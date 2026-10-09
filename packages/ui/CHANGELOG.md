@@ -206,6 +206,7 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - Below 48rem `LayoutHeader` hides its layout switcher and passes the same choices to the user menu's Layout submenu, so a phone-width bar keeps every control inside it under the floating and island shells.
 - In light mode the `flat` shell style paints its rail and bar with `--shell-flat-chrome`, a fixed 8.25-point step below `--background` lightness, instead of `--muted`, which sat at 1.05:1 against the page. The tone reads at about 1.2:1 and stays below the classic rail edge, so it does not look like a border. Dark mode keeps `--muted`.
 - On the settings page (`.dr-theme-settings-page`) a toggle group with four values (Style, Gradient pattern) lays out as 2x2 instead of one row of four, and one with five values (Sidebar selection) in two columns instead of rows of three, so the longer Vietnamese labels fit the column at 1024 and 1280px and at spacious density. The theme switcher popover keeps its single row of four and its rows of three.
+- Breaking: the item records passed to `registerItem` of `useDropdownMenu`, `useContextMenu`, `useMenubar`, `useSelect` and `useNavigationMenu` take an `id`, and registering an id that is already registered replaces its record without re-rendering. The hooks also return `focusedId` and `setFocusedId`, which track the focused item by id, and `unregisterItem(id)`. Focus stays on its item when other items are added or removed; when the focused item is removed, focus moves to the item that takes its place.
 
 ### Removed
 

@@ -480,8 +480,10 @@ function useMenuItem({
   // re-registering does not bounce useMenu state and trigger re-render loops.
   const descriptorRef = React.useRef<MenuItemDescriptor | null>(null)
   if (descriptorRef.current === null) {
+    const id = Math.random().toString(36).slice(2)
     descriptorRef.current = {
-      value: Math.random().toString(36).slice(2),
+      id,
+      value: id,
       textValue: textValue ?? "",
       disabled: !!disabled,
       ref: localRef,

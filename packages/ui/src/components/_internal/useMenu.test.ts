@@ -7,6 +7,7 @@ function makeItem(value: string, disabled = false) {
   const node = document.createElement("div")
   document.body.append(node)
   return {
+    id: value,
     value,
     textValue: value,
     disabled,
@@ -86,6 +87,7 @@ describe("useMenu", () => {
     })
     act(() => result.current.focusFirst())
     expect(result.current.focusedIndex).toBe(1)
+    expect(result.current.focusedId).toBe("b")
     a.cleanup()
     b.cleanup()
   })
@@ -94,6 +96,7 @@ describe("useMenu", () => {
     const { result } = renderHook(() => useMenu({ defaultOpen: true }))
     act(() => result.current.focusFirst())
     expect(result.current.focusedIndex).toBe(-1)
+    expect(result.current.focusedId).toBeNull()
     const a = makeItem("a")
     const b = makeItem("b")
     act(() => {
@@ -101,6 +104,7 @@ describe("useMenu", () => {
       result.current.registerItem(b)
     })
     expect(result.current.focusedIndex).toBe(0)
+    expect(result.current.focusedId).toBe("a")
     a.cleanup()
     b.cleanup()
   })
@@ -117,6 +121,7 @@ describe("useMenu", () => {
     })
     act(() => result.current.focusLast())
     expect(result.current.focusedIndex).toBe(1)
+    expect(result.current.focusedId).toBe("b")
     a.cleanup()
     b.cleanup()
     c.cleanup()
@@ -132,12 +137,16 @@ describe("useMenu", () => {
     })
     act(() => result.current.focusFirst())
     expect(result.current.focusedIndex).toBe(0)
+    expect(result.current.focusedId).toBe("a")
     act(() => result.current.focusNext())
     expect(result.current.focusedIndex).toBe(1)
+    expect(result.current.focusedId).toBe("b")
     act(() => result.current.focusNext())
     expect(result.current.focusedIndex).toBe(0)
+    expect(result.current.focusedId).toBe("a")
     act(() => result.current.focusPrev())
     expect(result.current.focusedIndex).toBe(1)
+    expect(result.current.focusedId).toBe("b")
     a.cleanup()
     b.cleanup()
   })
@@ -155,6 +164,7 @@ describe("useMenu", () => {
     act(() => result.current.focusFirst())
     act(() => result.current.focusNext())
     expect(result.current.focusedIndex).toBe(2)
+    expect(result.current.focusedId).toBe("c")
     a.cleanup()
     b.cleanup()
     c.cleanup()
@@ -174,12 +184,15 @@ describe("useMenu", () => {
     act(() => result.current.focusFirst())
     act(() => result.current.focusNext())
     expect(result.current.focusedIndex).toBe(2)
+    expect(result.current.focusedId).toBe("c")
     act(() => result.current.focusPrev())
     expect(result.current.focusedIndex).toBe(0)
+    expect(result.current.focusedId).toBe("a")
     act(() => {
       result.current.typeahead("b")
     })
     expect(result.current.focusedIndex).toBe(0)
+    expect(result.current.focusedId).toBe("a")
     a.cleanup()
     b.cleanup()
     c.cleanup()
@@ -198,11 +211,14 @@ describe("useMenu", () => {
     act(() => result.current.focusFirst())
     act(() => result.current.focusNext())
     expect(result.current.focusedIndex).toBe(1)
+    expect(result.current.focusedId).toBe("b")
     b.ref.current?.style.setProperty("display", "none")
     act(() => result.current.focusNext())
     expect(result.current.focusedIndex).toBe(2)
+    expect(result.current.focusedId).toBe("c")
     act(() => result.current.focusPrev())
     expect(result.current.focusedIndex).toBe(0)
+    expect(result.current.focusedId).toBe("a")
     a.cleanup()
     b.cleanup()
     c.cleanup()
@@ -227,6 +243,7 @@ describe("useMenu", () => {
     })
     expect(idx).toBe(1)
     expect(result.current.focusedIndex).toBe(1)
+    expect(result.current.focusedId).toBe("banana")
     apple.cleanup()
     banana.cleanup()
     cherry.cleanup()
@@ -250,12 +267,14 @@ describe("useMenu", () => {
     })
     // Single char "a": no focus → searches from index 0; apple matches.
     expect(result.current.focusedIndex).toBe(0)
+    expect(result.current.focusedId).toBe("apple")
     act(() => {
       result.current.typeahead("p")
     })
     // Chained "ap" (length > 1): preserves focus if current item still
     // matches (apple starts with "ap").
     expect(result.current.focusedIndex).toBe(0)
+    expect(result.current.focusedId).toBe("apple")
     apple.cleanup()
     apricot.cleanup()
     banana.cleanup()
@@ -278,6 +297,7 @@ describe("useMenu", () => {
       result.current.typeahead("a")
     })
     expect(result.current.focusedIndex).toBe(0)
+    expect(result.current.focusedId).toBe("apple")
     // Wait past the typeahead window so the buffer resets to a fresh "a".
     act(() => {
       vi.advanceTimersByTime(600)
@@ -287,6 +307,7 @@ describe("useMenu", () => {
     })
     // Fresh single "a", current focus 0: searches from offset 1, finds apricot.
     expect(result.current.focusedIndex).toBe(1)
+    expect(result.current.focusedId).toBe("apricot")
     apple.cleanup()
     apricot.cleanup()
     banana.cleanup()
@@ -306,6 +327,7 @@ describe("useMenu", () => {
       result.current.typeahead("a")
     })
     expect(result.current.focusedIndex).toBe(0)
+    expect(result.current.focusedId).toBe("apple")
     act(() => {
       vi.advanceTimersByTime(600)
     })
@@ -313,6 +335,7 @@ describe("useMenu", () => {
       result.current.typeahead("b")
     })
     expect(result.current.focusedIndex).toBe(1)
+    expect(result.current.focusedId).toBe("banana")
     a.cleanup()
     b.cleanup()
   })
@@ -325,8 +348,223 @@ describe("useMenu", () => {
     })
     act(() => result.current.focusFirst())
     expect(result.current.focusedIndex).toBe(0)
+    expect(result.current.focusedId).toBe("a")
     act(() => result.current.setOpen(false))
     expect(result.current.focusedIndex).toBe(-1)
+    expect(result.current.focusedId).toBeNull()
     a.cleanup()
+  })
+
+  it("focus falls to the next row when the focused row unregisters", () => {
+    const { result } = renderHook(() => useMenu())
+    const a = makeItem("a")
+    const b = makeItem("b")
+    const c = makeItem("c")
+    let unregisterB = () => {}
+    act(() => {
+      result.current.registerItem(a)
+      unregisterB = result.current.registerItem(b)
+      result.current.registerItem(c)
+    })
+    act(() => result.current.focusFirst())
+    act(() => result.current.focusNext())
+    expect(result.current.focusedIndex).toBe(1)
+    expect(result.current.focusedId).toBe("b")
+    act(() => {
+      b.cleanup()
+      unregisterB()
+    })
+    expect(result.current.items()[result.current.focusedIndex]?.value).toBe("c")
+    expect(result.current.focusedId).toBe("c")
+    a.cleanup()
+    c.cleanup()
+  })
+
+  it("focus falls to the next row when the focused row unregisters before leaving the document", () => {
+    const { result } = renderHook(() => useMenu())
+    const a = makeItem("a")
+    const b = makeItem("b")
+    const c = makeItem("c")
+    let unregisterB = () => {}
+    act(() => {
+      result.current.registerItem(a)
+      unregisterB = result.current.registerItem(b)
+      result.current.registerItem(c)
+    })
+    act(() => result.current.focusFirst())
+    act(() => result.current.focusNext())
+    act(() => {
+      unregisterB()
+      b.cleanup()
+    })
+    expect(result.current.items()[result.current.focusedIndex]?.value).toBe("c")
+    expect(result.current.focusedId).toBe("c")
+    a.cleanup()
+    c.cleanup()
+  })
+
+  it("no row is focused when the focused last row unregisters", () => {
+    const { result } = renderHook(() => useMenu())
+    const a = makeItem("a")
+    const b = makeItem("b")
+    let unregisterB = () => {}
+    act(() => {
+      result.current.registerItem(a)
+      unregisterB = result.current.registerItem(b)
+    })
+    act(() => result.current.focusLast())
+    act(() => {
+      b.cleanup()
+      unregisterB()
+    })
+    expect(result.current.items()[result.current.focusedIndex]).toBeUndefined()
+    expect(result.current.focusedId).toBeNull()
+    act(() => result.current.focusNext())
+    expect(result.current.focusedIndex).toBe(0)
+    expect(result.current.focusedId).toBe("a")
+    a.cleanup()
+  })
+
+  it("a focused row that becomes disabled keeps focus until navigation leaves it", () => {
+    const { result } = renderHook(() => useMenu())
+    const a = makeItem("a")
+    const b = makeItem("b")
+    const c = makeItem("c")
+    act(() => {
+      result.current.registerItem(a)
+      result.current.registerItem(b)
+      result.current.registerItem(c)
+    })
+    act(() => result.current.focusFirst())
+    act(() => result.current.focusNext())
+    act(() => {
+      b.disabled = true
+    })
+    expect(result.current.focusedIndex).toBe(1)
+    expect(result.current.focusedId).toBe("b")
+    act(() => result.current.focusNext())
+    expect(result.current.focusedIndex).toBe(2)
+    expect(result.current.focusedId).toBe("c")
+    act(() => result.current.focusPrev())
+    expect(result.current.focusedIndex).toBe(0)
+    expect(result.current.focusedId).toBe("a")
+    a.cleanup()
+    b.cleanup()
+    c.cleanup()
+  })
+
+  it("registerItem replaces the record of a known id without re-rendering", () => {
+    let renders = 0
+    const { result } = renderHook(() => {
+      renders += 1
+      return useMenu()
+    })
+    const a = makeItem("a")
+    act(() => {
+      result.current.registerItem(a)
+    })
+    const rendersAfterAdd = renders
+    act(() => {
+      result.current.registerItem({ ...a, disabled: true })
+    })
+    expect(renders).toBe(rendersAfterAdd)
+    expect(result.current.items()).toHaveLength(1)
+    expect(result.current.items()[0]?.disabled).toBe(true)
+    a.cleanup()
+  })
+
+  it("adding or removing an id re-renders", () => {
+    let renders = 0
+    const { result } = renderHook(() => {
+      renders += 1
+      return useMenu()
+    })
+    const a = makeItem("a")
+    let unregister = () => {}
+    const rendersBefore = renders
+    act(() => {
+      unregister = result.current.registerItem(a)
+    })
+    expect(renders).toBeGreaterThan(rendersBefore)
+    const rendersAfterAdd = renders
+    act(() => unregister())
+    expect(renders).toBeGreaterThan(rendersAfterAdd)
+    expect(result.current.items()).toHaveLength(0)
+    a.cleanup()
+  })
+
+  it("unregisterItem removes a row by id", () => {
+    const { result } = renderHook(() => useMenu())
+    const a = makeItem("a")
+    const b = makeItem("b")
+    act(() => {
+      result.current.registerItem(a)
+      result.current.registerItem(b)
+    })
+    act(() => result.current.unregisterItem("a"))
+    expect(result.current.items().map((it) => it.id)).toEqual(["b"])
+    a.cleanup()
+    b.cleanup()
+  })
+
+  it("setFocusedId focuses a row by id", () => {
+    const { result } = renderHook(() => useMenu())
+    const a = makeItem("a")
+    const b = makeItem("b")
+    const c = makeItem("c")
+    act(() => {
+      result.current.registerItem(a)
+      result.current.registerItem(b)
+      result.current.registerItem(c)
+    })
+    act(() => result.current.setFocusedId("b"))
+    expect(result.current.focusedId).toBe("b")
+    expect(result.current.focusedIndex).toBe(1)
+    act(() => result.current.focusNext())
+    expect(result.current.focusedId).toBe("c")
+    act(() => result.current.setFocusedId(null))
+    expect(result.current.focusedId).toBeNull()
+    expect(result.current.focusedIndex).toBe(-1)
+    a.cleanup()
+    b.cleanup()
+    c.cleanup()
+  })
+
+  it("setFocusedIndex keeps focusedId in step", () => {
+    const { result } = renderHook(() => useMenu())
+    const a = makeItem("a")
+    const b = makeItem("b")
+    act(() => {
+      result.current.registerItem(a)
+      result.current.registerItem(b)
+    })
+    act(() => result.current.setFocusedIndex(1))
+    expect(result.current.focusedId).toBe("b")
+    act(() => result.current.setFocusedIndex(-1))
+    expect(result.current.focusedId).toBeNull()
+    a.cleanup()
+    b.cleanup()
+  })
+
+  it("focus stays on its row when a row registers before it", () => {
+    const { result } = renderHook(() => useMenu())
+    const b = makeItem("b")
+    const c = makeItem("c")
+    act(() => {
+      result.current.registerItem(b)
+      result.current.registerItem(c)
+    })
+    act(() => result.current.focusFirst())
+    const a = makeItem("a")
+    const aNode = a.ref.current
+    if (aNode) document.body.prepend(aNode)
+    act(() => {
+      result.current.registerItem(a)
+    })
+    expect(result.current.focusedId).toBe("b")
+    expect(result.current.focusedIndex).toBe(1)
+    a.cleanup()
+    b.cleanup()
+    c.cleanup()
   })
 })

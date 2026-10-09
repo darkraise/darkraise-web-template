@@ -16,7 +16,7 @@ import {
   type PhysicalSide,
   type PopupAlign,
 } from "@primitives/floating"
-import { useControllableState } from "@primitives/state"
+import { useControllableState, useId } from "@primitives/state"
 import { focusProgrammatically } from "@primitives/focus-trap"
 import { useMenu } from "@components/_internal/useMenu"
 import "./select.css"
@@ -32,6 +32,7 @@ export type SelectAlign = Align
 export type SelectPosition = Position
 
 interface SelectItemRecord {
+  id: string
   value: string
   textValue: string
   disabled: boolean
@@ -606,10 +607,12 @@ function SelectItem({
 }: SelectItemProps) {
   const ctx = useSelectContext("SelectItem")
   const localRef = React.useRef<HTMLDivElement | null>(null)
+  const id = useId()
 
   const recordRef = React.useRef<SelectItemRecord | null>(null)
   if (recordRef.current === null) {
     recordRef.current = {
+      id,
       value,
       textValue: textValue ?? "",
       disabled: !!disabled,

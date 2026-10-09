@@ -2,6 +2,7 @@ import * as React from "react"
 import { useControllableState, useEvent, useId } from "@primitives/state"
 
 export interface MenuItemDescriptor {
+  id: string
   value: string
   textValue: string
   disabled: boolean
@@ -46,7 +47,16 @@ export interface UseMenuReturn {
   /** index of currently focused item (-1 = none) */
   focusedIndex: number
   setFocusedIndex: (next: number) => void
+  /** id of the currently focused item, or null when none is focused */
+  focusedId: string | null
+  setFocusedId: (id: string | null) => void
+  /**
+   * Add an item, or replace the record of an item already registered under
+   * the same id. Adding re-renders the menu; replacing does not. Returns a
+   * cleanup that unregisters the id.
+   */
   registerItem: (item: MenuItemDescriptor) => () => void
+  unregisterItem: (id: string) => void
   /** Get item descriptor by index. */
   getItemAt: (index: number) => MenuItemDescriptor | undefined
   /** Sorted list of all currently registered items in DOM order. */
@@ -67,6 +77,18 @@ export interface UseMenuReturn {
    * so moving the pointer onto any other item collapses the previous one.
    */
   closeOpenSubmenu: (exceptTrigger?: HTMLElement | null) => void
+}
+
+interface FocusState {
+  id: string | null
+  /** Position of `id` among the rows in document order, or -1. */
+  index: number
+}
+
+const NO_FOCUS: FocusState = { id: null, index: -1 }
+
+function indexOf(list: MenuItemDescriptor[], id: string | null): number {
+  return id === null ? -1 : list.findIndex((it) => it.id === id)
 }
 
 function compareNodeOrder(a: Element, b: Element): number {
@@ -97,13 +119,12 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
 
   const toggle = useEvent(() => setOpen(!open))
 
-  const [focusedIndex, setFocusedIndexState] = React.useState(-1)
-  const setFocusedIndex = React.useCallback((next: number) => {
-    setFocusedIndexState(next)
-  }, [])
+  const [focus, setFocus] = React.useState<FocusState>(NO_FOCUS)
+  const focusedIndex = focus.index
+  const focusedId = focus.id
 
   // Items are stored in a ref to allow imperative reads without re-renders.
-  const itemsRef = React.useRef<MenuItemDescriptor[]>([])
+  const itemsRef = React.useRef(new Map<string, MenuItemDescriptor>())
   // Bumping nonce forces consumers (sortItems) to recompute when items change.
   const [itemsNonce, setItemsNonce] = React.useState(0)
   // A keyboard open can ask for the first or last row before the content
@@ -111,7 +132,9 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
   const pendingFocusRef = React.useRef<"first" | "last" | null>(null)
 
   const sortItems = React.useCallback((): MenuItemDescriptor[] => {
-    const list = itemsRef.current.filter((it) => it.ref.current != null)
+    const list = [...itemsRef.current.values()].filter(
+      (it) => it.ref.current != null,
+    )
     list.sort((a, b) => {
       const aNode = a.ref.current
       const bNode = b.ref.current
@@ -126,14 +149,63 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
     [sortItems],
   )
 
-  const registerItem = React.useCallback((item: MenuItemDescriptor) => {
-    itemsRef.current = [...itemsRef.current, item]
-    setItemsNonce((n) => n + 1)
-    return () => {
-      itemsRef.current = itemsRef.current.filter((it) => it !== item)
+  const setFocusedIndex = React.useCallback(
+    (next: number) => {
+      const list = sortItems()
+      setFocus({ id: list[next]?.id ?? null, index: next })
+    },
+    [sortItems],
+  )
+
+  const setFocusedId = React.useCallback(
+    (id: string | null) => {
+      if (id === null) {
+        setFocus(NO_FOCUS)
+        return
+      }
+      const list = sortItems()
+      setFocus({ id, index: list.findIndex((it) => it.id === id) })
+    },
+    [sortItems],
+  )
+
+  // After a row is added or removed the focused row may sit at another
+  // position. A focused row that left hands focus to the row that took its
+  // position, which is where an index-tracked focus used to land.
+  const settleFocus = React.useCallback(() => {
+    const list = sortItems()
+    setFocus((prev) => {
+      if (prev.id === null) return prev
+      const index = list.findIndex((it) => it.id === prev.id)
+      if (index !== -1) {
+        return index === prev.index ? prev : { id: prev.id, index }
+      }
+      const successor = list[prev.index]
+      return successor ? { id: successor.id, index: prev.index } : NO_FOCUS
+    })
+  }, [sortItems])
+
+  const unregisterItem = React.useCallback(
+    (id: string) => {
+      if (!itemsRef.current.delete(id)) return
       setItemsNonce((n) => n + 1)
-    }
-  }, [])
+      settleFocus()
+    },
+    [settleFocus],
+  )
+
+  const registerItem = React.useCallback(
+    (item: MenuItemDescriptor) => {
+      const known = itemsRef.current.has(item.id)
+      itemsRef.current.set(item.id, item)
+      if (!known) {
+        setItemsNonce((n) => n + 1)
+        settleFocus()
+      }
+      return () => unregisterItem(item.id)
+    },
+    [settleFocus, unregisterItem],
+  )
 
   const getItemAt = React.useCallback(
     (index: number): MenuItemDescriptor | undefined => {
@@ -173,7 +245,7 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
       }
     }
     if (list.length === 0) pendingFocusRef.current = "first"
-    setFocusedIndex(-1)
+    setFocus(NO_FOCUS)
   }, [setFocusedIndex, sortItems])
 
   const focusLast = React.useCallback(() => {
@@ -186,7 +258,7 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
       }
     }
     if (list.length === 0) pendingFocusRef.current = "last"
-    setFocusedIndex(-1)
+    setFocus(NO_FOCUS)
   }, [setFocusedIndex, sortItems])
 
   React.useEffect(() => {
@@ -199,15 +271,15 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
 
   const focusNext = React.useCallback(() => {
     const list = sortItems()
-    const next = moveFocus(focusedIndex, 1, list)
+    const next = moveFocus(indexOf(list, focusedId), 1, list)
     if (next !== -1) setFocusedIndex(next)
-  }, [focusedIndex, moveFocus, setFocusedIndex, sortItems])
+  }, [focusedId, moveFocus, setFocusedIndex, sortItems])
 
   const focusPrev = React.useCallback(() => {
     const list = sortItems()
-    const next = moveFocus(focusedIndex, -1, list)
+    const next = moveFocus(indexOf(list, focusedId), -1, list)
     if (next !== -1) setFocusedIndex(next)
-  }, [focusedIndex, moveFocus, setFocusedIndex, sortItems])
+  }, [focusedId, moveFocus, setFocusedIndex, sortItems])
 
   // Typeahead buffer + timer in refs to avoid re-renders.
   const typeBufferRef = React.useRef("")
@@ -225,6 +297,7 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
       if (list.length === 0) return -1
       const buffer = typeBufferRef.current
       const len = list.length
+      const focusedIndex = indexOf(list, focusedId)
       // When no item is focused, search from index 0 inclusive. When an item
       // IS focused: chained characters (buffer length > 1) keep the same
       // focus if it still matches; a fresh single character moves to the
@@ -252,7 +325,7 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
       }
       return -1
     },
-    [focusedIndex, setFocusedIndex, sortItems, typeaheadDuration],
+    [focusedId, setFocusedIndex, sortItems, typeaheadDuration],
   )
 
   const openSubmenuRef = React.useRef<OpenSubmenuEntry | null>(null)
@@ -279,7 +352,7 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
   React.useEffect(() => {
     if (!open) {
       pendingFocusRef.current = null
-      setFocusedIndexState(-1)
+      setFocus(NO_FOCUS)
       const entry = openSubmenuRef.current
       openSubmenuRef.current = null
       entry?.close()
@@ -302,7 +375,10 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
     contentId,
     focusedIndex,
     setFocusedIndex,
+    focusedId,
+    setFocusedId,
     registerItem,
+    unregisterItem,
     getItemAt,
     items,
     focusFirst,
