@@ -292,4 +292,29 @@ test.describe("tour", () => {
     await expect(second.locator(".dr-tour-progress")).toHaveText("2 / 3")
     await expect(second.getByRole("button", { name: "Previous" })).toBeEnabled()
   })
+
+  test("tour keeps Tab inside its popover and returns focus to its opener", async ({
+    page,
+  }) => {
+    const main = await open(page, "/components/tour")
+    const start = main.getByRole("button", { name: "Start tour" })
+    await start.click()
+
+    const popover = page.getByRole("dialog", { name: "Welcome" })
+    await expect(popover).toBeFocused()
+    const skip = popover.getByRole("button", { name: "Skip" })
+    const next = popover.getByRole("button", { name: "Next" })
+
+    await next.focus()
+    await page.keyboard.press("Tab")
+    await expect(skip).toBeFocused()
+    await page.keyboard.press("Shift+Tab")
+    await expect(next).toBeFocused()
+
+    await page.keyboard.press("Shift+Tab")
+    await expect(skip).toBeFocused()
+    await page.keyboard.press("Enter")
+    await expect(popover).toBeHidden()
+    await expect(start).toBeFocused()
+  })
 })
