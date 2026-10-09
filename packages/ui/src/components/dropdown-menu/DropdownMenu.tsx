@@ -271,6 +271,7 @@ function DropdownMenuContentImpl({
   alignOffset = 0,
   collisionPadding = 8,
   avoidCollisions = true,
+  loop = true,
   onCloseAutoFocus,
   onEscapeKeyDown,
   onPointerDownOutside,
@@ -279,7 +280,7 @@ function DropdownMenuContentImpl({
   ref,
   style,
   ...rest
-}: Omit<DropdownMenuContentProps, "forceMount" | "loop">) {
+}: Omit<DropdownMenuContentProps, "forceMount">) {
   const ctx = useDropdownContext("DropdownMenuContent")
 
   const placement = placementOf(resolveSide(side, ctx.reference), align)
@@ -337,10 +338,10 @@ function DropdownMenuContentImpl({
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "ArrowDown") {
       event.preventDefault()
-      ctx.focusNext()
+      ctx.focusNext({ loop })
     } else if (event.key === "ArrowUp") {
       event.preventDefault()
-      ctx.focusPrev()
+      ctx.focusPrev({ loop })
     } else if (event.key === "Home") {
       event.preventDefault()
       ctx.focusFirst()

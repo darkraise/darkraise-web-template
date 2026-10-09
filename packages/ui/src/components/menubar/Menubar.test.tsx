@@ -514,3 +514,62 @@ describe("Menubar item text changed after mount", () => {
     await waitFor(() => expect(renamed).toHaveFocus())
   })
 })
+
+describe("Menubar content loop", () => {
+  function Bar({ loop, rootLoop }: { loop?: boolean; rootLoop?: boolean }) {
+    return (
+      <Menubar loop={rootLoop}>
+        <MenubarMenu value="edit">
+          <MenubarTrigger>Edit</MenubarTrigger>
+          <MenubarContent loop={loop}>
+            <MenubarItem>First</MenubarItem>
+            <MenubarItem>Last</MenubarItem>
+          </MenubarContent>
+        </MenubarMenu>
+      </Menubar>
+    )
+  }
+
+  async function open() {
+    const user = userEvent.setup()
+    await user.click(screen.getByRole("menuitem", { name: "Edit" }))
+    const menu = await screen.findByRole("menu")
+    return {
+      menu,
+      first: screen.getByRole("menuitem", { name: "First" }),
+      last: screen.getByRole("menuitem", { name: "Last" }),
+    }
+  }
+
+  it("stops at both ends when loop is false", async () => {
+    render(<Bar loop={false} />)
+    const { menu, first, last } = await open()
+
+    fireEvent.keyDown(menu, { key: "End" })
+    await waitFor(() => expect(last).toHaveFocus())
+    fireEvent.keyDown(last, { key: "ArrowDown" })
+    expect(last).toHaveFocus()
+
+    fireEvent.keyDown(menu, { key: "Home" })
+    await waitFor(() => expect(first).toHaveFocus())
+    fireEvent.keyDown(first, { key: "ArrowUp" })
+    expect(first).toHaveFocus()
+    expect(menu).not.toHaveAttribute("loop")
+  })
+
+  it.each([undefined, true])(
+    "wraps at both ends when loop is %s, whatever the root loop",
+    async (loop) => {
+      render(<Bar loop={loop} rootLoop={false} />)
+      const { menu, first, last } = await open()
+
+      fireEvent.keyDown(menu, { key: "End" })
+      await waitFor(() => expect(last).toHaveFocus())
+      fireEvent.keyDown(last, { key: "ArrowDown" })
+      await waitFor(() => expect(first).toHaveFocus())
+      fireEvent.keyDown(first, { key: "ArrowUp" })
+      await waitFor(() => expect(last).toHaveFocus())
+      expect(menu).not.toHaveAttribute("loop")
+    },
+  )
+})

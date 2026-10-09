@@ -612,3 +612,53 @@ describe("DropdownMenu item text changed after mount", () => {
     await waitFor(() => expect(renamed).toHaveFocus())
   })
 })
+
+describe("DropdownMenu content loop", () => {
+  function Menu({ loop }: { loop?: boolean }) {
+    return (
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent loop={loop}>
+          <DropdownMenuItem>First</DropdownMenuItem>
+          <DropdownMenuItem>Last</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
+  }
+
+  it("stops at both ends when loop is false", async () => {
+    render(<Menu loop={false} />)
+    const menu = await screen.findByRole("menu")
+    const first = screen.getByRole("menuitem", { name: "First" })
+    const last = screen.getByRole("menuitem", { name: "Last" })
+
+    fireEvent.keyDown(menu, { key: "End" })
+    await waitFor(() => expect(last).toHaveFocus())
+    fireEvent.keyDown(last, { key: "ArrowDown" })
+    expect(last).toHaveFocus()
+
+    fireEvent.keyDown(menu, { key: "Home" })
+    await waitFor(() => expect(first).toHaveFocus())
+    fireEvent.keyDown(first, { key: "ArrowUp" })
+    expect(first).toHaveFocus()
+    expect(menu).not.toHaveAttribute("loop")
+  })
+
+  it.each([undefined, true])(
+    "wraps at both ends when loop is %s",
+    async (loop) => {
+      render(<Menu loop={loop} />)
+      const menu = await screen.findByRole("menu")
+      const first = screen.getByRole("menuitem", { name: "First" })
+      const last = screen.getByRole("menuitem", { name: "Last" })
+
+      fireEvent.keyDown(menu, { key: "End" })
+      await waitFor(() => expect(last).toHaveFocus())
+      fireEvent.keyDown(last, { key: "ArrowDown" })
+      await waitFor(() => expect(first).toHaveFocus())
+      fireEvent.keyDown(first, { key: "ArrowUp" })
+      await waitFor(() => expect(last).toHaveFocus())
+      expect(menu).not.toHaveAttribute("loop")
+    },
+  )
+})

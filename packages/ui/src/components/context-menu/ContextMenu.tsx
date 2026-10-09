@@ -261,6 +261,7 @@ function ContextMenuContentImpl({
   children,
   collisionPadding = 8,
   avoidCollisions = true,
+  loop = true,
   onCloseAutoFocus,
   onEscapeKeyDown,
   onPointerDownOutside,
@@ -269,7 +270,7 @@ function ContextMenuContentImpl({
   ref,
   style,
   ...rest
-}: Omit<ContextMenuContentProps, "forceMount" | "loop">) {
+}: Omit<ContextMenuContentProps, "forceMount">) {
   const ctx = useContextMenuContext("ContextMenuContent")
 
   // The root menu opens at the pointer; a submenu anchors to its live
@@ -335,10 +336,10 @@ function ContextMenuContentImpl({
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "ArrowDown") {
       event.preventDefault()
-      ctx.focusNext()
+      ctx.focusNext({ loop })
     } else if (event.key === "ArrowUp") {
       event.preventDefault()
-      ctx.focusPrev()
+      ctx.focusPrev({ loop })
     } else if (event.key === "Home") {
       event.preventDefault()
       ctx.focusFirst()

@@ -401,6 +401,7 @@ function MenubarContentImpl({
   alignOffset = -4,
   collisionPadding = 8,
   avoidCollisions = true,
+  loop = true,
   onCloseAutoFocus,
   onEscapeKeyDown,
   onPointerDownOutside,
@@ -409,7 +410,7 @@ function MenubarContentImpl({
   ref,
   style,
   ...rest
-}: Omit<MenubarContentProps, "forceMount" | "loop">) {
+}: Omit<MenubarContentProps, "forceMount">) {
   const ctx = useMenubarMenu("MenubarContent")
   const root = useMenubarRoot("MenubarContent")
 
@@ -460,10 +461,10 @@ function MenubarContentImpl({
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "ArrowDown") {
       event.preventDefault()
-      ctx.focusNext()
+      ctx.focusNext({ loop })
     } else if (event.key === "ArrowUp") {
       event.preventDefault()
-      ctx.focusPrev()
+      ctx.focusPrev({ loop })
     } else if (event.key === "Home") {
       event.preventDefault()
       ctx.focusFirst()

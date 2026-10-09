@@ -37,6 +37,10 @@ export interface UseMenuOptions {
   orientation?: "vertical" | "horizontal"
 }
 
+export interface MenuMoveOptions {
+  loop?: boolean
+}
+
 export interface UseMenuReturn {
   open: boolean
   setOpen: (next: boolean) => void
@@ -59,9 +63,12 @@ export interface UseMenuReturn {
   /** Move focus to first/last enabled item. */
   focusFirst: () => void
   focusLast: () => void
-  /** Move focus to next/previous enabled item. */
-  focusNext: () => void
-  focusPrev: () => void
+  /**
+   * Move focus to next/previous enabled item. `loop` overrides the hook's
+   * `loop` option for this move.
+   */
+  focusNext: (options?: MenuMoveOptions) => void
+  focusPrev: (options?: MenuMoveOptions) => void
   /** Process a typeahead character; returns the matched item's id or null. */
   typeahead: (char: string) => string | null
   /** Record which submenu this menu currently holds open. */
@@ -206,23 +213,28 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
   )
 
   const moveFocus = React.useCallback(
-    (from: number, direction: 1 | -1, list: MenuItemDescriptor[]): number => {
+    (
+      from: number,
+      direction: 1 | -1,
+      list: MenuItemDescriptor[],
+      wrap: boolean,
+    ): number => {
       if (list.length === 0) return -1
       let i = from
       for (let step = 0; step < list.length; step += 1) {
         i += direction
         if (i < 0) {
-          if (!loop) return from === -1 ? -1 : from
+          if (!wrap) return from === -1 ? -1 : from
           i = list.length - 1
         } else if (i >= list.length) {
-          if (!loop) return from === -1 ? -1 : from
+          if (!wrap) return from === -1 ? -1 : from
           i = 0
         }
         if (!isSkipped(list[i])) return i
       }
       return -1
     },
-    [loop],
+    [],
   )
 
   const focusFirst = React.useCallback(() => {
@@ -259,17 +271,25 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
     else focusLast()
   }, [itemsNonce, focusFirst, focusLast, sortItems])
 
-  const focusNext = React.useCallback(() => {
-    const list = sortItems()
-    const next = moveFocus(indexOf(list, focusedId), 1, list)
-    if (next !== -1) focusAt(next)
-  }, [focusAt, focusedId, moveFocus, sortItems])
+  const focusNext = React.useCallback(
+    (moveOptions?: MenuMoveOptions) => {
+      const list = sortItems()
+      const wrap = moveOptions?.loop ?? loop
+      const next = moveFocus(indexOf(list, focusedId), 1, list, wrap)
+      if (next !== -1) focusAt(next)
+    },
+    [focusAt, focusedId, loop, moveFocus, sortItems],
+  )
 
-  const focusPrev = React.useCallback(() => {
-    const list = sortItems()
-    const next = moveFocus(indexOf(list, focusedId), -1, list)
-    if (next !== -1) focusAt(next)
-  }, [focusAt, focusedId, moveFocus, sortItems])
+  const focusPrev = React.useCallback(
+    (moveOptions?: MenuMoveOptions) => {
+      const list = sortItems()
+      const wrap = moveOptions?.loop ?? loop
+      const next = moveFocus(indexOf(list, focusedId), -1, list, wrap)
+      if (next !== -1) focusAt(next)
+    },
+    [focusAt, focusedId, loop, moveFocus, sortItems],
+  )
 
   // Typeahead buffer + timer in refs to avoid re-renders.
   const typeBufferRef = React.useRef("")

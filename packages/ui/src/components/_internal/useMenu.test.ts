@@ -151,6 +151,35 @@ describe("useMenu", () => {
     b.cleanup()
   })
 
+  it("a move's loop flag overrides the hook's loop option", () => {
+    const { result, rerender } = renderHook(
+      ({ loop }: { loop: boolean }) => useMenu({ loop }),
+      { initialProps: { loop: true } },
+    )
+    const a = makeItem("a")
+    const b = makeItem("b")
+    act(() => {
+      result.current.registerItem(a)
+      result.current.registerItem(b)
+    })
+    act(() => result.current.focusLast())
+    act(() => result.current.focusNext({ loop: false }))
+    expect(result.current.focusedId).toBe("b")
+    act(() => result.current.focusFirst())
+    act(() => result.current.focusPrev({ loop: false }))
+    expect(result.current.focusedId).toBe("a")
+
+    rerender({ loop: false })
+    act(() => result.current.focusPrev({ loop: true }))
+    expect(result.current.focusedId).toBe("b")
+    act(() => result.current.focusNext({ loop: true }))
+    expect(result.current.focusedId).toBe("a")
+    act(() => result.current.focusPrev())
+    expect(result.current.focusedId).toBe("a")
+    a.cleanup()
+    b.cleanup()
+  })
+
   it("focusNext skips disabled items", () => {
     const { result } = renderHook(() => useMenu())
     const a = makeItem("a")
