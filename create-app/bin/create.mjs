@@ -481,7 +481,7 @@ import { themeConfig } from "./src/theme.config"
 
 export default defineConfig({
   plugins: [
-    darkraisePrerender({ defaults: themeConfig.defaults }),
+    darkraisePrerender({ config: themeConfig }),
     react(),
     tailwindcss(),
   ],

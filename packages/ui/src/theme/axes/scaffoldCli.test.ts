@@ -230,14 +230,12 @@ describe("generated project", () => {
   )
 
   it(
-    "passes the config defaults to the pre-render plugin",
+    "passes the theme config to the pre-render plugin",
     async () => {
       expect((await scaffold()).code).toBe(0)
       const vite = readFileSync(join(cwd, "app/vite.config.ts"), "utf8")
       expect(vite).toContain('import { themeConfig } from "./src/theme.config"')
-      expect(vite).toContain(
-        "darkraisePrerender({ defaults: themeConfig.defaults })",
-      )
+      expect(vite).toContain("darkraisePrerender({ config: themeConfig })")
     },
     TIMEOUT,
   )
