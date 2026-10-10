@@ -1,4 +1,4 @@
-@layer theme, base, style.base, style.mode, style.when, style.preset, style.fallback, components, utilities, overrides;
+@layer properties, theme, base, style.base, style.mode, style.when, style.preset, style.fallback, components, utilities, overrides;
 @import "tailwindcss";
 @import "tw-animate-css";
 

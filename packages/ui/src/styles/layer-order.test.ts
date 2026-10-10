@@ -56,12 +56,17 @@ describe("cascade layer order", () => {
     expect(theme.split("\n")[0]).toBe(LAYER_STATEMENT)
   })
 
-  // Tailwind hoists `@layer properties;` above everything: that layer holds
-  // only the @property fallbacks for its own --tw-* variables and sorts
-  // lowest, below every kit layer.
+  // `properties` holds only the @property fallbacks for Tailwind's own
+  // --tw-* variables and must sort lowest, below every kit layer.
+  const kitLayers = LAYER_STATEMENT.replace(/^@layer |;$/g, "").split(", ")
+
   it("keeps the kit's layer order in a consumer's compiled stylesheet", async () => {
     const css = await consumerBuild(`@import "${KIT_ENTRY}";\n`)
-    const kitLayers = LAYER_STATEMENT.replace(/^@layer |;$/g, "").split(", ")
-    expect(layerOrder(css)).toEqual(["properties", ...kitLayers])
+    expect(layerOrder(css)).toEqual(kitLayers)
+  })
+
+  it("keeps it when a compiled sheet loads before the app's stylesheet", async () => {
+    const css = await consumerBuild(`@import "${KIT_ENTRY}";\n`)
+    expect(layerOrder(`${LAYER_STATEMENT}\n${css}`)).toEqual(kitLayers)
   })
 })

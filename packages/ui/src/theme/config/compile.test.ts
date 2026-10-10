@@ -101,7 +101,7 @@ const FROST_CSS = `@layer style.base {
 describe("LAYER_STATEMENT", () => {
   it("orders the style layers between base and components", () => {
     expect(LAYER_STATEMENT).toBe(
-      "@layer theme, base, style.base, style.mode, style.when, style.preset, style.fallback, components, utilities, overrides;",
+      "@layer properties, theme, base, style.base, style.mode, style.when, style.preset, style.fallback, components, utilities, overrides;",
     )
   })
 })

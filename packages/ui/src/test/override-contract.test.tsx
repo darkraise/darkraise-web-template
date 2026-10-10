@@ -47,7 +47,7 @@ describe("override contract", () => {
     expect(layerDeclMatch).not.toBeNull()
     if (!layerDeclMatch) return
     expect(layerDeclMatch[0]).toBe(
-      "@layer theme, base, style.base, style.mode, style.when, style.preset, style.fallback, components, utilities, overrides;",
+      "@layer properties, theme, base, style.base, style.mode, style.when, style.preset, style.fallback, components, utilities, overrides;",
     )
     expect(layerDeclMatch.index).toBeLessThan(
       themeCss.indexOf('@import "tailwindcss";'),

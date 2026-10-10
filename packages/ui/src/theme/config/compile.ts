@@ -6,10 +6,11 @@ import { PAINT_TOKENS, type PaintToken } from "./tokens"
 /**
  * Layer order is fixed by each name's first appearance, so this statement
  * must be the first one the browser sees: it leads theme.css and every
- * compiled sheet.
+ * compiled sheet. `properties` is Tailwind's own lowest layer; naming it
+ * here keeps it lowest when a compiled sheet loads before the app's CSS.
  */
 export const LAYER_STATEMENT =
-  "@layer theme, base, style.base, style.mode, style.when, style.preset, style.fallback, components, utilities, overrides;"
+  "@layer properties, theme, base, style.base, style.mode, style.when, style.preset, style.fallback, components, utilities, overrides;"
 
 const FORCED_MEDIA =
   "@media (prefers-reduced-transparency: reduce), (prefers-contrast: more)"
