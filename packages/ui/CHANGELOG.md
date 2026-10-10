@@ -154,6 +154,7 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - `focusNext` and `focusPrev` from `useDropdownMenu`, `useContextMenu`, `useMenubar` and `useSelect` take `{ loop }` to override the hook's `loop` option for one move.
 - `ThemeConfig` takes `styles` and `presets`: plain-data definitions of new styles (optionally extending another) and of presets of a style. `ThemeProvider` accepts their names as `style` and `preset` values, from storage, the config defaults, synced payloads and the setters, and paints with each definition's axis values and `frosted`; `useTheme().registry` holds the resolved styles and presets. Picking a preset also stores its style, and picking a style stores `preset: "base"`.
 - The theme switcher's Style control lists a config's styles after the built-ins, each by its `label`. Under `sidebarSelection: "auto"` a config style draws the look of the nearest built-in style it extends, or chips when it extends none, and a style that extends Flat drops the sidebar shadows as Flat does.
+- A theme definition value containing `{`, `}`, `</style` (in any case) or a `;` outside brackets or quotes, or a var name that is not a plain custom property name, is an error: the plugin fails the build and the provider leaves the definition out.
 
 ### Changed
 

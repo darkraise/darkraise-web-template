@@ -563,6 +563,117 @@ describe("errors", () => {
       ],
     )
   })
+
+  it.each([
+    "red; } body { color: red",
+    "{ color: red",
+    "url(x)}",
+    "red</style><script>alert(1)</script>",
+    "red</STYLE>",
+    "red</Style >",
+  ])(
+    "rejects the value %j, which would leave its rule or style element",
+    (value) => {
+      const registry = build({
+        styles: {
+          mine: { label: "Mine", tokens: { shared: { cardEdge: value } } },
+        },
+      })
+      expect(registry.issues).toEqual([
+        {
+          level: "error",
+          path: "styles.mine.tokens.shared.cardEdge",
+          message: 'a value cannot contain "{", "}" or "</style"',
+        },
+      ])
+      expect(registry.styles).not.toHaveProperty("mine")
+    },
+  )
+
+  it("checks vars, when entries, fallbacks and preset tokens for such values", () => {
+    const registry = build({
+      styles: {
+        mine: {
+          label: "Mine",
+          vars: { light: { "--mine-a": "}" } },
+          when: [
+            { axes: {}, tokens: { cardSheen: "{" }, vars: { "--mine-b": "}" } },
+          ],
+          forcedFallback: { tokens: { chromeEdge: "</style" } },
+        },
+      },
+      presets: {
+        ink: {
+          label: "Ink",
+          style: "plain",
+          tokens: { dark: { cardEdge: "a { b }" } },
+        },
+      },
+    })
+    expect(registry.issues.map((issue) => [issue.level, issue.path])).toEqual([
+      ["error", 'styles.mine.vars.light["--mine-a"]'],
+      ["error", "styles.mine.when[0].tokens.cardSheen"],
+      ["error", 'styles.mine.when[0].vars["--mine-b"]'],
+      ["error", "styles.mine.forcedFallback.tokens.chromeEdge"],
+      ["error", "presets.ink.tokens.dark.cardEdge"],
+    ])
+  })
+
+  it("rejects a var name that is not a plain custom property name", () => {
+    expect(
+      messages({
+        styles: {
+          mine: {
+            label: "Mine",
+            vars: { shared: { "--mine-a: red; } body { --x": "1" } },
+          },
+        },
+      }),
+    ).toEqual([
+      [
+        "error",
+        'styles.mine.vars.shared["--mine-a: red; } body { --x"]',
+        '"--mine-a: red; } body { --x" is not a custom property name',
+      ],
+    ])
+  })
+
+  it("rejects a value with a semicolon outside brackets or quotes", () => {
+    const registry = build({
+      styles: {
+        mine: {
+          label: "Mine",
+          tokens: { shared: { cardEdge: "red; color: blue" } },
+        },
+      },
+    })
+    expect(registry.issues).toEqual([
+      {
+        level: "error",
+        path: "styles.mine.tokens.shared.cardEdge",
+        message: 'a value cannot contain ";" outside brackets or quotes',
+      },
+    ])
+    expect(registry.styles).not.toHaveProperty("mine")
+  })
+
+  it("accepts a data URI with semicolons and markup", () => {
+    expect(
+      messages({
+        styles: {
+          mine: {
+            label: "Mine",
+            vars: {
+              shared: {
+                "--mine-noise":
+                  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><rect/></svg>\")",
+              },
+            },
+          },
+        },
+      }),
+    ).toEqual([])
+  })
 })
 
 describe("bare colour triplet warning", () => {

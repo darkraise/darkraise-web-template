@@ -69,6 +69,9 @@ const NOT_DEFINABLE = new Set(["mode", "style", "preset"])
 const NOT_TESTABLE = new Set(["mode", "style", "preset", "sidebarSelection"])
 
 const TRIPLET = /^-?[\d.]+ [\d.]+% [\d.]+%( \/ [\d.]+)?$/
+// Compiled values land inside a rule inside a <style> element.
+const ESCAPES_RULE = /[{}]|<\/style/i
+const CUSTOM_PROPERTY = /^--[\w-]+$/
 
 let tripletTokens: ReadonlySet<string> | undefined
 
@@ -163,9 +166,45 @@ interface Checker {
   owner: string
 }
 
+/** A `;` at parenthesis depth 0 outside quotes would end the declaration early. */
+function hasBareSemicolon(value: string): boolean {
+  let quote = ""
+  let depth = 0
+  for (const char of value) {
+    if (quote) {
+      if (char === quote) quote = ""
+    } else if (char === '"' || char === "'") {
+      quote = char
+    } else if (char === "(") {
+      depth++
+    } else if (char === ")") {
+      depth = Math.max(0, depth - 1)
+    } else if (char === ";" && depth === 0) {
+      return true
+    }
+  }
+  return false
+}
+
 function checkValue(c: Checker, path: string, value: unknown): void {
   if (typeof value !== "string") {
     c.issues.error(c.owner, path, "the value must be a string")
+    return
+  }
+  if (ESCAPES_RULE.test(value)) {
+    c.issues.error(
+      c.owner,
+      path,
+      'a value cannot contain "{", "}" or "</style"',
+    )
+    return
+  }
+  if (hasBareSemicolon(value)) {
+    c.issues.error(
+      c.owner,
+      path,
+      'a value cannot contain ";" outside brackets or quotes',
+    )
     return
   }
   for (const name of bareTriplets(value)) {
@@ -200,7 +239,7 @@ function checkVars(
   if (!isRecord(vars)) return
   for (const [name, value] of Object.entries(vars)) {
     const at = varPath(path, name)
-    if (!name.startsWith("--")) {
+    if (!CUSTOM_PROPERTY.test(name)) {
       c.issues.error(c.owner, at, `"${name}" is not a custom property name`)
       continue
     }
