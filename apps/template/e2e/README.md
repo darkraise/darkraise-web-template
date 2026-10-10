@@ -698,6 +698,19 @@ region; a page taller than 16384px throws.
   the host theme, the tree view's Empty placeholder lines up with leaf text,
   and a half star fills its inline-start side in both directions.
 
+### 32 · Consumer style (`32-consumer-style.spec.ts`)
+
+The template's own `glass-ink` style (extending Glass) and `ink-night` preset,
+from `src/theme.config.ts`. Set `E2E_PREVIEW_URL` to a `vite preview` origin to
+run them against a production build.
+
+- With the app's scripts blocked, the document's injected stylesheet and
+  pre-render script alone paint the style, what it inherits from Glass, and a
+  stored preset under a value the user set themselves.
+- The Style control switches to the example style and back.
+- Under reduced transparency and under more contrast, the fallbacks of Glass
+  and of the example style apply.
+
 ## Regression tests for fixed defects
 
 `11-review-regressions.spec.ts` holds tests for defects fixed in review (see
