@@ -1,5 +1,6 @@
 import { AXES, isAxisValue, type AxisKey } from "../axes/registry"
 import { generateTokens } from "../engine/generateTokens"
+import { BUILTIN_STYLES } from "../styles/builtin"
 import type { ShellStyle } from "../types"
 import { definitionsHash } from "./hash"
 import type {
@@ -559,4 +560,9 @@ function resolvePreset(
   if (definition.shellStyle !== undefined)
     resolved.shellStyle = definition.shellStyle
   return resolved
+}
+
+/** The registry of the built-in styles plus `definitions`. */
+export function resolveRegistry(definitions?: ThemeDefinitions): ThemeRegistry {
+  return buildRegistry(BUILTIN_STYLES, definitions)
 }

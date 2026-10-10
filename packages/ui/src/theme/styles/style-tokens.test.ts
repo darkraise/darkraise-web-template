@@ -568,7 +568,12 @@ const TACTILE_TOKENS = CONTROL_TOKENS.filter(
  */
 const FULL_HEIGHT_SHEEN = ['[data-style="tactile"]', "--btn-neutral-sheen"]
 
-const STYLE_SHEETS = SHEETS.filter((path) => path.startsWith(STYLES_DIR))
+// The compiled sheet is checked against its definitions by
+// builtin/builtin.test.ts; these rules describe the hand-written files.
+const GENERATED_DIR = join(STYLES_DIR, "generated") + sep
+const STYLE_SHEETS = SHEETS.filter(
+  (path) => path.startsWith(STYLES_DIR) && !path.startsWith(GENERATED_DIR),
+)
 const FLAT = join("src", "theme", "styles", "flat", "flat.css")
 const TACTILE = join("src", "theme", "styles", "tactile", "tactile.css")
 const READER_SHEETS = SHEETS.filter((path) =>

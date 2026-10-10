@@ -6,3 +6,4 @@ storybook-static
 pnpm-lock.yaml
 packages/ui/CONTRIBUTING.md
 create-app/bin/axes.json
+packages/ui/src/theme/styles/generated/builtins.css

@@ -78,7 +78,12 @@ function stylesheets(dir: string): string[] {
 const STYLES_DIR = join("src", "theme", "styles") + sep
 const ALL = stylesheets("src")
 const KIT_SHEETS = ALL.filter((path) => !path.startsWith(STYLES_DIR))
-const STYLE_SHEETS = ALL.filter((path) => path.startsWith(STYLES_DIR))
+// The compiled sheet is checked against its definitions by
+// builtin/builtin.test.ts; these rules describe the hand-written files.
+const GENERATED_DIR = join(STYLES_DIR, "generated") + sep
+const STYLE_SHEETS = ALL.filter(
+  (path) => path.startsWith(STYLES_DIR) && !path.startsWith(GENERATED_DIR),
+)
 
 /**
  * The style axis, or the preset axis it replaced, as an attribute selector

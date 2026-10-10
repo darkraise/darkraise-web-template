@@ -85,9 +85,10 @@
   },
   "scripts": {
     "generate:imports": "tsx scripts/generate-component-imports.ts",
+    "generate:styles": "tsx scripts/generate-style-css.ts",
     "build:css": "tsx scripts/build-css.ts",
     "write:scaffold-axes": "tsx scripts/write-scaffold-axes.ts",
-    "build": "pnpm run generate:imports && tsup && node scripts/client-banner.mjs && pnpm run build:types && pnpm run build:css",
+    "build": "pnpm run generate:imports && pnpm run generate:styles && tsup && node scripts/client-banner.mjs && pnpm run build:types && pnpm run build:css",
     "check:client-banner": "node scripts/check-client-banner.mjs",
     "build:types": "tsc -p tsconfig.build.json && tsx scripts/rewrite-dts-imports.ts",
     "dev": "pnpm run generate:imports && tsup --watch src --onSuccess \"node scripts/client-banner.mjs && pnpm run build:css\"",
