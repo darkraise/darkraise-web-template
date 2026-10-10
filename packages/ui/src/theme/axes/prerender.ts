@@ -1,19 +1,12 @@
-import { STYLE_NAMES } from "@theme/styles"
 import type { ThemeConfig } from "@theme/themeConfig"
-import { resolveRegistry } from "../config/registry"
+import { resolveRegistry, type ThemeRegistry } from "../config/registry"
 import {
   LEGACY_MARKER_KEY,
   LEGACY_REVISION,
   LEGACY_RULES,
   LEGACY_TARGETS,
 } from "./legacy"
-import {
-  AXES,
-  AXIS_KEYS,
-  isAxisValue,
-  type AxisKey,
-  type AxisValues,
-} from "./registry"
+import { AXES, AXIS_KEYS, type AxisKey, type AxisValues } from "./registry"
 import {
   TOKEN_CACHE_SCHEMA,
   TOKEN_CACHE_STORAGE_KEY,
@@ -25,59 +18,77 @@ import { KIT_VERSION } from "./version"
 type Restorable = [
   storageKey: string,
   attribute: string,
+  axis: AxisKey,
   values: readonly string[],
-  /** Painted when no valid value is stored, keyed by style name. */
-  fallback: Record<string, string>,
+  /** Painted when the user, the preset and the style leave the axis unset. */
+  fallback: string,
 ]
 
-// The config's value when it is one of the axis's values, else the
-// registry's; resolveDefaults gives the provider the same.
-function configDefault(
+/**
+ * The defaults resolveDefaults gives the provider, without its warnings: the
+ * config's value when the registry accepts it, else the axis default, and the
+ * preset only when it belongs to the default style.
+ */
+function configDefaults(
   given: Readonly<Record<string, unknown>>,
-  key: AxisKey,
-): string {
-  const value = given[key]
-  return isAxisValue(key, value) ? value : AXES[key].default
+  registry: ThemeRegistry,
+): AxisValues {
+  const out = {} as Record<AxisKey, string>
+  for (const key of AXIS_KEYS) {
+    const value = given[key]
+    out[key] = registry.isValue(key, value) ? value : AXES[key].default
+  }
+  out.preset = registry.presetFor(
+    out.style,
+    typeof given.preset === "string" ? given.preset : undefined,
+  )
+  return out as AxisValues
 }
 
 /**
  * The inline script that runs before the app. It migrates legacy storage as
  * `migrateStorage` does, then stamps the mode and every attribute axis as the
- * provider resolves them: mode, then style, from the stored value, else the
- * config default, else the registry default; every other axis from the stored
- * value, else the style's default, else the config default, else the registry
- * default. It applies the cached token set when its id matches. ES5 and
- * self-contained, because it runs before any bundle loads. Storage can throw
- * (sandboxed iframes, blocked site data), so the mode is resolved and set
- * before anything else touches it, and blocked storage reads as empty.
+ * provider resolves them: the mode; the style, stored or else the config
+ * default; the preset, stored or else the config default, either only when it
+ * belongs to that style, else `base`; every other axis from the stored value,
+ * else the preset's value, else the style's default, else the config default.
+ * The config's styles and presets travel as a table of each style's defaults
+ * and each preset's style and axis values. It applies the cached token set
+ * when its id matches. ES5 and self-contained, because it runs before any
+ * bundle loads. Storage can throw (sandboxed iframes, blocked site data), so
+ * the mode is resolved and set before anything else touches it, and blocked
+ * storage reads as empty.
  *
- * `defaults` must be the `defaults` the app passes ThemeProvider. A value that
- * is not one of its axis's values is ignored, as the provider ignores it.
+ * `config` must hold the `defaults`, `styles` and `presets` the app passes
+ * ThemeProvider. A value the registry does not accept is ignored, as the
+ * provider ignores it, and so is a definition with errors.
  */
 export function buildPrerenderScript(
-  defaults: ThemeConfig["defaults"] = {},
+  config?: Pick<ThemeConfig, "defaults" | "styles" | "presets">,
 ): string {
-  const given: Readonly<Record<string, unknown>> = defaults
-  const styles = resolveRegistry().styles
+  const registry = resolveRegistry(config)
+  const defaults = configDefaults(config?.defaults ?? {}, registry)
+  const styles: Record<string, Partial<Record<AxisKey, string>>> = {}
+  for (const [name, style] of Object.entries(registry.styles)) {
+    styles[name] = { ...style.defaults }
+  }
+  const presets: Record<string, [string, Partial<Record<AxisKey, string>>]> = {}
+  for (const [name, preset] of Object.entries(registry.presets)) {
+    presets[name] = [preset.style, { ...preset.axes }]
+  }
   const attributes: Restorable[] = AXIS_KEYS.filter(
-    (key) => key !== "mode" && key !== "style" && AXES[key].attribute,
-  ).map((key) => {
-    const fallback: Record<string, string> = {}
-    for (const name of STYLE_NAMES) {
-      const own: Partial<Record<AxisKey, string>> = styles[name]?.defaults ?? {}
-      fallback[name] = own[key] ?? configDefault(given, key)
-    }
-    return [
-      AXES[key].storageKey,
-      AXES[key].attribute as string,
-      AXES[key].values,
-      fallback,
-    ]
-  })
-
-  const configDefaults = Object.fromEntries(
-    AXIS_KEYS.map((key) => [key, configDefault(given, key)]),
-  ) as AxisValues
+    (key) =>
+      key !== "mode" &&
+      key !== "style" &&
+      key !== "preset" &&
+      AXES[key].attribute,
+  ).map((key) => [
+    AXES[key].storageKey,
+    AXES[key].attribute as string,
+    key,
+    registry.values(key),
+    defaults[key],
+  ])
 
   const storageRules = LEGACY_RULES.map((rule) => ({
     ...rule,
@@ -96,7 +107,7 @@ export function buildPrerenderScript(
     // threw. Without storage every read is absent, so each axis falls back.
     "g=function(a){var y=null;if(!s)return null;if(!h(o,a)){try{y=s.getItem(a)}catch(e){f=1}o[a]=y}return o[a]};",
     `try{s=window.localStorage;m=s.getItem(${json(AXES.mode.storageKey)})}catch(e){s=null}`,
-    `if(${json(AXES.mode.values)}.indexOf(m)===-1)m=${json(configDefault(given, "mode"))};`,
+    `if(${json(AXES.mode.values)}.indexOf(m)===-1)m=${json(defaults.mode)};`,
     "try{",
     'r=m==="system"?(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):m;',
     'd.setAttribute("data-mode",r);',
@@ -113,15 +124,21 @@ export function buildPrerenderScript(
     "for(i=0;i<w.length&&!f;i++)if(o[w[i]]!==null)try{s.setItem(w[i],o[w[i]])}catch(e){f=1}",
     "if(!f)for(i=0;i<w.length;i++)if(o[w[i]]===null)try{s.removeItem(w[i])}catch(e){f=1}",
     `if(!f&&n<${LEGACY_REVISION})try{s.setItem(${json(LEGACY_MARKER_KEY)},${json(String(LEGACY_REVISION))})}catch(e){}}`,
-    // The style picks every other axis's fallback, so it resolves first.
-    `p=g(${json(AXES.style.storageKey)});if(${json(AXES.style.values)}.indexOf(p)===-1)p=${json(configDefault(given, "style"))};`,
+    // S maps each style to its defaults, P each preset to [style, axes].
+    `var S=${json(styles)},P=${json(presets)},A=${json(attributes)},q,b,Q,Y;`,
+    // The style picks the preset and every other axis's fallback, so it
+    // resolves first; a preset of another style counts as unset.
+    `p=g(${json(AXES.style.storageKey)});if(p===null||!h(S,p))p=${json(defaults.style)};`,
     `d.setAttribute(${json(AXES.style.attribute)},p);`,
-    `var A=${json(attributes)};`,
-    "for(i=0;i<A.length;i++){v=g(A[i][0]);if(A[i][2].indexOf(v)===-1)v=A[i][3][p];d.setAttribute(A[i][1],v)}",
+    'b=function(x){return x==="base"||x!==null&&h(P,x)&&P[x][0]===p};',
+    `q=g(${json(AXES.preset.storageKey)});if(!b(q))q=b(${json(defaults.preset)})?${json(defaults.preset)}:"base";`,
+    `d.setAttribute(${json(AXES.preset.attribute)},q);`,
+    'Q=q==="base"?{}:P[q][1];Y=S[p];',
+    "for(i=0;i<A.length;i++){v=g(A[i][0]);if(A[i][3].indexOf(v)===-1)v=h(Q,A[i][2])?Q[A[i][2]]:h(Y,A[i][2])?Y[A[i][2]]:A[i][4];d.setAttribute(A[i][1],v)}",
     // tokenCacheId's form: kit version, schema, resolved mode, raw values,
-    // the defaults hash.
+    // the defaults hash, the definitions hash.
     `if(s){var K=${json(cacheInputKeys())},id=[${json(KIT_VERSION)},${json(String(TOKEN_CACHE_SCHEMA))},r],c;`,
-    `for(i=0;i<K.length;i++)id.push(g(K[i])||"");id.push(${json(defaultsHash(configDefaults))});id=id.join("|");`,
+    `for(i=0;i<K.length;i++)id.push(g(K[i])||"");id.push(${json(defaultsHash(defaults))},${json(registry.hash)});id=id.join("|");`,
     `c=JSON.parse(s.getItem(${json(TOKEN_CACHE_STORAGE_KEY)})||"null");`,
     "if(c&&c.id===id&&c.tokens){for(var t in c.tokens)d.style.setProperty(t,c.tokens[t])}}",
     "}catch(e){}})()",

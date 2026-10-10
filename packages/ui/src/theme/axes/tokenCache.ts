@@ -9,7 +9,7 @@ export const TOKEN_CACHE_STORAGE_KEY = "theme-token-cache"
  * Part of every cache id. Raise it when the set of tokens a paint writes
  * changes shape, so a set cached by an older kit build never matches.
  */
-export const TOKEN_CACHE_SCHEMA = 2
+export const TOKEN_CACHE_SCHEMA = 3
 
 export interface TokenCache {
   id: string
@@ -38,12 +38,14 @@ export function defaultsHash(defaults: Readonly<AxisValues>): string {
 /**
  * The pre-render script builds the same string from the migrated values, so
  * the two must stay byte-identical: raw values, "" for absent, then the
- * defaults hash, joined with "|".
+ * defaults hash, then `definitions` (the theme registry's hash, "" when the
+ * config defines no styles or presets), joined with "|".
  */
 export function tokenCacheId(
   read: (key: string) => string | null,
   resolved: ResolvedMode,
   defaults: Readonly<AxisValues> = REGISTRY_DEFAULTS,
+  definitions = "",
 ): string {
   return [
     KIT_VERSION,
@@ -51,6 +53,7 @@ export function tokenCacheId(
     resolved,
     ...cacheInputKeys().map((k) => read(k) ?? ""),
     defaultsHash(defaults),
+    definitions,
   ].join("|")
 }
 

@@ -1,4 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { resolveRegistry } from "@theme/config/registry"
+import type { ThemeDefinitions } from "@theme/config/schema"
 import type { ThemeConfig } from "@theme/themeConfig"
 import { LEGACY_MARKER_KEY, LEGACY_REVISION } from "./legacy"
 import { buildPrerenderScript } from "./prerender"
@@ -14,8 +16,11 @@ import { KIT_VERSION } from "./version"
 
 const root = document.documentElement
 
-function run(defaults: ThemeConfig["defaults"] = {}) {
-  new Function(buildPrerenderScript(defaults))()
+function run(
+  defaults: ThemeConfig["defaults"] = {},
+  definitions: ThemeDefinitions = {},
+) {
+  new Function(buildPrerenderScript({ ...definitions, defaults }))()
 }
 
 // A current user's choices: the marker says the legacy table already ran.
@@ -338,6 +343,28 @@ describe("pre-render script defaults", () => {
     expect(root.style.getPropertyValue("--primary")).toBe("1 2% 3%")
   })
 
+  it("finds the cache the provider wrote under theme definitions", () => {
+    const read = (k: string) => localStorage.getItem(k)
+    storeCurrent({ "theme-style": "ink" })
+    const defaults = Object.fromEntries(
+      AXIS_KEYS.map((key) => [key, AXES[key].default]),
+    ) as AxisValues
+    writeTokenCache(
+      localStorage,
+      tokenCacheId(read, "light", defaults, resolveRegistry(DEFINITIONS).hash),
+      { "--primary": "1 2% 3%" },
+    )
+    run({}, DEFINITIONS)
+    expect(root.style.getPropertyValue("--primary")).toBe("1 2% 3%")
+
+    root.style.cssText = ""
+    writeTokenCache(localStorage, tokenCacheId(read, "light", defaults), {
+      "--primary": "1 2% 3%",
+    })
+    run({}, DEFINITIONS)
+    expect(root.style.getPropertyValue("--primary")).toBe("")
+  })
+
   it("misses a cache written under an older schema", () => {
     const read = (k: string) => localStorage.getItem(k)
     const id = tokenCacheId(read, "light")
@@ -350,5 +377,90 @@ describe("pre-render script defaults", () => {
     )
     run()
     expect(root.style.getPropertyValue("--primary")).toBe("")
+  })
+})
+
+const DEFINITIONS: ThemeDefinitions = {
+  styles: {
+    ink: { label: "Ink", extends: "glass", defaults: { elevation: "flat" } },
+  },
+  presets: {
+    night: {
+      label: "Night",
+      style: "ink",
+      axes: { accentColor: "violet", radius: "pill", elevation: "high" },
+    },
+    dusk: { label: "Dusk", style: "quiet", axes: { radius: "sharp" } },
+  },
+}
+
+describe("pre-render script with theme definitions", () => {
+  it("stamps a stored consumer style with its own and inherited defaults", () => {
+    storeCurrent({ "theme-style": "ink" })
+    run({}, DEFINITIONS)
+    expect(root.getAttribute("data-style")).toBe("ink")
+    expect(root.getAttribute("data-preset")).toBe("base")
+    expect(root.getAttribute("data-elevation")).toBe("flat")
+    expect(root.getAttribute("data-background-style")).toBe("gradient")
+  })
+
+  it("stamps a stored preset of the stored style, its axes over the style's", () => {
+    storeCurrent({ "theme-style": "ink", "theme-preset": "night" })
+    run({}, DEFINITIONS)
+    expect(root.getAttribute("data-preset")).toBe("night")
+    expect(root.getAttribute("data-accent")).toBe("violet")
+    expect(root.getAttribute("data-radius")).toBe("pill")
+    expect(root.getAttribute("data-elevation")).toBe("high")
+    expect(root.getAttribute("data-background-style")).toBe("gradient")
+  })
+
+  it("drops a stored preset of another style", () => {
+    storeCurrent({ "theme-style": "quiet", "theme-preset": "night" })
+    run({}, DEFINITIONS)
+    expect(root.getAttribute("data-style")).toBe("quiet")
+    expect(root.getAttribute("data-preset")).toBe("base")
+    expect(root.getAttribute("data-accent")).toBe(AXES.accentColor.default)
+    expect(root.getAttribute("data-radius")).toBe(AXES.radius.default)
+  })
+
+  it("takes the config default preset only under its own style", () => {
+    run({ style: "ink", preset: "night" }, DEFINITIONS)
+    expect(root.getAttribute("data-style")).toBe("ink")
+    expect(root.getAttribute("data-preset")).toBe("night")
+    expect(root.getAttribute("data-accent")).toBe("violet")
+
+    storeCurrent({ "theme-style": "glass" })
+    run({ style: "ink", preset: "night" }, DEFINITIONS)
+    expect(root.getAttribute("data-style")).toBe("glass")
+    expect(root.getAttribute("data-preset")).toBe("base")
+  })
+
+  it("lets a user value beat the preset", () => {
+    storeCurrent({
+      "theme-style": "ink",
+      "theme-preset": "night",
+      "theme-radius": "subtle",
+    })
+    run({}, DEFINITIONS)
+    expect(root.getAttribute("data-radius")).toBe("subtle")
+  })
+
+  it("falls back to the config default style for an unknown or absent stored style", () => {
+    storeCurrent({ "theme-style": "ink" })
+    run({ style: "tactile" })
+    expect(root.getAttribute("data-style")).toBe("tactile")
+    expect(root.getAttribute("data-preset")).toBe("base")
+
+    // An absent value reads as null, which is not the name "null".
+    localStorage.clear()
+    run(
+      { style: "tactile" },
+      {
+        styles: { null: { label: "Null", extends: "quiet" } },
+        presets: { null: { label: "Null", style: "tactile" } },
+      },
+    )
+    expect(root.getAttribute("data-style")).toBe("tactile")
+    expect(root.getAttribute("data-preset")).toBe("base")
   })
 })

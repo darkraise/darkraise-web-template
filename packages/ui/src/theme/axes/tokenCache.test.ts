@@ -27,14 +27,14 @@ describe("token cache", () => {
     expect(keys).toContain("theme-glass-blur")
   })
 
-  it("builds the id from the kit version, the schema, the resolved mode, the stored values and the defaults hash", () => {
-    expect(TOKEN_CACHE_SCHEMA).toBe(2)
+  it("builds the id from the kit version, the schema, the resolved mode, the stored values, the defaults hash and the definitions hash", () => {
+    expect(TOKEN_CACHE_SCHEMA).toBe(3)
     const id = tokenCacheId(
       (k) => (k === "theme-density" ? "spacious" : null),
       "dark",
     )
-    expect(id.startsWith(`${KIT_VERSION}|2|dark|`)).toBe(true)
-    expect(id.split("|")).toHaveLength(4 + cacheInputKeys().length)
+    expect(id.startsWith(`${KIT_VERSION}|3|dark|`)).toBe(true)
+    expect(id.split("|")).toHaveLength(5 + cacheInputKeys().length)
     expect(id).toContain("spacious")
     expect(tokenCacheId(() => null, "light")).not.toBe(
       tokenCacheId(() => null, "dark"),
@@ -53,6 +53,13 @@ describe("token cache", () => {
     expect(tokenCacheId(() => null, "light", other)).not.toBe(
       tokenCacheId(() => null, "light", registry),
     )
+  })
+
+  it("ends with the definitions hash, an empty segment when there is none", () => {
+    expect(tokenCacheId(() => null, "light").endsWith("|")).toBe(true)
+    const id = tokenCacheId(() => null, "light", undefined, "k3x9")
+    expect(id.split("|").pop()).toBe("k3x9")
+    expect(id.slice(0, -"k3x9".length)).toBe(tokenCacheId(() => null, "light"))
   })
 
   it("round-trips through storage", () => {

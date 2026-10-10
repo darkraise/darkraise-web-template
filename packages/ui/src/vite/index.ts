@@ -30,7 +30,9 @@ export function darkraisePrerender(
       `[darkraisePrerender] Ignoring theme defaults that are not a value of their axis: ${invalid.join(", ")}.`,
     )
   }
-  const script = buildPrerenderScript(valid as ThemeConfig["defaults"])
+  const script = buildPrerenderScript({
+    defaults: valid as ThemeConfig["defaults"],
+  })
   return {
     name: "darkraise-prerender",
     transformIndexHtml: {

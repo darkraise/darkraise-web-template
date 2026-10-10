@@ -1,6 +1,7 @@
 import { cleanup, render } from "@testing-library/react"
 import { createElement } from "react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import type { ThemeDefinitions } from "@theme/config/schema"
 import { STYLE_NAMES, type StyleName } from "@theme/styles"
 import { ThemeProvider } from "@theme/theme-provider/ThemeProvider"
 import type { ThemeConfig } from "@theme/themeConfig"
@@ -73,14 +74,17 @@ function stamped(): Record<string, string | null> {
   )
 }
 
-function runScript(defaults: Defaults) {
-  new Function(buildPrerenderScript(defaults))()
+function runScript(defaults: Defaults, definitions: ThemeDefinitions = {}) {
+  new Function(buildPrerenderScript({ ...definitions, defaults }))()
 }
 
-function renderProvider(defaults: Defaults) {
+function renderProvider(
+  defaults: Defaults,
+  definitions: ThemeDefinitions = {},
+) {
   render(
     createElement(ThemeProvider, {
-      config: { defaults, switcher: { enabled: true } },
+      config: { ...definitions, defaults, switcher: { enabled: true } },
       children: null,
     }),
   )
@@ -117,6 +121,100 @@ describe("pre-render script and provider under config defaults", () => {
     cleanup()
     resetRoot()
     runScript(defaults)
+    expect(root.style.getPropertyValue("--background")).toBe(painted)
+  })
+})
+
+const DEFINITIONS: ThemeDefinitions = {
+  styles: {
+    ink: { label: "Ink", extends: "glass", defaults: { elevation: "flat" } },
+    plain: { label: "Plain", extends: "flat", defaults: { radius: "sharp" } },
+  },
+  presets: {
+    night: {
+      label: "Night",
+      style: "ink",
+      axes: { accentColor: "violet", radius: "pill", elevation: "high" },
+    },
+    dusk: {
+      label: "Dusk",
+      style: "quiet",
+      axes: { radius: "sharp", density: "compact" },
+    },
+  },
+}
+
+const DEFINITION_CASES: Case[] = [
+  ["a consumer default style", {}, { style: "ink" }],
+  ["a stored consumer style", current({ "theme-style": "plain" }), {}],
+  [
+    "a stored preset of the stored style",
+    current({ "theme-style": "ink", "theme-preset": "night" }),
+    {},
+  ],
+  [
+    "a stored preset of another style",
+    current({ "theme-style": "quiet", "theme-preset": "night" }),
+    {},
+  ],
+  [
+    "a stored preset of the default style, no stored style",
+    current({ "theme-preset": "dusk" }),
+    {},
+  ],
+  [
+    "a stored preset of another style, no stored style",
+    current({ "theme-preset": "night" }),
+    { style: "plain" },
+  ],
+  [
+    "the config default preset of the default style",
+    {},
+    { style: "ink", preset: "night" },
+  ],
+  [
+    "the config default preset under another stored style",
+    current({ "theme-style": "glass" }),
+    { style: "ink", preset: "night" },
+  ],
+  [
+    "a stored base over the config default preset",
+    current({ "theme-preset": "base" }),
+    { style: "ink", preset: "night" },
+  ],
+  [
+    "a user value over the preset",
+    current({
+      "theme-style": "ink",
+      "theme-preset": "night",
+      "theme-radius": "subtle",
+    }),
+    {},
+  ],
+  [
+    "dark mode under a preset",
+    current({ mode: "dark", "theme-style": "ink", "theme-preset": "night" }),
+    {},
+  ],
+]
+
+describe("pre-render script and provider under theme definitions", () => {
+  it.each(DEFINITION_CASES)("agree on %s", (_, stored, defaults) => {
+    seed(stored)
+    runScript(defaults, DEFINITIONS)
+    expect(root.getAttributeNames().sort()).toEqual(ATTRIBUTES)
+    const scripted = stamped()
+
+    resetRoot()
+    renderProvider(defaults, DEFINITIONS)
+    expect(stamped()).toEqual(scripted)
+    const painted = root.style.getPropertyValue("--background")
+    expect(painted).not.toBe("")
+
+    // A painted token proves the script built the provider's cache id.
+    cleanup()
+    resetRoot()
+    runScript(defaults, DEFINITIONS)
     expect(root.style.getPropertyValue("--background")).toBe(painted)
   })
 })

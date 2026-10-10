@@ -32,7 +32,7 @@ describe("darkraisePrerender", () => {
     const defaults: ThemeConfig["defaults"] = { mode: "dark", style: "glass" }
     const script = hookOf(darkraisePrerender({ defaults })).handler()[0]
       ?.children
-    expect(script).toBe(buildPrerenderScript(defaults))
+    expect(script).toBe(buildPrerenderScript({ defaults }))
     expect(script).not.toBe(buildPrerenderScript())
     expect(warn).not.toHaveBeenCalled()
   })
@@ -51,7 +51,7 @@ describe("darkraisePrerender", () => {
     expect(message).toContain('preset "glass"')
     expect(message).not.toContain("accentColor")
     expect(hookOf(plugin).handler()[0]?.children).toBe(
-      buildPrerenderScript({ accentColor: "rose" }),
+      buildPrerenderScript({ defaults: { accentColor: "rose" } }),
     )
   })
 })

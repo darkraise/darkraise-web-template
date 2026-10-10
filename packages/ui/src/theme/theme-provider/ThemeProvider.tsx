@@ -292,19 +292,15 @@ export function ThemeProvider({
   const paintedRef = useRef("")
   const paint = useCallback(
     (current: AxisValues, resolved: ResolvedMode) => {
+      // The id carries the registry's hash, so a config change that
+      // redefines a style repaints even when no setting changed.
       const cacheId = tokenCacheId(
         (key) => knownRef.current.get(key) ?? null,
         resolved,
         defaults,
-      )
-      // A config change can redefine a style without changing any setting.
-      const signature = JSON.stringify([
-        current,
-        resolved,
-        defaults,
-        cacheId,
         registry.hash,
-      ])
+      )
+      const signature = JSON.stringify([current, resolved, defaults, cacheId])
       if (signature === paintedRef.current) return
       paintedRef.current = signature
       applyAttributes(current)
