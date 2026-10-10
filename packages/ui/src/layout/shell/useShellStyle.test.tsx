@@ -1,6 +1,8 @@
 import { act, render, renderHook, screen } from "@testing-library/react"
 import type { ReactNode } from "react"
-import { beforeEach, describe, it, expect } from "vitest"
+import { hydrateRoot } from "react-dom/client"
+import { renderToString } from "react-dom/server"
+import { beforeEach, describe, it, expect, vi } from "vitest"
 import type { ShellStyle } from "@theme"
 import { ThemeProvider } from "@theme/theme-provider"
 import { themeConfig, type ThemeConfig } from "@theme/themeConfig"
@@ -119,6 +121,29 @@ describe("useShellStyle under a theme preset", () => {
       expect(result.current.shell).toBe("inset")
     },
   )
+
+  it("hydrates server markup without a mismatch, then shows the stored preset's shell style", async () => {
+    const tree = (
+      <ThemeProvider config={config}>
+        <Probe />
+      </ThemeProvider>
+    )
+    const container = document.createElement("div")
+    container.innerHTML = renderToString(tree)
+    document.body.append(container)
+    expect(container.textContent).toBe("classic")
+    localStorage.setItem("theme-style", "ink")
+    localStorage.setItem("theme-preset", "night")
+    const onRecoverableError = vi.fn()
+    let root: ReturnType<typeof hydrateRoot> | undefined
+    await act(async () => {
+      root = hydrateRoot(container, tree, { onRecoverableError })
+    })
+    expect(onRecoverableError).not.toHaveBeenCalled()
+    expect(container.textContent).toBe("island")
+    act(() => root?.unmount())
+    container.remove()
+  })
 
   it("follows a preset switch while mounted", () => {
     const { result } = renderUnder("plain", { fallback: "inset" })

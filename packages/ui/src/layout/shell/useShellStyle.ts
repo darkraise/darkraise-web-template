@@ -1,7 +1,9 @@
-import { useContext } from "react"
+import { useContext, useSyncExternalStore } from "react"
 import { useLayoutStore } from "@layout/layoutStore"
 import { ThemeContext } from "@theme/themeContext"
 import type { ShellStyle } from "@theme"
+
+const subscribeNever = () => () => {}
 
 /**
  * Resolves the chrome treatment a shell paints with: the pinned `override`,
@@ -21,9 +23,14 @@ export function useShellStyle(
 ): ShellStyle {
   const stored = useLayoutStore((state) => state.shellStyle)
   const theme = useContext(ThemeContext)
-  const presetShellStyle = theme
-    ? theme.registry.presets[theme.preset]?.shellStyle
-    : undefined
+  // The provider reads the stored preset in its first client render, which a
+  // server render cannot; hydrating with "base" first keeps the markup equal.
+  const preset = useSyncExternalStore(
+    subscribeNever,
+    () => theme?.preset ?? "base",
+    () => "base",
+  )
+  const presetShellStyle = theme?.registry.presets[preset]?.shellStyle
   return (
     override ?? stored ?? presetShellStyle ?? defaultShellStyle ?? "classic"
   )
