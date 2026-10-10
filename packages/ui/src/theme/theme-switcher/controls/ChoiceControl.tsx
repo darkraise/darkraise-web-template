@@ -1,13 +1,18 @@
 import { Blend, Monitor, Moon, Square, Sun } from "lucide-react"
 import { ToggleGroup, ToggleGroupItem } from "@components/toggle-group"
 import { useUiLabels } from "@labels"
-import { AXES, type AxisKey, type AxisValue } from "@theme/axes/registry"
+import type { AxisKey, AxisValue } from "@theme/axes/registry"
+import type { ThemeRegistry } from "@theme/config/registry"
 import type { StyleName } from "@theme/styles"
 import type { SidebarSelectionSetting } from "@theme/types"
 import { useTheme } from "@theme/useTheme"
 import type { UiMessages } from "../../../i18n/types"
 
-type OptionLabel = (value: string, labels: UiMessages) => string
+type OptionLabel = (
+  value: string,
+  labels: UiMessages,
+  registry: ThemeRegistry,
+) => string
 
 const ICONS: Partial<Record<AxisKey, Readonly<Record<string, typeof Sun>>>> = {
   mode: { light: Sun, dark: Moon, system: Monitor },
@@ -23,7 +28,13 @@ const themeOption: OptionLabel = (value, labels) =>
 const OPTION_LABELS: Partial<Record<AxisKey, OptionLabel>> = {
   mode: (value, labels) =>
     labels.theme.modes[value as keyof UiMessages["theme"]["modes"]],
-  style: (value, labels) => labels.theme.styles[value as StyleName],
+  // A built-in's label is translated; a config style brings its own.
+  style: (value, labels, registry) => {
+    const style = registry.styles[value]
+    return style && !style.builtIn
+      ? style.label
+      : labels.theme.styles[value as StyleName]
+  },
   // "pill" is also a radius value, so the shared option map would label it
   // as a shape; the looks carry their own group.
   sidebarSelection: (value, labels) =>
@@ -33,7 +44,7 @@ const OPTION_LABELS: Partial<Record<AxisKey, OptionLabel>> = {
 export function ChoiceControl({ axis }: { axis: AxisKey }) {
   const labels = useUiLabels()
   const theme = useTheme()
-  const values = AXES[axis].values as readonly string[]
+  const values = theme.registry.values(axis)
   const icons = ICONS[axis]
   const optionLabel = OPTION_LABELS[axis] ?? themeOption
 
@@ -54,10 +65,17 @@ export function ChoiceControl({ axis }: { axis: AxisKey }) {
     >
       {values.map((value) => {
         const Icon = icons?.[value]
+        // A config style's label is the app's own text; keep its casing.
+        const ownLabel =
+          axis === "style" && theme.registry.styles[value]?.builtIn === false
         return (
-          <ToggleGroupItem key={value} value={value} className="capitalize">
+          <ToggleGroupItem
+            key={value}
+            value={value}
+            className={ownLabel ? undefined : "capitalize"}
+          >
             {Icon && <Icon className="dr-theme-switcher-row-icon" />}
-            {optionLabel(value, labels)}
+            {optionLabel(value, labels, theme.registry)}
           </ToggleGroupItem>
         )
       })}

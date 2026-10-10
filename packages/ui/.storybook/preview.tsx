@@ -2,7 +2,7 @@ import type { Preview } from "@storybook/react"
 import { MockRouterAdapterProvider } from "../src/test/mock-router-adapter"
 import "../src/styles/theme.css"
 import { ACCENT_COLORS } from "../src/theme/types"
-import { STYLE_NAMES, type StyleName } from "../src/theme/styles"
+import { resolveRegistry } from "../src/theme/config/registry"
 import type { AccentColor, ResolvedMode } from "../src/theme/types"
 import { applyStoryTheme } from "./storyTheme"
 
@@ -30,7 +30,7 @@ const preview: Preview = {
       toolbar: {
         title: "Style",
         icon: "component",
-        items: [...STYLE_NAMES],
+        items: [...resolveRegistry().values("style")],
         dynamicTitle: true,
       },
     },
@@ -53,7 +53,7 @@ const preview: Preview = {
     (Story, context) => {
       applyStoryTheme({
         accentColor: (context.globals.accentColor || "blue") as AccentColor,
-        style: (context.globals.style || "quiet") as StyleName,
+        style: String(context.globals.style || "quiet"),
         mode: (context.globals.mode || "light") as ResolvedMode,
       })
       return <Story />

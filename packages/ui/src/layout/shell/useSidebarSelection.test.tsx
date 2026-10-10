@@ -11,6 +11,10 @@ const withDefaults =
     <ThemeProvider
       config={{
         ...themeConfig,
+        styles: {
+          pale: { label: "Pale", extends: "glass" },
+          plain: { label: "Plain", extends: "flat" },
+        },
         defaults: { ...themeConfig.defaults, ...defaults },
       }}
     >
@@ -26,6 +30,13 @@ describe("useSidebarSelection", () => {
   it("follows the style under auto", () => {
     const { result } = renderHook(() => useSidebarSelection(), {
       wrapper: withDefaults({ style: "glass" }),
+    })
+    expect(result.current).toBe("frosted")
+  })
+
+  it("follows a consumer style's nearest built-in ancestor under auto", () => {
+    const { result } = renderHook(() => useSidebarSelection(), {
+      wrapper: withDefaults({ style: "pale" }),
     })
     expect(result.current).toBe("frosted")
   })
@@ -49,6 +60,13 @@ describe("useSidebarShadow", () => {
   it("drops the shadows under Flat, whatever the look", () => {
     const { result } = renderHook(() => useSidebarShadow(), {
       wrapper: withDefaults({ style: "flat", sidebarSelection: "tile" }),
+    })
+    expect(result.current).toBe("none")
+  })
+
+  it("drops the shadows under a style that extends Flat", () => {
+    const { result } = renderHook(() => useSidebarShadow(), {
+      wrapper: withDefaults({ style: "plain" }),
     })
     expect(result.current).toBe("none")
   })

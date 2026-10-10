@@ -1,7 +1,6 @@
 import { useContext } from "react"
 import { ThemeContext } from "@theme/themeContext"
 import { AXES } from "@theme/axes/registry"
-import type { StyleName } from "@theme/styles"
 import type { SidebarSelection } from "@theme/types"
 import { resolveSidebarSelection } from "@layout/sidebar/sidebar-selection"
 
@@ -19,16 +18,19 @@ export function useSidebarSelection(
   if (override) return override
   return resolveSidebarSelection(
     theme?.sidebarSelection ?? AXES.sidebarSelection.default,
-    (theme?.style ?? AXES.style.default) as StyleName,
+    theme?.style ?? AXES.style.default,
+    theme?.registry,
   )
 }
 
 /**
- * `"none"` under Flat, which draws no shadows whichever look is picked. A nav
- * stamps it as `data-sidebar-shadow`, because only theme/styles may name a
- * style in CSS.
+ * `"none"` under Flat and every style that extends it, which draw no shadows
+ * whichever look is picked. A nav stamps it as `data-sidebar-shadow`, because
+ * only theme/styles may name a style in CSS.
  */
 export function useSidebarShadow(): "none" | undefined {
   const theme = useContext(ThemeContext)
-  return (theme?.style ?? AXES.style.default) === "flat" ? "none" : undefined
+  const style = theme?.style ?? AXES.style.default
+  const lineage = theme?.registry.styles[style]?.lineage ?? [style]
+  return lineage.includes("flat") ? "none" : undefined
 }

@@ -90,6 +90,36 @@ describe("ThemeSwitcher style section", () => {
     ).toEqual(["Flat", "Quiet", "Tactile", "Glass"])
   })
 
+  it("lists a consumer style by its definition label", () => {
+    render(
+      <ThemeProvider
+        config={{
+          defaults: {},
+          switcher: { enabled: true },
+          styles: { ink: { label: "Ink wash", extends: "glass" } },
+        }}
+      >
+        <ThemeSwitcher />
+      </ThemeProvider>,
+    )
+    openSwitcher()
+    const group = screen.getByRole("radiogroup", { name: "Style" })
+    expect(
+      within(group)
+        .getAllByRole("radio")
+        .map((radio) => radio.textContent),
+    ).toEqual(["Flat", "Quiet", "Tactile", "Glass", "Ink wash"])
+    // A config label is shown as written, not title-cased like built-in values.
+    expect(
+      within(group).getByRole("radio", { name: "Ink wash" }),
+    ).not.toHaveClass("capitalize")
+    expect(within(group).getByRole("radio", { name: "Glass" })).toHaveClass(
+      "capitalize",
+    )
+    fireEvent.click(within(group).getByRole("radio", { name: "Ink wash" }))
+    expect(document.documentElement.getAttribute("data-style")).toBe("ink")
+  })
+
   it("does NOT render glass axis toggles when quiet is active", () => {
     renderSwitcher()
     openSwitcher()

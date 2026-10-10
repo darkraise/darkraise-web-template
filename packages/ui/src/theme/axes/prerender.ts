@@ -1,5 +1,6 @@
-import { STYLES, STYLE_NAMES } from "@theme/styles"
+import { STYLE_NAMES } from "@theme/styles"
 import type { ThemeConfig } from "@theme/themeConfig"
+import { resolveRegistry } from "../config/registry"
 import {
   LEGACY_MARKER_KEY,
   LEGACY_REVISION,
@@ -57,12 +58,13 @@ export function buildPrerenderScript(
   defaults: ThemeConfig["defaults"] = {},
 ): string {
   const given: Readonly<Record<string, unknown>> = defaults
+  const styles = resolveRegistry().styles
   const attributes: Restorable[] = AXIS_KEYS.filter(
     (key) => key !== "mode" && key !== "style" && AXES[key].attribute,
   ).map((key) => {
     const fallback: Record<string, string> = {}
     for (const name of STYLE_NAMES) {
-      const own: Partial<Record<AxisKey, string>> = STYLES[name].defaults
+      const own: Partial<Record<AxisKey, string>> = styles[name]?.defaults ?? {}
       fallback[name] = own[key] ?? configDefault(given, key)
     }
     return [
