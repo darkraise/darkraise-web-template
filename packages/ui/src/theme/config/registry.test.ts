@@ -657,6 +657,59 @@ describe("errors", () => {
     expect(registry.styles).not.toHaveProperty("mine")
   })
 
+  it("rejects a semicolon hidden by a comment, an escape or a line break, and an unclosed bracket, quote or comment", () => {
+    const semicolon = 'a value cannot contain ";" outside brackets or quotes'
+    const open = "a value cannot leave a bracket, quote or comment open"
+    const cases: [string, string, string][] = [
+      ["--mine-a", '/* " */ ; color: blue; /* " */', semicolon],
+      ["--mine-b", "/* ( */ ; color: blue", semicolon],
+      ["--mine-c", '\\" ; color: blue; --z: \\"', semicolon],
+      ["--mine-d", '"x\n; color: blue; --z: "', semicolon],
+      ["--mine-e", "calc(1px ; color: blue", open],
+      ["--mine-f", '"red', open],
+      ["--mine-g", "red /* note", open],
+    ]
+    expect(
+      messages({
+        styles: {
+          mine: {
+            label: "Mine",
+            vars: {
+              shared: Object.fromEntries(
+                cases.map(([name, value]) => [name, value]),
+              ),
+            },
+          },
+        },
+      }),
+    ).toEqual(
+      cases.map(([name, , message]) => [
+        "error",
+        `styles.mine.vars.shared[${JSON.stringify(name)}]`,
+        message,
+      ]),
+    )
+  })
+
+  it("accepts a semicolon inside brackets only, inside quotes only, or after an escaped quote", () => {
+    expect(
+      messages({
+        styles: {
+          mine: {
+            label: "Mine",
+            vars: {
+              shared: {
+                "--mine-a": "url(data:a;b)",
+                "--mine-b": '"a;b"',
+                "--mine-c": '"a\\";b"',
+              },
+            },
+          },
+        },
+      }),
+    ).toEqual([])
+  })
+
   it("accepts a data URI with semicolons and markup", () => {
     expect(
       messages({

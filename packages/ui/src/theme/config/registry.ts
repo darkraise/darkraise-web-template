@@ -166,13 +166,25 @@ interface Checker {
   owner: string
 }
 
-/** A `;` at parenthesis depth 0 outside quotes would end the declaration early. */
-function hasBareSemicolon(value: string): boolean {
+/**
+ * Reads a value the way the CSS tokenizer does: a backslash escapes the next
+ * character, a line break ends a string, and comments are skipped.
+ */
+function scanValue(value: string): "semicolon" | "open" | null {
   let quote = ""
   let depth = 0
-  for (const char of value) {
-    if (quote) {
-      if (char === quote) quote = ""
+  for (let i = 0; i < value.length; i++) {
+    const char = value[i]
+    if (char === "\\") {
+      i++
+    } else if (quote) {
+      if (char === quote || char === "\n" || char === "\r" || char === "\f") {
+        quote = ""
+      }
+    } else if (char === "/" && value[i + 1] === "*") {
+      const end = value.indexOf("*/", i + 2)
+      if (end === -1) return "open"
+      i = end + 1
     } else if (char === '"' || char === "'") {
       quote = char
     } else if (char === "(") {
@@ -180,10 +192,10 @@ function hasBareSemicolon(value: string): boolean {
     } else if (char === ")") {
       depth = Math.max(0, depth - 1)
     } else if (char === ";" && depth === 0) {
-      return true
+      return "semicolon"
     }
   }
-  return false
+  return quote || depth > 0 ? "open" : null
 }
 
 function checkValue(c: Checker, path: string, value: unknown): void {
@@ -199,11 +211,14 @@ function checkValue(c: Checker, path: string, value: unknown): void {
     )
     return
   }
-  if (hasBareSemicolon(value)) {
+  const problem = scanValue(value)
+  if (problem) {
     c.issues.error(
       c.owner,
       path,
-      'a value cannot contain ";" outside brackets or quotes',
+      problem === "semicolon"
+        ? 'a value cannot contain ";" outside brackets or quotes'
+        : "a value cannot leave a bracket, quote or comment open",
     )
     return
   }
