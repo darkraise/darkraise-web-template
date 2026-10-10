@@ -14,6 +14,7 @@ export const SERVER_SAFE_ENTRIES = new Set([
   "lib/index",
   "locales/en",
   "locales/vi",
+  "theme-config/index",
   "vite/index",
 ])
 

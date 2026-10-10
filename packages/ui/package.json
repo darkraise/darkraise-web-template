@@ -62,6 +62,11 @@
       "types": "./dist/labels/index.d.ts"
     },
     "./styles.css": "./dist/styles.css",
+    "./theme.schema.json": "./dist/theme.schema.json",
+    "./theme-config": {
+      "types": "./dist/theme/config/index.d.ts",
+      "import": "./dist/theme-config/index.js"
+    },
     "./vite": {
       "types": "./dist/vite/index.d.ts",
       "import": "./dist/vite/index.js"
@@ -87,8 +92,9 @@
     "generate:imports": "tsx scripts/generate-component-imports.ts",
     "generate:styles": "tsx scripts/generate-style-css.ts",
     "build:css": "tsx scripts/build-css.ts",
+    "build:schema": "tsx scripts/write-theme-schema.ts",
     "write:scaffold-axes": "tsx scripts/write-scaffold-axes.ts",
-    "build": "pnpm run generate:imports && pnpm run generate:styles && tsup && node scripts/client-banner.mjs && pnpm run build:types && pnpm run build:css",
+    "build": "pnpm run generate:imports && pnpm run generate:styles && tsup && node scripts/client-banner.mjs && pnpm run build:types && pnpm run build:css && pnpm run build:schema",
     "check:client-banner": "node scripts/check-client-banner.mjs",
     "build:types": "tsc -p tsconfig.build.json && tsx scripts/rewrite-dts-imports.ts",
     "dev": "pnpm run generate:imports && tsup --watch src --onSuccess \"node scripts/client-banner.mjs && pnpm run generate:styles && pnpm run build:css\"",

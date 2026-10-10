@@ -185,7 +185,7 @@ Passing the `themeConfig` the app gives `ThemeProvider` lets an axis the user ne
 
 ## React Server Components
 
-Every kit entry except `darkraise-ui/lib`, `darkraise-ui/locales/en`, `darkraise-ui/locales/vi` and `darkraise-ui/vite` starts with `"use client"`. A server component can render kit components and pass them serialisable props, but cannot call kit hooks such as `useTheme`, read values such as `generateTokens` or `ACCENT_COLORS` imported from `darkraise-ui/theme` (a client entry exports them as opaque references), or pass functions to kit components; move that code into a file of your own that starts with `"use client"`. Import helpers such as `cn` from `darkraise-ui/lib`, which is safe on the server.
+Every kit entry except `darkraise-ui/lib`, `darkraise-ui/locales/en`, `darkraise-ui/locales/vi`, `darkraise-ui/theme-config` and `darkraise-ui/vite` starts with `"use client"`. A server component can render kit components and pass them serialisable props, but cannot call kit hooks such as `useTheme`, read values such as `generateTokens` or `ACCENT_COLORS` imported from `darkraise-ui/theme` (a client entry exports them as opaque references), or pass functions to kit components; move that code into a file of your own that starts with `"use client"`. Import helpers such as `cn` from `darkraise-ui/lib`, which is safe on the server.
 
 ## create-darkraise-ui
 

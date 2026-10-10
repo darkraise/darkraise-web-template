@@ -61,17 +61,27 @@ export interface ThemeRegistry {
 const MODE_KEYS = ["shared", "light", "dark"] as const
 type ModeKey = (typeof MODE_KEYS)[number]
 
-const KEBAB = /^[a-z][a-z0-9]*(-[a-z0-9]+)*$/
+export const KEBAB = /^[a-z][a-z0-9]*(-[a-z0-9]+)*$/
 // `base` is the preset value for "no preset"; the others are 6.x stored
 // style values that the legacy migration still recognises.
-const RESERVED_NAMES = new Set(["base", "default", "glassmorphism", "scifi"])
-const NOT_DEFINABLE = new Set(["mode", "style", "preset"])
-const NOT_TESTABLE = new Set(["mode", "style", "preset", "sidebarSelection"])
+export const RESERVED_NAMES = new Set([
+  "base",
+  "default",
+  "glassmorphism",
+  "scifi",
+])
+export const NOT_DEFINABLE = new Set(["mode", "style", "preset"])
+export const NOT_TESTABLE = new Set([
+  "mode",
+  "style",
+  "preset",
+  "sidebarSelection",
+])
 
 const TRIPLET = /^-?[\d.]+ [\d.]+% [\d.]+%( \/ [\d.]+)?$/
 // Compiled values land inside a rule inside a <style> element.
 const ESCAPES_RULE = /[{}]|<\/style/i
-const CUSTOM_PROPERTY = /^--[\w-]+$/
+export const CUSTOM_PROPERTY = /^--[\w-]+$/
 
 let tripletTokens: ReadonlySet<string> | undefined
 

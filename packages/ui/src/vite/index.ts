@@ -1,9 +1,12 @@
 import type { HtmlTagDescriptor, Plugin } from "vite"
-import { buildPrerenderScript } from "../theme/axes/prerender"
 import { AXES, AXIS_KEYS, type AxisKey } from "../theme/axes/registry"
-import { compileThemeCss } from "../theme/config/compile"
-import { resolveRegistry, type ThemeRegistry } from "../theme/config/registry"
-import type { ThemeConfig } from "../theme/themeConfig"
+import {
+  compileThemeCss,
+  resolveRegistry,
+  themePrerenderScript,
+  type ThemeConfig,
+  type ThemeRegistry,
+} from "../theme/config"
 
 type PrerenderConfig = Pick<ThemeConfig, "defaults" | "styles" | "presets">
 
@@ -92,7 +95,7 @@ export function darkraisePrerender(
   tags.push({
     tag: "script",
     ...(options.nonce === undefined ? {} : { attrs: nonce }),
-    children: buildPrerenderScript({
+    children: themePrerenderScript({
       ...config,
       defaults: valid as ThemeConfig["defaults"],
     }),
