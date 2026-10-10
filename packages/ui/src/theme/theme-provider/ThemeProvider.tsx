@@ -11,7 +11,6 @@ import { SHELL_STYLES, type ShellStyle } from "@theme/types"
 import { useLayoutStore } from "@layout/layoutStore"
 import { generateTokens } from "@theme/engine/generateTokens"
 import { resolveRegistry } from "@theme/config/registry"
-import { STYLES, type StyleName } from "@theme/styles"
 import { ThemeContext } from "@theme/themeContext"
 import {
   resolveDefaults,
@@ -22,12 +21,12 @@ import { useDebouncedCallback } from "@hooks/useDebouncedCallback"
 import {
   AXES,
   AXIS_KEYS,
-  isAxisValue,
   type AxisKey,
   type AxisSetters,
   type AxisValue,
   type AxisValues,
 } from "@theme/axes/registry"
+import { applyAxisChange, effectiveSettings } from "@theme/axes/resolve"
 import {
   THEME_PAYLOAD_VERSION,
   readStoredAxes,
@@ -126,25 +125,6 @@ function applyTokens(tokens: Record<string, string>) {
 }
 
 /**
- * The value each axis paints with: the user's own, else the active style's
- * default for it, else the config's. An axis the user never set stays absent
- * from `stored`, which is what lets a style default apply to it.
- */
-function effectiveSettings(
-  stored: Partial<AxisValues>,
-  defaults: AxisValues,
-): AxisValues {
-  const style = stored.style ?? defaults.style
-  const styleDefaults: Partial<Record<AxisKey, string>> =
-    STYLES[style as StyleName].defaults
-  const out = {} as Record<AxisKey, string>
-  for (const key of AXIS_KEYS) {
-    out[key] = stored[key] ?? styleDefaults[key] ?? defaults[key]
-  }
-  return out as AxisValues
-}
-
-/**
  * Stamps every attribute axis except mode, whose attribute holds the resolved
  * mode and is written by applyTheme.
  */
@@ -194,11 +174,13 @@ export function ThemeProvider({
   // An inline `config` prop is a new object on every parent render; keying the
   // defaults on its content stops each of those renders from repainting.
   const configKey = JSON.stringify(cfg)
-  const defaults = useMemo(
-    () =>
-      // Built-ins only: this provider still paints from the fixed style list.
-      resolveDefaults(JSON.parse(configKey) as ThemeConfig, resolveRegistry()),
+  const registry = useMemo(
+    () => resolveRegistry(JSON.parse(configKey) as ThemeConfig),
     [configKey],
+  )
+  const defaults = useMemo(
+    () => resolveDefaults(JSON.parse(configKey) as ThemeConfig, registry),
+    [configKey, registry],
   )
   // ThemeConfig is plain data, so equal content means an equal config.
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -210,16 +192,16 @@ export function ThemeProvider({
   const [initial] = useState(() => {
     const known = readMigratedInputs()
     const read = (key: string) => known.get(key) ?? null
-    return { known, stored: readStoredAxes(read) }
+    return { known, stored: readStoredAxes(read, registry) }
   })
   const knownRef = useRef(new Map(initial.known))
   const [stored, setStoredState] = useState<Partial<AxisValues>>(initial.stored)
   const settings = useMemo(
-    () => effectiveSettings(stored, defaults),
-    [stored, defaults],
+    () => effectiveSettings(stored, defaults, registry),
+    [stored, defaults, registry],
   )
   const [resolvedMode, setResolvedMode] = useState<ResolvedMode>(() =>
-    resolveMode(effectiveSettings(initial.stored, defaults).mode),
+    resolveMode(effectiveSettings(initial.stored, defaults, registry).mode),
   )
   const [syncStatus, setSyncStatus] = useState<ThemeSyncStatus>("idle")
 
@@ -288,7 +270,7 @@ export function ThemeProvider({
       const tokens = generateTokens({
         accentColor: current.accentColor,
         surfaceColor: current.surfaceColor,
-        frosted: STYLES[current.style as StyleName].frosted,
+        frosted: registry.styles[current.style]?.frosted ?? false,
         backgroundStyle: current.backgroundStyle,
         mode: resolved,
         contrast: current.contrast,
@@ -302,7 +284,7 @@ export function ThemeProvider({
       const store = storage()
       if (store) writeTokenCache(store, cacheId, tokens)
     },
-    [],
+    [registry],
   )
 
   // commit paints synchronously so a setter's change lands in the same frame;
@@ -315,13 +297,20 @@ export function ThemeProvider({
         resolved,
         defaults,
       )
-      const signature = JSON.stringify([current, resolved, defaults, cacheId])
+      // A config change can redefine a style without changing any setting.
+      const signature = JSON.stringify([
+        current,
+        resolved,
+        defaults,
+        cacheId,
+        registry.hash,
+      ])
       if (signature === paintedRef.current) return
       paintedRef.current = signature
       applyAttributes(current)
       applyTheme(current, resolved, cacheId)
     },
-    [applyTheme, defaults],
+    [applyTheme, defaults, registry.hash],
   )
 
   const commit = useCallback(
@@ -330,9 +319,9 @@ export function ThemeProvider({
       resolvedRef.current = resolved
       setStoredState(nextStored)
       setResolvedMode(resolved)
-      paint(effectiveSettings(nextStored, defaults), resolved)
+      paint(effectiveSettings(nextStored, defaults, registry), resolved)
     },
-    [paint, defaults],
+    [paint, defaults, registry],
   )
 
   const debouncedSave = useDebouncedCallback(
@@ -364,21 +353,29 @@ export function ThemeProvider({
 
   const setAxis = useCallback(
     <K extends AxisKey>(key: K, value: AxisValue<K>) => {
-      if (!isAxisValue(key, value)) {
+      if (!registry.isValue(key, value)) {
         if (process.env.NODE_ENV !== "production") {
           console.warn(
-            `[ThemeProvider] "${String(value)}" is not a valid ${key} (expected one of: ${AXES[key].values.join(", ")}).`,
+            `[ThemeProvider] "${String(value)}" is not a valid ${key} (expected one of: ${registry.values(key).join(", ")}).`,
           )
         }
         return
       }
-      persist(AXES[key].storageKey, value)
+      const current = storedRef.current
+      const next = applyAxisChange(current, key, value, registry)
+      // A preset brings its style and a style resets the preset, so one
+      // change can write two keys.
+      for (const name of AXIS_KEYS) {
+        if (name === key || next[name] !== current[name]) {
+          persist(AXES[name].storageKey, next[name])
+        }
+      }
       const resolved =
         key === "mode" ? resolveMode(value as Mode) : resolvedRef.current
-      commit({ ...storedRef.current, [key]: value }, resolved)
+      commit(next, resolved)
       announce()
     },
-    [commit, announce, persist],
+    [commit, announce, persist, registry],
   )
 
   /**
@@ -391,7 +388,7 @@ export function ThemeProvider({
       const source: Record<string, unknown> = versioned
         ? input
         : migratePayload(input as Record<string, unknown>)
-      const present = sanitizeSettings(source) as Partial<AxisValues>
+      const present = sanitizeSettings(source, registry) as Partial<AxisValues>
       // A 6.x save never sent the glow axes, so an axis missing from an
       // unversioned payload says nothing about the user's choice.
       const nextStored = versioned
@@ -403,13 +400,15 @@ export function ThemeProvider({
       for (const key of written) {
         persist(AXES[key].storageKey, nextStored[key])
       }
-      const resolved = resolveMode(effectiveSettings(nextStored, defaults).mode)
+      const resolved = resolveMode(
+        effectiveSettings(nextStored, defaults, registry).mode,
+      )
       commit(nextStored, resolved)
       if (versioned) return null
       seedShellStyle(source.shellStyle)
       return { ...nextStored, version: THEME_PAYLOAD_VERSION }
     },
-    [commit, defaults, persist],
+    [commit, defaults, persist, registry],
   )
 
   // Fast Refresh and StrictMode re-run effects while keeping refs; without
@@ -488,11 +487,20 @@ export function ThemeProvider({
       ...settings,
       resolvedMode,
       config: stableConfig,
+      registry,
       syncStatus,
       setAxis,
       ...setters,
     }),
-    [settings, resolvedMode, stableConfig, syncStatus, setAxis, setters],
+    [
+      settings,
+      resolvedMode,
+      stableConfig,
+      registry,
+      syncStatus,
+      setAxis,
+      setters,
+    ],
   )
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

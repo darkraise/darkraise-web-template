@@ -180,6 +180,8 @@ export type ThemeSyncStatus = "idle" | "loading" | "saving" | "error"
 export interface ThemeContextValue extends AxisValues, AxisSetters {
   resolvedMode: ResolvedMode
   config: import("./themeConfig").ThemeConfig
+  /** The config's styles and presets with the built-ins, flattened and validated. */
+  registry: import("./config/registry").ThemeRegistry
   syncStatus: ThemeSyncStatus
   /** Sets any axis by key; the named setters are shorthands for it. */
   setAxis: <K extends AxisKey>(key: K, value: AxisValue<K>) => void

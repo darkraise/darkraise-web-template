@@ -10,7 +10,7 @@ import {
 } from "@theme/axes/tokenCache"
 import { buildPrerenderScript } from "@theme/axes/prerender"
 import { LEGACY_MARKER_KEY, LEGACY_REVISION } from "@theme/axes/legacy"
-import { themeConfig } from "@theme/themeConfig"
+import { themeConfig, type ThemeConfig } from "@theme/themeConfig"
 import { SHELL_STYLE_STORAGE_KEY, useLayoutStore } from "@layout/layoutStore"
 import type { ThemePersistenceAdapter, ThemeSettings } from "@theme/types"
 
@@ -927,5 +927,170 @@ describe("ThemeProvider synced payloads", () => {
       await vi.advanceTimersByTimeAsync(0)
     })
     expect(result.current.syncStatus).toBe("idle")
+  })
+})
+
+describe("ThemeProvider theme definitions", () => {
+  const config: ThemeConfig = {
+    ...themeConfig,
+    styles: {
+      ink: { label: "Ink", extends: "glass", defaults: { elevation: "flat" } },
+      paper: { label: "Paper", extends: "glass", frosted: false },
+    },
+    presets: {
+      night: { label: "Night", style: "ink", axes: { accentColor: "violet" } },
+    },
+  }
+
+  function withConfig(
+    options: {
+      defaults?: ThemeConfig["defaults"]
+      onChange?: (settings: ThemeSettings) => void
+      persistence?: ThemePersistenceAdapter
+    } = {},
+  ) {
+    const own = { ...config, defaults: options.defaults ?? config.defaults }
+    return ({ children }: { children: ReactNode }) => (
+      <ThemeProvider
+        config={own}
+        onChange={options.onChange}
+        persistence={options.persistence}
+        persistenceDebounce={50}
+      >
+        {children}
+      </ThemeProvider>
+    )
+  }
+
+  const token = (name: string) => root.style.getPropertyValue(name)
+
+  it("accepts, stamps and frosts a consumer style as its definition says", () => {
+    localStorage.setItem("mode", "dark")
+    const { result } = renderHook(() => useTheme(), { wrapper: withConfig() })
+    act(() => result.current.setStyle("ink"))
+    expect(result.current.style).toBe("ink")
+    expect(root.getAttribute("data-style")).toBe("ink")
+    expect(root.getAttribute("data-elevation")).toBe("flat")
+    expect(root.getAttribute("data-background-style")).toBe("gradient")
+    expect(token("--card")).not.toBe(token("--background"))
+    expect(token("--surface-sidebar")).toBe(token("--background"))
+
+    act(() => result.current.setStyle("paper"))
+    expect(root.getAttribute("data-style")).toBe("paper")
+    expect(token("--surface-sidebar")).toBe(token("--card"))
+  })
+
+  it("boots on a stored consumer style or one set as the default", () => {
+    localStorage.setItem("theme-style", "ink")
+    const stored = renderHook(() => useTheme(), { wrapper: withConfig() })
+    expect(stored.result.current.style).toBe("ink")
+    stored.unmount()
+
+    localStorage.clear()
+    const { result } = renderHook(() => useTheme(), {
+      wrapper: withConfig({ defaults: { style: "paper" } }),
+    })
+    expect(result.current.style).toBe("paper")
+    expect(root.getAttribute("data-style")).toBe("paper")
+  })
+
+  it.each(["setAxis", "setPreset"] as const)(
+    "%s stores the preset and its style",
+    (setter) => {
+      const { result } = renderHook(() => useTheme(), {
+        wrapper: withConfig(),
+      })
+      act(() => {
+        if (setter === "setAxis") result.current.setAxis("preset", "night")
+        else result.current.setPreset("night")
+      })
+      expect(result.current.style).toBe("ink")
+      expect(result.current.preset).toBe("night")
+      expect(localStorage.getItem("theme-style")).toBe("ink")
+      expect(localStorage.getItem("theme-preset")).toBe("night")
+      expect(root.getAttribute("data-style")).toBe("ink")
+      expect(root.getAttribute("data-preset")).toBe("night")
+      expect(root.getAttribute("data-accent")).toBe("violet")
+    },
+  )
+
+  it("resets the preset to base when the user picks a style", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper: withConfig() })
+    act(() => result.current.setPreset("night"))
+    act(() => result.current.setStyle("glass"))
+    expect(result.current.style).toBe("glass")
+    expect(result.current.preset).toBe("base")
+    expect(localStorage.getItem("theme-style")).toBe("glass")
+    expect(localStorage.getItem("theme-preset")).toBe("base")
+    expect(root.getAttribute("data-preset")).toBe("base")
+    expect(root.getAttribute("data-accent")).toBe("blue")
+  })
+
+  it("rejects a preset the config does not define", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
+    const { result } = renderHook(() => useTheme(), { wrapper: withConfig() })
+    act(() => result.current.setPreset("noon"))
+    expect(result.current.preset).toBe("base")
+    expect(localStorage.getItem("theme-preset")).toBeNull()
+    expect(warn).toHaveBeenCalledWith(
+      '[ThemeProvider] "noon" is not a valid preset (expected one of: base, night).',
+    )
+  })
+
+  it("carries the preset in onChange and synced payloads", async () => {
+    vi.useFakeTimers()
+    const onChange = vi.fn()
+    const { adapter } = memoryAdapter({
+      version: 7,
+      style: "ink",
+      preset: "night",
+    })
+    const { result } = renderHook(() => useTheme(), {
+      wrapper: withConfig({ onChange, persistence: adapter }),
+    })
+    await settle()
+    expect(result.current.style).toBe("ink")
+    expect(result.current.preset).toBe("night")
+    expect(localStorage.getItem("theme-preset")).toBe("night")
+
+    act(() => result.current.setStyle("paper"))
+    expect(onChange).toHaveBeenLastCalledWith({
+      style: "paper",
+      preset: "base",
+      version: 7,
+    })
+    await settle()
+    expect(adapter.save).toHaveBeenLastCalledWith(
+      { style: "paper", preset: "base", version: 7 },
+      expect.anything(),
+    )
+  })
+
+  it("repaints when the config redefines the active style", () => {
+    localStorage.setItem("mode", "dark")
+    localStorage.setItem("theme-style", "ink")
+    const tree = (frosted: boolean) => (
+      <ThemeProvider
+        config={{
+          ...config,
+          styles: { ink: { label: "Ink", extends: "glass", frosted } },
+        }}
+      >
+        <span />
+      </ThemeProvider>
+    )
+    const { rerender } = render(tree(true))
+    expect(token("--surface-sidebar")).toBe(token("--background"))
+    rerender(tree(false))
+    expect(token("--surface-sidebar")).toBe(token("--card"))
+  })
+
+  it("exposes the registry built from the config", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper: withConfig() })
+    expect(result.current.registry.styles.ink?.lineage).toEqual([
+      "ink",
+      "glass",
+    ])
+    expect(result.current.registry.values("preset")).toEqual(["base", "night"])
   })
 })

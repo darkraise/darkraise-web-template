@@ -152,6 +152,7 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - `VirtualizedDropdownMenuContent` takes `isItemDisabled(item, index)`. A disabled row is skipped by the arrow keys, Home and End, ignores clicks, Enter and the pointer, and carries `data-disabled` and `aria-disabled`; the item render function receives `disabled`, and `VirtualizedDropdownMenuItem` takes `disabled`.
 - `UserMenu` takes `layoutSwitcher` (the `variants`, `shellStylePinned` and `currentShellStyle` of `LayoutSwitcherProps`) and then shows a Layout submenu with the same layout and shell-style choices as `LayoutSwitcher`. Its trigger carries `.dr-user-menu-layout` and shows below 48rem only. `LayoutSwitcher`'s trigger carries `.dr-layout-switcher-trigger`.
 - `focusNext` and `focusPrev` from `useDropdownMenu`, `useContextMenu`, `useMenubar` and `useSelect` take `{ loop }` to override the hook's `loop` option for one move.
+- `ThemeConfig` takes `styles` and `presets`: plain-data definitions of new styles (optionally extending another) and of presets of a style. `ThemeProvider` accepts their names as `style` and `preset` values, from storage, the config defaults, synced payloads and the setters, and paints with each definition's axis values and `frosted`; `useTheme().registry` holds the resolved styles and presets. Picking a preset also stores its style, and picking a style stores `preset: "base"`.
 
 ### Changed
 
