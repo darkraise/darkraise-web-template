@@ -1,13 +1,14 @@
 import { describe, it, expect } from "vitest"
 import { existsSync, readFileSync, readdirSync } from "node:fs"
 import { dirname, join, resolve, sep } from "node:path"
+import { LAYER_STATEMENT } from "@theme/config/compile"
 import { STYLE_NAMES } from "@theme/styles"
 import { stripCssComments } from "../../test/strip-css-comments"
 
-// Styles are token sets. A style file under theme/styles/ sets custom
-// properties and nothing else, and no other stylesheet names a style, so a
-// component reads one token family whatever style is active. jsdom never
-// parses CSS, so the source text is what this asserts.
+// Styles are token sets. The compiled style sheet under theme/styles/ sets
+// custom properties and nothing else, and no other stylesheet names a style,
+// so a component reads one token family whatever style is active. jsdom
+// never parses CSS, so the source text is what this asserts.
 
 interface Block {
   prelude: string
@@ -78,12 +79,7 @@ function stylesheets(dir: string): string[] {
 const STYLES_DIR = join("src", "theme", "styles") + sep
 const ALL = stylesheets("src")
 const KIT_SHEETS = ALL.filter((path) => !path.startsWith(STYLES_DIR))
-// The compiled sheet is checked against its definitions by
-// builtin/builtin.test.ts; these rules describe the hand-written files.
-const GENERATED_DIR = join(STYLES_DIR, "generated") + sep
-const STYLE_SHEETS = ALL.filter(
-  (path) => path.startsWith(STYLES_DIR) && !path.startsWith(GENERATED_DIR),
-)
+const STYLE_SHEETS = ALL.filter((path) => path.startsWith(STYLES_DIR))
 
 /**
  * The style axis, or the preset axis it replaced, as an attribute selector
@@ -148,7 +144,7 @@ describe("style selectors", () => {
   })
 })
 
-/** Attributes a style file may combine with its own [data-style]. */
+/** Attributes a style rule may combine with its own [data-style]. */
 const CONTEXT_ATTRIBUTES = [
   "data-mode",
   "data-glass-opacity",
@@ -157,15 +153,17 @@ const CONTEXT_ATTRIBUTES = [
 ]
 
 /**
- * Why a style-file selector breaks the grammar, or null when it is valid. A
+ * Why a style-rule selector breaks the grammar, or null when it is valid. A
  * valid selector is one compound: an optional `:root` or `html`, then
- * attribute selectors in any order, exactly one of them the file's own
- * `[data-style="…"]` and the rest context attributes.
+ * attribute selectors and `:not([data-mode="dark"])` in any order, exactly
+ * one of them the style's own `[data-style="…"]` and the rest context
+ * attributes.
  */
 function selectorProblem(selector: string, style: string): string | null {
-  const compound = /^(?::root|html)?((?:\[[a-z-]+(?:="[a-z0-9-]+")?\])+)$/.exec(
-    selector,
-  )
+  const compound =
+    /^(?::root|html)?((?:\[[a-z-]+(?:="[a-z0-9-]+")?\]|:not\(\[data-mode="dark"\]\))+)$/.exec(
+      selector,
+    )
   if (!compound) return "is not one compound of attribute selectors"
   const attributes = [
     ...(compound[1] as string).matchAll(/\[([a-z-]+)(?:="([a-z0-9-]+)")?\]/g),
@@ -181,44 +179,55 @@ function selectorProblem(selector: string, style: string): string | null {
   return foreign ? `names ${foreign[0]}` : null
 }
 
-/** A style file's style: `theme/styles/<style>/<style>.css`. */
-function styleOf(path: string): string {
-  const [style, file, ...rest] = path.slice(STYLES_DIR.length).split(sep)
-  if (
-    !style ||
-    rest.length > 0 ||
-    file !== `${style}.css` ||
-    !(STYLE_NAMES as readonly string[]).includes(style)
-  ) {
-    throw new Error(`${path} is not theme/styles/<style>/<style>.css`)
-  }
-  return style
+/** The built-in style a compiled selector names, or null. */
+function styleOf(selector: string): string | null {
+  const style = /\[data-style="([a-z0-9-]+)"\]/.exec(selector)?.[1]
+  return style && (STYLE_NAMES as readonly string[]).includes(style)
+    ? style
+    : null
 }
 
+/** The layers the compiled built-ins write to. */
+const STYLE_LAYERS = [
+  "@layer style.base",
+  "@layer style.mode",
+  "@layer style.when",
+  "@layer style.fallback",
+]
+
 describe("style files", () => {
+  // Besides custom properties, the compiled sheet opens with the layer
+  // statement, so it orders the layers wherever it loads first.
   it.each(STYLE_SHEETS)("%s declares custom properties only", (path) => {
     const root = parse(readFileSync(path, "utf8"))
     const offenders = [root, ...descendants(root)].flatMap((block) =>
-      block.declarations.filter((d) => !d.startsWith("--")),
+      block.declarations.filter(
+        (d) =>
+          !d.startsWith("--") &&
+          !(block === root && `${d};` === LAYER_STATEMENT),
+      ),
     )
     expect(offenders).toEqual([])
   })
 
   it.each(STYLE_SHEETS)(
-    "%s scopes every rule to its own style and uses no at-rule but @media",
+    "%s scopes every rule to one style and uses no at-rule but the style layers and @media",
     (path) => {
-      const style = styleOf(path)
       const offenders = descendants(parse(readFileSync(path, "utf8"))).flatMap(
         (block) =>
           block.prelude.startsWith("@")
-            ? block.prelude.startsWith("@media")
+            ? block.prelude.startsWith("@media") ||
+              STYLE_LAYERS.includes(block.prelude)
               ? []
-              : [`${block.prelude}: not @media`]
+              : [`${block.prelude}: not a style layer or @media`]
             : block.prelude
                 .split(/,(?![^(]*\))/)
                 .map((selector) => selector.trim())
                 .map((selector) => {
-                  const problem = selectorProblem(selector, style)
+                  const style = styleOf(selector)
+                  const problem = style
+                    ? selectorProblem(selector, style)
+                    : "names no built-in style"
                   return problem ? `${selector}: ${problem}` : null
                 })
                 .filter((problem): problem is string => problem !== null),
@@ -236,7 +245,9 @@ describe("style files", () => {
     '[data-background-style="gradient"][data-style="glass"][data-glass-blur="none"]',
     // Presence-only context attributes raise specificity without naming a value.
     '[data-style="glass"][data-mode][data-glass-opacity][data-glass-blur][data-background-style]',
-  ])("accepts %s in glass.css", (selector) => {
+    '[data-style="glass"]:not([data-mode="dark"])',
+    '[data-style="glass"]:not([data-mode="dark"])[data-glass-opacity="subtle"]',
+  ])("accepts %s for glass", (selector) => {
     expect(selectorProblem(selector, "glass")).toBeNull()
   })
 
@@ -251,7 +262,8 @@ describe("style files", () => {
     ['[data-style="flat"]', "another style's attribute"],
     ['[data-style="glass"][data-style="flat"]', "two styles"],
     ["[data-style]", "a style attribute with no value"],
-  ])("rejects %s (%s) in glass.css", (selector) => {
+    ['[data-style="glass"]:not([data-mode="light"])', "another negation"],
+  ])("rejects %s (%s) for glass", (selector) => {
     expect(selectorProblem(selector, "glass")).not.toBeNull()
   })
 })

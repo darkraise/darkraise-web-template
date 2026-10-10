@@ -106,7 +106,7 @@ describe("ThemeProvider style orchestration", () => {
     expect(root.getAttribute("data-glass-blur")).toBe("high")
   })
 
-  it("paints engine tokens alone under glass: glass.css owns its tokens", () => {
+  it("paints engine tokens alone under glass: the glass stylesheet owns its tokens", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
     // Glass defaults the background to gradient; pin it so only the style
     // differs between the two reads.

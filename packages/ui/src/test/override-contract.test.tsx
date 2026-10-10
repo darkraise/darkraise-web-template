@@ -2,7 +2,8 @@
 // 1. Components forward consumer className alongside their own dr-* class.
 // 2. Components write data-variant / data-size attributes (used by CSS selectors).
 // 3. theme.css declares the cascade layer order with utilities after components,
-//    so Tailwind utility classes passed by consumers can always win over component defaults.
+//    so Tailwind utility classes passed by consumers can always win over component defaults,
+//    before its Tailwind import, so Tailwind's shorter statement cannot order the layers.
 import { readFileSync } from "node:fs"
 import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -45,6 +46,12 @@ describe("override contract", () => {
     const layerDeclMatch = themeCss.match(/@layer\s+([^;]+);/)
     expect(layerDeclMatch).not.toBeNull()
     if (!layerDeclMatch) return
+    expect(layerDeclMatch[0]).toBe(
+      "@layer theme, base, style.base, style.mode, style.when, style.preset, style.fallback, components, utilities, overrides;",
+    )
+    expect(layerDeclMatch.index).toBeLessThan(
+      themeCss.indexOf('@import "tailwindcss";'),
+    )
     const declared = layerDeclMatch[1]
     if (declared === undefined) throw new Error("layer list missing")
     const layers = declared.split(",").map((s) => s.trim())

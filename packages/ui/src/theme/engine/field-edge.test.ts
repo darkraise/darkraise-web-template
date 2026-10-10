@@ -223,7 +223,10 @@ describe("--field-edge-lifted-color", () => {
   }, 30_000)
 
   it("covers the stylesheet's brightest lift under Tactile's card sheen", () => {
-    const tactile = readFileSync("src/theme/styles/tactile/tactile.css", "utf8")
+    const tactile = readFileSync(
+      "src/theme/styles/generated/builtins.css",
+      "utf8",
+    )
     const alphas = (css: string, pattern: RegExp) =>
       [...css.matchAll(pattern)].map((m) => Number(m[1]))
     // A style file may declare a lift of its own, so every one is read.
@@ -235,7 +238,7 @@ describe("--field-edge-lifted-color", () => {
         .map((file) => join("src", "theme", "styles", file)),
     ]
     expect(liftSheets).toContain(
-      join("src", "theme", "styles", "tactile", "tactile.css"),
+      join("src", "theme", "styles", "generated", "builtins.css"),
     )
     const lift = Math.max(
       ...liftSheets.flatMap((path) =>
@@ -248,7 +251,7 @@ describe("--field-edge-lifted-color", () => {
     const sheen = Math.max(
       ...alphas(
         tactile.replace(/\s+/g, " "),
-        /--card-sheen: linear-gradient\( 180deg, rgb\(255 255 255 \/ ([\d.]+)\)/g,
+        /--card-sheen: linear-gradient\( ?180deg, rgb\(255 255 255 \/ ([\d.]+)\)/g,
       ),
     )
     expect(lift).toBeGreaterThan(0)

@@ -149,7 +149,7 @@ test.describe("style axis", () => {
       const attrs = await readThemeAttrs(page)
       expect(attrs["data-style"]).toBe(style)
       expect(attrs["data-preset"]).toBeUndefined()
-      // Ordinary axes: stamped under every style, read only by glass.css.
+      // Ordinary axes: stamped under every style, read only by the glass style.
       expect(attrs["data-glass-opacity"]).toBe("medium")
       expect(attrs["data-glass-blur"]).toBe("medium")
 
@@ -250,7 +250,7 @@ test.describe("glass axes", () => {
     consoleWatch.assertClean()
   })
 
-  // Chrome blurs half again as hard as overlays (glass.css).
+  // Chrome blurs half again as hard as overlays (theme/styles/builtin/glass.ts).
   const chromeBlur: Record<(typeof GLASS_BLURS)[number], string> = {
     none: "none",
     low: "blur(9px) saturate(1.4)",

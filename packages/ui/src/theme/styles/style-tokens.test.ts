@@ -6,11 +6,11 @@ import { cssRules } from "../../test/css-rules"
 import { KIT_FALLBACK, PAINT_TOKENS } from "../config/tokens"
 
 // Every control and chrome token has its base value in @layer base, and only
-// the unlayered style files under theme/styles/ override it, so a style file
-// wins over a base value whatever their specificity. An unlayered declaration
-// anywhere else would compete with the style files on specificity and source
-// order instead of losing to them outright. jsdom never parses CSS, so the
-// source text is what this asserts.
+// the style layers compiled to theme/styles/generated/ (plus the kit's forced
+// fallback rule) override it, so a style wins over a base value whatever
+// their specificity. An unlayered declaration anywhere else would beat every
+// style outright. jsdom never parses CSS, so the source text is what this
+// asserts.
 
 const CONTROL_TOKENS = [
   "--btn-edge",
@@ -163,6 +163,11 @@ const KIT_SHEETS = SHEETS.filter((path) => !path.startsWith(STYLES_DIR))
 
 const LIGHT_BASE = ["@layer base", ":root"]
 const DARK_BASE = ["@layer base", ':root[data-mode="dark"]']
+const KIT_FALLBACK_RULE = [
+  "@layer style.fallback",
+  "@media (prefers-reduced-transparency: reduce), (prefers-contrast: more)",
+  ":where(:root)",
+]
 
 function sameContext(a: string[], b: string[]): boolean {
   return a.length === b.length && a.every((item, i) => item === b[i])
@@ -231,6 +236,20 @@ describe("paint token schema", () => {
       expect(base.find((d) => d.property === name)?.value, name).toBe(value)
     }
   })
+
+  // A style or preset that adds a backdrop stays covered without a
+  // forcedFallback of its own.
+  it("resets every kit fallback token in the kit's forced fallback rule", () => {
+    const reset = declarations(THEME)
+      .filter((d) => sameContext(d.context, KIT_FALLBACK_RULE))
+      .map((d) => [d.property, d.value])
+    expect(reset).toEqual(
+      Object.entries(KIT_FALLBACK).map(([token, value]) => [
+        PAINT_TOKENS[token as keyof typeof PAINT_TOKENS],
+        value,
+      ]),
+    )
+  })
 })
 
 describe("where contract tokens are declared", () => {
@@ -241,10 +260,13 @@ describe("where contract tokens are declared", () => {
     expect(KIT_SHEETS).toContain(SHELL_STYLES)
   })
 
-  it("declares a contract token outside theme/styles only inside @layer base", () => {
+  it("declares a contract token outside theme/styles only inside @layer base or the kit fallback", () => {
     const offenders = kit
       .filter((d) => CONTRACT.includes(d.property))
       .filter((d) => d.context[0] !== "@layer base")
+      .filter(
+        (d) => !(d.path === THEME && sameContext(d.context, KIT_FALLBACK_RULE)),
+      )
       .filter(
         (d) =>
           !(
@@ -568,14 +590,16 @@ const TACTILE_TOKENS = CONTROL_TOKENS.filter(
  */
 const FULL_HEIGHT_SHEEN = ['[data-style="tactile"]', "--btn-neutral-sheen"]
 
-// The compiled sheet is checked against its definitions by
-// builtin/builtin.test.ts; these rules describe the hand-written files.
-const GENERATED_DIR = join(STYLES_DIR, "generated") + sep
-const STYLE_SHEETS = SHEETS.filter(
-  (path) => path.startsWith(STYLES_DIR) && !path.startsWith(GENERATED_DIR),
-)
-const FLAT = join("src", "theme", "styles", "flat", "flat.css")
-const TACTILE = join("src", "theme", "styles", "tactile", "tactile.css")
+const STYLE_SHEETS = SHEETS.filter((path) => path.startsWith(STYLES_DIR))
+const GENERATED = join("src", "theme", "styles", "generated", "builtins.css")
+
+/** A built-in style's declarations in the compiled sheet. */
+function styleDeclarations(style: string): Declaration[] {
+  return declarations(GENERATED).filter((d) =>
+    d.context.some((prelude) => prelude.includes(`[data-style="${style}"]`)),
+  )
+}
+
 const READER_SHEETS = SHEETS.filter((path) =>
   [join("src", "components") + sep, join("src", "layout") + sep].some((dir) =>
     path.startsWith(dir),
@@ -597,13 +621,14 @@ function lastStop(gradient: string): number {
 
 describe("style files", () => {
   it("ships flat, tactile and glass; quiet is the base", () => {
-    expect(
-      STYLE_SHEETS.map((path) => path.slice(STYLES_DIR.length)).sort(),
-    ).toEqual([
-      join("flat", "flat.css"),
-      join("glass", "glass.css"),
-      join("tactile", "tactile.css"),
+    expect(STYLE_SHEETS.map((path) => path.slice(STYLES_DIR.length))).toEqual([
+      join("generated", "builtins.css"),
     ])
+    expect(
+      ["flat", "quiet", "tactile", "glass"].filter(
+        (style) => styleDeclarations(style).length > 0,
+      ),
+    ).toEqual(["flat", "tactile", "glass"])
   })
 
   it.each(STYLE_SHEETS)(
@@ -619,34 +644,37 @@ describe("style files", () => {
   )
 
   it("flattens every control token under flat, in both modes", () => {
-    const flat = declarations(FLAT)
+    const flat = styleDeclarations("flat")
     expect(flat.map((d) => d.property).sort()).toEqual(
       [...CONTROL_TOKENS].sort(),
     )
     for (const d of flat) {
-      expect(d.context).toEqual(['[data-style="flat"]'])
+      expect(d.context).toEqual(["@layer style.base", '[data-style="flat"]'])
       expect(["0 0 transparent", "none"]).toContain(d.value)
     }
   })
 
-  // The light block is unlayered too, so in dark mode it would beat the dark
-  // base values unless the dark block restates every token it sets.
+  // The light block's layer sits above @layer base too, so in dark mode it
+  // would beat the dark base values unless the dark block restates every
+  // token it sets.
   it.each([
     [
       '[data-style="tactile"]',
+      "@layer style.base",
       LIGHT_BASE,
       [...TACTILE_TOKENS, "--card-edge", "--track-well"],
     ],
     [
       '[data-mode="dark"][data-style="tactile"]',
+      "@layer style.mode",
       DARK_BASE,
       [...TACTILE_TOKENS, ...SURFACE_TOKENS, "--btn-neutral-edge"],
     ],
   ])(
     "%s sets every token Tactile changes, each to a real depth",
-    (selector, baseContext, expected) => {
-      const set = declarations(TACTILE).filter((d) =>
-        sameContext(d.context, [selector]),
+    (selector, layer, baseContext, expected) => {
+      const set = declarations(GENERATED).filter((d) =>
+        sameContext(d.context, [layer, selector]),
       )
       expect(set.map((d) => d.property).sort()).toEqual([...expected].sort())
       const base = declarations(THEME).filter((d) =>
@@ -664,13 +692,15 @@ describe("style files", () => {
   // Engine fills sit at their label's 4.5:1 floor, so a sheen that lightens
   // behind a light label must fade out above the glyphs.
   it("fades every other tactile sheen out by 20% of the height", () => {
-    const sheens = declarations(TACTILE)
+    const sheens = styleDeclarations("tactile")
       .filter((d) => d.property.endsWith("-sheen"))
       .filter(
         (d) =>
           !(
-            sameContext(d.context, [FULL_HEIGHT_SHEEN[0] as string]) &&
-            d.property === FULL_HEIGHT_SHEEN[1]
+            sameContext(d.context, [
+              "@layer style.base",
+              FULL_HEIGHT_SHEEN[0] as string,
+            ]) && d.property === FULL_HEIGHT_SHEEN[1]
           ),
       )
       .filter((d) => d.property !== "--card-sheen")
@@ -684,7 +714,7 @@ describe("style files", () => {
   // 4.5:1 floor; e2e 26 measures muted text on the brightest Tactile card.
   // Above 0.015 a field at the card's top edge drops below 3:1 (e2e 16).
   it("keeps the dark card sheen faint", () => {
-    const sheen = declarations(TACTILE).find(
+    const sheen = styleDeclarations("tactile").find(
       (d) => d.property === "--card-sheen",
     )
     expect(normalise(sheen?.value ?? "")).toBe(

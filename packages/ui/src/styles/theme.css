@@ -1,3 +1,4 @@
+@layer theme, base, style.base, style.mode, style.when, style.preset, style.fallback, components, utilities, overrides;
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -136,12 +137,24 @@
 /* Theme switcher (manual; theme/ is outside the auto-scanner) */
 @import "../theme/theme-switcher/theme-switcher.css";
 
-/* Style-specific CSS (manual; theme/styles/ is outside the auto-scanner) */
-@import "../theme/styles/flat/flat.css";
-@import "../theme/styles/tactile/tactile.css";
-@import "../theme/styles/glass/glass.css";
+/* Built-in styles, compiled from theme/styles/builtin (manual; run generate:styles) */
+@import "../theme/styles/generated/builtins.css";
 
-@layer theme, base, components, utilities, overrides;
+/* Opaque, unblurred backdrop and translucency tokens under reduced
+   transparency or more contrast, whatever a style or preset sets; a style's
+   own forcedFallback outranks this zero-specificity rule. */
+@layer style.fallback {
+  @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+    :where(:root) {
+      --chrome-backdrop: none;
+      --chrome-canvas: none;
+      --overlay-backdrop: none;
+      --surface-overlay-layers: ;
+      --surface-overlay-base: hsl(var(--popover));
+      --surface-overlay-blend-mode: normal;
+    }
+  }
+}
 
 @custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
 
@@ -453,14 +466,11 @@
   }
 }
 
-/* :root token defaults live in @layer base so unlayered style bindings
-   in glass.css / @layer overrides win the cascade. Without
-   this wrapper, `:root` (specificity 0,1,0, unlayered, source-order
-   LATER than the style @imports) was overriding every style's CSS
-   token overrides at runtime, such as Glass's --surface-overlay-layers.
-   Inline-style writes from generateTokens were the only
-   style overrides that worked, because they win regardless of
-   stylesheet layer. */
+/* :root token defaults live in @layer base so the style.* layers and
+   @layer overrides win the cascade. Without this wrapper, `:root`
+   (unlayered) would override every style's token overrides at runtime,
+   such as Glass's --surface-overlay-layers; inline-style writes from
+   generateTokens win regardless of stylesheet layer. */
 @layer base {
   :root {
     --font-family-sans:
@@ -912,10 +922,10 @@
       0 8px 20px -2px rgb(0 0 0 / 0.18), 0 3px 8px -1px rgb(0 0 0 / 0.1);
     --card-elevation-high:
       0 48px 72px -10px rgb(0 0 0 / 0.45), 0 20px 36px -6px rgb(0 0 0 / 0.28);
-    /* Control depth, at Quiet's values; flat.css and tactile.css override
-       them. A shadow token is `0 0 transparent`, never `none`: components
-       compose it into shadow lists, where `none` invalidates the whole
-       declaration. */
+    /* Control depth, at Quiet's values; the Flat and Tactile definitions
+       override them. A shadow token is `0 0 transparent`, never `none`:
+       components compose it into shadow lists, where `none` invalidates the
+       whole declaration. */
     --btn-edge:
       inset 0 1px 0 rgb(255 255 255 / 0.22), inset 0 -1px 0 rgb(0 0 0 / 0.08);
     --btn-sheen: none;

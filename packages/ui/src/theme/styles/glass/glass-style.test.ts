@@ -4,13 +4,15 @@ import { GLASS_BLURS, GLASS_OPACITIES } from "@theme/types"
 import { cssRules } from "../../../test/css-rules"
 import { stripCssComments } from "../../../test/strip-css-comments"
 
-// jsdom never parses CSS, so the stylesheet text is what this asserts. The
-// fog alphas and edge speculars are pinned value by value: nothing else
-// checks the opacity tables.
-const GLASS = readFileSync("src/theme/styles/glass/glass.css", "utf8")
+// jsdom never parses CSS, so the compiled stylesheet text is what this
+// asserts. The fog alphas and edge speculars are pinned value by value:
+// nothing else checks the opacity tables.
+const GLASS = readFileSync("src/theme/styles/generated/builtins.css", "utf8")
 const THEME = readFileSync("src/styles/theme.css", "utf8")
 
 interface Rule {
+  /** The `@layer` block the rule sits in. */
+  layer: string
   selector: string
   body: string
 }
@@ -26,14 +28,17 @@ function normalise(text: string): string {
 
 /** Innermost rules; the media query wrapper is transparent. */
 const RULES: Rule[] = cssRules(stripCssComments(GLASS)).map((rule) => ({
+  layer: rule.wrappers[0] ?? "",
   selector: normalise(rule.selector),
   body: normalise(rule.body),
 }))
 
-/** The value `name` takes in the rule whose selector is exactly `selector`. */
-function valueOf(selector: string, name: string): string {
-  const rule = RULES.find((r) => r.selector === selector)
-  if (!rule) throw new Error(`no rule ${selector}`)
+/** The value `name` takes in `layer`'s rule whose selector is exactly `selector`. */
+function valueOf(layer: string, selector: string, name: string): string {
+  const rule = RULES.find(
+    (r) => r.layer === `@layer ${layer}` && r.selector === selector,
+  )
+  if (!rule) throw new Error(`no rule ${selector} in @layer ${layer}`)
   const after = rule.body.split(`${name}:`)[1]
   if (after === undefined) throw new Error(`${selector} sets no ${name}`)
   return (after.split(";")[0] as string).trim()
@@ -41,6 +46,13 @@ function valueOf(selector: string, name: string): string {
 
 const GLASS_ROOT = '[data-style="glass"]'
 const MODES = ["light", "dark"] as const
+
+/** Glass's selector in one mode, with `rest` appended. */
+function inMode(mode: (typeof MODES)[number], rest = ""): string {
+  return mode === "light"
+    ? `${GLASS_ROOT}:not([data-mode="dark"])${rest}`
+    : `[data-mode="dark"]${GLASS_ROOT}${rest}`
+}
 
 const TINT = {
   light: "color-mix(in oklab, hsl(var(--primary-8)) 24%, white)",
@@ -85,9 +97,9 @@ describe("glass fog and specular", () => {
   it.each(MODE_OPACITY)(
     "tints the %s fog at %s opacity from the mark step",
     (mode, opacity) => {
-      const selector = `[data-mode="${mode}"]${GLASS_ROOT}[data-glass-opacity="${opacity}"]`
+      const selector = inMode(mode, `[data-glass-opacity="${opacity}"]`)
       FOG_ALPHA[mode][opacity].forEach((alpha, i) => {
-        expect(valueOf(selector, `--glass-fog-${i + 1}`)).toBe(
+        expect(valueOf("style.when", selector, `--glass-fog-${i + 1}`)).toBe(
           `color-mix(in oklab, ${TINT[mode]} ${alpha}%, transparent)`,
         )
       })
@@ -95,10 +107,12 @@ describe("glass fog and specular", () => {
   )
 
   it.each(MODE_OPACITY)("lights the %s edge at %s opacity", (mode, opacity) => {
-    const selector = `[data-mode="${mode}"]${GLASS_ROOT}[data-glass-opacity="${opacity}"]`
+    const selector = inMode(mode, `[data-glass-opacity="${opacity}"]`)
     const [top, side, strongTop, strongSide] = INSET[mode][opacity]
-    expect(valueOf(selector, "--glass-inset")).toBe(specular(top, side))
-    expect(valueOf(selector, "--glass-inset-strong")).toBe(
+    expect(valueOf("style.when", selector, "--glass-inset")).toBe(
+      specular(top, side),
+    )
+    expect(valueOf("style.when", selector, "--glass-inset-strong")).toBe(
       specular(strongTop, strongSide),
     )
   })
@@ -112,6 +126,7 @@ describe("glass overlays", () => {
   ] as const)("bases a %s overlay on the popover at %s", (opacity, alpha) => {
     expect(
       valueOf(
+        "style.when",
         `${GLASS_ROOT}[data-glass-opacity="${opacity}"]`,
         "--surface-overlay-base",
       ),
@@ -119,35 +134,35 @@ describe("glass overlays", () => {
   })
 
   it.each([
-    ["light", "--glass-fog-3", "--glass-fog-1", "32px", "2%"],
-    ["dark", "--glass-fog-4", "--glass-fog-2", "40px", "28%"],
+    ["light", "style.base", "--glass-fog-3", "--glass-fog-1", "32px", "2%"],
+    ["dark", "style.mode", "--glass-fog-4", "--glass-fog-2", "40px", "28%"],
   ] as const)(
     "frosts the %s overlay with noise, fog and the strong specular",
-    (mode, from, to, spread, tint) => {
-      const selector = `[data-mode="${mode}"]${GLASS_ROOT}`
-      expect(valueOf(selector, "--surface-overlay-layers")).toBe(
+    (mode, layer, from, to, spread, tint) => {
+      const selector = inMode(mode)
+      expect(valueOf(layer, selector, "--surface-overlay-layers")).toBe(
         `var(--glass-noise), linear-gradient(135deg, var(${from}), var(${to}))`,
       )
-      expect(valueOf(selector, "--overlay-shadow")).toBe(
+      expect(valueOf(layer, selector, "--overlay-shadow")).toBe(
         `var(--elevation-medium), var(--glass-inset-strong), inset 0 0 ${spread} color-mix(in oklab, hsl(var(--surface-tint)) ${tint}, transparent), var(--glow-outer), var(--glow-inner)`,
       )
     },
   )
 
   it("blends the noise over the fog and rims overlays with the fog", () => {
-    expect(valueOf(GLASS_ROOT, "--surface-overlay-blend-mode")).toBe(
-      "overlay, normal",
+    expect(
+      valueOf("style.base", GLASS_ROOT, "--surface-overlay-blend-mode"),
+    ).toBe("overlay, normal")
+    expect(valueOf("style.base", GLASS_ROOT, "--overlay-border")).toBe(
+      "var(--glass-fog-4)",
     )
-    expect(valueOf(GLASS_ROOT, "--overlay-border")).toBe("var(--glass-fog-4)")
   })
 
   it("tints light glass's dropdown shadow and keeps dark's black", () => {
-    expect(valueOf(GLASS_ROOT, "--shadow-dropdown")).toBe(
+    expect(valueOf("style.base", GLASS_ROOT, "--shadow-dropdown")).toBe(
       "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
     )
-    expect(
-      valueOf(`[data-mode="light"]${GLASS_ROOT}`, "--shadow-dropdown"),
-    ).toBe(
+    expect(valueOf("style.base", inMode("light"), "--shadow-dropdown")).toBe(
       "0 10px 15px -3px rgb(16 24 40 / 0.1), 0 4px 6px -4px rgb(16 24 40 / 0.1)",
     )
   })
@@ -168,8 +183,8 @@ describe("glass blur", () => {
   it.each(GLASS_BLURS)("blurs overlays and chrome at %s", (blur) => {
     const selector = `${GLASS_ROOT}[data-glass-blur="${blur}"]`
     const [overlay, chrome] = BLUR[blur]
-    expect(valueOf(selector, "--overlay-backdrop")).toBe(overlay)
-    expect(valueOf(selector, "--chrome-backdrop")).toBe(chrome)
+    expect(valueOf("style.when", selector, "--overlay-backdrop")).toBe(overlay)
+    expect(valueOf("style.when", selector, "--chrome-backdrop")).toBe(chrome)
   })
 })
 
@@ -186,12 +201,13 @@ describe("glass chrome", () => {
     ["--chrome-edge", "var(--glass-fog-4)"],
     ["--chrome-shadow", "var(--glass-inset)"],
   ])("sets %s to %s", (name, value) => {
-    expect(valueOf(GLASS_ROOT, name)).toBe(value)
+    expect(valueOf("style.base", GLASS_ROOT, name)).toBe(value)
   })
 
   it("shows the canvas behind chrome on a gradient background", () => {
     expect(
       valueOf(
+        "style.when",
         `${GLASS_ROOT}[data-background-style="gradient"]`,
         "--chrome-canvas",
       ),
@@ -202,11 +218,9 @@ describe("glass chrome", () => {
 })
 
 describe("reduced transparency and more contrast", () => {
-  const SELECTOR = `${GLASS_ROOT}[data-mode][data-glass-opacity][data-glass-blur][data-background-style]`
-
-  it("outranks every glass rule from inside the media query", () => {
+  it("outranks every glass rule from inside @layer style.fallback", () => {
     expect(normalise(GLASS)).toContain(
-      `@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { ${SELECTOR} {`,
+      `@layer style.fallback { @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { ${GLASS_ROOT} {`,
     )
   })
 
@@ -222,7 +236,7 @@ describe("reduced transparency and more contrast", () => {
     ["--overlay-border", "hsl(var(--border))"],
     ["--overlay-backdrop", "none"],
   ])("sets %s to %s", (name, value) => {
-    expect(valueOf(SELECTOR, name)).toBe(value)
+    expect(valueOf("style.fallback", GLASS_ROOT, name)).toBe(value)
   })
 })
 
@@ -231,7 +245,7 @@ describe("base overlay backdrop", () => {
     expect(normalise(THEME)).toContain("--overlay-backdrop: none;")
   })
 
-  it("declares the glass noise only in glass.css", () => {
+  it("declares the glass noise only in the glass rules", () => {
     expect(THEME).not.toContain("--glass-noise")
   })
 })
