@@ -1,6 +1,7 @@
 import { cleanup, render } from "@testing-library/react"
 import { createElement } from "react"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
+import { STYLE_NAMES } from "@theme/styles"
 import { ThemeProvider } from "@theme/theme-provider/ThemeProvider"
 import { LEGACY_MARKER_KEY, LEGACY_REVISION, migrateStorage } from "./legacy"
 import { PRE_V696_KEYS, V696_KEYS } from "./legacy-fixture"
@@ -72,6 +73,12 @@ function legacyStates(): [string, Record<string, string>][] {
     },
   ])
   states.push(["a browser at revision 2", REVISION_2_BROWSER])
+  for (const style of STYLE_NAMES) {
+    states.push([
+      `a browser at revision 3 on ${style}`,
+      { [LEGACY_MARKER_KEY]: "3", mode: "dark", "theme-preset": style },
+    ])
+  }
   return states
 }
 

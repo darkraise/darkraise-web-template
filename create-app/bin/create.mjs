@@ -28,7 +28,9 @@ async function latestVersion(pkg) {
 const AXES = JSON.parse(
   readFileSync(new URL("./axes.json", import.meta.url), "utf8"),
 )
-const AXIS_KEYS = Object.keys(AXES)
+// A new app defines no presets, so the preset axis has nothing to offer and
+// --preset keeps its 6.9.6 meaning in RETIRED_FLAGS.
+const AXIS_KEYS = Object.keys(AXES).filter((key) => key !== "preset")
 const LAYOUTS = ["sidebar", "stacked", "top-nav", "split-panel"]
 
 // Two axes kept their 6.x flag names when the axis key changed.

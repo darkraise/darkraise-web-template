@@ -89,8 +89,9 @@ describe("LEGACY_TARGETS", () => {
     }
   })
 
-  it("holds the style names under the preset key", () => {
-    expect(LEGACY_TARGETS["theme-preset"]).toEqual(STYLE_NAMES)
+  it("holds the style names under the style key and base under the preset key", () => {
+    expect(LEGACY_TARGETS["theme-style"]).toEqual(STYLE_NAMES)
+    expect(LEGACY_TARGETS["theme-preset"]).toEqual(["base"])
   })
 })
 
@@ -106,21 +107,42 @@ describe("LEGACY_RULES", () => {
     }
   })
 
-  it("run revision 1, then three revision 2 rules, then one revision 3 rule", () => {
-    expect(LEGACY_REVISION).toBe(3)
+  it("run revision 1, then three revision 2 rules, then one rule each for revisions 3 and 4", () => {
+    expect(LEGACY_REVISION).toBe(4)
     const revisions = LEGACY_RULES.map((rule) => rule.since)
     const first = revisions.indexOf(2)
     expect(revisions.slice(0, first).every((since) => since === 1)).toBe(true)
-    expect(revisions.slice(first)).toEqual([2, 2, 2, 3])
+    expect(revisions.slice(first)).toEqual([2, 2, 2, 3, 4])
+  })
+
+  it("end with the rule that moves a style off the preset key", () => {
+    expect(LEGACY_RULES[LEGACY_RULES.length - 1]).toEqual({
+      since: 4,
+      when: [
+        { key: "theme-preset", field: "preset", values: [...STYLE_NAMES] },
+      ],
+      map: Object.fromEntries(
+        STYLE_NAMES.map((style) => [style, { "theme-style": style }]),
+      ),
+      remove: ["theme-preset"],
+    })
   })
 
   it("write only values valid for their target, or legacy keys a later rule consumes", () => {
     LEGACY_RULES.forEach((rule, index) => {
       for (const [key, value] of ruleTargets(rule)) {
         const accepted = LEGACY_TARGETS[key]
-        if (accepted) {
+        // 6.x stored the style under the preset key, so the rules before
+        // revision 4 write style names there for the last rule to move.
+        const movedLater = LEGACY_RULES.slice(index + 1).some(
+          (next) =>
+            next.remove?.includes(key) &&
+            next.when[0]?.key === key &&
+            next.when[0].values?.includes(value),
+        )
+        if (accepted && !movedLater) {
           expect(accepted, key).toContain(value)
-        } else {
+        } else if (!accepted) {
           const later = LEGACY_RULES.slice(index + 1)
           expect(
             later.some((next) => next.remove?.includes(key)),
@@ -137,7 +159,7 @@ describe("migrateStorage", () => {
     [
       "renames the glassmorphism preset",
       { "theme-preset": "glassmorphism" },
-      { "theme-preset": "glass" },
+      { "theme-style": "glass" },
     ],
     [
       "carries glassmorphism axes to the glass keys",
@@ -194,17 +216,17 @@ describe("migrateStorage", () => {
     [
       "moves glass on a solid canvas to gradient",
       { "theme-preset": "glass", "theme-bg-style": "solid" },
-      { "theme-preset": "glass", "theme-bg-style": "gradient" },
+      { "theme-style": "glass", "theme-bg-style": "gradient" },
     ],
     [
       "moves a renamed glassmorphism user to gradient too",
       { "theme-preset": "glassmorphism", "theme-bg-style": "solid" },
-      { "theme-preset": "glass", "theme-bg-style": "gradient" },
+      { "theme-style": "glass", "theme-bg-style": "gradient" },
     ],
     [
       "moves the default preset to quiet and keeps its solid canvas",
       { "theme-preset": "default", "theme-bg-style": "solid" },
-      { "theme-preset": "quiet", "theme-bg-style": "solid" },
+      { "theme-style": "quiet", "theme-bg-style": "solid" },
     ],
     [
       "turns an accent-named surface into zinc tinted with the accent",
@@ -268,7 +290,7 @@ describe("migrateStorage", () => {
         "theme-surface-intensity": "bold",
         "theme-accent-intensity": "calm",
       },
-      { "theme-preset": "glass" },
+      { "theme-style": "glass" },
     ],
     [
       "writes nothing for either intensity under sci-fi",
@@ -292,7 +314,7 @@ describe("migrateStorage", () => {
     [
       "drops accent vibrancy under glass",
       { "theme-preset": "glass", "theme-accent-vibrancy": "calm" },
-      { "theme-preset": "glass" },
+      { "theme-style": "glass" },
     ],
     [
       "keeps a stored contrast over the surface intensity",
@@ -413,7 +435,7 @@ describe("migrateStorage", () => {
     const storage = readOnlyStorage(seed)
     for (let load = 0; load < 2; load++) {
       expect(Object.fromEntries(migrateStorage(storage))).toEqual({
-        "theme-preset": "glass",
+        "theme-style": "glass",
         "theme-bg-style": "gradient",
         "theme-surface-color": "zinc",
         "theme-tint-with-accent": "on",
@@ -472,18 +494,18 @@ describe("revision 2 in storage", () => {
     [
       "moves the default preset to quiet",
       { "theme-preset": "default" },
-      { "theme-preset": "quiet" },
+      { "theme-style": "quiet" },
     ],
     [
       "keeps the glass preset as the glass style",
       { "theme-preset": "glass" },
-      { "theme-preset": "glass" },
+      { "theme-style": "glass" },
     ],
     ["still drops the sci-fi preset", { "theme-preset": "scifi" }, {}],
     [
       "moves a renamed glassmorphism user to the glass style",
       { "theme-preset": "glassmorphism" },
-      { "theme-preset": "glass" },
+      { "theme-style": "glass" },
     ],
     [
       "removes a medium glass opacity and blur",
@@ -530,7 +552,7 @@ describe("revision 2 in storage", () => {
     )
   })
 
-  it("runs revisions 2 and 3 on a browser at revision 1", () => {
+  it("runs revisions 2 to 4 on a browser at revision 1", () => {
     const storage = memoryStorage({
       [LEGACY_MARKER_KEY]: "1",
       "theme-preset": "default",
@@ -542,11 +564,55 @@ describe("revision 2 in storage", () => {
     migrateStorage(storage)
     expect(storage.contents()).toEqual({
       [LEGACY_MARKER_KEY]: String(LEGACY_REVISION),
-      "theme-preset": "quiet",
+      "theme-style": "quiet",
       "theme-glass-blur": "high",
       "theme-elevation": "low",
       "theme-canvas-tint": "vivid",
     })
+  })
+})
+
+describe("revision 4 in storage", () => {
+  it.each(STYLE_NAMES)(
+    "moves a %s style stored under the preset key to the style key",
+    (style) => {
+      const storage = memoryStorage({
+        [LEGACY_MARKER_KEY]: "3",
+        "theme-preset": style,
+      })
+      migrateStorage(storage)
+      expect(storage.contents()).toEqual({
+        [LEGACY_MARKER_KEY]: MARKER,
+        "theme-style": style,
+      })
+    },
+  )
+
+  it("leaves a stored preset that names no style", () => {
+    const seed = { [LEGACY_MARKER_KEY]: "3", "theme-preset": "base" }
+    const storage = memoryStorage(seed)
+    migrateStorage(storage)
+    expect(storage.contents()).toEqual({ ...seed, [LEGACY_MARKER_KEY]: MARKER })
+  })
+
+  it("keeps a style already stored under the style key", () => {
+    const storage = memoryStorage({
+      [LEGACY_MARKER_KEY]: "3",
+      "theme-preset": "glass",
+      "theme-style": "flat",
+    })
+    migrateStorage(storage)
+    expect(storage.contents()).toEqual({
+      [LEGACY_MARKER_KEY]: MARKER,
+      "theme-style": "flat",
+    })
+  })
+
+  it("leaves a browser already at revision 4 alone", () => {
+    const seed = { [LEGACY_MARKER_KEY]: "4", "theme-preset": "glass" }
+    const storage = memoryStorage(seed)
+    migrateStorage(storage)
+    expect(storage.contents()).toEqual(seed)
   })
 })
 
@@ -690,6 +756,11 @@ describe("migratePayload", () => {
         presetAxisValues: { glass: { opacity: "strong", blur: "medium" } },
       },
       { style: "glass", backgroundStyle: "gradient", glassOpacity: "strong" },
+    ],
+    [
+      "keeps a preset field that names no style",
+      { preset: "base", density: "compact" },
+      { preset: "base", density: "compact" },
     ],
     [
       "keeps the fields no rule names",

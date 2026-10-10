@@ -23,6 +23,7 @@ describe("axis registry", () => {
       "surfaceColor",
       "tintWithAccent",
       "style",
+      "preset",
       "glassOpacity",
       "glassBlur",
       "font",
@@ -54,6 +55,7 @@ describe("axis registry", () => {
     expect(byKind("choice")).toEqual([
       "mode",
       "style",
+      "preset",
       "font",
       "backgroundStyle",
       "gradientPattern",
@@ -76,7 +78,11 @@ describe("axis registry", () => {
   })
 
   it("gives every choice axis two to five values", () => {
-    for (const key of AXIS_KEYS.filter((k) => AXES[k].control === "choice")) {
+    // A theme config supplies the presets; the registry holds only `base`.
+    const choices = AXIS_KEYS.filter(
+      (k) => AXES[k].control === "choice" && k !== "preset",
+    )
+    for (const key of choices) {
       expect(AXES[key].values.length, key).toBeGreaterThanOrEqual(2)
       expect(AXES[key].values.length, key).toBeLessThanOrEqual(5)
     }
@@ -91,6 +97,7 @@ describe("axis registry", () => {
   it("declares a visibility rule only where another axis gates the control", () => {
     expect(AXIS_KEYS.filter((key) => AXES[key].visibleWhen)).toEqual([
       "tintWithAccent",
+      "preset",
       "glassOpacity",
       "glassBlur",
       "gradientPattern",
@@ -124,10 +131,10 @@ describe("axis registry", () => {
     expect(AXES.font.layer).toBe("brand")
   })
 
-  it("keeps the 6.x storage keys for the style and glass axes", () => {
+  it("stores the style under theme-style and keeps the glass axes' 6.x keys", () => {
     expect(AXES.style).toMatchObject({
       default: "quiet",
-      storageKey: "theme-preset",
+      storageKey: "theme-style",
       attribute: "data-style",
     })
     expect(AXES.glassOpacity).toMatchObject({
@@ -142,6 +149,26 @@ describe("axis registry", () => {
       storageKey: "theme-glass-blur",
       attribute: "data-glass-blur",
     })
+  })
+
+  it("registers the preset axis after the style, stored under the 6.x key", () => {
+    expect(AXIS_KEYS.indexOf("preset")).toBe(AXIS_KEYS.indexOf("style") + 1)
+    expect(AXES.preset).toMatchObject({
+      values: ["base"],
+      default: "base",
+      storageKey: "theme-preset",
+      attribute: "data-preset",
+      layer: "style",
+      control: "choice",
+    })
+  })
+
+  it("hides the preset control under every style", () => {
+    const visible = AXES.preset.visibleWhen
+    expect(visible).toBeDefined()
+    for (const style of AXES.style.values) {
+      expect(visible?.({ style, preset: "base" }), style).toBe(false)
+    }
   })
 
   it("holds only registry axes and their values in the kit config", () => {

@@ -436,7 +436,7 @@ describe("ThemeProvider synced payloads", () => {
     expect(result.current.style).toBe("glass")
     expect(result.current.glassOpacity).toBe("strong")
     expect(result.current.glassBlur).toBe("medium")
-    expect(localStorage.getItem("theme-preset")).toBe("glass")
+    expect(localStorage.getItem("theme-style")).toBe("glass")
     expect(localStorage.getItem("theme-glass-opacity")).toBe("strong")
     expect(localStorage.getItem("theme-glass-blur")).toBeNull()
     expect(root.getAttribute("data-style")).toBe("glass")
@@ -509,14 +509,14 @@ describe("ThemeProvider synced payloads", () => {
     })
     await settle()
     expect(result.current.style).toBe("quiet")
-    expect(localStorage.getItem("theme-preset")).toBe("quiet")
+    expect(localStorage.getItem("theme-style")).toBe("quiet")
     expect(adapter.save.mock.calls[0]?.[0]).toEqual(
       expect.objectContaining({ style: "quiet", version: 7 }),
     )
   })
 
   it("keeps the local style when a synced payload names a retired preset", async () => {
-    localStorage.setItem("theme-preset", "glass")
+    localStorage.setItem("theme-style", "glass")
     const { adapter } = memoryAdapter({
       accentColor: "rose",
       preset: "scifi",
@@ -527,7 +527,7 @@ describe("ThemeProvider synced payloads", () => {
     await settle()
     expect(result.current.style).toBe("glass")
     expect(result.current.accentColor).toBe("rose")
-    expect(localStorage.getItem("theme-preset")).toBe("glass")
+    expect(localStorage.getItem("theme-style")).toBe("glass")
     expect(root.getAttribute("data-style")).toBe("glass")
     expect(adapter.save.mock.calls[0]?.[0]).toEqual(
       expect.objectContaining({ style: "glass", version: 7 }),

@@ -1,7 +1,8 @@
+import { STYLE_NAMES } from "@theme/styles"
 import { AXES, AXIS_KEYS, isAxisValue } from "./registry"
 
 /** The table's revision; a browser stores the one it last ran. */
-export const LEGACY_REVISION = 3
+export const LEGACY_REVISION = 4
 
 export const LEGACY_MARKER_KEY = "theme-settings-version"
 
@@ -239,6 +240,17 @@ export const LEGACY_RULES: readonly LegacyRule[] = [
     },
     remove: ["theme-sidebar-active-bar"],
   },
+  // Every rule above reads and writes the style on the 6.x key, which now
+  // holds the preset. This one runs last so it moves the style those rules
+  // left there, and a 7.0 development build's stored style alike.
+  {
+    since: 4,
+    when: [{ key: "theme-preset", field: "preset", values: [...STYLE_NAMES] }],
+    map: Object.fromEntries(
+      STYLE_NAMES.map((style) => [style, { "theme-style": style }]),
+    ),
+    remove: ["theme-preset"],
+  },
 ]
 
 function buildTargets(): Record<string, readonly string[]> {
@@ -254,10 +266,6 @@ export const LEGACY_TARGETS: Readonly<Record<string, readonly string[]>> =
 // The payload field each storage key a rule writes or removes is synced as.
 const PAYLOAD_FIELDS: Readonly<Record<string, string>> = {
   ...Object.fromEntries(AXIS_KEYS.map((key) => [AXES[key].storageKey, key])),
-  // 6.x payloads call the style `preset`, and later rules read the field an
-  // earlier rule rewrote, so the table works on `preset` throughout;
-  // migratePayload moves it to `style` afterwards.
-  "theme-preset": "preset",
   "theme-surface-intensity": "surfaceIntensity",
   "theme-accent-intensity": "accentIntensity",
   "theme-control-depth": "controlDepth",
@@ -447,7 +455,7 @@ export function liftPresetAxisValues(
  * The payload form of the table, for a synced payload without a version. A
  * payload carries no marker, so every rule runs. Returns the input's fields
  * with glass's nested axes lifted, plus those a rule wrote, minus those a rule
- * removed, and 6.x's `preset` field renamed to `style`.
+ * removed. 6.x called the style `preset`; the last rule moves it to `style`.
  */
 export function migratePayload(
   input: Record<string, unknown>,
@@ -468,8 +476,5 @@ export function migratePayload(
     (condition) => condition.field,
     (key) => PAYLOAD_FIELDS[key],
   )
-  const preset = fields.get("preset")
-  fields.delete("preset")
-  if (typeof preset === "string") fields.set("style", preset)
   return Object.fromEntries(fields)
 }

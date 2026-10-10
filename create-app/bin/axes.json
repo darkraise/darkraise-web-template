@@ -83,10 +83,21 @@
       "glass"
     ],
     "default": "quiet",
-    "storageKey": "theme-preset",
+    "storageKey": "theme-style",
     "attribute": "data-style",
     "layer": "style",
     "label": "Style",
+    "groupLabel": "Style"
+  },
+  "preset": {
+    "values": [
+      "base"
+    ],
+    "default": "base",
+    "storageKey": "theme-preset",
+    "attribute": "data-preset",
+    "layer": "style",
+    "label": "Preset",
     "groupLabel": "Style"
   },
   "glassOpacity": {

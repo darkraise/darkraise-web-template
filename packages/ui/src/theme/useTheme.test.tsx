@@ -66,11 +66,11 @@ describe("useTheme", () => {
     expect(localStorage.getItem("theme-accent")).toBe("rose")
   })
 
-  it("setStyle updates style and persists to theme-preset key", () => {
+  it("setStyle updates style and persists to theme-style key", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     act(() => result.current.setStyle("glass"))
     expect(result.current.style).toBe("glass")
-    expect(localStorage.getItem("theme-preset")).toBe("glass")
+    expect(localStorage.getItem("theme-style")).toBe("glass")
   })
 
   it("setMode updates mode and applies data-mode attribute", () => {
@@ -97,7 +97,7 @@ describe("useTheme", () => {
   it("reads persisted values from localStorage on mount", () => {
     storageMock.setItem("theme-accent", "emerald")
     storageMock.setItem("theme-surface-color", "stone")
-    storageMock.setItem("theme-preset", "glass")
+    storageMock.setItem("theme-style", "glass")
     storageMock.setItem("mode", "dark")
 
     const { result } = renderHook(() => useTheme(), { wrapper })
@@ -368,7 +368,7 @@ describe("useTheme persistence", () => {
   })
 
   // The adapter payload names glass, not the default style, so the stored
-  // theme-preset shows the loaded value was written back.
+  // theme-style shows the loaded value was written back.
   it("updates localStorage when loading from adapter", async () => {
     const adapter = createAdapter()
     renderHook(() => useTheme(), { wrapper: wrapperWith(adapter) })
@@ -379,7 +379,7 @@ describe("useTheme persistence", () => {
 
     expect(localStorage.getItem("theme-accent")).toBe("rose")
     expect(localStorage.getItem("theme-surface-color")).toBe("stone")
-    expect(localStorage.getItem("theme-preset")).toBe("glass")
+    expect(localStorage.getItem("theme-style")).toBe("glass")
     expect(localStorage.getItem("theme-bg-style")).toBe("gradient")
     expect(localStorage.getItem("mode")).toBe("dark")
     expect(localStorage.getItem("theme-density")).toBe("spacious")

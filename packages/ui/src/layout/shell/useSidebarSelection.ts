@@ -1,6 +1,7 @@
 import { useContext } from "react"
 import { ThemeContext } from "@theme/themeContext"
 import { AXES } from "@theme/axes/registry"
+import type { StyleName } from "@theme/styles"
 import type { SidebarSelection } from "@theme/types"
 import { resolveSidebarSelection } from "@layout/sidebar/sidebar-selection"
 
@@ -18,7 +19,7 @@ export function useSidebarSelection(
   if (override) return override
   return resolveSidebarSelection(
     theme?.sidebarSelection ?? AXES.sidebarSelection.default,
-    theme?.style ?? AXES.style.default,
+    (theme?.style ?? AXES.style.default) as StyleName,
   )
 }
 

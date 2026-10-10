@@ -72,6 +72,7 @@ export const defaultLabels: UiLabels = {
       accentColor: "Accent Color",
       surfaceColor: "Surface Color",
       style: "Style",
+      preset: "Preset",
       glassOpacity: "Opacity",
       glassBlur: "Backdrop Blur",
       font: "Font",

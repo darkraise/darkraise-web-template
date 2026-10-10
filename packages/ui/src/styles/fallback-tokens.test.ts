@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
 import { generateTokens } from "@theme/engine/generateTokens"
 import { AXES } from "@theme/axes/registry"
-import { STYLES } from "@theme/styles"
+import { STYLES, type StyleName } from "@theme/styles"
 import { stripCssComments } from "../test/strip-css-comments"
 
 /**
@@ -41,7 +41,7 @@ function fallbackDeclarations(): Map<string, string> {
 const engine = generateTokens({
   accentColor: AXES.accentColor.default,
   surfaceColor: AXES.surfaceColor.default,
-  frosted: STYLES[AXES.style.default].frosted,
+  frosted: STYLES[AXES.style.default as StyleName].frosted,
   backgroundStyle: AXES.backgroundStyle.default,
   mode: "light",
   contrast: AXES.contrast.default,

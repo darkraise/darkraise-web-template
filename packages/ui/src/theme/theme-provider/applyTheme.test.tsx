@@ -54,14 +54,14 @@ describe("ThemeProvider style orchestration", () => {
     root.style.cssText = ""
   })
 
-  it("stamps data-style and the glass axes, never data-preset", () => {
+  it("stamps data-style, the glass axes and the base preset", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
     for (const style of ["quiet", "flat", "tactile", "glass"] as const) {
       act(() => result.current.setStyle(style))
       expect(root.getAttribute("data-style")).toBe(style)
       expect(root.getAttribute("data-glass-opacity")).toBe("medium")
       expect(root.getAttribute("data-glass-blur")).toBe("medium")
-      expect(root.hasAttribute("data-preset")).toBe(false)
+      expect(root.getAttribute("data-preset")).toBe("base")
     }
   })
 
@@ -75,11 +75,11 @@ describe("ThemeProvider style orchestration", () => {
     expect(root.getAttribute("data-glass-blur")).toBe("medium")
   })
 
-  it("persists the style under the 6.x storage key", () => {
+  it("persists the style under its own storage key", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
     act(() => result.current.setStyle("tactile"))
     expect(result.current.style).toBe("tactile")
-    expect(localStorage.getItem("theme-preset")).toBe("tactile")
+    expect(localStorage.getItem("theme-style")).toBe("tactile")
   })
 
   it("keeps a glass opacity across a round trip through another style", () => {
@@ -219,7 +219,7 @@ describe("ThemeProvider style orchestration", () => {
   })
 
   it("leaves a stored mode untouched at boot", () => {
-    localStorage.setItem("theme-preset", "glass")
+    localStorage.setItem("theme-style", "glass")
     localStorage.setItem("mode", "light")
 
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
@@ -235,7 +235,7 @@ describe("ThemeProvider style orchestration", () => {
     act(() => result.current.setMode("light"))
     expect(result.current.style).toBe("glass")
     expect(result.current.resolvedMode).toBe("light")
-    expect(localStorage.getItem("theme-preset")).toBe("glass")
+    expect(localStorage.getItem("theme-style")).toBe("glass")
   })
 
   it("setStyle leaves the mode alone", () => {

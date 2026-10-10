@@ -10,7 +10,7 @@ import type {
 import { SHELL_STYLES, type ShellStyle } from "@theme/types"
 import { useLayoutStore } from "@layout/layoutStore"
 import { generateTokens } from "@theme/engine/generateTokens"
-import { STYLES } from "@theme/styles"
+import { STYLES, type StyleName } from "@theme/styles"
 import { ThemeContext } from "@theme/themeContext"
 import {
   resolveDefaults,
@@ -134,7 +134,8 @@ function effectiveSettings(
   defaults: AxisValues,
 ): AxisValues {
   const style = stored.style ?? defaults.style
-  const styleDefaults: Partial<Record<AxisKey, string>> = STYLES[style].defaults
+  const styleDefaults: Partial<Record<AxisKey, string>> =
+    STYLES[style as StyleName].defaults
   const out = {} as Record<AxisKey, string>
   for (const key of AXIS_KEYS) {
     out[key] = stored[key] ?? styleDefaults[key] ?? defaults[key]
@@ -284,7 +285,7 @@ export function ThemeProvider({
       const tokens = generateTokens({
         accentColor: current.accentColor,
         surfaceColor: current.surfaceColor,
-        frosted: STYLES[current.style].frosted,
+        frosted: STYLES[current.style as StyleName].frosted,
         backgroundStyle: current.backgroundStyle,
         mode: resolved,
         contrast: current.contrast,

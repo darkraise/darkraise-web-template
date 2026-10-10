@@ -29,16 +29,16 @@ const current = (values: Record<string, string>) => ({
 function cases(style: StyleName): Case[] {
   return [
     ["nothing stored", {}, { style }],
-    ["style only", current({ "theme-preset": style }), {}],
+    ["style only", current({ "theme-style": style }), {}],
     [
       "style and conflicting config defaults",
-      current({ "theme-preset": style }),
+      current({ "theme-style": style }),
       { elevation: "high", backgroundStyle: "solid" },
     ],
     [
       "a user value",
       current({
-        "theme-preset": style,
+        "theme-style": style,
         "theme-elevation": "high",
         "theme-bg-style": "solid",
         "theme-glass-opacity": "strong",

@@ -216,8 +216,19 @@ describe("ThemeSettingsPanel", () => {
     ).not.toBeInTheDocument()
   })
 
+  it("shows no preset control", () => {
+    for (const style of ["quiet", "glass"]) {
+      localStorage.setItem("theme-style", style)
+      const { container, unmount } = renderPanel(
+        <ThemeSettingsPanel layout="page" />,
+      )
+      expect(sectionLabels(container), style).not.toContain("Preset")
+      unmount()
+    }
+  })
+
   it("renders the glass axes right after the style control under glass", () => {
-    localStorage.setItem("theme-preset", "glass")
+    localStorage.setItem("theme-style", "glass")
     const { container } = renderPanel(<ThemeSettingsPanel layout="page" />)
     const labels = sectionLabels(container)
     const at = labels.indexOf("Style")

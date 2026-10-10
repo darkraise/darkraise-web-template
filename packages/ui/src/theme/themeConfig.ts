@@ -77,7 +77,8 @@ export function resolveDefaults(config: ThemeConfig): AxisValues {
       continue
     }
     resolved[key] = AXES[key].default
-    if (value !== undefined) {
+    // A removed key that names an axis again is reported once, as removed.
+    if (value !== undefined && !REMOVED_DEFAULTS.has(key)) {
       invalid.push(
         `[ThemeProvider] themeConfig.defaults.${key} "${String(value)}" is not a valid ${key} (expected one of: ${AXES[key].values.join(", ")}); using "${AXES[key].default}".`,
       )

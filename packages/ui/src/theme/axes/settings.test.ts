@@ -32,7 +32,7 @@ describe("glass axes", () => {
     expect(
       readStoredAxes(
         from({
-          "theme-preset": "glass",
+          "theme-style": "glass",
           "theme-glass-blur": "high",
           "theme-glass-opacity": "cloudy",
         }),

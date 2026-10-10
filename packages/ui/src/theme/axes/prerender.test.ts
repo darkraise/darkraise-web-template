@@ -245,7 +245,7 @@ describe("pre-render script", () => {
     localStorage.setItem("theme-glass-blur", "high")
     localStorage.setItem("theme-elevation", "low")
     run()
-    expect(localStorage.getItem("theme-preset")).toBe("quiet")
+    expect(localStorage.getItem("theme-style")).toBe("quiet")
     expect(localStorage.getItem("theme-glass-opacity")).toBeNull()
     expect(localStorage.getItem("theme-glass-blur")).toBe("high")
     expect(localStorage.getItem("theme-elevation")).toBe("low")
@@ -296,16 +296,16 @@ describe("pre-render script defaults", () => {
   })
 
   it("lets a style default beat a config default", () => {
-    storeCurrent({ "theme-preset": "flat" })
+    storeCurrent({ "theme-style": "flat" })
     run({ elevation: "high" })
     expect(root.getAttribute("data-elevation")).toBe("flat")
-    storeCurrent({ "theme-preset": "tactile" })
+    storeCurrent({ "theme-style": "tactile" })
     run({ elevation: "high" })
     expect(root.getAttribute("data-elevation")).toBe("high")
   })
 
   it("lets a stored value beat the style default", () => {
-    storeCurrent({ "theme-preset": "glass", "theme-bg-style": "solid" })
+    storeCurrent({ "theme-style": "glass", "theme-bg-style": "solid" })
     run()
     expect(root.getAttribute("data-background-style")).toBe("solid")
   })

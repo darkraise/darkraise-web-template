@@ -16,7 +16,7 @@ describe("Storybook theme decorator", () => {
     expect(root.getAttribute("data-glass-opacity")).toBe("medium")
     expect(root.getAttribute("data-glass-blur")).toBe("medium")
     expect(root.getAttribute("data-background-style")).toBe("gradient")
-    expect(root.hasAttribute("data-preset")).toBe(false)
+    expect(root.getAttribute("data-preset")).toBe("base")
     expect(root.style.getPropertyValue("--glass-fog-1")).toBe("")
     expect(root.style.getPropertyValue("--primary")).not.toBe("")
   })

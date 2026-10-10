@@ -21,7 +21,10 @@ const FLAG_ALIASES: Record<string, string> = {
 const flagOf = (key: string) =>
   FLAG_ALIASES[key] ?? key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)
 
-const PROMPTED = AXIS_KEYS.filter(
+// The CLI leaves out the preset axis: a new app defines no presets.
+const SCAFFOLD_KEYS = AXIS_KEYS.filter((key) => key !== "preset")
+
+const PROMPTED = SCAFFOLD_KEYS.filter(
   (key) => AXES[key].layer === "brand" || key === "style",
 )
 
@@ -101,7 +104,8 @@ describe("create-darkraise-ui --help", () => {
     async (flag) => {
       const { code, stdout } = await run(flag)
       expect(code).toBe(0)
-      for (const key of AXIS_KEYS) expect(stdout).toContain(`--${flagOf(key)} `)
+      for (const key of SCAFFOLD_KEYS)
+        expect(stdout).toContain(`--${flagOf(key)} `)
       expect(readdirSync(cwd)).toEqual([])
     },
     TIMEOUT,
@@ -275,10 +279,13 @@ describe("generated project", () => {
         const values = AXES[key].values
         return values[values.length - 1] as string
       }
-      const flags = AXIS_KEYS.flatMap((key) => [`--${flagOf(key)}`, last(key)])
+      const flags = SCAFFOLD_KEYS.flatMap((key) => [
+        `--${flagOf(key)}`,
+        last(key),
+      ])
       expect((await scaffold(...flags)).code).toBe(0)
       expect(generated().defaults).toEqual(
-        Object.fromEntries(AXIS_KEYS.map((key) => [key, last(key)])),
+        Object.fromEntries(SCAFFOLD_KEYS.map((key) => [key, last(key)])),
       )
     },
     TIMEOUT,
@@ -296,7 +303,7 @@ describe("generated project", () => {
       expect(config.switcher).toEqual({
         enabled: true,
         axes: Object.fromEntries(
-          AXIS_KEYS.filter((key) => key !== "mode" && key !== "font").map(
+          SCAFFOLD_KEYS.filter((key) => key !== "mode" && key !== "font").map(
             (key) => [key, false],
           ),
         ),

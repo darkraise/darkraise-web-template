@@ -35,7 +35,7 @@ export function applyStoryTheme(choice: {
   const tokens = generateTokens({
     accentColor: current.accentColor,
     surfaceColor: current.surfaceColor,
-    frosted: STYLES[current.style].frosted,
+    frosted: STYLES[choice.style].frosted,
     backgroundStyle: current.backgroundStyle,
     mode: choice.mode,
     contrast: current.contrast,

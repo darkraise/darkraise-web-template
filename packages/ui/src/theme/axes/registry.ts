@@ -89,12 +89,24 @@ export const AXES = {
   }),
   /** Visual style: one token set for every control; `glass` frosts the shell chrome and overlays. */
   style: axis({
-    values: STYLE_NAMES,
+    // Typed as plain strings: a theme config can register its own styles.
+    values: STYLE_NAMES as readonly string[],
     default: "quiet",
-    storageKey: "theme-preset",
+    storageKey: "theme-style",
     attribute: "data-style",
     layer: "style",
     control: "choice",
+  }),
+  /** A named variant of the active style; `base` is the style alone. */
+  preset: axis({
+    // Every preset comes from a theme config, so only `base` is fixed.
+    values: ["base"] as readonly string[],
+    default: "base",
+    storageKey: "theme-preset",
+    attribute: "data-preset",
+    layer: "style",
+    control: "choice",
+    visibleWhen: () => false,
   }),
   /** How much of the canvas Glass's frosted chrome lets through. */
   glassOpacity: axis({
