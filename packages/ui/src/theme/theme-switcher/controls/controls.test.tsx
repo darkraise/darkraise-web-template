@@ -139,6 +139,23 @@ describe("ChoiceControl", () => {
     expect(html.getAttribute("data-style")).toBe("glass")
   })
 
+  it("wraps six or more styles like five", () => {
+    render(
+      <ThemeProvider
+        config={{
+          defaults: {},
+          switcher: { enabled: true },
+          styles: { ink: { label: "Ink" }, dusk: { label: "Dusk" } },
+        }}
+      >
+        <ChoiceControl axis="style" />
+      </ThemeProvider>,
+    )
+    const group = screen.getByRole("radiogroup", { name: "Style" })
+    expect(within(group).getAllByRole("radio")).toHaveLength(6)
+    expect(group).toHaveAttribute("data-cols", "5")
+  })
+
   it("offers the three fonts and sets one", () => {
     renderControl(<ChoiceControl axis="font" />)
     const group = screen.getByRole("radiogroup", { name: "Font" })

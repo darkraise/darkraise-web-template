@@ -61,7 +61,7 @@ export function ChoiceControl({ axis }: { axis: AxisKey }) {
       size="sm"
       aria-label={labels.theme.axisLabels[axis]}
       className="dr-theme-switcher-toggle-group"
-      data-cols={values.length}
+      data-cols={Math.min(values.length, 5)}
     >
       {values.map((value) => {
         const Icon = icons?.[value]
