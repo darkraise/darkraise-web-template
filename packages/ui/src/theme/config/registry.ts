@@ -180,13 +180,15 @@ interface Checker {
  * Reads a value the way the CSS tokenizer does: a backslash escapes the next
  * character, a line break ends a string, and comments are skipped.
  */
-function scanValue(value: string): "semicolon" | "open" | null {
+function scanValue(value: string): "semicolon" | "open" | "escape" | null {
   let quote = ""
-  let depth = 0
+  const closers: string[] = []
   for (let i = 0; i < value.length; i++) {
     const char = value[i]
     if (char === "\\") {
       i++
+      // The compiler appends ";" after the value, which a final backslash escapes.
+      if (i >= value.length) return "escape"
     } else if (quote) {
       if (char === quote || char === "\n" || char === "\r" || char === "\f") {
         quote = ""
@@ -198,14 +200,22 @@ function scanValue(value: string): "semicolon" | "open" | null {
     } else if (char === '"' || char === "'") {
       quote = char
     } else if (char === "(") {
-      depth++
-    } else if (char === ")") {
-      depth = Math.max(0, depth - 1)
-    } else if (char === ";" && depth === 0) {
+      closers.push(")")
+    } else if (char === "[") {
+      closers.push("]")
+    } else if (char === closers[closers.length - 1]) {
+      closers.pop()
+    } else if (char === ";" && closers.length === 0) {
       return "semicolon"
     }
   }
-  return quote || depth > 0 ? "open" : null
+  return quote || closers.length > 0 ? "open" : null
+}
+
+const VALUE_PROBLEMS = {
+  semicolon: 'a value cannot contain ";" outside brackets or quotes',
+  open: "a value cannot leave a bracket, quote or comment open",
+  escape: "a value cannot end with a backslash",
 }
 
 function checkValue(c: Checker, path: string, value: unknown): void {
@@ -223,13 +233,7 @@ function checkValue(c: Checker, path: string, value: unknown): void {
   }
   const problem = scanValue(value)
   if (problem) {
-    c.issues.error(
-      c.owner,
-      path,
-      problem === "semicolon"
-        ? 'a value cannot contain ";" outside brackets or quotes'
-        : "a value cannot leave a bracket, quote or comment open",
-    )
+    c.issues.error(c.owner, path, VALUE_PROBLEMS[problem])
     return
   }
   for (const name of bareTriplets(value)) {
