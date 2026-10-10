@@ -145,6 +145,29 @@ describe("useShellStyle under a theme preset", () => {
     container.remove()
   })
 
+  it("hydrates a default preset's shell style without a mismatch", async () => {
+    const tree = (
+      <ThemeProvider
+        config={{ ...config, defaults: { style: "ink", preset: "night" } }}
+      >
+        <Probe />
+      </ThemeProvider>
+    )
+    const container = document.createElement("div")
+    container.innerHTML = renderToString(tree)
+    document.body.append(container)
+    expect(container.textContent).toBe("island")
+    const onRecoverableError = vi.fn()
+    let root: ReturnType<typeof hydrateRoot> | undefined
+    await act(async () => {
+      root = hydrateRoot(container, tree, { onRecoverableError })
+    })
+    expect(onRecoverableError).not.toHaveBeenCalled()
+    expect(container.textContent).toBe("island")
+    act(() => root?.unmount())
+    container.remove()
+  })
+
   it("follows a preset switch while mounted", () => {
     const { result } = renderUnder("plain", { fallback: "inset" })
     expect(result.current.shell).toBe("inset")

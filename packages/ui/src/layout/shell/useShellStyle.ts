@@ -1,6 +1,8 @@
-import { useContext, useSyncExternalStore } from "react"
+import { useContext, useMemo, useSyncExternalStore } from "react"
 import { useLayoutStore } from "@layout/layoutStore"
+import { effectiveSettings } from "@theme/axes/resolve"
 import { ThemeContext } from "@theme/themeContext"
+import { resolveDefaults } from "@theme/themeConfig"
 import type { ShellStyle } from "@theme"
 
 const subscribeNever = () => () => {}
@@ -24,13 +26,24 @@ export function useShellStyle(
   const stored = useLayoutStore((state) => state.shellStyle)
   const theme = useContext(ThemeContext)
   // The provider reads the stored preset in its first client render, which a
-  // server render cannot; hydrating with "base" first keeps the markup equal.
+  // server render cannot; hydrating with the preset a render without storage
+  // resolves keeps the markup equal.
+  const config = theme?.config
+  const registry = theme?.registry
+  const unstoredPreset = useMemo(
+    () =>
+      config && registry
+        ? effectiveSettings({}, resolveDefaults(config, registry), registry)
+            .preset
+        : "base",
+    [config, registry],
+  )
   const preset = useSyncExternalStore(
     subscribeNever,
     () => theme?.preset ?? "base",
-    () => "base",
+    () => unstoredPreset,
   )
-  const presetShellStyle = theme?.registry.presets[preset]?.shellStyle
+  const presetShellStyle = registry?.presets[preset]?.shellStyle
   return (
     override ?? stored ?? presetShellStyle ?? defaultShellStyle ?? "classic"
   )
