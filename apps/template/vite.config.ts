@@ -8,7 +8,7 @@ import { themeConfig } from "./src/theme.config"
 
 export default defineConfig({
   plugins: [
-    darkraisePrerender({ defaults: themeConfig.defaults }),
+    darkraisePrerender({ config: themeConfig }),
     tanstackRouter({
       routesDirectory: "./src/routes",
       generatedRouteTree: "./src/routeTree.gen.ts",
