@@ -91,7 +91,7 @@
     "build": "pnpm run generate:imports && pnpm run generate:styles && tsup && node scripts/client-banner.mjs && pnpm run build:types && pnpm run build:css",
     "check:client-banner": "node scripts/check-client-banner.mjs",
     "build:types": "tsc -p tsconfig.build.json && tsx scripts/rewrite-dts-imports.ts",
-    "dev": "pnpm run generate:imports && tsup --watch src --onSuccess \"node scripts/client-banner.mjs && pnpm run build:css\"",
+    "dev": "pnpm run generate:imports && tsup --watch src --onSuccess \"node scripts/client-banner.mjs && pnpm run generate:styles && pnpm run build:css\"",
     "prepublishOnly": "pnpm run build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
