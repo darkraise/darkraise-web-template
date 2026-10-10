@@ -1,14 +1,10 @@
-import {
-  AXES,
-  AXIS_KEYS,
-  isAxisValue,
-  type AxisKey,
-  type AxisValues,
-} from "./axes/registry"
+import { AXES, AXIS_KEYS, type AxisKey, type AxisValues } from "./axes/registry"
+import { resolveRegistry, type ThemeRegistry } from "./config/registry"
+import type { ThemeDefinitions } from "./config/schema"
 
 declare const process: { env: { NODE_ENV?: string } }
 
-export interface ThemeConfig {
+export interface ThemeConfig extends ThemeDefinitions {
   /** Default per axis; an axis left out takes the registry default. */
   defaults: Partial<AxisValues>
   switcher: {
@@ -32,7 +28,6 @@ const REMOVED_DEFAULTS = new Map<string, string | null>([
   ["controlDepth", null],
   ["buttonElevation", null],
   ["shellStyle", "the layout's defaultShellStyle prop"],
-  ["preset", "style"],
   ["sidebarActiveBar", "sidebarSelection"],
 ])
 
@@ -60,27 +55,57 @@ function removedKeyWarnings(
 // config, or rendered twice by StrictMode, must not repeat its warnings.
 const checkedConfigs = new Set<string>()
 
+function presetWarning(
+  value: unknown,
+  style: string,
+  registry: ThemeRegistry,
+): string {
+  const name = String(value)
+  // 6.x took a style name here.
+  if (registry.styles[name]?.builtIn) {
+    return `[ThemeProvider] themeConfig.defaults.preset "${name}" names a style; preset now selects a preset, so use defaults.style. The key is ignored.`
+  }
+  const owner = registry.presets[name]?.style
+  if (owner !== undefined) {
+    return `[ThemeProvider] themeConfig.defaults.preset "${name}" belongs to style "${owner}", not "${style}"; using "base".`
+  }
+  return `[ThemeProvider] themeConfig.defaults.preset "${name}" is not a valid preset (expected one of: ${registry.values("preset").join(", ")}); using "base".`
+}
+
 /**
- * Every axis's default: the config's value when it is one of the axis's
- * values, else the registry's. Outside production it warns, once per distinct
- * config content, about each removed key and each invalid value; both are
- * ignored.
+ * Every axis's default: the config's value when `registry` accepts it, else
+ * the axis registry's. The preset must also belong to the resolved style.
+ * Outside production it warns, once per distinct config content, about each
+ * removed key and each invalid value; both are ignored.
  */
-export function resolveDefaults(config: ThemeConfig): AxisValues {
+export function resolveDefaults(
+  config: ThemeConfig,
+  registry: ThemeRegistry = resolveRegistry(config),
+): AxisValues {
   const given: Readonly<Record<string, unknown>> = config.defaults
   const resolved = {} as Record<AxisKey, string>
   const invalid: string[] = []
   for (const key of AXIS_KEYS) {
     const value = given[key]
-    if (isAxisValue(key, value)) {
+    // The style precedes the preset in AXIS_KEYS, so it is resolved here.
+    if (key === "preset") {
+      resolved.preset = registry.presetFor(
+        resolved.style,
+        typeof value === "string" ? value : undefined,
+      )
+      if (value !== undefined && value !== resolved.preset) {
+        invalid.push(presetWarning(value, resolved.style, registry))
+      }
+      continue
+    }
+    if (registry.isValue(key, value)) {
       resolved[key] = value
       continue
     }
     resolved[key] = AXES[key].default
-    // A removed key that names an axis again is reported once, as removed.
-    if (value !== undefined && !REMOVED_DEFAULTS.has(key)) {
+    if (value !== undefined) {
       invalid.push(
-        `[ThemeProvider] themeConfig.defaults.${key} "${String(value)}" is not a valid ${key} (expected one of: ${AXES[key].values.join(", ")}); using "${AXES[key].default}".`,
+        `[ThemeProvider] themeConfig.defaults.${key} "${String(value)}" is not a valid ${key} (expected one of: ${registry.values(key).join(", ")}); using "${AXES[key].default}".`,
       )
     }
   }

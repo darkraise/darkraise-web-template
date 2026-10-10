@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest"
+import { resolveRegistry } from "@theme/config/registry"
 import type { ThemeSettings } from "@theme/types"
 import {
   THEME_PAYLOAD_VERSION,
@@ -8,6 +9,11 @@ import {
 
 const from = (entries: Record<string, string>) => (key: string) =>
   entries[key] ?? null
+
+const consumer = resolveRegistry({
+  styles: { ink: { label: "Ink", extends: "glass" } },
+  presets: { night: { label: "Night", style: "ink" } },
+})
 
 describe("readStoredAxes", () => {
   it("keeps valid stored values and drops the rest", () => {
@@ -38,6 +44,23 @@ describe("glass axes", () => {
         }),
       ),
     ).toEqual({ style: "glass", glassBlur: "high" })
+  })
+})
+
+describe("registry values", () => {
+  it("reads a consumer style and preset only through a registry that has them", () => {
+    const read = from({ "theme-style": "ink", "theme-preset": "night" })
+    expect(readStoredAxes(read, consumer)).toEqual({
+      style: "ink",
+      preset: "night",
+    })
+    expect(readStoredAxes(read)).toEqual({})
+  })
+
+  it("keeps a synced consumer style and preset only under a registry that has them", () => {
+    const payload = { style: "ink", preset: "night", density: "compact" }
+    expect(sanitizeSettings(payload, consumer)).toEqual(payload)
+    expect(sanitizeSettings(payload)).toEqual({ density: "compact" })
   })
 })
 

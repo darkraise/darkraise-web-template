@@ -10,6 +10,7 @@ import type {
 import { SHELL_STYLES, type ShellStyle } from "@theme/types"
 import { useLayoutStore } from "@layout/layoutStore"
 import { generateTokens } from "@theme/engine/generateTokens"
+import { resolveRegistry } from "@theme/config/registry"
 import { STYLES, type StyleName } from "@theme/styles"
 import { ThemeContext } from "@theme/themeContext"
 import {
@@ -194,7 +195,9 @@ export function ThemeProvider({
   // defaults on its content stops each of those renders from repainting.
   const configKey = JSON.stringify(cfg)
   const defaults = useMemo(
-    () => resolveDefaults(JSON.parse(configKey) as ThemeConfig),
+    () =>
+      // Built-ins only: this provider still paints from the fixed style list.
+      resolveDefaults(JSON.parse(configKey) as ThemeConfig, resolveRegistry()),
     [configKey],
   )
   // ThemeConfig is plain data, so equal content means an equal config.
