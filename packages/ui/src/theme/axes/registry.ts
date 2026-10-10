@@ -34,11 +34,15 @@ interface AxisSpec<V extends readonly string[]> {
   readonly layer: AxisLayer
   readonly control: AxisControlKind
   /**
-   * Shows the axis's control only when this holds for the effective settings.
+   * Shows the axis's control only when this holds for the effective settings
+   * and the active style's lineage (the style, then each style it extends).
    * Typed over plain strings because the settings type is derived from this
    * object and cannot be named inside it.
    */
-  readonly visibleWhen?: (settings: Readonly<Record<string, string>>) => boolean
+  readonly visibleWhen?: (
+    settings: Readonly<Record<string, string>>,
+    styleLineage: readonly string[],
+  ) => boolean
 }
 
 function axis<const V extends readonly string[]>(
@@ -116,7 +120,7 @@ export const AXES = {
     attribute: "data-glass-opacity",
     layer: "style",
     control: "ordinal",
-    visibleWhen: (settings) => settings.style === "glass",
+    visibleWhen: (_settings, styleLineage) => styleLineage.includes("glass"),
   }),
   /** Backdrop blur behind Glass's frosted chrome. */
   glassBlur: axis({
@@ -126,7 +130,7 @@ export const AXES = {
     attribute: "data-glass-blur",
     layer: "style",
     control: "ordinal",
-    visibleWhen: (settings) => settings.style === "glass",
+    visibleWhen: (_settings, styleLineage) => styleLineage.includes("glass"),
   }),
   /** Sans and heading typeface; monospace text stays JetBrains Mono. */
   font: axis({

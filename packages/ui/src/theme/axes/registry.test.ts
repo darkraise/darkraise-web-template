@@ -104,24 +104,28 @@ describe("axis registry", () => {
     ])
   })
 
-  it("shows the glass axes only under the glass style", () => {
+  it("shows the glass axes under any style descended from glass", () => {
     for (const key of ["glassOpacity", "glassBlur"] as const) {
       const visible = AXES[key].visibleWhen
-      expect(visible?.({ style: "glass" }), key).toBe(true)
-      expect(visible?.({ style: "quiet" }), key).toBe(false)
+      expect(visible?.({ style: "glass" }, ["glass"]), key).toBe(true)
+      expect(
+        visible?.({ style: "glass-ink" }, ["glass-ink", "glass"]),
+        key,
+      ).toBe(true)
+      expect(visible?.({ style: "quiet" }, ["quiet"]), key).toBe(false)
     }
   })
 
   it("shows the gradient pattern only under the gradient style", () => {
     const visible = AXES.gradientPattern.visibleWhen
-    expect(visible?.({ backgroundStyle: "gradient" })).toBe(true)
-    expect(visible?.({ backgroundStyle: "solid" })).toBe(false)
+    expect(visible?.({ backgroundStyle: "gradient" }, [])).toBe(true)
+    expect(visible?.({ backgroundStyle: "solid" }, [])).toBe(false)
   })
 
   it("hides tint with accent under the neutral accent", () => {
     const visible = AXES.tintWithAccent.visibleWhen
-    expect(visible?.({ accentColor: "blue" })).toBe(true)
-    expect(visible?.({ accentColor: "neutral" })).toBe(false)
+    expect(visible?.({ accentColor: "blue" }, [])).toBe(true)
+    expect(visible?.({ accentColor: "neutral" }, [])).toBe(false)
   })
 
   it("keeps the style axis and the glass axes in the style layer", () => {
@@ -167,7 +171,7 @@ describe("axis registry", () => {
     const visible = AXES.preset.visibleWhen
     expect(visible).toBeDefined()
     for (const style of AXES.style.values) {
-      expect(visible?.({ style, preset: "base" }), style).toBe(false)
+      expect(visible?.({ style, preset: "base" }, [style]), style).toBe(false)
     }
   })
 

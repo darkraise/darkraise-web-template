@@ -240,6 +240,17 @@ describe("ThemeSettingsPanel", () => {
     ])
   })
 
+  it("renders the glass axes under a style that extends glass", () => {
+    localStorage.setItem("theme-style", "ink")
+    const { container } = renderPanel(<ThemeSettingsPanel layout="page" />, {
+      ...themeConfig,
+      styles: { ink: { label: "Ink", extends: "glass" } },
+    })
+    expect(sectionLabels(container)).toEqual(
+      expect.arrayContaining(["Opacity", "Backdrop Blur"]),
+    )
+  })
+
   it("renders the colour engine controls in place of the old intensity ones", () => {
     renderPanel(<ThemeSettingsPanel layout="page" />)
     expect(screen.getByText("Contrast")).toBeInTheDocument()

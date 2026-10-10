@@ -47,6 +47,9 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
 
   const showAdvanced = config.switcher.advanced !== false
   const settings = Object.fromEntries(AXIS_KEYS.map((key) => [key, theme[key]]))
+  const styleLineage = theme.registry.styles[theme.style]?.lineage ?? [
+    theme.style,
+  ]
 
   const sections: ThemeSettingsSection[] = []
   for (const key of AXIS_KEYS) {
@@ -55,7 +58,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
       spec.layer === "advanced" ? "advanced" : "brand"
     if (group === "advanced" && !showAdvanced) continue
     if (config.switcher.axes?.[key] === false) continue
-    if (spec.visibleWhen && !spec.visibleWhen(settings)) continue
+    if (spec.visibleWhen && !spec.visibleWhen(settings, styleLineage)) continue
 
     const Control = CONTROLS[spec.control]
     sections.push({
