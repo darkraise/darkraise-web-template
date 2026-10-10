@@ -3,6 +3,7 @@ import { readFileSync, readdirSync } from "node:fs"
 import { join, sep } from "node:path"
 import { stripCssComments } from "../../test/strip-css-comments"
 import { cssRules } from "../../test/css-rules"
+import { KIT_FALLBACK, PAINT_TOKENS } from "../config/tokens"
 
 // Every control and chrome token has its base value in @layer base, and only
 // the unlayered style files under theme/styles/ override it, so a style file
@@ -214,6 +215,22 @@ describe("contract base values", () => {
       ).toBe(true)
     },
   )
+})
+
+describe("paint token schema", () => {
+  it("names exactly the contract tokens, in order", () => {
+    expect(Object.values(PAINT_TOKENS)).toEqual(CONTRACT)
+  })
+
+  it("falls back to each token's light base value", () => {
+    const base = declarations(THEME).filter((d) =>
+      sameContext(d.context, LIGHT_BASE),
+    )
+    for (const [token, value] of Object.entries(KIT_FALLBACK)) {
+      const name = PAINT_TOKENS[token as keyof typeof PAINT_TOKENS]
+      expect(base.find((d) => d.property === name)?.value, name).toBe(value)
+    }
+  })
 })
 
 describe("where contract tokens are declared", () => {
