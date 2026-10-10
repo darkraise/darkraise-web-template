@@ -1,4 +1,5 @@
 import type { ResolvedMode } from "@theme/types"
+import { fnv1a36 } from "../config/hash"
 import { AXES, AXIS_KEYS, type AxisValues } from "./registry"
 import { KIT_VERSION } from "./version"
 
@@ -31,13 +32,7 @@ const REGISTRY_DEFAULTS = Object.fromEntries(
  * function while it is built and embeds the result, so the two cannot drift.
  */
 export function defaultsHash(defaults: Readonly<AxisValues>): string {
-  const text = AXIS_KEYS.map((key) => defaults[key]).join("|")
-  let hash = 0x811c9dc5
-  for (let i = 0; i < text.length; i++) {
-    hash ^= text.charCodeAt(i)
-    hash = Math.imul(hash, 0x01000193)
-  }
-  return (hash >>> 0).toString(36)
+  return fnv1a36(AXIS_KEYS.map((key) => defaults[key]).join("|"))
 }
 
 /**
