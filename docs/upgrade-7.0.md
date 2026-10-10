@@ -177,11 +177,11 @@ import { darkraisePrerender } from "darkraise-ui/vite"
 import { themeConfig } from "./src/theme.config"
 
 export default defineConfig({
-  plugins: [darkraisePrerender({ defaults: themeConfig.defaults }), react()],
+  plugins: [darkraisePrerender({ config: themeConfig }), react()],
 })
 ```
 
-Passing `themeConfig.defaults` lets an axis the user never set resolve as the provider resolves it: the active style's default, then the config default, then the registry default. `vite` is an optional peer dependency (`>=6.0.0`).
+Passing the `themeConfig` the app gives `ThemeProvider` lets an axis the user never set resolve as the provider resolves it: the preset's value, then the active style's default, then the config default, then the registry default. When the config defines `styles` or `presets`, the plugin also injects their CSS in a `<style data-darkraise-theme>` element before the script, so they paint on first load, and the build fails on a definition error. Pass `nonce` to put a CSP nonce on both elements. `darkraisePrerender({ defaults: themeConfig.defaults })` still works but injects no styles and is deprecated. `vite` is an optional peer dependency (`>=6.0.0`).
 
 ## React Server Components
 
