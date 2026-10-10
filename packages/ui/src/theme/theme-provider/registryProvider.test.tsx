@@ -9,6 +9,8 @@ import {
   readTokenCache,
 } from "@theme/axes/tokenCache"
 import { buildPrerenderScript } from "@theme/axes/prerender"
+import { compileThemeCss } from "@theme/config/compile"
+import { resolveRegistry } from "@theme/config/registry"
 import { LEGACY_MARKER_KEY, LEGACY_REVISION } from "@theme/axes/legacy"
 import { themeConfig, type ThemeConfig } from "@theme/themeConfig"
 import { SHELL_STYLE_STORAGE_KEY, useLayoutStore } from "@layout/layoutStore"
@@ -1092,5 +1094,130 @@ describe("ThemeProvider theme definitions", () => {
       "glass",
     ])
     expect(result.current.registry.values("preset")).toEqual(["base", "night"])
+  })
+})
+
+describe("ThemeProvider consumer stylesheet", () => {
+  const sheets = () =>
+    Array.from(document.querySelectorAll("style[data-darkraise-theme]"))
+
+  const withStyles = (cardEdge: string): ThemeConfig => ({
+    ...themeConfig,
+    styles: {
+      ink: { label: "Ink", extends: "glass", tokens: { shared: { cardEdge } } },
+    },
+  })
+
+  const tree = (config: ThemeConfig, nonce?: string) => (
+    <ThemeProvider config={config} nonce={nonce}>
+      <span />
+    </ThemeProvider>
+  )
+
+  beforeEach(() => {
+    for (const sheet of sheets()) sheet.remove()
+  })
+
+  afterEach(() => {
+    vi.unstubAllEnvs()
+  })
+
+  it("injects the config's compiled styles once", () => {
+    const config = withStyles("red")
+    const registry = resolveRegistry(config)
+    const { rerender } = render(<StrictMode>{tree(config)}</StrictMode>)
+    expect(sheets()).toHaveLength(1)
+    const [sheet] = sheets()
+    expect(sheet?.getAttribute("data-darkraise-theme")).toBe(registry.hash)
+    expect(sheet?.textContent).toBe(
+      compileThemeCss(registry, { include: "consumer" }),
+    )
+    expect(sheet?.hasAttribute("nonce")).toBe(false)
+
+    rerender(<StrictMode>{tree({ ...config })}</StrictMode>)
+    expect(sheets()).toHaveLength(1)
+    expect(sheets()[0]).toBe(sheet)
+  })
+
+  it("replaces the stylesheet when the definitions change", () => {
+    const { rerender } = render(tree(withStyles("red")))
+    rerender(tree(withStyles("blue")))
+    const registry = resolveRegistry(withStyles("blue"))
+    expect(sheets()).toHaveLength(1)
+    expect(sheets()[0]?.getAttribute("data-darkraise-theme")).toBe(
+      registry.hash,
+    )
+    expect(sheets()[0]?.textContent).toContain("--card-edge: blue;")
+  })
+
+  it("keeps the plugin's stylesheet for the same definitions", () => {
+    const config = withStyles("red")
+    const injected = document.createElement("style")
+    injected.setAttribute("data-darkraise-theme", resolveRegistry(config).hash)
+    injected.textContent = "/* from the plugin */"
+    document.head.append(injected)
+    render(tree(config))
+    expect(sheets()).toHaveLength(1)
+    expect(sheets()[0]).toBe(injected)
+    expect(injected.textContent).toBe("/* from the plugin */")
+  })
+
+  it("replaces a stylesheet built from other definitions", () => {
+    const stale = document.createElement("style")
+    stale.setAttribute("data-darkraise-theme", "stale")
+    document.head.append(stale)
+    render(tree(withStyles("red")))
+    expect(sheets()).toHaveLength(1)
+    expect(stale.isConnected).toBe(false)
+  })
+
+  it("injects nothing with only the built-in styles", () => {
+    render(tree(themeConfig))
+    expect(sheets()).toEqual([])
+  })
+
+  it("puts the nonce on the stylesheet", () => {
+    render(tree(withStyles("red"), "r4nd"))
+    expect(sheets()[0]?.getAttribute("nonce")).toBe("r4nd")
+  })
+
+  it("warns about each definition issue once per config content", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
+    const config = (): ThemeConfig => ({
+      ...themeConfig,
+      styles: {
+        dusk: {
+          label: "Dusk",
+          tokens: { shared: { cardEdge: "var(--primary-8)" } },
+        },
+        dawn: { label: "Dawn", extends: "noon" },
+      },
+    })
+    const { rerender, unmount } = render(
+      <StrictMode>{tree(config())}</StrictMode>,
+    )
+    rerender(<StrictMode>{tree(config())}</StrictMode>)
+    unmount()
+    render(tree(config()))
+    expect(warn.mock.calls).toEqual([
+      [
+        '[ThemeProvider] themeConfig.styles.dawn.extends: "noon" is not a style. The definition is ignored.',
+      ],
+      [
+        "[ThemeProvider] themeConfig.styles.dusk.tokens.shared.cardEdge: var(--primary-8) is an HSL channel triplet; write hsl(var(--primary-8)).",
+      ],
+    ])
+  })
+
+  it("stays silent about definition issues in production", () => {
+    vi.stubEnv("NODE_ENV", "production")
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
+    render(
+      tree({
+        ...themeConfig,
+        styles: { morn: { label: "Morn", extends: "noon" } },
+      }),
+    )
+    expect(warn).not.toHaveBeenCalled()
   })
 })

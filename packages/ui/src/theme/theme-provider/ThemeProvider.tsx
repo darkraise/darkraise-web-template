@@ -10,7 +10,8 @@ import type {
 import { SHELL_STYLES, type ShellStyle } from "@theme/types"
 import { useLayoutStore } from "@layout/layoutStore"
 import { generateTokens } from "@theme/engine/generateTokens"
-import { resolveRegistry } from "@theme/config/registry"
+import { compileThemeCss } from "@theme/config/compile"
+import { resolveRegistry, type ThemeRegistry } from "@theme/config/registry"
 import { ThemeContext } from "@theme/themeContext"
 import {
   resolveDefaults,
@@ -18,6 +19,7 @@ import {
   type ThemeConfig,
 } from "@theme/themeConfig"
 import { useDebouncedCallback } from "@hooks/useDebouncedCallback"
+import { useIsomorphicLayoutEffect } from "@hooks/useIsomorphicLayoutEffect"
 import {
   AXES,
   AXIS_KEYS,
@@ -155,9 +157,53 @@ function seedShellStyle(value: unknown) {
   }
 }
 
+// Keyed by the config's JSON, as resolveDefaults keys its warnings.
+const reportedConfigs = new Set<string>()
+
+function reportIssues(configKey: string, registry: ThemeRegistry) {
+  if (process.env.NODE_ENV === "production") return
+  if (reportedConfigs.has(configKey)) return
+  reportedConfigs.add(configKey)
+  for (const issue of registry.issues) {
+    console.warn(
+      issue.level === "error"
+        ? `[ThemeProvider] themeConfig.${issue.path}: ${issue.message}. The definition is ignored.`
+        : `[ThemeProvider] themeConfig.${issue.path}: ${issue.message}.`,
+    )
+  }
+}
+
+const THEME_SHEET_ATTRIBUTE = "data-darkraise-theme"
+
+/**
+ * Adds the config's compiled styles and presets unless the Vite plugin, or
+ * an earlier render, already put the same definitions on the page. A sheet
+ * for other definitions is stale and goes.
+ */
+function injectThemeSheet(registry: ThemeRegistry, nonce: string | undefined) {
+  if (registry.hash === "") return
+  if (
+    document.querySelector(`style[${THEME_SHEET_ATTRIBUTE}="${registry.hash}"]`)
+  ) {
+    return
+  }
+  for (const sheet of document.querySelectorAll(
+    `style[${THEME_SHEET_ATTRIBUTE}]`,
+  )) {
+    sheet.remove()
+  }
+  const sheet = document.createElement("style")
+  sheet.setAttribute(THEME_SHEET_ATTRIBUTE, registry.hash)
+  if (nonce !== undefined) sheet.setAttribute("nonce", nonce)
+  sheet.textContent = compileThemeCss(registry, { include: "consumer" })
+  document.head.append(sheet)
+}
+
 interface ThemeProviderProps {
   children: React.ReactNode
   config?: ThemeConfig
+  /** CSP nonce for the stylesheet the provider adds for `config`'s styles and presets. */
+  nonce?: string
   onChange?: (settings: ThemeSettings) => void
   persistence?: ThemePersistenceAdapter
   persistenceDebounce?: number
@@ -166,6 +212,7 @@ interface ThemeProviderProps {
 export function ThemeProvider({
   children,
   config,
+  nonce,
   onChange,
   persistence,
   persistenceDebounce = 500,
@@ -185,6 +232,16 @@ export function ThemeProvider({
   // ThemeConfig is plain data, so equal content means an equal config.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const stableConfig = useMemo(() => cfg, [configKey])
+
+  // Before the first paint effect, so a config style's tokens are there when
+  // its attributes land.
+  useIsomorphicLayoutEffect(() => {
+    injectThemeSheet(registry, nonce)
+  }, [registry, nonce])
+
+  useEffect(() => {
+    reportIssues(configKey, registry)
+  }, [configKey, registry])
 
   // One storage read at mount. knownRef then mirrors every write this provider
   // makes, and the token-cache id is built from it rather than read back, so a
