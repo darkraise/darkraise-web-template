@@ -1,7 +1,7 @@
 import { AXES, isAxisValue, type AxisKey } from "../axes/registry"
 import { generateTokens } from "../engine/generateTokens"
 import { BUILTIN_STYLES } from "../styles/builtin"
-import type { ShellStyle } from "../types"
+import { SHELL_STYLES, type ShellStyle } from "../types"
 import { definitionsHash } from "./hash"
 import type {
   DefinableAxes,
@@ -563,6 +563,16 @@ export function buildRegistry(
       )
     }
     checkAxes(c, `${owner}.axes`, definition.axes)
+    if (
+      definition.shellStyle !== undefined &&
+      !(SHELL_STYLES as readonly unknown[]).includes(definition.shellStyle)
+    ) {
+      issues.error(
+        owner,
+        `${owner}.shellStyle`,
+        `"${String(definition.shellStyle)}" is not a shell style`,
+      )
+    }
     checkModes(c, `${owner}.tokens`, definition.tokens, (path, tokens) => {
       checkTokens(c, path, tokens)
       if (!style || !isRecord(tokens)) return

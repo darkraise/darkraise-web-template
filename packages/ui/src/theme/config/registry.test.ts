@@ -419,6 +419,12 @@ describe("errors", () => {
       '"missing" is not a style',
     ],
     [
+      "a preset with an unknown shell style",
+      preset({ shellStyle: loose("cosy") }),
+      "presets.bad.shellStyle",
+      '"cosy" is not a shell style',
+    ],
+    [
       "a preset token its style's when entries set",
       preset({ style: "frost", tokens: { dark: { overlayFillBase: "x" } } }),
       "presets.bad.tokens.dark.overlayFillBase",
