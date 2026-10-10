@@ -148,7 +148,7 @@ test.describe("style axis", () => {
 
       const attrs = await readThemeAttrs(page)
       expect(attrs["data-style"]).toBe(style)
-      expect(attrs["data-preset"]).toBeUndefined()
+      expect(attrs["data-preset"]).toBe("base")
       // Ordinary axes: stamped under every style, read only by the glass style.
       expect(attrs["data-glass-opacity"]).toBe("medium")
       expect(attrs["data-glass-blur"]).toBe("medium")

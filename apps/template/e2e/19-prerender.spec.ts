@@ -122,15 +122,17 @@ const LEGACY_USERS: {
       "data-contrast": "standard",
       "data-glass-opacity": "medium",
       "data-glass-blur": "medium",
+      "data-preset": "base",
     },
-    absent: ["data-preset"],
+    absent: [],
     removed: [
+      "theme-preset",
       "theme-surface-intensity",
       "theme-glass-halo",
       "theme-canvas-tint",
       "theme-contrast",
     ],
-    kept: { "theme-preset": "glass" },
+    kept: { "theme-style": "glass" },
   },
   {
     name: "a 6.x sci-fi user",
@@ -146,8 +148,9 @@ const LEGACY_USERS: {
       "data-style": "quiet",
       "data-contrast": "standard",
       "data-dark-accent-chroma": "standard",
+      "data-preset": "base",
     },
-    absent: ["data-preset", "data-scifi-frame"],
+    absent: ["data-scifi-frame"],
     removed: [
       "theme-preset",
       "theme-scifi-frame",
@@ -165,8 +168,9 @@ const LEGACY_USERS: {
       "data-mode": "dark",
       "data-style": "quiet",
       "data-dark-accent-chroma": "vivid",
+      "data-preset": "base",
     },
-    absent: ["data-preset"],
+    absent: [],
     removed: ["theme-accent-vibrancy", "theme-accent-intensity"],
     kept: { "theme-dark-accent-chroma": "vivid" },
   },
@@ -184,10 +188,11 @@ const LEGACY_USERS: {
       "data-style": "quiet",
       "data-glass-opacity": "medium",
       "data-glass-blur": "high",
+      "data-preset": "base",
     },
-    absent: ["data-preset"],
-    removed: ["theme-glass-opacity"],
-    kept: { "theme-preset": "quiet", "theme-glass-blur": "high" },
+    absent: [],
+    removed: ["theme-preset", "theme-glass-opacity"],
+    kept: { "theme-style": "quiet", "theme-glass-blur": "high" },
   },
   {
     // At marker 1 only revision 2 runs: the vibrancy key, which a revision 1
@@ -205,24 +210,47 @@ const LEGACY_USERS: {
       "data-style": "quiet",
       "data-glass-blur": "medium",
       "data-dark-accent-chroma": "standard",
+      "data-preset": "base",
     },
-    absent: ["data-preset"],
-    removed: ["theme-glass-blur", "theme-dark-accent-chroma"],
-    kept: { "theme-preset": "quiet", "theme-accent-vibrancy": "intense" },
+    absent: [],
+    removed: ["theme-preset", "theme-glass-blur", "theme-dark-accent-chroma"],
+    kept: { "theme-style": "quiet", "theme-accent-vibrancy": "intense" },
   },
   {
-    // At marker 2 only revision 3 runs: the sidebar indicator becomes a look.
-    // The look reaches the DOM only on the sidebar, which needs the app.
+    // At marker 2 only revisions 3 and 4 run: the sidebar indicator becomes a
+    // look, which reaches the DOM only on the sidebar and so needs the app.
     name: "a browser that already ran revision 2",
     stored: {
       "theme-settings-version": "2",
       mode: "dark",
       "theme-sidebar-active-bar": "ring",
     },
-    painted: { "data-mode": "dark", "data-style": "quiet" },
-    absent: ["data-preset"],
+    painted: {
+      "data-mode": "dark",
+      "data-style": "quiet",
+      "data-preset": "base",
+    },
+    absent: [],
     removed: ["theme-sidebar-active-bar"],
     kept: { "theme-sidebar-selection": "chip" },
+  },
+  {
+    // A 7.0 development build stored the style under the preset key.
+    name: "a browser that already ran revision 3",
+    stored: {
+      "theme-settings-version": "3",
+      mode: "dark",
+      "theme-preset": "glass",
+    },
+    painted: {
+      "data-mode": "dark",
+      "data-style": "glass",
+      "data-preset": "base",
+      "data-background-style": "gradient",
+    },
+    absent: [],
+    removed: ["theme-preset"],
+    kept: { "theme-style": "glass" },
   },
 ]
 

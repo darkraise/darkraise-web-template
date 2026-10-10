@@ -88,7 +88,7 @@ export type Font = (typeof FONTS)[number]
 export const LS_KEYS = {
   accent: "theme-accent",
   surface: "theme-surface-color",
-  style: "theme-preset",
+  style: "theme-style",
   glassOpacity: "theme-glass-opacity",
   glassBlur: "theme-glass-blur",
   backgroundStyle: "theme-bg-style",
