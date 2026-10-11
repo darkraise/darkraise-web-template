@@ -14,6 +14,18 @@ const withDefaults =
         styles: {
           pale: { label: "Pale", extends: "glass" },
           plain: { label: "Plain", extends: "flat" },
+          tiled: {
+            label: "Tiled",
+            extends: "glass",
+            signatures: { navSelection: "tile" },
+          },
+        },
+        presets: {
+          pillish: {
+            label: "Pillish",
+            style: "tiled",
+            signatures: { navSelection: "pill" },
+          },
         },
         defaults: { ...themeConfig.defaults, ...defaults },
       }}
@@ -39,6 +51,17 @@ describe("useSidebarSelection", () => {
       wrapper: withDefaults({ style: "pale" }),
     })
     expect(result.current).toBe("frosted")
+  })
+
+  it("follows the active preset's look under auto", () => {
+    const { result } = renderHook(() => useSidebarSelection(), {
+      wrapper: withDefaults({ style: "tiled" }),
+    })
+    expect(result.current).toBe("tile")
+    const preset = renderHook(() => useSidebarSelection(), {
+      wrapper: withDefaults({ style: "tiled", preset: "pillish" }),
+    })
+    expect(preset.result.current).toBe("pill")
   })
 
   it("uses an explicit setting under any style", () => {

@@ -2,6 +2,10 @@ import { cleanup, render } from "@testing-library/react"
 import { createElement } from "react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import type { ThemeDefinitions } from "@theme/config/schema"
+import {
+  STAMPED_SIGNATURES,
+  signatureAttribute,
+} from "@theme/config/signatures"
 import { STYLE_NAMES, type StyleName } from "@theme/styles"
 import { ThemeProvider } from "@theme/theme-provider/ThemeProvider"
 import type { ThemeConfig } from "@theme/themeConfig"
@@ -16,7 +20,11 @@ type Case = [name: string, stored: Record<string, string>, defaults: Defaults]
 
 const root = document.documentElement
 
-const ATTRIBUTES = AXIS_KEYS.flatMap((key) => AXES[key].attribute ?? []).sort()
+// Every attribute axis, then every signature the style and preset stamp.
+const ATTRIBUTES = [
+  ...AXIS_KEYS.flatMap((key) => AXES[key].attribute ?? []),
+  ...STAMPED_SIGNATURES.map(signatureAttribute),
+].sort()
 
 // A current user's choices: the marker says the legacy table already ran,
 // which would otherwise move a stored glass-on-solid to gradient.

@@ -12,6 +12,10 @@ import { useLayoutStore } from "@layout/layoutStore"
 import { generateTokens } from "@theme/engine/generateTokens"
 import { compileThemeCss } from "@theme/config/compile"
 import { resolveRegistry, type ThemeRegistry } from "@theme/config/registry"
+import {
+  STAMPED_SIGNATURES,
+  signatureAttribute,
+} from "@theme/config/signatures"
 import { ThemeContext } from "@theme/themeContext"
 import {
   resolveDefaults,
@@ -128,14 +132,19 @@ function applyTokens(tokens: Record<string, string>) {
 
 /**
  * Stamps every attribute axis except mode, whose attribute holds the resolved
- * mode and is written by applyTheme.
+ * mode and is written by applyTheme, then every signature of the active style
+ * and preset.
  */
-function applyAttributes(settings: AxisValues) {
+function applyAttributes(settings: AxisValues, registry: ThemeRegistry) {
   const root = document.documentElement
   for (const key of AXIS_KEYS) {
     const attribute = AXES[key].attribute
     if (!attribute || key === "mode") continue
     root.setAttribute(attribute, settings[key])
+  }
+  const signatures = registry.signaturesFor(settings.style, settings.preset)
+  for (const key of STAMPED_SIGNATURES) {
+    root.setAttribute(signatureAttribute(key), signatures[key])
   }
 }
 
@@ -360,10 +369,10 @@ export function ThemeProvider({
       const signature = JSON.stringify([current, resolved, defaults, cacheId])
       if (signature === paintedRef.current) return
       paintedRef.current = signature
-      applyAttributes(current)
+      applyAttributes(current, registry)
       applyTheme(current, resolved, cacheId)
     },
-    [applyTheme, defaults, registry.hash],
+    [applyTheme, defaults, registry],
   )
 
   const commit = useCallback(

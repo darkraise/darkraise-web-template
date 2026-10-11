@@ -1,6 +1,11 @@
 import type { ThemeConfig } from "@theme/themeConfig"
 import { resolveRegistry, type ThemeRegistry } from "../config/registry"
 import {
+  STAMPED_SIGNATURES,
+  signatureAttribute,
+  type SignatureMap,
+} from "../config/signatures"
+import {
   LEGACY_MARKER_KEY,
   LEGACY_REVISION,
   LEGACY_RULES,
@@ -51,13 +56,14 @@ function configDefaults(
  * provider resolves them: the mode; the style, stored or else the config
  * default; the preset, stored or else the config default, either only when it
  * belongs to that style, else `base`; every other axis from the stored value,
- * else the preset's value, else the style's default, else the config default.
- * The config's styles and presets travel as a table of each style's defaults
- * and each preset's style and axis values. It applies the cached token set
- * when its id matches. ES5 and self-contained, because it runs before any
- * bundle loads. Storage can throw (sandboxed iframes, blocked site data), so
- * the mode is resolved and set before anything else touches it, and blocked
- * storage reads as empty.
+ * else the preset's value, else the style's default, else the config default;
+ * then every signature, from the preset, else the style. The config's styles
+ * and presets travel as a table of each style's defaults and signatures and
+ * each preset's style, axis values and signatures. It applies the cached
+ * token set when its id matches. ES5 and self-contained, because it runs
+ * before any bundle loads. Storage can throw (sandboxed iframes, blocked site
+ * data), so the mode is resolved and set before anything else touches it, and
+ * blocked storage reads as empty.
  *
  * `config` must hold the `defaults`, `styles` and `presets` the app passes
  * ThemeProvider. A value the registry does not accept is ignored, as the
@@ -68,14 +74,37 @@ export function buildPrerenderScript(
 ): string {
   const registry = resolveRegistry(config)
   const defaults = configDefaults(config?.defaults ?? {}, registry)
-  const styles: Record<string, Partial<Record<AxisKey, string>>> = {}
+  // A style's signatures are complete (kit defaults filled in); a preset's
+  // hold only what it sets.
+  const styles: Record<
+    string,
+    [Partial<Record<AxisKey, string>>, Record<string, string>]
+  > = {}
   for (const [name, style] of Object.entries(registry.styles)) {
-    styles[name] = { ...style.defaults }
+    const signatures = registry.signaturesFor(name, "base")
+    styles[name] = [
+      { ...style.defaults },
+      Object.fromEntries(
+        STAMPED_SIGNATURES.map((key) => [key, signatures[key]]),
+      ),
+    ]
   }
-  const presets: Record<string, [string, Partial<Record<AxisKey, string>>]> = {}
+  const presets: Record<
+    string,
+    [string, Partial<Record<AxisKey, string>>, SignatureMap]
+  > = {}
   for (const [name, preset] of Object.entries(registry.presets)) {
-    presets[name] = [preset.style, { ...preset.axes }]
+    const own: SignatureMap = {}
+    for (const key of STAMPED_SIGNATURES) {
+      const value = preset.signatures[key]
+      if (value !== undefined) Object.assign(own, { [key]: value })
+    }
+    presets[name] = [preset.style, { ...preset.axes }, own]
   }
+  const stamped = STAMPED_SIGNATURES.map((key) => [
+    key,
+    signatureAttribute(key),
+  ])
   const attributes: Restorable[] = AXIS_KEYS.filter(
     (key) =>
       key !== "mode" &&
@@ -124,8 +153,9 @@ export function buildPrerenderScript(
     "for(i=0;i<w.length&&!f;i++)if(o[w[i]]!==null)try{s.setItem(w[i],o[w[i]])}catch(e){f=1}",
     "if(!f)for(i=0;i<w.length;i++)if(o[w[i]]===null)try{s.removeItem(w[i])}catch(e){f=1}",
     `if(!f&&n<${LEGACY_REVISION})try{s.setItem(${json(LEGACY_MARKER_KEY)},${json(String(LEGACY_REVISION))})}catch(e){}}`,
-    // S maps each style to its defaults, P each preset to [style, axes].
-    `var S=${json(styles)},P=${json(presets)},A=${json(attributes)},q,b,Q,Y;`,
+    // S maps each style to [defaults, signatures], P each preset to
+    // [style, axes, signatures], G lists [signature, attribute].
+    `var S=${json(styles)},P=${json(presets)},A=${json(attributes)},G=${json(stamped)},q,b,Q,Y,Z;`,
     // The style picks the preset and every other axis's fallback, so it
     // resolves first; a preset of another style counts as unset.
     `p=g(${json(AXES.style.storageKey)});if(p===null||!h(S,p))p=${json(defaults.style)};`,
@@ -133,8 +163,9 @@ export function buildPrerenderScript(
     'b=function(x){return x==="base"||x!==null&&h(P,x)&&P[x][0]===p};',
     `q=g(${json(AXES.preset.storageKey)});if(!b(q))q=b(${json(defaults.preset)})?${json(defaults.preset)}:"base";`,
     `d.setAttribute(${json(AXES.preset.attribute)},q);`,
-    'Q=q==="base"?{}:P[q][1];Y=S[p];',
+    'Q=q==="base"?{}:P[q][1];Z=q==="base"?{}:P[q][2];Y=S[p][0];',
     "for(i=0;i<A.length;i++){v=g(A[i][0]);if(A[i][3].indexOf(v)===-1)v=h(Q,A[i][2])?Q[A[i][2]]:h(Y,A[i][2])?Y[A[i][2]]:A[i][4];d.setAttribute(A[i][1],v)}",
+    "for(i=0;i<G.length;i++)d.setAttribute(G[i][1],h(Z,G[i][0])?Z[G[i][0]]:S[p][1][G[i][0]]);",
     // tokenCacheId's form: kit version, schema, resolved mode, raw values,
     // the defaults hash, the definitions hash.
     `if(s){var K=${json(cacheInputKeys())},id=[${json(KIT_VERSION)},${json(String(TOKEN_CACHE_SCHEMA))},r],c;`,

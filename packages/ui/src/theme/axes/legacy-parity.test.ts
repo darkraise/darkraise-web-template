@@ -1,6 +1,10 @@
 import { cleanup, render } from "@testing-library/react"
 import { createElement } from "react"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
+import {
+  STAMPED_SIGNATURES,
+  signatureAttribute,
+} from "@theme/config/signatures"
 import { STYLE_NAMES } from "@theme/styles"
 import { ThemeProvider } from "@theme/theme-provider/ThemeProvider"
 import { LEGACY_MARKER_KEY, LEGACY_REVISION, migrateStorage } from "./legacy"
@@ -110,8 +114,12 @@ function memoryStorage(state: Record<string, string>) {
   }
 }
 
-// The script and the provider both stamp every attribute axis.
-const ATTRIBUTES = AXIS_KEYS.flatMap((key) => AXES[key].attribute ?? [])
+// The script and the provider both stamp every attribute axis and every
+// signature.
+const ATTRIBUTES = [
+  ...AXIS_KEYS.flatMap((key) => AXES[key].attribute ?? []),
+  ...STAMPED_SIGNATURES.map(signatureAttribute),
+]
 
 // Clearing the inline style leaves an empty style attribute, which the snapshot
 // of what the script painted must not pick up.
