@@ -104,9 +104,9 @@ const ALLOWED: readonly (readonly [string, string, readonly string[]])[] = [
     "data-direction always carries the resolved physical side",
     [
       '.dr-drawer-content[data-direction="left"] { left-0 }',
-      '.dr-drawer-content[data-direction="left"] { rounded-r-[var(--overlay-radius)] }',
+      '.dr-drawer-content[data-direction="left"] { rounded-r-[var(--dialog-radius)] }',
       '.dr-drawer-content[data-direction="right"] { right-0 }',
-      '.dr-drawer-content[data-direction="right"] { rounded-l-[var(--overlay-radius)] }',
+      '.dr-drawer-content[data-direction="right"] { rounded-l-[var(--dialog-radius)] }',
     ],
   ],
   [

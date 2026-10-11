@@ -158,7 +158,7 @@ describe("PAINT_TOKENS", () => {
 })
 
 describe("KIT_FALLBACK", () => {
-  it("resets the backdrops and the overlay fill to their opaque values", () => {
+  it("resets the backdrops and the overlay and surface fills to their opaque values", () => {
     expect(KIT_FALLBACK).toEqual({
       chromeBackdrop: "none",
       chromeCanvas: "none",
@@ -166,6 +166,9 @@ describe("KIT_FALLBACK", () => {
       overlayFillLayers: "",
       overlayFillBase: "hsl(var(--popover))",
       overlayFillBlend: "normal",
+      surfaceFillAlpha: "1",
+      surfaceBackdrop: "none",
+      scrimBackdrop: "none",
     })
   })
 })

@@ -284,25 +284,25 @@ describe("sheet edges", () => {
     [
       "top",
       "border-width: 0 0 1px;",
-      "border-radius: 0 0 var(--overlay-radius) var(--overlay-radius);",
+      "border-radius: 0 0 var(--dialog-radius) var(--dialog-radius);",
       "padding-top: max(1.5rem, env(safe-area-inset-top));",
     ],
     [
       "bottom",
       "border-width: 1px 0 0;",
-      "border-radius: var(--overlay-radius) var(--overlay-radius) 0 0;",
+      "border-radius: var(--dialog-radius) var(--dialog-radius) 0 0;",
       "padding-bottom: max(1.5rem, env(safe-area-inset-bottom));",
     ],
     [
       "left",
       "border-width: 0 1px 0 0;",
-      "border-radius: 0 var(--overlay-radius) var(--overlay-radius) 0;",
+      "border-radius: 0 var(--dialog-radius) var(--dialog-radius) 0;",
       "padding-left: max(1.5rem, env(safe-area-inset-left));",
     ],
     [
       "right",
       "border-width: 0 0 0 1px;",
-      "border-radius: var(--overlay-radius) 0 0 var(--overlay-radius);",
+      "border-radius: var(--dialog-radius) 0 0 var(--dialog-radius);",
       "padding-right: max(1.5rem, env(safe-area-inset-right));",
     ],
   ])(
@@ -320,8 +320,10 @@ describe("sheet edges", () => {
 })
 
 describe("overlay backdrop", () => {
+  // Scrims frost through their own token, which defaults to the overlay
+  // backdrop.
   const FROSTED =
-    "-webkit-backdrop-filter: var(--overlay-backdrop); backdrop-filter: var(--overlay-backdrop);"
+    "-webkit-backdrop-filter: var(--scrim-backdrop); backdrop-filter: var(--scrim-backdrop);"
 
   it.each([
     ["src/components/drawer/drawer.css", ".dr-drawer-overlay"],
@@ -330,7 +332,7 @@ describe("overlay backdrop", () => {
       ".dr-overlay-backdrop",
     ],
     ["src/components/tour/tour.css", ".dr-tour-backdrop"],
-  ])("%s %s frosts through --overlay-backdrop", (path, selector) => {
+  ])("%s %s frosts through --scrim-backdrop", (path, selector) => {
     expect(bodyOf(path, selector)).toContain(FROSTED)
   })
 

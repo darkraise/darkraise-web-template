@@ -1,15 +1,23 @@
 @layer components {
   .dr-drawer-overlay {
-    @apply data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 fixed inset-0 z-50 bg-black/50;
-    -webkit-backdrop-filter: var(--overlay-backdrop);
-    backdrop-filter: var(--overlay-backdrop);
+    @apply data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 fixed inset-0 z-50;
+    background-color: var(--scrim);
+    -webkit-backdrop-filter: var(--scrim-backdrop);
+    backdrop-filter: var(--scrim-backdrop);
   }
 
   .dr-drawer-content {
     @apply modal-surface text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col border ease-in-out;
-    /* Modal-tier surface: bg + border from style-driven tokens;
-       --elevation-high stays via .modal-surface. */
+    /* Modal-tier surface: the dialog's fill and border; the shadow
+       stays via .modal-surface. */
     @apply overlay-surface;
+    background: var(--dialog-fill);
+    border-color: var(--dialog-border);
+  }
+
+  /* As for dialogs: an explicit `surface` prop keeps its plane. */
+  .dr-drawer-content[data-surface-fill] {
+    background: var(--overlay-bg);
   }
 
   .dr-drawer-overlay[data-state="closed"],
@@ -26,22 +34,22 @@
      matching height cap a tall drawer simply grew past it and its footer
      became unreachable behind the locked page scroll. */
   .dr-drawer-content[data-direction="bottom"] {
-    @apply data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 mt-24 h-auto rounded-t-[var(--overlay-radius)];
+    @apply data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 mt-24 h-auto rounded-t-[var(--dialog-radius)];
   }
 
   /* The `mb-24` reserves a strip of page at the far edge; without a
      matching height cap a tall drawer simply grew past it and its footer
      became unreachable behind the locked page scroll. */
   .dr-drawer-content[data-direction="top"] {
-    @apply data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0 mb-24 h-auto rounded-b-[var(--overlay-radius)];
+    @apply data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0 mb-24 h-auto rounded-b-[var(--dialog-radius)];
   }
 
   .dr-drawer-content[data-direction="left"] {
-    @apply data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 rounded-r-[var(--overlay-radius)] sm:max-w-sm;
+    @apply data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 rounded-r-[var(--dialog-radius)] sm:max-w-sm;
   }
 
   .dr-drawer-content[data-direction="right"] {
-    @apply data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 rounded-l-[var(--overlay-radius)] sm:max-w-sm;
+    @apply data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 rounded-l-[var(--dialog-radius)] sm:max-w-sm;
   }
 
   .dr-drawer-content[data-direction="bottom"],

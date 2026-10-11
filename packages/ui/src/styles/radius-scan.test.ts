@@ -47,13 +47,17 @@ const FULL_ROUND = new Map<string, string>([
   ["dr-user-menu-trigger", "avatar trigger"],
 ])
 
-/** Every overlay surface: [stylesheet, selector of the rule that shapes it]. */
-const OVERLAYS: Array<[string, string]> = [
+/** Modals round with --dialog-radius, which defaults to --overlay-radius. */
+const MODALS: Array<[string, string]> = [
   ["dialog/dialog.css", ".dr-dialog-content"],
   ["drawer/drawer.css", '.dr-drawer-content[data-direction="bottom"]'],
   ["drawer/drawer.css", '.dr-drawer-content[data-direction="top"]'],
   ["drawer/drawer.css", '.dr-drawer-content[data-direction="left"]'],
   ["drawer/drawer.css", '.dr-drawer-content[data-direction="right"]'],
+]
+
+/** Every overlay surface: [stylesheet, selector of the rule that shapes it]. */
+const OVERLAYS: Array<[string, string]> = [
   ["popover/popover.css", ".dr-popover-content"],
   ["hover-card/hover-card.css", ".dr-hover-card-content"],
   ["tooltip/tooltip.css", ".dr-tooltip-content"],
@@ -383,10 +387,18 @@ describe("overlay family", () => {
     )
   })
 
+  it.each(MODALS)("rounds %s %s with --dialog-radius", (file, selector) => {
+    const body = bodyOf(file, selector)
+    expect(readsRadius(body, "--dialog-radius")).toBe(true)
+    expect(body).not.toMatch(
+      new RegExp(`(?<![\\w-])rounded${SIDES}-(?:sm|md|lg)(?![\\w-])`),
+    )
+  })
+
   // SheetContent renders DialogContent, which rounds every corner with
-  // --overlay-radius. Each side squares the two corners on its viewport
+  // --dialog-radius. Each side squares the two corners on its viewport
   // edge and reads no other radius.
-  it("rounds only the sheet's inner corners, with --overlay-radius", () => {
+  it("rounds only the sheet's inner corners, with --dialog-radius", () => {
     const own = RULES.filter(
       (rule) =>
         rule.path.endsWith("sheet/sheet.css") &&
@@ -400,7 +412,7 @@ describe("overlay family", () => {
       expect(radii.length).toBeGreaterThan(0)
       for (const value of radii) {
         expect(value).toMatch(
-          /^(?:0|var\(--overlay-radius\))(?: (?:0|var\(--overlay-radius\))){0,3}$/,
+          /^(?:0|var\(--dialog-radius\))(?: (?:0|var\(--dialog-radius\))){0,3}$/,
         )
       }
     }
@@ -414,7 +426,13 @@ describe("overlay family", () => {
       )
       expect(css).not.toMatch(/var\(--surface-overlay-(?:bg|border|shadow)\)/)
       expect(css).toMatch(/@apply overlay-surface;/)
-      expect(css).not.toContain("background: var(--overlay-bg)")
+      // A modal re-reads --overlay-bg only where an explicit `surface` prop
+      // must win over the style's dialog fill.
+      const outsideProp = css.replace(
+        /[^{}]*\[data-surface-fill\][^{}]*\{[^{}]*\}/g,
+        "",
+      )
+      expect(outsideProp).not.toContain("background: var(--overlay-bg)")
     },
   )
 })

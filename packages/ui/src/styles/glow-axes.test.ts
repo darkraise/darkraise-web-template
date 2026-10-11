@@ -46,7 +46,7 @@ describe("glow axes — composed tokens", () => {
 describe("glow axes — adoption", () => {
   it("reaches the modal tier through its shared utility", () => {
     expect(theme).toMatch(
-      /@utility modal-surface \{ box-shadow: var\(--elevation-high\), var\(--glow-outer\), var\(--glow-inner\); \}/,
+      /@utility modal-surface \{ box-shadow: var\(--modal-shadow\), var\(--glow-outer\), var\(--glow-inner\); \}/,
     )
   })
 

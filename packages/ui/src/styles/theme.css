@@ -155,6 +155,9 @@
       --surface-overlay-layers: ;
       --surface-overlay-base: hsl(var(--popover));
       --surface-overlay-blend-mode: normal;
+      --surface-fill-alpha: 1;
+      --surface-backdrop: none;
+      --scrim-backdrop: none;
     }
   }
 }
@@ -170,7 +173,7 @@
 }
 
 @utility modal-surface {
-  box-shadow: var(--elevation-high), var(--glow-outer), var(--glow-inner);
+  box-shadow: var(--modal-shadow), var(--glow-outer), var(--glow-inner);
 }
 
 /* Popups and modals carry the dark tonal lift, so fields in them take the
@@ -1085,7 +1088,11 @@
        custom property computes with its var()s already substituted, so a
        token that composed a prop variable would bake in the root value and
        ignore any subtree override. */
-    --surface-card-fill: hsl(var(--card));
+    /* A style's translucency for the card plane: an alpha over the card fill
+       wherever the `surface` prop composes it. The opaque twin below ignores
+       it. At 1 the fill computes to the same opaque rgb() as before. */
+    --surface-fill-alpha: 1;
+    --surface-card-fill: hsl(var(--card) / var(--surface-fill-alpha));
     --surface-popover-fill: hsl(var(--popover));
     --surface-raised-fill: hsl(var(--surface-raised));
     --surface-overlay-fill: hsl(var(--surface-overlay));
@@ -1366,7 +1373,7 @@
    is declared, so each value redeclares the whole fill family on the element
    that carries it; `card` restores the plane under an ancestor's value. */
 [data-surface-fill="card"] {
-  --surface-card-fill: hsl(var(--card));
+  --surface-card-fill: hsl(var(--card) / var(--surface-fill-alpha));
   --surface-popover-fill: hsl(var(--popover));
   --surface-raised-fill: hsl(var(--surface-raised));
   --surface-overlay-fill: hsl(var(--surface-overlay));
@@ -1377,7 +1384,7 @@
 }
 
 [data-surface-fill="page"] {
-  --surface-card-fill: hsl(var(--background));
+  --surface-card-fill: hsl(var(--background) / var(--surface-fill-alpha));
   --surface-popover-fill: hsl(var(--background));
   --surface-raised-fill: hsl(var(--background));
   --surface-overlay-fill: hsl(var(--background));
@@ -1387,7 +1394,7 @@
 }
 
 [data-surface-fill="muted"] {
-  --surface-card-fill: hsl(var(--muted));
+  --surface-card-fill: hsl(var(--muted) / var(--surface-fill-alpha));
   --surface-popover-fill: hsl(var(--muted));
   --surface-raised-fill: hsl(var(--muted));
   --surface-overlay-fill: hsl(var(--muted));

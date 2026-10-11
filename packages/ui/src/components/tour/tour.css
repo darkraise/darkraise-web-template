@@ -1,8 +1,11 @@
 @layer components {
   .dr-tour-backdrop {
-    @apply fixed inset-0 z-[80] bg-black/40;
-    -webkit-backdrop-filter: var(--overlay-backdrop);
-    backdrop-filter: var(--overlay-backdrop);
+    @apply fixed inset-0 z-[80];
+    /* Four fifths of the scrim: the tour keeps the page a little more
+       readable behind its popover. */
+    background-color: color-mix(in oklab, var(--scrim) 80%, transparent);
+    -webkit-backdrop-filter: var(--scrim-backdrop);
+    backdrop-filter: var(--scrim-backdrop);
   }
   .dr-tour-popover {
     @apply text-popover-foreground z-[81] w-80 max-w-[calc(100vw-2rem)] rounded-[var(--overlay-radius)] border p-4 shadow-[var(--elevation-medium)];
