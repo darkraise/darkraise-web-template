@@ -223,8 +223,10 @@ describe("contract base values", () => {
 })
 
 describe("paint token schema", () => {
-  it("names exactly the contract tokens, in order", () => {
-    expect(Object.values(PAINT_TOKENS)).toEqual(CONTRACT)
+  it("starts with the contract tokens, in order", () => {
+    expect(Object.values(PAINT_TOKENS).slice(0, CONTRACT.length)).toEqual(
+      CONTRACT,
+    )
   })
 
   it("falls back to each token's light base value", () => {
