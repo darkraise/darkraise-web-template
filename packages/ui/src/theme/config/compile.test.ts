@@ -186,6 +186,22 @@ describe("compileThemeCss", () => {
     ).toBe(compileThemeCss(buildRegistry(BUILTINS), { include: "builtin" }))
   })
 
+  it("limits the sheet to the listed styles and their presets", () => {
+    const registry = buildRegistry(BUILTINS, CONSUMER)
+    expect(
+      compileThemeCss(registry, { include: "builtin", styles: ["frost"] }),
+    ).toBe(`${LAYER_STATEMENT}\n\n${FROST_CSS}\n`)
+    expect(
+      compileThemeCss(registry, { include: "builtin", styles: ["plain"] }),
+    ).toBe(`${LAYER_STATEMENT}\n`)
+    expect(
+      compileThemeCss(registry, { include: "consumer", styles: ["frost"] }),
+    ).toBe(`${LAYER_STATEMENT}\n`)
+    expect(
+      compileThemeCss(registry, { include: "consumer", styles: ["frost-ink"] }),
+    ).toBe(compileThemeCss(registry, { include: "consumer" }))
+  })
+
   it("prints only the layer statement when nothing is included", () => {
     expect(
       compileThemeCss(buildRegistry(BUILTINS), { include: "consumer" }),

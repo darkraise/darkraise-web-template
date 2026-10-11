@@ -6,7 +6,7 @@ import { resolveRegistry } from "@theme/config/registry"
 import { BUILTIN_STYLES, STYLE_NAMES } from "@theme/styles"
 
 const BUILTIN_DIR = join("src", "theme", "styles", "builtin")
-const GENERATED = join("src", "theme", "styles", "generated", "builtins.css")
+const GENERATED_DIR = join("src", "theme", "styles", "generated")
 
 describe("built-in style definitions", () => {
   it("defines the four styles in STYLE_NAMES order", () => {
@@ -75,10 +75,19 @@ describe("built-in style definitions", () => {
   })
 })
 
-describe("generated built-in stylesheet", () => {
-  it("equals the compiler's output for the built-in definitions", () => {
-    expect(readFileSync(GENERATED, "utf8")).toBe(
-      compileThemeCss(resolveRegistry(), { include: "builtin" }),
+describe("generated built-in stylesheets", () => {
+  it("holds one sheet per built-in style", () => {
+    expect(readdirSync(GENERATED_DIR).sort()).toEqual(
+      STYLE_NAMES.map((name) => `${name}.css`).sort(),
+    )
+  })
+
+  it.each(STYLE_NAMES)("%s.css equals the compiler's output for it", (name) => {
+    expect(readFileSync(join(GENERATED_DIR, `${name}.css`), "utf8")).toBe(
+      compileThemeCss(resolveRegistry(), {
+        include: "builtin",
+        styles: [name],
+      }),
     )
   })
 })
