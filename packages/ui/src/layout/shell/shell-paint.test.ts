@@ -73,7 +73,7 @@ const FORCED =
 const RAIL_TONED =
   ':root:not([data-rail-tone="inverse"], [data-rail-tone="accent"])'
 const BAR_TONED =
-  ':root:not([data-bar-tone="inverse"], [data-bar-tone="accent"])'
+  ':root:not([data-bar-tone="inverse"], [data-bar-tone="accent"], [data-bar-edge="veil"])'
 const DETACHED =
   ':is([data-shell-style="island"], [data-shell-style="floating"], [data-shell-style="inset"])'
 

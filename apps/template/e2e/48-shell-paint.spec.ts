@@ -202,3 +202,19 @@ test("the bar edge drops the rule or veils the content", async ({ page }) => {
     await resolved(page, "var(--chrome-edge)"),
   )
 })
+
+for (const shellStyle of ["flat", "inset"]) {
+  test(`the veil holds on a ${shellStyle} shell`, async ({ page }) => {
+    await openShell(page, shellStyle)
+    await stamp(page, "data-bar-edge", "veil")
+    expect(await pseudo(page, "bar", "::before", "background-image")).toMatch(
+      /^linear-gradient\(/,
+    )
+
+    await page.emulateMedia({ contrast: "more" })
+    await settle(page)
+    const fill = await pseudo(page, "bar", "::before", "background-color")
+    expect(fill).toBe(await resolved(page, "var(--chrome-bar-bg)"))
+    expect(fill).not.toBe("rgba(0, 0, 0, 0)")
+  })
+}

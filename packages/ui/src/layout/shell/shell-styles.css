@@ -80,7 +80,9 @@
      region drops its canvas and its ::before its fill, rather than the
      chrome tokens being rebound here, so a style's chrome tokens keep
      reaching every other shell. A rail or bar under an inverse or accent
-     tone keeps its fill: its ink is solved on that fill, not on the ground. */
+     tone keeps its fill: its ink is solved on that fill, not on the ground.
+     A veiled bar is left to the veil's rules, which are less specific than
+     these. */
   .dr-shell[data-shell-style="inset"]
     > :is(
       [data-region="nav"],
@@ -101,7 +103,11 @@
     background: none;
   }
 
-  :root:not([data-bar-tone="inverse"], [data-bar-tone="accent"])
+  :root:not(
+      [data-bar-tone="inverse"],
+      [data-bar-tone="accent"],
+      [data-bar-edge="veil"]
+    )
     .dr-shell[data-shell-style="inset"]
     > [data-region="bar"]::before {
     background: none;
@@ -228,7 +234,8 @@
 
   /* flat — tone alone separates the regions: the chrome drops its canvas
      and fills from the flat fill. A toned rail or bar keeps its own fill,
-     which its ink is solved on. */
+     which its ink is solved on. A veiled bar is left to the veil's rules,
+     which are less specific than these. */
   .dr-shell[data-shell-style="flat"]
     > :is(
       [data-region="nav"],
@@ -249,7 +256,11 @@
     background: var(--chrome-flat-fill);
   }
 
-  :root:not([data-bar-tone="inverse"], [data-bar-tone="accent"])
+  :root:not(
+      [data-bar-tone="inverse"],
+      [data-bar-tone="accent"],
+      [data-bar-edge="veil"]
+    )
     .dr-shell[data-shell-style="flat"]
     > [data-region="bar"]::before {
     background: var(--chrome-flat-fill);
