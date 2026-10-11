@@ -30,13 +30,28 @@
     border-bottom-color: var(--field-edge);
   }
 
+  /* Before the active rules, which tie on specificity: an active slot draws
+     its whole box in the focus colour. The bottom edge always stays. */
+  [data-field-border="bottom"] .dr-input-otp-slot {
+    border-top-color: transparent;
+    border-inline-color: transparent;
+    border-radius: 0;
+  }
+
+  [data-field-border="none"] .dr-input-otp-slot {
+    border-top-color: transparent;
+    border-inline-color: transparent;
+  }
+
   .dr-input-otp-slot[data-active] {
     z-index: 1;
-    border-color: hsl(var(--primary));
+    border-color: var(--field-focus-border);
+    background-image: linear-gradient(
+      var(--field-focus-fill),
+      var(--field-focus-fill)
+    );
     box-shadow:
-      0 0 0 1px hsl(var(--primary)),
-      var(--field-shadow),
-      var(--affordance-glow);
+      var(--field-focus-ring), var(--field-shadow), var(--affordance-glow);
   }
 
   /* Separate variant — each slot IS the input. Strip native input chrome so
@@ -53,11 +68,13 @@
   .dr-input-otp-slot-separate:focus,
   .dr-input-otp-slot-separate:focus-visible {
     z-index: 1;
-    border-color: hsl(var(--primary));
+    border-color: var(--field-focus-border);
+    background-image: linear-gradient(
+      var(--field-focus-fill),
+      var(--field-focus-fill)
+    );
     box-shadow:
-      0 0 0 1px hsl(var(--primary)),
-      var(--field-shadow),
-      var(--affordance-glow);
+      var(--field-focus-ring), var(--field-shadow), var(--affordance-glow);
   }
   .dr-input-otp-slot-separate:disabled {
     @apply cursor-not-allowed opacity-[var(--disabled-opacity)];

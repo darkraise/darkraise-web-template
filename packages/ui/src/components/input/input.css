@@ -59,6 +59,8 @@
     border: 0;
     box-shadow: none;
     outline: none;
+    /* The wrapper lays the focus fill once. */
+    background-image: none;
   }
 
   /* The inner input carries aria-invalid, so the group finds it with :has();

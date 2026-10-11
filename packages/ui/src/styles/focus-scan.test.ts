@@ -165,10 +165,11 @@ const OUTLINE_EXEMPT = new Map<string, string>([
 
 /**
  * The 1px edge the field utilities draw (theme.css): --primary, or
- * --destructive-edge on an invalid field.
+ * --destructive-edge on an invalid field; or the field focus tokens, whose
+ * kit default is that --primary edge.
  */
 const FIELD_INDICATOR =
-  /border-color:\s*hsl\(var\(--(primary|destructive-edge)\)\);[\s\S]*?box-shadow:\s*0 0 0 1px hsl\(var\(--\1\)\)/
+  /border-color:\s*hsl\(var\(--(primary|destructive-edge)\)\);[\s\S]*?box-shadow:\s*0 0 0 1px hsl\(var\(--\1\)\)|border-color:\s*var\(--field-focus-border\);[\s\S]*?box-shadow:\s*var\(--field-focus-ring\)/
 
 const SHADOW_OR_RING =
   /box-shadow\s*:|(?<![\w-])(?:ring|shadow)-(?!0(?![\w-])|none(?![\w-]))/

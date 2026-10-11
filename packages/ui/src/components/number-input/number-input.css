@@ -41,6 +41,8 @@
     border: 0;
     box-shadow: none;
     outline: none;
+    /* The wrapper lays the focus fill once. */
+    background-image: none;
   }
 
   /* Prefix / suffix addons. Mirror .dr-input-addon — same muted block, same

@@ -2,4 +2,36 @@
   .dr-label {
     @apply type-label cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-[var(--disabled-opacity)];
   }
+
+  /* Field labels keep their sentence case under `auto` and `none`; `upper`
+     and `lower` reach them as they reach every other label site. */
+  [data-label-case="upper"]
+    :is(
+      .dr-label,
+      .dr-tags-input-label,
+      .dr-combobox-label,
+      .dr-clipboard-label,
+      .dr-date-picker-label,
+      .dr-password-input-label,
+      .dr-number-input-label,
+      .dr-rating-group-label,
+      .dr-color-picker-label
+    ) {
+    text-transform: uppercase;
+  }
+
+  [data-label-case="lower"]
+    :is(
+      .dr-label,
+      .dr-tags-input-label,
+      .dr-combobox-label,
+      .dr-clipboard-label,
+      .dr-date-picker-label,
+      .dr-password-input-label,
+      .dr-number-input-label,
+      .dr-rating-group-label,
+      .dr-color-picker-label
+    ) {
+    text-transform: lowercase;
+  }
 }

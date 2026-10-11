@@ -472,7 +472,7 @@ describe("fields compose --field-shadow", () => {
       const body = block(theme, new RegExp(`@utility ${utility} \\{`))
       expect(body).toContain("box-shadow: var(--field-shadow);")
       expect(body).toContain(
-        "box-shadow: 0 0 0 1px hsl(var(--primary)), var(--field-shadow);",
+        "box-shadow: var(--field-focus-ring), var(--field-shadow);",
       )
       expect(body).toContain(
         "box-shadow: 0 0 0 1px hsl(var(--destructive-edge)), var(--field-shadow);",
@@ -485,12 +485,12 @@ describe("fields compose --field-shadow", () => {
     [
       OTP,
       ".dr-input-otp-slot[data-active]",
-      "box-shadow: 0 0 0 1px hsl(var(--primary)), var(--field-shadow), var(--affordance-glow);",
+      "box-shadow: var(--field-focus-ring), var(--field-shadow), var(--affordance-glow);",
     ],
     [
       OTP,
       ".dr-input-otp-slot-separate:focus",
-      "box-shadow: 0 0 0 1px hsl(var(--primary)), var(--field-shadow), var(--affordance-glow);",
+      "box-shadow: var(--field-focus-ring), var(--field-shadow), var(--affordance-glow);",
     ],
     [
       OTP,

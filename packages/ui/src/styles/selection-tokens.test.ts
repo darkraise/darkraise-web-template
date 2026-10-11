@@ -436,11 +436,6 @@ const ALLOWED: Array<[string, string, string]> = [
     "the active annotation kind is tool chrome",
   ],
   [
-    "components/input-otp/input-otp.css",
-    ".dr-input-otp-slot[data-active]",
-    "the active slot is the caret position, drawn as field focus",
-  ],
-  [
     "components/json-tree-view/json-tree-view.css",
     '.dr-json-row[data-focused="true"]',
     "the focused JSON row is a keyboard position, not a selection",

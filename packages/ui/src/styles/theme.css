@@ -291,12 +291,29 @@
   outline: none;
   box-shadow: var(--field-shadow);
 
+  /* Before the focus rules, which tie on specificity: a focused field draws
+     its whole box in the focus colour whatever its resting border. Only the
+     top and the sides go, so the 3:1 bottom edge stays. */
+  [data-field-border="bottom"] & {
+    border-top-color: transparent;
+    border-inline-color: transparent;
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  [data-field-border="none"] & {
+    border-top-color: transparent;
+    border-inline-color: transparent;
+  }
+
   &:focus,
   &:focus-visible {
-    border-color: hsl(var(--primary));
-    box-shadow:
-      0 0 0 1px hsl(var(--primary)),
-      var(--field-shadow);
+    border-color: var(--field-focus-border);
+    background-image: linear-gradient(
+      var(--field-focus-fill),
+      var(--field-focus-fill)
+    );
+    box-shadow: var(--field-focus-ring), var(--field-shadow);
   }
 
   /* :is, not :where. A field declares its own border colours after this
@@ -318,11 +335,25 @@
 @utility focus-ring-input-wrapper {
   box-shadow: var(--field-shadow);
 
+  [data-field-border="bottom"] & {
+    border-top-color: transparent;
+    border-inline-color: transparent;
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  [data-field-border="none"] & {
+    border-top-color: transparent;
+    border-inline-color: transparent;
+  }
+
   &:focus-within {
-    border-color: hsl(var(--primary));
-    box-shadow:
-      0 0 0 1px hsl(var(--primary)),
-      var(--field-shadow);
+    border-color: var(--field-focus-border);
+    background-image: linear-gradient(
+      var(--field-focus-fill),
+      var(--field-focus-fill)
+    );
+    box-shadow: var(--field-focus-ring), var(--field-shadow);
   }
 
   &:focus-within:where([data-invalid], [aria-invalid="true"]) {
@@ -946,6 +977,11 @@
     --field-shadow: 0 0 transparent;
     --check-well-shadow: 0 0 transparent;
     --thumb-shadow: 0 0 transparent;
+    /* A focused field: its ring, its border and a fill laid over its own
+       background, transparent by default so the field keeps its rung. */
+    --field-focus-ring: 0 0 0 1px hsl(var(--primary));
+    --field-focus-border: hsl(var(--primary));
+    --field-focus-fill: transparent;
 
     /* Surface depth, flat by default; a style that gives surfaces a
        material (Tactile) binds these. */
@@ -1120,6 +1156,51 @@
 .dr-popover-content,
 .dr-floating-panel {
   --control-surface: var(--control-well);
+}
+
+/* The field fill signature. `surface` paints a field in the surface it sits
+   on rather than a rung below it; `translucent` lets a frosted canvas show
+   through. Each restates the containers above, and `.dr-card`, so it wins
+   over their own rung. */
+[data-field-fill="surface"] .dr-card {
+  --control-surface: var(--card);
+}
+
+[data-field-fill="surface"]
+  :is(
+    .dr-dialog-content,
+    .dr-sheet-content,
+    .dr-drawer-content,
+    .dr-popover-content,
+    .dr-floating-panel
+  ) {
+  --control-surface: var(--popover);
+}
+
+[data-field-fill="translucent"],
+[data-field-fill="translucent"]
+  :is(
+    .dr-card,
+    .dr-dialog-content,
+    .dr-sheet-content,
+    .dr-drawer-content,
+    .dr-popover-content,
+    .dr-floating-panel
+  ) {
+  --control-surface: var(--card) / 0.6;
+}
+
+[data-mode="dark"][data-field-fill="translucent"],
+[data-mode="dark"][data-field-fill="translucent"]
+  :is(
+    .dr-card,
+    .dr-dialog-content,
+    .dr-sheet-content,
+    .dr-drawer-content,
+    .dr-popover-content,
+    .dr-floating-panel
+  ) {
+  --control-surface: var(--foreground) / 0.06;
 }
 
 [data-density="compact"] {
