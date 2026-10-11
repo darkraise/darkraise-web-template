@@ -10,15 +10,17 @@ import { contrast, pixel, settle } from "./helpers/measure"
 
 const FIXTURE = "/e2e/fixtures/controls-behaviour.html"
 const MODES = ["light", "dark"] as const
+const STYLES = ["quiet", "flat", "tactile", "glass"] as const
 
 async function openInMode(
   page: Page,
   mode: (typeof MODES)[number],
+  style: (typeof STYLES)[number] = "quiet",
 ): Promise<void> {
-  await seedApp(page, { style: "quiet", mode })
+  await seedApp(page, { style, mode })
   await page.goto(FIXTURE)
   await page.getByTestId("controls-behaviour").waitFor()
-  await expect(page.locator("html")).toHaveAttribute("data-style", "quiet")
+  await expect(page.locator("html")).toHaveAttribute("data-style", style)
   await page.mouse.move(0, 0)
   await settle(page)
 }
@@ -145,21 +147,27 @@ test.describe("outline variants", () => {
       expect(await edgeAgainstFill(page, row)).toBeGreaterThanOrEqual(3)
     })
 
-    test(`pagination edges its other links · ${mode}`, async ({ page }) => {
-      await openInMode(page, mode)
-      const link = probe(
+    // The outline edge is the control's boundary, so every built-in style
+    // keeps it at 3:1 whatever it does to the face.
+    for (const style of STYLES) {
+      test(`pagination edges its other links · ${style} · ${mode}`, async ({
         page,
-        "pagination-outline",
-        ".dr-pagination-link",
-      ).first()
-      await expect(link).toHaveText("1")
-      const box = await boxOf(link)
-      const x = Math.floor(box.x)
-      const y = Math.floor(box.y + box.height / 2)
-      const edge = await pixel(page, x, y)
-      const ground = await pixel(page, x - 3, y)
-      expect(contrast(edge, ground)).toBeGreaterThanOrEqual(3)
-    })
+      }) => {
+        await openInMode(page, mode, style)
+        const link = probe(
+          page,
+          "pagination-outline",
+          ".dr-pagination-link",
+        ).first()
+        await expect(link).toHaveText("1")
+        const box = await boxOf(link)
+        const x = Math.floor(box.x)
+        const y = Math.floor(box.y + box.height / 2)
+        const edge = await pixel(page, x, y)
+        const ground = await pixel(page, x - 3, y)
+        expect(contrast(edge, ground)).toBeGreaterThanOrEqual(3)
+      })
+    }
   }
 })
 

@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test"
-import { boxOf, gotoApp, seedApp } from "./helpers/app"
+import { boxOf, gotoApp, kitLook, seedApp } from "./helpers/app"
 import { computed, settle } from "./helpers/measure"
 
 /**
@@ -20,6 +20,7 @@ async function openShell(page: Page, shellStyle: string, mode = "light") {
   await seedApp(page, { shellStyle, style: "quiet", mode })
   await gotoApp(page, "/")
   await expect(shell(page)).toHaveAttribute("data-shell-style", shellStyle)
+  await kitLook(page)
   await settle(page)
 }
 

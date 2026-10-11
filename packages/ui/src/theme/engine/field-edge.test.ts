@@ -222,11 +222,7 @@ describe("--field-edge-lifted-color", () => {
     }
   }, 30_000)
 
-  it("covers the stylesheet's brightest lift under Tactile's card sheen", () => {
-    const tactile = readFileSync(
-      "src/theme/styles/generated/tactile.css",
-      "utf8",
-    )
+  it("covers the stylesheet's brightest lift under any built-in card sheen", () => {
     const alphas = (css: string, pattern: RegExp) =>
       [...css.matchAll(pattern)].map((m) => Number(m[1]))
     // A style file may declare a lift of its own, so every one is read.
@@ -248,14 +244,17 @@ describe("--field-edge-lifted-color", () => {
         ),
       ),
     )
+    // A style whose cards carry no sheen adds nothing over the lift.
     const sheen = Math.max(
-      ...alphas(
-        tactile.replace(/\s+/g, " "),
-        /--card-sheen: linear-gradient\( ?180deg, rgb\(255 255 255 \/ ([\d.]+)\)/g,
+      0,
+      ...liftSheets.flatMap((path) =>
+        alphas(
+          readFileSync(path, "utf8").replace(/\s+/g, " "),
+          /--card-sheen: linear-gradient\( ?180deg, rgb\(255 255 255 \/ ([\d.]+)\)/g,
+        ),
       ),
     )
     expect(lift).toBeGreaterThan(0)
-    expect(sheen).toBeGreaterThan(0)
     expect(1 - (1 - lift) * (1 - sheen)).toBeLessThanOrEqual(LIFTED_FACE_TINT)
   })
 

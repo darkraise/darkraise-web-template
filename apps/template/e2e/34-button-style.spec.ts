@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test"
-import { seedApp } from "./helpers/app"
+import { kitLook, seedApp } from "./helpers/app"
 import { openControlFixture } from "./helpers/controls"
 import { computed, settle } from "./helpers/measure"
 
@@ -78,6 +78,8 @@ for (const mode of MODES) {
     test.beforeEach(async ({ page }) => {
       await seedApp(page, { style: "quiet", mode })
       await openControlFixture(page)
+      await kitLook(page)
+      await settle(page)
       await page.mouse.move(0, 0)
     })
 

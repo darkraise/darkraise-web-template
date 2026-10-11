@@ -1,5 +1,5 @@
 import { test, expect, type Locator, type Page } from "@playwright/test"
-import { gotoApp, seedApp } from "./helpers/app"
+import { gotoApp, kitLook, seedApp } from "./helpers/app"
 import { computed, contrast, rgbOf, settle } from "./helpers/measure"
 
 /**
@@ -16,6 +16,7 @@ const MODES = ["light", "dark"] as const
 async function open(page: Page, path: string, mode = "light") {
   await seedApp(page, { style: "quiet", mode })
   await gotoApp(page, path)
+  await kitLook(page)
   await settle(page)
 }
 
@@ -90,6 +91,7 @@ test("a style's status tokens reach banners, alerts and badges", async ({
   )
 
   await gotoApp(page, "/components/badges")
+  await kitLook(page)
   await settle(page)
   await page.addStyleTag({
     content: "@layer style.base { :root { --badge-radius: 9999px; } }",

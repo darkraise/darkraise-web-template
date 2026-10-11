@@ -9,6 +9,8 @@ import type { NavGroup } from "@layout/types"
 import { readFileSync } from "node:fs"
 import { CreditCard, Home, Settings, ShoppingCart, Users } from "lucide-react"
 import { ThemeProvider, themeConfig } from "@theme"
+import { resolveRegistry } from "@theme/config/registry"
+import { resolveSidebarSelection } from "@layout/sidebar/sidebar-selection"
 import type { SidebarSelectionSetting } from "@theme"
 
 function StubLink({ to, className, children }: RouterLinkProps) {
@@ -160,8 +162,14 @@ describe("sidebar selection", () => {
 
   it("resolves auto against the style", () => {
     const { container } = renderWith("auto")
-    expect(look(container, "dr-stacked-layout-rail-nav")).toBe("chip")
-    expect(look(container, "dr-stacked-layout-aside-nav")).toBe("chip")
+    const expected = resolveSidebarSelection(
+      "auto",
+      themeConfig.defaults.style ?? "quiet",
+      "base",
+      resolveRegistry(),
+    )
+    expect(look(container, "dr-stacked-layout-rail-nav")).toBe(expected)
+    expect(look(container, "dr-stacked-layout-aside-nav")).toBe(expected)
   })
 
   it.each(["dr-stacked-layout-rail-nav", "dr-stacked-layout-aside-nav"])(

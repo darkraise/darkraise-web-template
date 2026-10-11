@@ -601,8 +601,11 @@ const PROBES = {
 
 type Probe = keyof typeof PROBES
 
-/** An outset 1px layer: the field focus ring and the destructive OTP ring. */
-const OUTSET_RING = /0px 0px 0px 1px(?! inset)/
+/**
+ * An outset ring layer: the field focus ring (its width is the style's
+ * --field-focus-ring) and the destructive OTP ring.
+ */
+const OUTSET_RING = /0px 0px 0px [1-9]\d*px(?! inset)/
 
 async function setProbes(page: Page) {
   const pairs = Object.entries(PROBES).map(

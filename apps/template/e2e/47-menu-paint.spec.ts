@@ -1,5 +1,5 @@
 import { test, expect, type Locator, type Page } from "@playwright/test"
-import { seedApp } from "./helpers/app"
+import { kitLook, seedApp } from "./helpers/app"
 import { computed, settle } from "./helpers/measure"
 
 /**
@@ -17,6 +17,7 @@ async function openMenu(page: Page, style = "quiet", mode = "light") {
   await page.goto(FIXTURE)
   const menu = page.getByRole("menu")
   await expect(menu).toBeVisible()
+  await kitLook(page)
   await settle(page)
   const item = menu.getByRole("menuitem", { name: /Profile/ })
   await item.focus()
@@ -58,7 +59,7 @@ async function paint(locator: Locator) {
 
 for (const style of STYLES) {
   for (const mode of MODES) {
-    test(`a ${style} ${mode} menu row keeps its highlight and corner`, async ({
+    test(`the kit look keeps a menu row's highlight and corner under ${style} ${mode}`, async ({
       page,
     }) => {
       const { item } = await openMenu(page, style, mode)

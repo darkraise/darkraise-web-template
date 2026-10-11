@@ -3,6 +3,7 @@ import { renderHook } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 import { ThemeProvider, themeConfig } from "@theme"
 import type { AxisValues } from "@theme"
+import { BUILTIN_STYLES } from "@theme/styles"
 import { useSidebarSelection, useSidebarShadow } from "./useSidebarSelection"
 
 const withDefaults =
@@ -43,14 +44,14 @@ describe("useSidebarSelection", () => {
     const { result } = renderHook(() => useSidebarSelection(), {
       wrapper: withDefaults({ style: "glass" }),
     })
-    expect(result.current).toBe("frosted")
+    expect(result.current).toBe(BUILTIN_STYLES.glass.signatures?.navSelection)
   })
 
   it("follows a consumer style's nearest built-in ancestor under auto", () => {
     const { result } = renderHook(() => useSidebarSelection(), {
       wrapper: withDefaults({ style: "pale" }),
     })
-    expect(result.current).toBe("frosted")
+    expect(result.current).toBe(BUILTIN_STYLES.glass.signatures?.navSelection)
   })
 
   it("follows the active preset's look under auto", () => {

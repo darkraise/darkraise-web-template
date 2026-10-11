@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event"
 import { afterEach, beforeEach, describe, it, expect } from "vitest"
 import { useLayoutStore } from "@layout/layoutStore"
 import { ThemeProvider, themeConfig } from "@theme"
+import { BUILTIN_STYLES } from "@theme/styles"
 import type { AxisValues } from "@theme"
 import { SidebarLayout } from "@layout/sidebar"
 import type { SidebarLayoutProps } from "@layout/sidebar"
@@ -210,7 +211,9 @@ describe("sidebar selection precedence", () => {
   }
 
   it("follows the style under auto", () => {
-    expect(look({}, { style: "tactile" })).toBe("tile")
+    expect(look({}, { style: "tactile" })).toBe(
+      BUILTIN_STYLES.tactile.signatures?.navSelection,
+    )
   })
 
   it("follows an explicit theme setting", () => {

@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test"
-import { seedApp } from "./helpers/app"
+import { kitLook, seedApp } from "./helpers/app"
 import { computed, settle } from "./helpers/measure"
 
 /**
@@ -17,6 +17,7 @@ async function openDialog(page: Page, style = "quiet", mode = "light") {
   await page.goto(FIXTURE)
   const dialog = page.getByRole("dialog")
   await expect(dialog).toBeVisible()
+  await kitLook(page)
   await settle(page)
   return dialog
 }
@@ -47,7 +48,7 @@ const MODAL = [
 
 for (const style of STYLES) {
   for (const mode of MODES) {
-    test(`a ${style} ${mode} dialog keeps its overlay paint`, async ({
+    test(`the kit look keeps a dialog's overlay paint under ${style} ${mode}`, async ({
       page,
     }) => {
       const dialog = await openDialog(page, style, mode)

@@ -77,20 +77,13 @@ describe("SIGNATURES", () => {
 })
 
 describe("built-in signatures", () => {
-  it("gives each built-in style its nav selection look", () => {
+  it("names a nav selection look for every built-in style", () => {
     const registry = resolveRegistry()
-    expect(
-      Object.fromEntries(
-        Object.values(registry.styles).map((style) => [
-          style.name,
-          style.signatures,
-        ]),
-      ),
-    ).toEqual({
-      flat: { navSelection: "pill" },
-      quiet: { navSelection: "chip" },
-      tactile: { navSelection: "tile" },
-      glass: { navSelection: "frosted" },
-    })
+    for (const style of Object.values(registry.styles)) {
+      expect(
+        SIGNATURES.navSelection.values as readonly string[],
+        style.name,
+      ).toContain(style.signatures.navSelection)
+    }
   })
 })

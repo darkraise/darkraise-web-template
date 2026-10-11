@@ -1,4 +1,5 @@
 import { test, expect, type Locator, type Page } from "@playwright/test"
+import { resolveRegistry } from "darkraise-ui/theme-config"
 import { STYLES, type Style } from "./fixtures/theme"
 import {
   applyTheme,
@@ -576,19 +577,16 @@ test.describe("shell style geometry", () => {
 })
 
 test.describe("sidebar selection setting", () => {
-  const autoLook: Record<Style, string> = {
-    quiet: "chip",
-    flat: "pill",
-    tactile: "tile",
-    glass: "frosted",
-  }
+  const registry = resolveRegistry()
+  const autoLook = (style: Style) =>
+    registry.signaturesFor(style, "base").navSelection
   for (const style of STYLES) {
     test(`auto follows the style · ${style}`, async ({ page }) => {
       await seedApp(page, { style, sidebarSelection: "auto" })
       await gotoApp(page, "/")
       await expect(page.locator(".dr-sidebar-nav").first()).toHaveAttribute(
         "data-sidebar-selection",
-        autoLook[style],
+        autoLook(style),
       )
     })
   }

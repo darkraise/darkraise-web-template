@@ -6,6 +6,12 @@ import {
   type ConsoleMessage,
   type Request,
 } from "@playwright/test"
+import {
+  SIGNATURES,
+  signatureAttribute,
+  type SignatureKey,
+  type StampedSignature,
+} from "darkraise-ui/theme-config"
 import { LS_KEYS, SHELL_STYLE_KEY, type Font } from "../fixtures/theme"
 
 export interface Box {
@@ -127,6 +133,24 @@ export async function seedApp(
     }
     sessionStorage.setItem("e2e-seeded", "1")
   }, entries)
+}
+
+/**
+ * Shows the kit's own look on the loaded page: no style sheet matches the
+ * root and every signature sits at its kit default, whatever the built-in
+ * styles set. The engine's inline tokens stay those of the seeded style.
+ */
+export async function kitLook(page: Page) {
+  const stamped = (Object.keys(SIGNATURES) as SignatureKey[]).filter(
+    (key): key is StampedSignature => key !== "navSelection",
+  )
+  const defaults = stamped.map(
+    (key) => [signatureAttribute(key), SIGNATURES[key].default] as const,
+  )
+  await page.locator("html").evaluate((el, pairs) => {
+    el.setAttribute("data-style", "kit")
+    for (const [name, value] of pairs) el.setAttribute(name, value)
+  }, defaults)
 }
 
 /**

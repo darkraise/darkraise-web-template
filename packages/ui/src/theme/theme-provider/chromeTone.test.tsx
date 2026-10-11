@@ -9,10 +9,12 @@ const root = document.documentElement
 
 const config: ThemeConfig = {
   ...themeConfig,
+  defaults: { ...themeConfig.defaults, style: "plain" },
   styles: {
+    plain: { label: "Plain" },
     "night-rail": {
       label: "Night rail",
-      extends: "quiet",
+      extends: "plain",
       signatures: { railTone: "inverse", barTone: "inverse" },
     },
   },
@@ -72,7 +74,7 @@ describe("ThemeProvider chrome tone", () => {
     expect(token("--surface-header")).not.toBe(inverse)
     expect(token("--bar-foreground-hover")).toBe("0 0% 100%")
 
-    act(() => result.current.setStyle("quiet"))
+    act(() => result.current.setStyle("plain"))
     expect(token("--surface-sidebar")).toBe(pageRail)
     expect(token("--surface-header")).toBe(pageBar)
     expect(token("--bar-foreground")).toBe("")

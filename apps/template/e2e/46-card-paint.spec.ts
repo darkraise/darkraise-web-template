@@ -1,5 +1,5 @@
 import { test, expect, type Locator, type Page } from "@playwright/test"
-import { gotoApp, seedApp } from "./helpers/app"
+import { gotoApp, kitLook, seedApp } from "./helpers/app"
 import { computed, settle } from "./helpers/measure"
 
 /**
@@ -15,6 +15,7 @@ const MODES = ["light", "dark"] as const
 async function openCard(page: Page, style = "quiet", mode = "light") {
   await seedApp(page, { style, mode })
   await gotoApp(page, "/components/cards")
+  await kitLook(page)
   await settle(page)
   await page.evaluate(() => {
     const card = document.createElement("div")
@@ -67,7 +68,9 @@ const CARD = [
 
 for (const style of STYLES) {
   for (const mode of MODES) {
-    test(`a ${style} ${mode} card keeps its paint`, async ({ page }) => {
+    test(`the kit look keeps a card's paint under ${style} ${mode}`, async ({
+      page,
+    }) => {
       const card = await openCard(page, style, mode)
       const expected = await probe(
         page,

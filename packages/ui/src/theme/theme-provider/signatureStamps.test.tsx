@@ -10,15 +10,17 @@ import {
   signatureAttribute,
 } from "@theme/config/signatures"
 import { themeConfig, type ThemeConfig } from "@theme/themeConfig"
+import { BUILTIN_STYLES, STYLE_NAMES } from "@theme/styles"
 
 const root = document.documentElement
 
 const config: ThemeConfig = {
   ...themeConfig,
   styles: {
+    plain: { label: "Plain" },
     ledger: {
       label: "Ledger",
-      extends: "quiet",
+      extends: "plain",
       signatures: { cardFooter: "inset", tableHead: "ruled" },
     },
     "ledger-ink": {
@@ -78,14 +80,29 @@ afterEach(() => {
 })
 
 describe("ThemeProvider signature stamps", () => {
-  it("stamps every signature at its kit default under the built-in styles", () => {
-    for (const style of ["quiet", "flat", "tactile", "glass"]) {
+  it("stamps each built-in style's own signatures over the kit defaults", () => {
+    for (const style of STYLE_NAMES) {
       const { unmount } = renderHook(() => useTheme(), {
         wrapper: wrap({ ...themeConfig, defaults: { style } }),
       })
-      expect(stamps(), style).toEqual(DEFAULT_STAMPS)
+      const own = Object.fromEntries(
+        STAMPED_SIGNATURES.filter(
+          (key) => BUILTIN_STYLES[style].signatures?.[key] !== undefined,
+        ).map((key) => [
+          signatureAttribute(key),
+          BUILTIN_STYLES[style].signatures?.[key],
+        ]),
+      )
+      expect(stamps(), style).toEqual({ ...DEFAULT_STAMPS, ...own })
       unmount()
     }
+  })
+
+  it("stamps every signature at its kit default under a style that sets none", () => {
+    renderHook(() => useTheme(), {
+      wrapper: wrap({ ...config, defaults: { style: "plain" } }),
+    })
+    expect(stamps()).toEqual(DEFAULT_STAMPS)
   })
 
   it("stamps a style's signatures over its parent's and a preset's over both", () => {
@@ -107,7 +124,7 @@ describe("ThemeProvider signature stamps", () => {
       "data-banner-mark": "lamp",
     })
 
-    act(() => result.current.setStyle("quiet"))
+    act(() => result.current.setStyle("plain"))
     expect(stamps()).toEqual(DEFAULT_STAMPS)
   })
 })

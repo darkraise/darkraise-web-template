@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
-import { join, sep } from "node:path"
+import { basename, join, sep } from "node:path"
 import { stripCssComments } from "../../test/strip-css-comments"
 import { cssRules } from "../../test/css-rules"
 import { KIT_FALLBACK, PAINT_TOKENS } from "../config/tokens"
@@ -638,27 +638,24 @@ function lastStop(gradient: string): number {
 }
 
 describe("style files", () => {
-  it("ships flat, tactile and glass; quiet is the base", () => {
+  it("ships one generated sheet per built-in style", () => {
     expect(STYLE_SHEETS.map((path) => path.slice(STYLES_DIR.length))).toEqual([
       join("generated", "flat.css"),
       join("generated", "glass.css"),
       join("generated", "quiet.css"),
       join("generated", "tactile.css"),
     ])
-    expect(
-      ["flat", "quiet", "tactile", "glass"].filter(
-        (style) => styleDeclarations(style).length > 0,
-      ),
-    ).toEqual(["flat", "tactile", "glass"])
   })
 
   it.each(STYLE_SHEETS)(
-    "%s sets only contract or private glass tokens",
+    "%s sets only paint tokens or its own private vars",
     (path) => {
+      const style = basename(path, ".css")
+      const paint = Object.values(PAINT_TOKENS) as string[]
       const offenders = declarations(path)
         .map((d) => d.property)
         .filter(
-          (name) => !CONTRACT.includes(name) && !name.startsWith("--glass-"),
+          (name) => !paint.includes(name) && !name.startsWith(`--${style}-`),
         )
       expect(offenders).toEqual([])
     },

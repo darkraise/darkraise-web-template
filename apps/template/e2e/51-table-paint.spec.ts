@@ -1,5 +1,5 @@
 import { test, expect, type Locator, type Page } from "@playwright/test"
-import { gotoApp, seedApp } from "./helpers/app"
+import { gotoApp, kitLook, seedApp } from "./helpers/app"
 import { computed, settle } from "./helpers/measure"
 
 /**
@@ -12,6 +12,7 @@ import { computed, settle } from "./helpers/measure"
 async function openProbe(page: Page) {
   await seedApp(page, { style: "quiet", mode: "light" })
   await gotoApp(page, "/components/cards")
+  await kitLook(page)
   await settle(page)
   await page.evaluate(() => {
     const host = document.createElement("div")

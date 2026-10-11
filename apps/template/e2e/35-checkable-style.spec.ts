@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test"
-import { gotoApp, seedApp } from "./helpers/app"
+import { gotoApp, kitLook, seedApp } from "./helpers/app"
 import { openControlFixture } from "./helpers/controls"
 import { computed, settle } from "./helpers/measure"
 
@@ -56,6 +56,8 @@ for (const mode of MODES) {
     test.beforeEach(async ({ page }) => {
       await seedApp(page, { style: "quiet", mode })
       await openControlFixture(page)
+      await kitLook(page)
+      await settle(page)
     })
 
     test("the default tokens draw the checkables as before", async ({
@@ -179,6 +181,7 @@ for (const mode of MODES) {
 
     test("the tabs view pill takes a gradient face", async ({ page }) => {
       await gotoApp(page, "/components/tabs")
+      await kitLook(page)
       const pill = first(page, '.dr-tabs-indicator[data-variant="default"]')
       await pill.waitFor()
       await settle(page)
