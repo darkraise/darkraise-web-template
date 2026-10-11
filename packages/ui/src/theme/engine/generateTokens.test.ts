@@ -337,7 +337,7 @@ describe("generateTokens", () => {
     expect(declared("src/styles/theme.css", ":root")).toContain(
       "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
     )
-    const glassCss = "src/theme/styles/generated/builtins.css"
+    const glassCss = "src/theme/styles/generated/glass.css"
     expect(declared(glassCss, '[data-style="glass"]')).toEqual([
       "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
     ])

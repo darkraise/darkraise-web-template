@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
 import { compileThemeCss } from "../src/theme/config/compile"
 import { resolveRegistry } from "../src/theme/config/registry"
+import { STYLE_NAMES } from "../src/theme/styles"
 
 const registry = resolveRegistry()
 // The registry drops a definition with an error, which would silently drop
@@ -14,17 +15,19 @@ if (registry.issues.length > 0) {
   )
 }
 
-const target = new URL(
-  "../src/theme/styles/generated/builtins.css",
-  import.meta.url,
-)
-const css = compileThemeCss(registry, { include: "builtin" })
-// The kit's watch build reruns this after every rebuild while watching src/,
-// so rewriting an unchanged file would start the next rebuild, forever.
-if (existsSync(target) && readFileSync(target, "utf8") === css) {
-  console.log(`[generate-style-css] ${target.pathname} is up to date`)
-} else {
-  mkdirSync(new URL(".", target), { recursive: true })
-  writeFileSync(target, css)
-  console.log(`[generate-style-css] wrote ${target.pathname}`)
+for (const style of STYLE_NAMES) {
+  const target = new URL(
+    `../src/theme/styles/generated/${style}.css`,
+    import.meta.url,
+  )
+  const css = compileThemeCss(registry, { include: "builtin", styles: [style] })
+  // The kit's watch build reruns this after every rebuild while watching src/,
+  // so rewriting an unchanged file would start the next rebuild, forever.
+  if (existsSync(target) && readFileSync(target, "utf8") === css) {
+    console.log(`[generate-style-css] ${target.pathname} is up to date`)
+  } else {
+    mkdirSync(new URL(".", target), { recursive: true })
+    writeFileSync(target, css)
+    console.log(`[generate-style-css] wrote ${target.pathname}`)
+  }
 }

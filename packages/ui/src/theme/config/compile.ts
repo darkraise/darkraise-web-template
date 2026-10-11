@@ -49,15 +49,21 @@ function whenSelector(self: string, entry: WhenEntry): string {
   return selector
 }
 
+/**
+ * `styles` limits the sheet to those styles and the presets of them, so each
+ * built-in style can ship as a sheet of its own.
+ */
 export function compileThemeCss(
   registry: ThemeRegistry,
-  options: { include: "builtin" | "consumer" },
+  options: { include: "builtin" | "consumer"; styles?: readonly string[] },
 ): string {
   const builtIn = options.include === "builtin"
+  const listed = (style: string) =>
+    options.styles === undefined || options.styles.includes(style)
   const blocks: string[][] = []
 
   for (const style of Object.values(registry.styles)) {
-    if (style.builtIn !== builtIn) continue
+    if (style.builtIn !== builtIn || !listed(style.name)) continue
     const self = `[data-style="${style.name}"]`
     const { vars, tokens } = style
     blocks.push(
@@ -89,7 +95,7 @@ export function compileThemeCss(
   }
 
   for (const preset of Object.values(registry.presets)) {
-    if (preset.builtIn !== builtIn) continue
+    if (preset.builtIn !== builtIn || !listed(preset.style)) continue
     const self = `[data-preset="${preset.name}"]`
     const { tokens } = preset
     blocks.push(

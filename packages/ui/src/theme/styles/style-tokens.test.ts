@@ -593,11 +593,11 @@ const TACTILE_TOKENS = CONTROL_TOKENS.filter(
 const FULL_HEIGHT_SHEEN = ['[data-style="tactile"]', "--btn-neutral-sheen"]
 
 const STYLE_SHEETS = SHEETS.filter((path) => path.startsWith(STYLES_DIR))
-const GENERATED = join("src", "theme", "styles", "generated", "builtins.css")
+const GENERATED = join("src", "theme", "styles", "generated")
 
-/** A built-in style's declarations in the compiled sheet. */
+/** A built-in style's declarations in its compiled sheet. */
 function styleDeclarations(style: string): Declaration[] {
-  return declarations(GENERATED).filter((d) =>
+  return declarations(join(GENERATED, `${style}.css`)).filter((d) =>
     d.context.some((prelude) => prelude.includes(`[data-style="${style}"]`)),
   )
 }
@@ -624,7 +624,10 @@ function lastStop(gradient: string): number {
 describe("style files", () => {
   it("ships flat, tactile and glass; quiet is the base", () => {
     expect(STYLE_SHEETS.map((path) => path.slice(STYLES_DIR.length))).toEqual([
-      join("generated", "builtins.css"),
+      join("generated", "flat.css"),
+      join("generated", "glass.css"),
+      join("generated", "quiet.css"),
+      join("generated", "tactile.css"),
     ])
     expect(
       ["flat", "quiet", "tactile", "glass"].filter(
@@ -675,7 +678,7 @@ describe("style files", () => {
   ])(
     "%s sets every token Tactile changes, each to a real depth",
     (selector, layer, baseContext, expected) => {
-      const set = declarations(GENERATED).filter((d) =>
+      const set = declarations(join(GENERATED, "tactile.css")).filter((d) =>
         sameContext(d.context, [layer, selector]),
       )
       expect(set.map((d) => d.property).sort()).toEqual([...expected].sort())

@@ -7,7 +7,7 @@ import { stripCssComments } from "../../../test/strip-css-comments"
 // jsdom never parses CSS, so the compiled stylesheet text is what this
 // asserts. The fog alphas and edge speculars are pinned value by value:
 // nothing else checks the opacity tables.
-const GLASS = readFileSync("src/theme/styles/generated/builtins.css", "utf8")
+const GLASS = readFileSync("src/theme/styles/generated/glass.css", "utf8")
 const THEME = readFileSync("src/styles/theme.css", "utf8")
 
 interface Rule {

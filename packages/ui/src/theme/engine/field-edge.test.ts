@@ -224,7 +224,7 @@ describe("--field-edge-lifted-color", () => {
 
   it("covers the stylesheet's brightest lift under Tactile's card sheen", () => {
     const tactile = readFileSync(
-      "src/theme/styles/generated/builtins.css",
+      "src/theme/styles/generated/tactile.css",
       "utf8",
     )
     const alphas = (css: string, pattern: RegExp) =>
@@ -238,7 +238,7 @@ describe("--field-edge-lifted-color", () => {
         .map((file) => join("src", "theme", "styles", file)),
     ]
     expect(liftSheets).toContain(
-      join("src", "theme", "styles", "generated", "builtins.css"),
+      join("src", "theme", "styles", "generated", "tactile.css"),
     )
     const lift = Math.max(
       ...liftSheets.flatMap((path) =>

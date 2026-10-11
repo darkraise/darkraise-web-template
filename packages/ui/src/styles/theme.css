@@ -138,7 +138,10 @@
 @import "../theme/theme-switcher/theme-switcher.css";
 
 /* Built-in styles, compiled from theme/styles/builtin (manual; run generate:styles) */
-@import "../theme/styles/generated/builtins.css";
+@import "../theme/styles/generated/flat.css";
+@import "../theme/styles/generated/quiet.css";
+@import "../theme/styles/generated/tactile.css";
+@import "../theme/styles/generated/glass.css";
 
 /* Opaque, unblurred backdrop and translucency tokens under reduced
    transparency or more contrast, whatever a style or preset sets; a style's
