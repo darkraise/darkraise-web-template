@@ -64,7 +64,11 @@ describe("severity pairs", () => {
     expect(body).toContain(`--alert-subtle: var(--${status}-subtle);`)
     expect(body).toContain(`--alert-edge: var(--${status}-edge);`)
     expect(body).toContain(`--alert-text: var(--${status}-text);`)
-    expect(body).toContain("background-color: hsl(var(--alert-subtle));")
+    // The status fill is the fallback of the --banner-fill style token, and
+    // follows the surface alpha.
+    expect(body).toContain(
+      "background: var(--banner-fill, hsl(var(--alert-subtle) / var(--surface-fill-alpha)));",
+    )
     expect(body).toContain("border-inline-start-color: hsl(var(--alert-edge));")
     expect(body).not.toContain("background-image")
     expect(bodyOf(ALERT, `${variant} > svg`)).toContain(
@@ -81,13 +85,18 @@ describe("severity pairs", () => {
     expect(body).toContain(`--banner-subtle: var(--${status}-subtle);`)
     expect(body).toContain(`--banner-edge: var(--${status}-edge);`)
     expect(body).not.toContain("--banner-text")
-    expect(body).toContain("background-color: hsl(var(--banner-subtle));")
+    expect(body).toContain(
+      "background: var(--banner-fill, hsl(var(--banner-subtle) / var(--surface-fill-alpha)));",
+    )
     expect(body).toContain(
       "border-inline-start-color: hsl(var(--banner-edge));",
     )
     expect(body).not.toContain("background-image")
     expect(body).not.toMatch(/(?<![\w:-])bg-muted(?![\w-])/)
-    expect(body).toMatch(/(?<![\w:-])border-border(?![\w-])/)
+    // The neutral frame is the banner's own, read from --banner-border.
+    expect(bodyOf(BANNER, ".dr-banner")).toContain(
+      "border-color: var(--banner-border);",
+    )
     expect(bodyOf(BANNER, `${variant} .dr-banner-icon`)).toContain(
       "color: hsl(var(--banner-edge));",
     )
@@ -384,10 +393,23 @@ describe("overlay backdrop", () => {
     expect(body).not.toContain("backdrop-filter")
   })
 
-  // Page content keeps Quiet's recipe under every style.
+  // Banners and alerts frost only through the --surface-backdrop style
+  // token, as cards do; its default is none.
   it.each([
     [ALERT, ".dr-alert"],
     [BANNER, ".dr-banner"],
+  ])("%s %s frosts only through the surface backdrop", (path, selector) => {
+    const backdrops = [
+      ...bodyOf(path, selector).matchAll(/backdrop-filter:\s*([^;]+);/g),
+    ].map((m) => m[1])
+    expect(backdrops).toEqual([
+      "var(--surface-backdrop)",
+      "var(--surface-backdrop)",
+    ])
+  })
+
+  // Page content keeps Quiet's recipe under every style.
+  it.each([
     ["src/components/file-upload/file-upload.css", ".dr-file-upload-dropzone"],
     ["src/components/file-upload/file-upload.css", ".dr-file-upload-item"],
     ["src/components/menubar/menubar.css", ".dr-menubar"],

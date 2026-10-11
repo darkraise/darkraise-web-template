@@ -1,6 +1,15 @@
 @layer components {
   .dr-alert {
-    @apply bg-muted text-foreground [&>svg]:text-foreground relative w-full rounded-lg border p-4 [&>svg]:absolute [&>svg]:start-4 [&>svg]:top-4 [&>svg]:size-[var(--icon-size)] [&>svg+div]:translate-y-[-3px] [&>svg~*]:ps-7;
+    @apply text-foreground [&>svg]:text-foreground relative w-full rounded-[var(--banner-radius)] border p-4 [&>svg]:absolute [&>svg]:start-4 [&>svg]:top-4 [&>svg]:size-[var(--icon-size)] [&>svg+div]:translate-y-[-3px] [&>svg~*]:ps-7;
+    background: var(
+      --banner-fill,
+      hsl(var(--muted) / var(--surface-fill-alpha))
+    );
+    border-color: var(--banner-border);
+    box-shadow: var(--banner-shadow, none);
+    -webkit-backdrop-filter: var(--surface-backdrop);
+    backdrop-filter: var(--surface-backdrop);
+    --alert-lamp: hsl(var(--signal-fill));
   }
 
   /* Status variants share a left-rail pattern, driven by --alert-subtle /
@@ -35,8 +44,15 @@
   .dr-alert[data-variant="warning"],
   .dr-alert[data-variant="info"] {
     @apply border-s-4;
-    background-color: hsl(var(--alert-subtle));
+    background: var(
+      --banner-fill,
+      hsl(var(--alert-subtle) / var(--surface-fill-alpha))
+    );
     border-inline-start-color: hsl(var(--alert-edge));
+    --alert-lamp: hsl(var(--alert-edge));
+  }
+  .dr-alert[data-variant="info"] {
+    --alert-lamp: hsl(var(--signal-fill));
   }
 
   .dr-alert[data-variant="destructive"] > svg,
@@ -58,5 +74,68 @@
 
   .dr-alert-description {
     @apply text-sm [&_p]:leading-relaxed;
+  }
+
+  /* The banner mark and surface signatures, as Banner draws them. The lamp
+     takes the icon's place, so it sits where the icon would have. */
+  [data-banner-mark="rule"] .dr-alert[data-variant="destructive"],
+  [data-banner-mark="rule"] .dr-alert[data-variant="success"],
+  [data-banner-mark="rule"] .dr-alert[data-variant="warning"],
+  [data-banner-mark="rule"] .dr-alert[data-variant="info"] {
+    border-width: 0;
+    border-inline-start-width: 3px;
+    background: var(--banner-fill, transparent);
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+  }
+
+  [data-banner-mark="icon"] .dr-alert[data-variant="destructive"],
+  [data-banner-mark="icon"] .dr-alert[data-variant="success"],
+  [data-banner-mark="icon"] .dr-alert[data-variant="warning"],
+  [data-banner-mark="icon"] .dr-alert[data-variant="info"] {
+    border-inline-start-width: 1px;
+    border-color: hsl(var(--alert-edge) / 0.3);
+  }
+
+  [data-banner-mark="lamp"] .dr-alert[data-variant="destructive"],
+  [data-banner-mark="lamp"] .dr-alert[data-variant="success"],
+  [data-banner-mark="lamp"] .dr-alert[data-variant="warning"],
+  [data-banner-mark="lamp"] .dr-alert[data-variant="info"] {
+    border-inline-start-width: 1px;
+    border-inline-start-color: var(--banner-border);
+  }
+
+  /* The lamp replaces the icon: every alert keeps the icon's slot, with or
+     without an icon, and lights the dot in it. */
+  [data-banner-mark="lamp"] .dr-alert {
+    padding-inline-start: 2.75rem;
+  }
+
+  [data-banner-mark="lamp"] .dr-alert > * {
+    padding-inline-start: 0;
+  }
+
+  [data-banner-mark="lamp"] .dr-alert > svg {
+    display: none;
+  }
+
+  [data-banner-mark="lamp"] .dr-alert::before {
+    @apply rounded-full;
+    content: "";
+    position: absolute;
+    inset-inline-start: calc(1rem + (var(--icon-size) - 0.5rem) / 2);
+    top: calc(1rem + (var(--icon-size) - 0.5rem) / 2);
+    width: 0.5rem;
+    height: 0.5rem;
+    background: var(--alert-lamp);
+    box-shadow:
+      0 0 0 3px color-mix(in oklab, var(--alert-lamp) 18%, transparent),
+      0 0 8px color-mix(in oklab, var(--alert-lamp) 60%, transparent);
+  }
+
+  [data-banner-surface="card"] .dr-alert {
+    background: var(--banner-fill, var(--surface-card-fill));
+    border-color: var(--card-border);
+    box-shadow: var(--card-edge), var(--banner-shadow, 0 0 transparent);
   }
 }

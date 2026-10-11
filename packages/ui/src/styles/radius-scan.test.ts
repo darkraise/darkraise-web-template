@@ -24,7 +24,9 @@ const FULL_ROUND = new Map<string, string>([
   ["dr-angle-slider-pointer", "the dial's knob is a circle"],
   ["dr-avatar", "avatars are circles"],
   ["dr-avatar-fallback", "fills the circular avatar"],
+  ["dr-alert", "the lamp mark is a dot"],
   ["dr-badge-anchor-dot", "status dot"],
+  ["dr-banner", "the lamp mark is a dot"],
   ["dr-box", 'the consumer asked for rounded="full"'],
   ["dr-carousel-previous", "round arrow floating over the slide"],
   ["dr-carousel-next", "round arrow floating over the slide"],
@@ -306,9 +308,14 @@ describe("control radius readers", () => {
     )
   })
 
-  it("caps the badge radius so it is never rounder than a button", () => {
+  // A style may round badges up to a pill through --badge-radius; the
+  // default keeps them no rounder than a button.
+  it("caps the default badge radius so it is never rounder than a button", () => {
     expect(bodyOf("badge/badge.css", ".dr-badge")).toMatch(
-      /border-radius:\s*min\(var\(--radius-control\),\s*0\.375rem\)\s*;/,
+      /border-radius:\s*var\(--badge-radius\)\s*;/,
+    )
+    expect(readFileSync("src/components/badge/badge.css", "utf8")).toMatch(
+      /--badge-radius:\s*min\(var\(--radius-control\),\s*0\.375rem\)\s*;/,
     )
   })
 })
