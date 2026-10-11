@@ -588,4 +588,37 @@ test.describe("selection tokens and signatures", () => {
       await active.evaluate((el) => getComputedStyle(el).backgroundColor),
     ).toBe(fill)
   })
+
+  test("the top nav's active item stays readable on a toned bar", async ({
+    page,
+  }) => {
+    await page.addInitScript(() =>
+      localStorage.setItem("layout-variant", "top-nav"),
+    )
+    await seedApp(page, { style: "tactile", mode: "light" })
+    await gotoApp(page, "/orders")
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-bar-tone",
+      "inverse",
+    )
+    const topNav = page.locator(".dr-top-nav-layout-nav")
+    await expect(topNav).toHaveAttribute("data-sidebar-selection", "chip")
+    const active = topNav.locator(".dr-top-nav-layout-nav-item.active")
+    await expect(active).toHaveCount(1)
+    await settle(page)
+    const [card] = await resolveColours(topNav, ["hsl(var(--card))"])
+    expect(
+      await active.evaluate((el) => getComputedStyle(el).backgroundColor),
+    ).not.toBe(card)
+    // The bar paints its fill on a pseudo-element, which a walk up the
+    // item's ancestors cannot see, so the ground is read from a pixel.
+    const row = await box(active)
+    const ground = await pixel(
+      page,
+      Math.round(row.x + row.width - 5),
+      Math.round(row.y + row.height / 2),
+    )
+    const ink = rgbOf(await active.evaluate((el) => getComputedStyle(el).color))
+    expect(contrast(ink, ground)).toBeGreaterThanOrEqual(4.5)
+  })
 })
