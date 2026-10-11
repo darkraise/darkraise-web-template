@@ -102,4 +102,61 @@
       transparent
     );
   }
+
+  /* Table head signature. `band` (the default) is the muted header above;
+     `plain` drops the band; `ruled` drops it and rules the head off on the
+     strong border rung; `seam` rules it with a seam, a line with a
+     highlight under it. */
+  [data-table-head="plain"] .dr-table-header,
+  [data-table-head="ruled"] .dr-table-header,
+  [data-table-head="seam"] .dr-table-header {
+    background-color: transparent;
+  }
+
+  [data-table-head="ruled"] .dr-table-header tr {
+    border-bottom-color: hsl(var(--border-strong));
+  }
+
+  [data-table-head="seam"] .dr-table-header tr {
+    border-bottom-color: var(--seam);
+  }
+
+  [data-table-head="seam"] .dr-table-header .dr-table-head {
+    box-shadow: 0 1px 0 var(--seam-highlight);
+  }
+
+  /* Row selection signature. `tint` (the default) is the muted fill above;
+     `accent` takes the brand hue at low strength; `stripe` keeps the muted
+     fill and marks the row's leading edge with the accent. */
+  [data-row-selection="accent"] .dr-table-row[data-state="selected"] {
+    background-color: hsl(var(--primary) / 0.12);
+  }
+
+  [data-row-selection="stripe"]
+    .dr-table-row[data-state="selected"]
+    > :first-child {
+    box-shadow: inset 3px 0 0 hsl(var(--primary));
+  }
+
+  [data-row-selection="stripe"]
+    .dr-table-row[data-state="selected"]
+    > :first-child:dir(rtl) {
+    box-shadow: inset -3px 0 0 hsl(var(--primary));
+  }
+
+  /* Figure family signature: `mono` sets end-aligned (numeric) cells in the
+     mono face. */
+  [data-figure-family="mono"] .dr-table-cell[data-align="end"] {
+    font-family: var(--font-mono);
+  }
+
+  /* Label case signature: auto sets heads as written, as today; upper and
+     lower set their case. */
+  [data-label-case="upper"] .dr-table-head {
+    text-transform: uppercase;
+  }
+
+  [data-label-case="lower"] .dr-table-head {
+    text-transform: lowercase;
+  }
 }

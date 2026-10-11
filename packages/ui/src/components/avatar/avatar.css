@@ -20,4 +20,10 @@
   .dr-avatar-fallback {
     @apply bg-muted flex h-full w-full items-center justify-center rounded-full;
   }
+
+  /* Avatar shape signature: `square` rounds the avatar and its fallback to
+     half the radius, so the corners still follow the radius axis. */
+  [data-avatar-shape="square"] :is(.dr-avatar, .dr-avatar-fallback) {
+    border-radius: calc(var(--radius) / 2);
+  }
 }

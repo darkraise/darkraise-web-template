@@ -2037,6 +2037,7 @@
 
   body {
     @apply bg-background text-foreground antialiased;
+    font-weight: var(--type-ui-weight);
     font-feature-settings:
       "rlig" 1,
       "calt" 1;

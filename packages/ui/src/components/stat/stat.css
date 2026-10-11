@@ -1,3 +1,11 @@
+/* A style's weight for figures; the default is the semibold stat values
+   had before. */
+@layer base {
+  :root {
+    --figure-weight: 600;
+  }
+}
+
 @layer components {
   .dr-stat {
     @apply flex flex-col gap-1;
@@ -6,7 +14,8 @@
     @apply text-muted-foreground text-xs font-medium;
   }
   .dr-stat-value {
-    @apply text-2xl font-semibold tabular-nums;
+    @apply text-2xl tabular-nums;
+    font-weight: var(--figure-weight);
   }
   .dr-stat-change {
     @apply inline-flex items-center gap-1 text-xs font-medium;
@@ -19,5 +28,10 @@
   }
   .dr-stat-change[data-direction="flat"] {
     @apply text-muted-foreground;
+  }
+
+  /* Figure family signature: `mono` sets figures in the mono face. */
+  [data-figure-family="mono"] .dr-stat-value {
+    font-family: var(--font-mono);
   }
 }
