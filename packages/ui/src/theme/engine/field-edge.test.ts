@@ -245,15 +245,27 @@ describe("--field-edge-lifted-color", () => {
       ),
     )
     // A style whose cards carry no sheen adds nothing over the lift.
-    const sheen = Math.max(
-      0,
-      ...liftSheets.flatMap((path) =>
-        alphas(
-          readFileSync(path, "utf8").replace(/\s+/g, " "),
-          /--card-sheen: linear-gradient\( ?180deg, rgb\(255 255 255 \/ ([\d.]+)\)/g,
+    const normalised = liftSheets.map((path) =>
+      readFileSync(path, "utf8").replace(/\s+/g, " "),
+    )
+    const declared = normalised
+      .flatMap((css) =>
+        [...css.matchAll(/--card-sheen: ([^;]+);/g)].map((m) =>
+          (m[1] as string).trim(),
         ),
+      )
+      .filter((value) => value !== "none")
+    const parsed = normalised.flatMap((css) =>
+      alphas(
+        css,
+        /--card-sheen: linear-gradient\( ?180deg, rgb\(255 255 255 \/ ([\d.]+)\)/g,
       ),
     )
+    expect(
+      parsed.length,
+      `unparsed --card-sheen declarations: ${declared.join(" | ")}`,
+    ).toBe(declared.length)
+    const sheen = Math.max(0, ...parsed)
     expect(lift).toBeGreaterThan(0)
     expect(1 - (1 - lift) * (1 - sheen)).toBeLessThanOrEqual(LIFTED_FACE_TINT)
   })
