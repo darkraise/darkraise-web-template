@@ -576,6 +576,14 @@ test.describe("background style axis", () => {
       return main ? getComputedStyle(main, "::before").backgroundSize : null
     })
     expect(strip).toMatch(/^16px 16px, /)
+    // The strip's dots start where the page's do, so the two grids coincide.
+    const anchor = await page.evaluate(() => {
+      const main = document.querySelector("main[data-content]")
+      if (!main) return null
+      const style = getComputedStyle(main, "::before")
+      return `${style.backgroundAttachment} | ${style.backgroundPosition}`
+    })
+    expect(anchor).toMatch(/^fixed, scroll, .* \| 0px 0px, /)
   })
 })
 

@@ -1977,8 +1977,10 @@
     opacity: min(1, calc(var(--noise-opacity, 0) * 2));
   }
 
-  /* The strip stretches every canvas layer to its own width; the dot tile
-     keeps its 16px so the grid runs on unbroken under the strip. */
+  /* The strip stretches every canvas layer to its own width and centres it,
+     which would shift the dot tile off the page's grid. The tile keeps its
+     16px and starts at the viewport's corner, as the body's tile does, and
+     stays put while the content scrolls. */
   [data-gradient-pattern="dots"] main[data-content]::before {
     background-size:
       16px 16px,
@@ -1987,6 +1989,13 @@
       max(100%, 1440px) 100%,
       max(100%, 1440px) 100%;
     background-repeat: repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+    background-position:
+      0 0,
+      center top,
+      center top,
+      center top,
+      center top;
+    background-attachment: fixed, scroll, scroll, scroll, scroll;
   }
 
   .theme-transition {
