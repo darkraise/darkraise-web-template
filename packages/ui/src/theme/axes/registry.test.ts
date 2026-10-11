@@ -84,14 +84,14 @@ describe("axis registry", () => {
     expect(byKind("switch")).toEqual(["tintWithAccent"])
   })
 
-  it("gives every choice axis two to five values", () => {
+  it("gives every choice axis two to six values", () => {
     // A theme config supplies the presets; the registry holds only `base`.
     const choices = AXIS_KEYS.filter(
       (k) => AXES[k].control === "choice" && k !== "preset",
     )
     for (const key of choices) {
       expect(AXES[key].values.length, key).toBeGreaterThanOrEqual(2)
-      expect(AXES[key].values.length, key).toBeLessThanOrEqual(5)
+      expect(AXES[key].values.length, key).toBeLessThanOrEqual(6)
     }
   })
 

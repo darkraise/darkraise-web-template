@@ -69,6 +69,8 @@ export const GRADIENT_PATTERNS = [
   "aurora",
   "spotlight",
   "mesh",
+  "dots",
+  "grain",
 ] as const
 export type GradientPattern = (typeof GRADIENT_PATTERNS)[number]
 

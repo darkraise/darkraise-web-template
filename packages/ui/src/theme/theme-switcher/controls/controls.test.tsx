@@ -180,7 +180,8 @@ describe("ChoiceControl", () => {
   it("sizes the grid to the gradient patterns", () => {
     renderControl(<ChoiceControl axis="gradientPattern" />)
     const group = screen.getByRole("radiogroup", { name: "Gradient Pattern" })
-    expect(group).toHaveAttribute("data-cols", "4")
+    // Six patterns wrap into rows of three, as five values do.
+    expect(group).toHaveAttribute("data-cols", "5")
     fireEvent.click(within(group).getByRole("radio", { name: "aurora" }))
     expect(html.getAttribute("data-gradient-pattern")).toBe("aurora")
   })

@@ -325,7 +325,9 @@
       "blobs",
       "aurora",
       "spotlight",
-      "mesh"
+      "mesh",
+      "dots",
+      "grain"
     ],
     "default": "blobs",
     "storageKey": "theme-gradient-pattern",

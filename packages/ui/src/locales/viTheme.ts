@@ -42,6 +42,8 @@ export const viTheme: Record<keyof typeof themeMessages, string> = {
   aurora: "cực quang",
   spotlight: "đèn chiếu",
   mesh: "lưới",
+  dots: "chấm",
+  grain: "hạt",
   compact: "gọn",
   cozy: "vừa",
   comfortable: "thoải mái",

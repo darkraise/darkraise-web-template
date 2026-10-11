@@ -41,6 +41,8 @@ export const themeMessages = {
   aurora: "aurora",
   spotlight: "spotlight",
   mesh: "mesh",
+  dots: "dots",
+  grain: "grain",
   compact: "compact",
   cozy: "cozy",
   comfortable: "comfortable",
