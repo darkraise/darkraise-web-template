@@ -264,14 +264,12 @@
     --sidebar-frost-highlight: inset 0 1px 0 hsl(0 0% 100% / 0.07);
   }
 
-  /* The same lift on a toned bar's nav, from the bar's tiers. A page-tone
-     fill, edge or shadow a style sets would paint a light chip under the
-     bar's light ink, so the nav starts from the looks' own paints. */
+  /* The same lift on a toned bar's nav, from the bar's tiers. Each look then
+     takes its own paints outright: a fill, edge or shadow a style sets for
+     the rail through the public selection tokens would paint a light chip
+     under the bar's light ink. */
   :root:is([data-bar-tone="inverse"], [data-bar-tone="accent"])
     .dr-top-nav-layout-nav[data-sidebar-selection] {
-    --nav-selection-fill: initial;
-    --nav-selection-edge: initial;
-    --nav-selection-shadow: initial;
     --sidebar-chip: hsl(var(--bar-foreground-hover) / 0.12);
     --sidebar-chip-opaque: color-mix(
       in srgb,
@@ -288,6 +286,61 @@
     --sidebar-frost: hsl(var(--bar-foreground-hover) / 0.12);
     --sidebar-frost-edge: hsl(var(--bar-foreground-hover) / 0.16);
     --sidebar-frost-highlight: inset 0 1px 0 hsl(0 0% 100% / 0.07);
+  }
+
+  :root:is([data-bar-tone="inverse"], [data-bar-tone="accent"])
+    .dr-top-nav-layout-nav:is(
+      [data-sidebar-selection="chip"],
+      [data-sidebar-selection="key"]
+    ) {
+    --sidebar-active-surface: var(--sidebar-chip);
+    --sidebar-active-edge: var(--sidebar-chip-edge);
+    --sidebar-active-shadow: var(--sidebar-chip-shadow);
+  }
+
+  :root:is([data-bar-tone="inverse"], [data-bar-tone="accent"])
+    .dr-top-nav-layout-nav[data-sidebar-selection="tile"] {
+    --sidebar-active-surface: var(--sidebar-chip);
+    --sidebar-active-edge: var(--sidebar-chip-edge);
+    --sidebar-active-shadow: var(--sidebar-tile-shadow);
+  }
+
+  :root:is([data-bar-tone="inverse"], [data-bar-tone="accent"])
+    .dr-top-nav-layout-nav[data-sidebar-selection="tab"] {
+    --sidebar-active-surface: var(--sidebar-chip-opaque);
+    --sidebar-active-edge: var(--sidebar-chip-edge);
+    --sidebar-active-shadow: var(--sidebar-tab-shadow);
+  }
+
+  :root:is([data-bar-tone="inverse"], [data-bar-tone="accent"])
+    .dr-top-nav-layout-nav[data-sidebar-selection="frosted"] {
+    --sidebar-active-surface: var(--sidebar-frost);
+    --sidebar-active-edge: var(--sidebar-frost-edge);
+    --sidebar-active-shadow: var(--sidebar-frost-highlight);
+  }
+
+  :root:is([data-bar-tone="inverse"], [data-bar-tone="accent"])
+    .dr-top-nav-layout-nav:is(
+      [data-sidebar-selection="pill"],
+      [data-sidebar-selection="tint"]
+    ) {
+    --sidebar-active-surface: var(--sidebar-tint);
+    --sidebar-active-edge: transparent;
+    --sidebar-active-shadow: 0 0 transparent;
+  }
+
+  :root:is([data-bar-tone="inverse"], [data-bar-tone="accent"])
+    .dr-top-nav-layout-nav[data-sidebar-selection="accent"] {
+    --sidebar-active-surface: hsl(var(--primary) / 0.12);
+    --sidebar-active-edge: hsl(var(--primary) / 0.3);
+    --sidebar-active-shadow: 0 0 transparent;
+  }
+
+  :root:is([data-bar-tone="inverse"], [data-bar-tone="accent"])
+    .dr-top-nav-layout-nav[data-sidebar-selection="rule"] {
+    --sidebar-active-surface: transparent;
+    --sidebar-active-edge: transparent;
+    --sidebar-active-shadow: 0 0 transparent;
   }
 
   .dr-sidebar-popover-child {
