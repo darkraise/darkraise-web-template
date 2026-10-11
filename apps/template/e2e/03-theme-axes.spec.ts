@@ -71,9 +71,10 @@ const STYLE_SIGNATURES: Record<
   },
   tactile: {
     tokens: {
-      "--btn-shadow":
-        "0 1px 2px rgb(0 0 0 / 0.14), 0 2px 5px -2px rgb(0 0 0 / 0.14)",
-      "--field-shadow": "inset 0 1px 2px rgb(0 0 0 / 0.07)",
+      "--btn-shadow": "0 0 transparent",
+      "--btn-sheen":
+        "linear-gradient(180deg, transparent 75%, rgb(255 255 255 / 0.15))",
+      "--field-shadow": "0 0 transparent",
       "--chrome-backdrop": "none",
     },
     attrs: { "data-elevation": "standard", "data-background-style": "solid" },
@@ -190,18 +191,22 @@ test.describe("style axis", () => {
 
   test("styles set the button token family", async ({ page }) => {
     const shadows = new Map<Style, string>()
+    const edges = new Map<Style, string>()
     await seedApp(page)
     await gotoApp(page, PROBE)
     for (const style of STYLES) {
       await applyTheme(page, { style, mode: "light" })
       await reloadApp(page)
       shadows.set(style, await readToken(page, "--btn-shadow"))
+      edges.set(style, await readToken(page, "--btn-edge"))
     }
     expect(shadows.get("flat")).toContain("transparent")
     // Quiet's depth is tint steps and rules: its buttons cast no shadow.
     expect(shadows.get("quiet")).toContain("transparent")
-    expect(shadows.get("tactile")).not.toContain("transparent")
-    expect(shadows.get("tactile")).not.toBe(shadows.get("quiet"))
+    // A Tactile key casts no shadow: its depth is the rim lit from below.
+    expect(shadows.get("tactile")).toContain("transparent")
+    expect(edges.get("tactile")).toContain("inset 0 -1px 0 1px")
+    expect(edges.get("tactile")).not.toBe(edges.get("quiet"))
     // Glass restyles no button, so its buttons keep the kit's shadow.
     expect(shadows.get("glass")).not.toContain("transparent")
   })

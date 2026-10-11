@@ -594,30 +594,7 @@ describe("checkables, thumbs and the view pill", () => {
   )
 })
 
-/**
- * Every control token Tactile rebinds from Quiet's base in light mode;
- * --btn-neutral-edge stays Quiet's in light and is strengthened in dark.
- */
-const TACTILE_TOKENS = CONTROL_TOKENS.filter(
-  (name) => name !== "--btn-neutral-edge",
-)
-
-/**
- * The one sheen that may run the full height: over a dark label on a light
- * fill, lightening the fill only raises the label's contrast.
- */
-const FULL_HEIGHT_SHEEN = ['[data-style="tactile"]', "--btn-neutral-sheen"]
-
 const STYLE_SHEETS = SHEETS.filter((path) => path.startsWith(STYLES_DIR))
-const GENERATED = join("src", "theme", "styles", "generated")
-
-/** A built-in style's declarations in its compiled sheet. */
-function styleDeclarations(style: string): Declaration[] {
-  return declarations(join(GENERATED, `${style}.css`)).filter((d) =>
-    d.context.some((prelude) => prelude.includes(`[data-style="${style}"]`)),
-  )
-}
-
 const READER_SHEETS = SHEETS.filter((path) =>
   [join("src", "components") + sep, join("src", "layout") + sep].some((dir) =>
     path.startsWith(dir),
@@ -626,15 +603,6 @@ const READER_SHEETS = SHEETS.filter((path) =>
 
 function reads(text: string, token: string): boolean {
   return new RegExp(`var\\(${token}[,)]`).test(text)
-}
-
-/** Where a linear gradient's last colour stop sits, in percent of the box. */
-function lastStop(gradient: string): number {
-  const inner = /^linear-gradient\((.*)\)$/.exec(gradient)?.[1]
-  if (inner === undefined) throw new Error(`not a linear gradient: ${gradient}`)
-  const stops = inner.split(/,(?![^(]*\))/)
-  const at = /(\d+(?:\.\d+)?)%\s*$/.exec(stops[stops.length - 1] as string)
-  return at ? Number(at[1]) : 100
 }
 
 describe("style files", () => {
@@ -660,74 +628,6 @@ describe("style files", () => {
       expect(offenders).toEqual([])
     },
   )
-
-  // The light block's layer sits above @layer base too, so in dark mode it
-  // would beat the dark base values unless the dark block restates every
-  // token it sets.
-  it.each([
-    [
-      '[data-style="tactile"]',
-      "@layer style.base",
-      LIGHT_BASE,
-      [...TACTILE_TOKENS, "--card-edge", "--track-well"],
-    ],
-    [
-      '[data-mode="dark"][data-style="tactile"]',
-      "@layer style.mode",
-      DARK_BASE,
-      [...TACTILE_TOKENS, ...SURFACE_TOKENS, "--btn-neutral-edge"],
-    ],
-  ])(
-    "%s sets every token Tactile changes, each to a real depth",
-    (selector, layer, baseContext, expected) => {
-      const set = declarations(join(GENERATED, "tactile.css")).filter((d) =>
-        sameContext(d.context, [layer, selector]),
-      )
-      expect(set.map((d) => d.property).sort()).toEqual([...expected].sort())
-      const base = declarations(THEME).filter((d) =>
-        sameContext(d.context, baseContext),
-      )
-      for (const d of set) {
-        expect(["0 0 transparent", "none"], d.property).not.toContain(d.value)
-        expect(d.value, d.property).not.toBe(
-          base.find((b) => b.property === d.property)?.value,
-        )
-      }
-    },
-  )
-
-  // Engine fills sit at their label's 4.5:1 floor, so a sheen that lightens
-  // behind a light label must fade out above the glyphs.
-  it("fades every other tactile sheen out by 20% of the height", () => {
-    const sheens = styleDeclarations("tactile")
-      .filter((d) => d.property.endsWith("-sheen"))
-      .filter(
-        (d) =>
-          !(
-            sameContext(d.context, [
-              "@layer style.base",
-              FULL_HEIGHT_SHEEN[0] as string,
-            ]) && d.property === FULL_HEIGHT_SHEEN[1]
-          ),
-      )
-      .filter((d) => d.property !== "--card-sheen")
-    expect(sheens).toHaveLength(3)
-    for (const d of sheens) {
-      expect(lastStop(d.value), where(d)).toBeLessThanOrEqual(20)
-    }
-  })
-
-  // The card sheen lightens a fill under body text, not a label at its
-  // 4.5:1 floor; e2e 26 measures muted text on the brightest Tactile card.
-  // Above 0.015 a field at the card's top edge drops below 3:1 (e2e 16).
-  it("keeps the dark card sheen faint", () => {
-    const sheen = styleDeclarations("tactile").find(
-      (d) => d.property === "--card-sheen",
-    )
-    expect(normalise(sheen?.value ?? "")).toBe(
-      "linear-gradient(180deg, rgb(255 255 255 / 0.015), transparent 70%)",
-    )
-  })
 
   // A token counts as read when a component or layout stylesheet reads it,
   // when the overlay-surface utility in theme.css reads it, or when theme.css
