@@ -15,7 +15,9 @@ pnpm test:e2e:report                  # open the HTML report
 ```
 
 `playwright.config.ts` starts the dev server on `http://localhost:5176` and
-reuses one that is already running. Workers are capped at 4 because the whole
+reuses one that is already running. `E2E_PORT` moves both to another port, so
+runs from several worktrees can each own a server:
+`E2E_PORT=5211 pnpm test:e2e`. Workers are capped at 4 because the whole
 suite drives a single Vite dev server; above that its transform queue, not the
 app, becomes the thing under test.
 
