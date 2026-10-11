@@ -6,7 +6,8 @@ import { stripCssComments } from "../../test/strip-css-comments"
 //
 // `.dr-card` declares its own border-color, a (0,1,0) declaration that
 // outranks the global `* { @apply border-border }` rule (0,0,0), so the
-// default card traces its shape with the subtle rung rather than --border.
+// default card traces its shape with --card-border, whose kit default is
+// the subtle rung rather than --border.
 //
 // Prettier wraps long values across lines on commit, so every assertion is
 // made against whitespace-collapsed source.
@@ -28,10 +29,8 @@ function bodyOf(selector: string): string {
 }
 
 describe("Card border tiers", () => {
-  it("paints the default tier with the subtle border token", () => {
-    expect(bodyOf(".dr-card")).toMatch(
-      /border-color: hsl\(var\(--border-subtle\)\)/,
-    )
+  it("paints the default tier with the style's card border token", () => {
+    expect(bodyOf(".dr-card")).toMatch(/border-color: var\(--card-border\)/)
   })
 
   it("keeps the default tier visually distinct from `none`", () => {

@@ -1,11 +1,29 @@
-@layer components {
-  .dr-card {
-    @apply bg-card text-card-foreground rounded-[var(--radius)] border;
+/* Card paint a style may set. Each default reproduces the card as it was
+   before the style tokens, so a style that sets none of them changes
+   nothing; the seam pair only shows under the `seam` divider. */
+@layer base {
+  :root {
     /* The subtle rung rather than `--border`: the card's own background
        already separates it from the canvas, so the edge only has to trace
        the shape. `--border` sits two palette steps above the card fill and
        reads as a drawn outline rather than an edge. */
-    border-color: hsl(var(--border-subtle));
+    --card-border: hsl(var(--border-subtle));
+    --card-radius: var(--radius);
+    --card-rim: none;
+    --surface-backdrop: none;
+    --seam: hsl(var(--border));
+    --seam-highlight: transparent;
+  }
+}
+
+@layer components {
+  .dr-card {
+    @apply bg-card text-card-foreground rounded-[var(--card-radius)] border;
+    border-color: var(--card-border);
+    /* Anchors the rim ring below. */
+    position: relative;
+    -webkit-backdrop-filter: var(--surface-backdrop);
+    backdrop-filter: var(--surface-backdrop);
     /* Controls inside a card recess to the rung below it rather than
        sitting flush. Inherited, so nested content picks it up without
        every control needing to know it is in a card. */
@@ -14,6 +32,26 @@
     box-shadow: var(--card-edge);
     --card-lift-tint: transparent;
     transition: box-shadow var(--duration-normal) var(--ease-in-out);
+  }
+
+  /* A style's rim: a 1px ring over the border painted with any background,
+     a gradient included, and masked down to the ring so the fill shows
+     through. The default `none` paints nothing. */
+  .dr-card::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    padding: 1px;
+    border-radius: inherit;
+    background: var(--card-rim);
+    pointer-events: none;
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
   }
 
   /* Elevation prop — opt-in shadow. `auto` follows the active theme axis
@@ -93,6 +131,53 @@
   .dr-card[data-divided="true"] > .dr-card-header + .dr-card-footer,
   .dr-card[data-divided="true"] > .dr-card-content + .dr-card-footer {
     padding-top: var(--density-container-p);
+  }
+
+  /* Divider signature: a style divides every card the way the `divided`
+     prop does, with hairlines or with seams (a line over a highlight). The
+     rules match the prop's in specificity and come after them, so a seam
+     style also restyles a card that sets the prop. */
+  [data-card-divider="hairline"] .dr-card > .dr-card-header:not(:last-child) {
+    border-bottom: 1px solid hsl(var(--border-subtle));
+  }
+
+  [data-card-divider="hairline"] .dr-card > .dr-card-content + .dr-card-footer {
+    border-top: 1px solid hsl(var(--border-subtle));
+  }
+
+  [data-card-divider="seam"] .dr-card > .dr-card-header:not(:last-child) {
+    border-bottom: 1px solid var(--seam);
+    box-shadow: 0 1px 0 var(--seam-highlight);
+  }
+
+  [data-card-divider="seam"] .dr-card > .dr-card-content + .dr-card-footer {
+    border-top: 1px solid var(--seam);
+    box-shadow: inset 0 1px 0 var(--seam-highlight);
+  }
+
+  :is([data-card-divider="hairline"], [data-card-divider="seam"])
+    .dr-card
+    > .dr-card-header
+    + .dr-card-content,
+  :is([data-card-divider="hairline"], [data-card-divider="seam"])
+    .dr-card
+    > .dr-card-header
+    + .dr-card-footer,
+  :is([data-card-divider="hairline"], [data-card-divider="seam"])
+    .dr-card
+    > .dr-card-content
+    + .dr-card-footer {
+    padding-top: var(--density-container-p);
+  }
+
+  /* Footer signature: `inset` sets the footer on the page tone, ruled off
+     from the content and flush with the card's lower corners. */
+  [data-card-footer="inset"] .dr-card > .dr-card-footer {
+    padding-top: var(--density-container-p);
+    background: hsl(var(--background));
+    border-top: 1px solid var(--card-border);
+    border-end-start-radius: calc(var(--card-radius) - 1px);
+    border-end-end-radius: calc(var(--card-radius) - 1px);
   }
 
   /* Border variants. `none` clears only the colour so the 1px box is
