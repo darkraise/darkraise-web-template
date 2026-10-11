@@ -17,6 +17,14 @@ export type {
   WhenEntry,
 } from "./schema"
 export { KIT_FALLBACK, PAINT_TOKENS, type PaintToken } from "./tokens"
+export {
+  SIGNATURES,
+  signatureAttribute,
+  type SignatureKey,
+  type SignatureMap,
+  type SignatureValues,
+  type StampedSignature,
+} from "./signatures"
 export { defineStyle, definePreset, defineThemeConfig } from "./define"
 export { canonicalJson, definitionsHash, fnv1a36 } from "./hash"
 export {

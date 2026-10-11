@@ -3,6 +3,7 @@ import type { StyleDefinition } from "../../config/schema"
 /** Flat draws no depth on controls, in either mode. */
 export const flat: StyleDefinition = {
   label: "Flat",
+  signatures: { navSelection: "pill" },
   defaults: { elevation: "flat" },
   tokens: {
     shared: {

@@ -57,6 +57,8 @@ describe("built-in styles", () => {
       tokens: { shared: {}, light: {}, dark: {} },
       when: [],
       forcedFallback: {},
+      signatures: {},
+      hairlines: "opaque",
     })
   })
 
@@ -227,6 +229,7 @@ describe("presets", () => {
       style: "frost",
       axes: { accentColor: "violet" },
       tokens: { shared: {}, light: {}, dark: { cardSheen: "none" } },
+      signatures: {},
       shellStyle: "inset",
     })
   })
@@ -245,6 +248,81 @@ describe("presets", () => {
     expect(registry.presetFor("frost", "missing")).toBe("base")
     expect(registry.presetFor("frost", null)).toBe("base")
     expect(registry.presetFor("frost", undefined)).toBe("base")
+  })
+})
+
+describe("signatures", () => {
+  const definitions: ThemeDefinitions = {
+    styles: {
+      ledger: {
+        label: "Ledger",
+        signatures: { cardFooter: "inset", tableHead: "ruled" },
+        hairlines: "alpha",
+      },
+      "ledger-ink": {
+        label: "Ledger ink",
+        extends: "ledger",
+        signatures: { tableHead: "seam", navSelection: "tile" },
+      },
+    },
+    presets: {
+      night: {
+        label: "Night",
+        style: "ledger-ink",
+        signatures: { navSelection: "pill", bannerMark: "rule" },
+      },
+    },
+  }
+  const registry = build(definitions)
+
+  it("merges signatures per key along extends and inherits hairlines", () => {
+    expect(registry.styles.ledger?.signatures).toEqual({
+      cardFooter: "inset",
+      tableHead: "ruled",
+    })
+    expect(registry.styles["ledger-ink"]?.signatures).toEqual({
+      cardFooter: "inset",
+      tableHead: "seam",
+      navSelection: "tile",
+    })
+    expect(registry.styles["ledger-ink"]?.hairlines).toBe("alpha")
+    expect(registry.styles.plain?.hairlines).toBe("opaque")
+    expect(registry.presets.night?.signatures).toEqual({
+      navSelection: "pill",
+      bannerMark: "rule",
+    })
+  })
+
+  it("resolves each signature from the preset, then the style, then the default", () => {
+    const resolved = registry.signaturesFor("ledger-ink", "night")
+    expect(resolved).toMatchObject({
+      navSelection: "pill",
+      bannerMark: "rule",
+      tableHead: "seam",
+      cardFooter: "inset",
+      menuTone: "surface",
+      avatarShape: "round",
+    })
+    expect(Object.keys(resolved)).toHaveLength(24)
+  })
+
+  it("ignores a preset of another style and gives an unknown style the defaults", () => {
+    expect(registry.signaturesFor("ledger", "night")).toMatchObject({
+      navSelection: "chip",
+      bannerMark: "stripe",
+      tableHead: "ruled",
+    })
+    expect(registry.signaturesFor("missing", "base")).toEqual(
+      build().signaturesFor("plain", "base"),
+    )
+    expect(build().signaturesFor("plain", "base")).toMatchObject({
+      navSelection: "chip",
+      navMarker: "auto",
+      railTone: "page",
+      barTone: "page",
+      labelCase: "auto",
+      fieldFill: "well",
+    })
   })
 })
 
@@ -287,6 +365,13 @@ describe("hash", () => {
     }
     expect(build(definitions).hash).toBe(definitionsHash(definitions))
     expect(build(definitions).hash).not.toBe("")
+  })
+
+  it("changes when a signature changes", () => {
+    const signed = (cardFooter: "plain" | "inset"): ThemeDefinitions => ({
+      styles: { ledger: { label: "Ledger", signatures: { cardFooter } } },
+    })
+    expect(build(signed("inset")).hash).not.toBe(build(signed("plain")).hash)
   })
 })
 
@@ -450,6 +535,30 @@ describe("errors", () => {
         ? `"${name}" is a reserved name`
         : `"${name}" is not a kebab-case name`,
     ]),
+    [
+      "an unknown signature",
+      style({ signatures: loose({ cardGlow: "on" }) }),
+      "styles.bad.signatures.cardGlow",
+      '"cardGlow" is not a signature',
+    ],
+    [
+      "an unknown signature value",
+      style({ signatures: loose({ cardFooter: "perforated" }) }),
+      "styles.bad.signatures.cardFooter",
+      '"perforated" is not a valid cardFooter',
+    ],
+    [
+      "an unknown preset signature value",
+      preset({ signatures: loose({ navMarker: "led" }) }),
+      "presets.bad.signatures.navMarker",
+      '"led" is not a valid navMarker',
+    ],
+    [
+      "an unknown hairlines mode",
+      style({ hairlines: loose("dashed") }),
+      "styles.bad.hairlines",
+      '"dashed" is not a hairlines mode (expected opaque or alpha)',
+    ],
     [
       "a style named after a built-in",
       { styles: { frost: { label: "X" } } },

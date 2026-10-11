@@ -1,5 +1,6 @@
 import type { AxisKey, AxisValues } from "../axes/registry"
 import type { ShellStyle } from "../types"
+import type { SignatureMap } from "./signatures"
 import type { PaintToken } from "./tokens"
 
 /** Paint token values; free CSS strings, `""` included. */
@@ -57,6 +58,10 @@ export interface StyleDefinition {
   when?: readonly WhenEntry[]
   /** Applied under `prefers-reduced-transparency: reduce` or `prefers-contrast: more`. */
   forcedFallback?: { tokens: TokenMap }
+  /** Structural choices; a preset's own beat these, these beat the kit's. */
+  signatures?: SignatureMap
+  /** `alpha` draws borders and dividers as translucent lines over their surface. */
+  hairlines?: "opaque" | "alpha"
 }
 
 export interface PresetDefinition {
@@ -64,6 +69,7 @@ export interface PresetDefinition {
   style: string
   axes?: DefinableAxes
   tokens?: ModeTokens
+  signatures?: SignatureMap
   shellStyle?: ShellStyle
 }
 

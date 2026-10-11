@@ -13,6 +13,13 @@ import type {
   TokenMap,
   WhenEntry,
 } from "./schema"
+import {
+  SIGNATURE_KEYS,
+  SIGNATURES,
+  type SignatureKey,
+  type SignatureMap,
+  type SignatureValues,
+} from "./signatures"
 import { PAINT_TOKENS } from "./tokens"
 
 export interface ResolvedStyle {
@@ -27,6 +34,9 @@ export interface ResolvedStyle {
   tokens: Required<ModeTokens>
   when: readonly WhenEntry[]
   forcedFallback: TokenMap
+  /** Per key, the style's own value over each ancestor's. */
+  signatures: SignatureMap
+  hairlines: "opaque" | "alpha"
 }
 
 export interface ResolvedPreset {
@@ -36,6 +46,7 @@ export interface ResolvedPreset {
   style: string
   axes: DefinableAxes
   tokens: Required<ModeTokens>
+  signatures: SignatureMap
   shellStyle?: ShellStyle
 }
 
@@ -56,6 +67,11 @@ export interface ThemeRegistry {
   isValue(key: AxisKey, value: unknown): value is string
   /** `preset` when it names a preset of `style`, else `"base"`. */
   presetFor(style: string, preset: string | null | undefined): string
+  /**
+   * Every signature: the preset's value when `preset` belongs to `style`,
+   * else the style's, else the kit default.
+   */
+  signaturesFor(style: string, preset: string): SignatureValues
 }
 
 const MODE_KEYS = ["shared", "light", "dark"] as const
@@ -372,6 +388,25 @@ function checkWhen(
   })
 }
 
+function checkSignatures(c: Checker, path: string, signatures: unknown): void {
+  if (!isRecord(signatures)) return
+  for (const [key, value] of Object.entries(signatures)) {
+    if (!has(SIGNATURES, key)) {
+      c.issues.error(c.owner, `${path}.${key}`, `"${key}" is not a signature`)
+    } else if (
+      !(SIGNATURES[key as SignatureKey].values as readonly unknown[]).includes(
+        value,
+      )
+    ) {
+      c.issues.error(
+        c.owner,
+        `${path}.${key}`,
+        `"${String(value)}" is not a valid ${key}`,
+      )
+    }
+  }
+}
+
 function nameError(
   name: string,
   builtins: Readonly<Record<string, unknown>>,
@@ -497,6 +532,18 @@ export function buildRegistry(
       `${owner}.forcedFallback.tokens`,
       definition.forcedFallback?.tokens,
     )
+    checkSignatures(c, `${owner}.signatures`, definition.signatures)
+    if (
+      definition.hairlines !== undefined &&
+      definition.hairlines !== "opaque" &&
+      definition.hairlines !== "alpha"
+    ) {
+      issues.error(
+        owner,
+        `${owner}.hairlines`,
+        `"${String(definition.hairlines)}" is not a hairlines mode (expected opaque or alpha)`,
+      )
+    }
   }
 
   const styles: Record<string, ResolvedStyle> = {}
@@ -535,6 +582,8 @@ export function buildRegistry(
         ...parent?.forcedFallback,
         ...definition.forcedFallback?.tokens,
       },
+      signatures: { ...parent?.signatures, ...definition.signatures },
+      hairlines: definition.hairlines ?? parent?.hairlines ?? "opaque",
     }
     styles[name] = resolved
     return resolved
@@ -567,6 +616,7 @@ export function buildRegistry(
       )
     }
     checkAxes(c, `${owner}.axes`, definition.axes)
+    checkSignatures(c, `${owner}.signatures`, definition.signatures)
     if (
       definition.shellStyle !== undefined &&
       !(SHELL_STYLES as readonly unknown[]).includes(definition.shellStyle)
@@ -604,6 +654,11 @@ export function buildRegistry(
     return AXES[key].values
   }
 
+  const presetFor = (style: string, preset: string | null | undefined) =>
+    preset && has(presets, preset) && presets[preset]?.style === style
+      ? preset
+      : "base"
+
   return {
     styles: orderedStyles,
     presets,
@@ -612,10 +667,20 @@ export function buildRegistry(
     values,
     isValue: (key: AxisKey, value: unknown): value is string =>
       typeof value === "string" && values(key).includes(value),
-    presetFor: (style, preset) =>
-      preset && has(presets, preset) && presets[preset]?.style === style
-        ? preset
-        : "base",
+    presetFor,
+    signaturesFor: (style, preset) => {
+      const own = has(orderedStyles, style)
+        ? orderedStyles[style]?.signatures
+        : undefined
+      const chosen = presetFor(style, preset)
+      const fromPreset =
+        chosen === "base" ? undefined : presets[chosen]?.signatures
+      const out: Partial<Record<SignatureKey, string>> = {}
+      for (const key of SIGNATURE_KEYS) {
+        out[key] = fromPreset?.[key] ?? own?.[key] ?? SIGNATURES[key].default
+      }
+      return out as SignatureValues
+    },
   }
 }
 
@@ -634,6 +699,7 @@ function resolvePreset(
       light: { ...definition.tokens?.light },
       dark: { ...definition.tokens?.dark },
     },
+    signatures: { ...definition.signatures },
   }
   if (definition.shellStyle !== undefined)
     resolved.shellStyle = definition.shellStyle
