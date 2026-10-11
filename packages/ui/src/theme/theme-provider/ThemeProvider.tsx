@@ -343,6 +343,7 @@ export function ThemeProvider({
         darkAccentChroma: current.darkAccentChroma,
         tintWithAccent: current.tintWithAccent === "on",
         backgroundIntensity: current.backgroundIntensity,
+        hairlines: registry.styles[current.style]?.hairlines ?? "opaque",
       })
 
       applyTokens(tokens)
