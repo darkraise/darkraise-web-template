@@ -122,13 +122,18 @@ for (const mode of MODES) {
           "linear-gradient(rgb(7, 8, 9), rgb(7, 8, 9))",
         )
       }
-      // The inner input of a group leaves the fill to its wrapper.
-      const inner = page.locator(
+      // The inner input of a group leaves the fill to its wrapper. A
+      // translucent fill would show a second layer as a darker band.
+      await setTokens(page, { "--field-focus-fill": "rgba(7, 8, 9, 0.5)" })
+      for (const selector of [
         '[data-probe="number-input"] .dr-number-input-field',
-      )
-      await inner.focus()
-      await settle(page)
-      expect(await computed(inner, "background-image")).toBe("none")
+        '[data-probe="chips-card"] .dr-multi-select-input',
+      ]) {
+        const inner = page.locator(selector).first()
+        await inner.focus()
+        await settle(page)
+        expect(await computed(inner, "background-image"), selector).toBe("none")
+      }
     })
 
     test("field border bottom keeps only the bottom edge, squared", async ({
@@ -155,6 +160,26 @@ for (const mode of MODES) {
           await computed(box, "border-bottom-left-radius"),
           field.name,
         ).toBe("0px")
+      }
+      // The OTP slots square too: the separate variant sets its own radius.
+      for (const selector of [
+        '[data-probe="otp"] .dr-input-otp-slot',
+        '[data-case="otp"] .dr-input-otp-slot',
+      ]) {
+        const slots = page.locator(selector)
+        for (let index = 0; index < (await slots.count()); index++) {
+          for (const corner of [
+            "start-start",
+            "start-end",
+            "end-start",
+            "end-end",
+          ]) {
+            expect(
+              await computed(slots.nth(index), `border-${corner}-radius`),
+              `${selector} ${index} ${corner}`,
+            ).toBe("0px")
+          }
+        }
       }
       // A focused field draws its whole box in the focus colour.
       const box = await focusField(page, FIELDS[0])

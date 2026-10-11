@@ -90,6 +90,16 @@
     @apply rounded-[var(--field-radius)] border;
   }
 
+  /* After the separate rule, which outranks the plain bottom rule above. */
+  [data-field-border="bottom"]
+    .dr-input-otp-container[data-variant="separate"]
+    .dr-input-otp-slot {
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
+  }
+
   /* Invalid. The overlay variant's aria-invalid sits on its hidden input,
      so the slots read data-invalid on the container. The focused rule uses
      :focus alone: focus-scan reserves :focus-visible rings with a box-shadow
