@@ -45,7 +45,10 @@ const BUTTON = "src/components/button/button.css"
 describe("buttons at rest", () => {
   it("rims the outline variant with the neutral field edge", () => {
     const body = bodyOf(BUTTON, '.dr-btn[data-variant="outline"]')
-    expect(body).toContain("border-color: var(--field-edge);")
+    // A style may set the rim; unset, it is the field edge.
+    expect(body).toContain(
+      "border-color: var(--btn-neutral-border, var(--field-edge));",
+    )
     expect(body).not.toContain("--primary")
   })
 
