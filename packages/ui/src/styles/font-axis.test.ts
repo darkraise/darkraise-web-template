@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest"
 import { readFileSync } from "node:fs"
 import { AXES } from "@theme/axes/registry"
-import type { Font } from "@theme/types"
+import { BUILTIN_FONTS } from "@theme/config/fonts"
+import { FONTS, type Font } from "@theme/types"
 import { stripCssComments } from "../test/strip-css-comments"
 
 const css = stripCssComments(readFileSync("src/styles/theme.css", "utf8"))
@@ -37,7 +38,14 @@ describe("font axis tokens", () => {
   it("paints Inter on :root before any font is chosen", () => {
     const root = body(":root", css.indexOf("@layer base {"))
     expect(declaration(root, "--font-family-sans")).toBe(
-      `"${FAMILIES[AXES.font.default]}", ${FALLBACKS}`,
+      `"${FAMILIES[AXES.font.default as Font]}", ${FALLBACKS}`,
+    )
+  })
+
+  it("gives headings the sans face before a heading font is chosen", () => {
+    const root = body(":root", css.indexOf("@layer base {"))
+    expect(declaration(root, "--font-family-heading")).toBe(
+      "var(--font-family-sans)",
     )
   })
 
@@ -46,9 +54,33 @@ describe("font axis tokens", () => {
     (font) => {
       expect(
         declaration(body(`[data-font="${font}"]`), "--font-family-sans"),
+      ).toBe(`"${FAMILIES[font as Font]}", ${FALLBACKS}`)
+    },
+  )
+
+  it.each(FONTS)(
+    "switches --font-family-heading under data-heading-font=%s",
+    (font) => {
+      expect(
+        declaration(
+          body(`[data-heading-font="${font}"]`),
+          "--font-family-heading",
+        ),
       ).toBe(`"${FAMILIES[font]}", ${FALLBACKS}`)
     },
   )
+
+  it("declares no block for the body heading font", () => {
+    expect(css).not.toContain('[data-heading-font="body"]')
+  })
+
+  it("names each face as the font registry does", () => {
+    for (const font of FONTS) {
+      expect(BUILTIN_FONTS[font].family).toBe(
+        `"${FAMILIES[font]}", ${FALLBACKS}`,
+      )
+    }
+  })
 
   it("declares no block for the default face", () => {
     expect(css).not.toContain(`[data-font="${AXES.font.default}"]`)
@@ -57,7 +89,9 @@ describe("font axis tokens", () => {
   it("routes the sans, heading and mono utilities through the face tokens", () => {
     const theme = body("@theme inline")
     expect(declaration(theme, "--font-sans")).toBe("var(--font-family-sans)")
-    expect(declaration(theme, "--font-heading")).toBe("var(--font-family-sans)")
+    expect(declaration(theme, "--font-heading")).toBe(
+      "var(--font-family-heading)",
+    )
     expect(declaration(theme, "--font-mono")).toBe(
       '"JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace',
     )

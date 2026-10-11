@@ -84,6 +84,6 @@ export interface FontDefinition {
 export interface ThemeDefinitions {
   styles?: Readonly<Record<string, StyleDefinition>>
   presets?: Readonly<Record<string, PresetDefinition>>
-  /** Values the `font` axis accepts beside the built-in faces. */
+  /** Values the `font` and `headingFont` axes accept beside the built-in faces. */
   fonts?: Readonly<Record<string, FontDefinition>>
 }

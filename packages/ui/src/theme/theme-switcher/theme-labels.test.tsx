@@ -115,6 +115,13 @@ describe("ThemeSwitcher labels", () => {
     }
   })
 
+  it("labels the heading font axis and its body value in English and Vietnamese", () => {
+    expect(defaultLabels.theme.axisLabels.headingFont).toBe("Heading Font")
+    expect(viLocale.messages.theme.axisLabels.headingFont).toBe("Phông tiêu đề")
+    expect(themeMessages.body).toBe("body")
+    expect(viTheme.body).toBe("như nội dung")
+  })
+
   it("labels the style axes and the styles in English and Vietnamese", () => {
     expect(defaultLabels.theme.axisLabels.style).toBe("Style")
     expect(defaultLabels.theme.axisLabels.glassOpacity).toBe("Opacity")

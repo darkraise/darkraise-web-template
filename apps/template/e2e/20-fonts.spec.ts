@@ -85,6 +85,27 @@ test.describe("kit fonts", () => {
     expect(foreign).toEqual([])
   })
 
+  test("a stored heading font sets the headings and leaves the body face", async ({
+    page,
+  }) => {
+    await seedApp(page, {
+      style: "quiet",
+      mode: "light",
+      headingFont: "geist",
+    })
+    await gotoApp(page, PROBE)
+
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-heading-font",
+      "geist",
+    )
+    const heading = page.locator("h1").first()
+    await expect
+      .poll(() => heading.evaluate((el) => getComputedStyle(el).fontFamily))
+      .toMatch(/^"Geist Variable"/)
+    expect(await bodyFont(page)).toMatch(/^"Inter Variable"/)
+  })
+
   for (const { font, family, file } of SEEDED_FONTS) {
     test(`a stored ${font} font renders ${family} from the app's own origin`, async ({
       page,

@@ -426,7 +426,7 @@
   --color-chart-8: var(--chart-8);
 
   --font-sans: var(--font-family-sans);
-  --font-heading: var(--font-family-sans);
+  --font-heading: var(--font-family-heading);
   --font-mono:
     "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
 
@@ -478,6 +478,9 @@
   :root {
     --font-family-sans:
       "Inter Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    /* The heading-font axis's `body` value: the face the font axis picked.
+       The theme is inline, so --font-heading cannot be rebound at runtime. */
+    --font-family-heading: var(--font-family-sans);
     --neutral-1: 44 0% 98%;
     --neutral-2: 0 0% 100%;
     --neutral-3: 240 5% 96%;
@@ -1159,6 +1162,24 @@
 
 [data-font="ibm-plex-sans"] {
   --font-family-sans:
+    "IBM Plex Sans Variable", ui-sans-serif, system-ui, -apple-system,
+    sans-serif;
+}
+
+/* Heading-font axis. `body` declares no block: --font-family-heading keeps
+   reading the sans face the font axis picked. */
+[data-heading-font="inter"] {
+  --font-family-heading:
+    "Inter Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+[data-heading-font="geist"] {
+  --font-family-heading:
+    "Geist Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+[data-heading-font="ibm-plex-sans"] {
+  --font-family-heading:
     "IBM Plex Sans Variable", ui-sans-serif, system-ui, -apple-system,
     sans-serif;
 }

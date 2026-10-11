@@ -1,7 +1,6 @@
 import type {
   AccentColor,
   Density,
-  Font,
   GlassBlur,
   GlassOpacity,
   GlowLevel,
@@ -23,8 +22,10 @@ type Expect<T extends true> = T
 /** Compile-time only: `pnpm --filter darkraise-ui typecheck` fails if any entry is false. */
 export type RegistryTypeChecks = [
   Expect<Equal<ThemeContextValue["density"], Density>>,
-  Expect<Equal<ThemeContextValue["font"], Font>>,
-  Expect<Equal<ThemeContextValue["setFont"], (value: Font) => void>>,
+  Expect<Equal<ThemeContextValue["font"], string>>,
+  Expect<Equal<ThemeContextValue["setFont"], (value: string) => void>>,
+  Expect<Equal<ThemeContextValue["headingFont"], string>>,
+  Expect<Equal<ThemeContextValue["setHeadingFont"], (value: string) => void>>,
   Expect<Equal<ThemeContextValue["style"], string>>,
   Expect<Equal<ThemeContextValue["setStyle"], (value: string) => void>>,
   Expect<Equal<ThemeContextValue["preset"], string>>,

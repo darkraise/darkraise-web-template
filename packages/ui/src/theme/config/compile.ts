@@ -72,6 +72,9 @@ export function compileThemeCss(
             ...block(`[data-font="${font.name}"]`, [
               `--font-family-sans: ${font.family};`,
             ]),
+            ...block(`[data-heading-font="${font.name}"]`, [
+              `--font-family-heading: ${font.family};`,
+            ]),
           ]),
       ),
     )

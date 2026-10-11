@@ -134,10 +134,21 @@ export const AXES = {
   }),
   /** Sans and heading typeface; monospace text stays JetBrains Mono. */
   font: axis({
-    values: FONTS,
+    // Typed as plain strings: a theme config can register its own fonts.
+    values: FONTS as readonly string[],
     default: "inter",
     storageKey: "theme-font",
     attribute: "data-font",
+    layer: "brand",
+    control: "choice",
+  }),
+  /** Typeface of headings and titles; `body` keeps the sans face. */
+  headingFont: axis({
+    // Typed as plain strings: a theme config can register its own fonts.
+    values: ["body", ...FONTS] as readonly string[],
+    default: "body",
+    storageKey: "theme-heading-font",
+    attribute: "data-heading-font",
     layer: "brand",
     control: "choice",
   }),

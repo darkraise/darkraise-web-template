@@ -3,7 +3,7 @@ import type { FontDefinition } from "./schema"
 
 const SANS_FALLBACK = "ui-sans-serif, system-ui, -apple-system, sans-serif"
 
-/** The faces the kit ships; theme.css declares each one's `[data-font]` rule. */
+/** The faces the kit ships; theme.css declares each one's `[data-font]` and `[data-heading-font]` rules. */
 export const BUILTIN_FONTS: Readonly<Record<Font, FontDefinition>> = {
   inter: {
     label: "Inter",

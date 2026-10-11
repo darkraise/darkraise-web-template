@@ -52,6 +52,7 @@ export interface ThemeSeed {
   darkAccentChroma?: string
   tintWithAccent?: string
   font?: Font
+  headingFont?: string
 }
 
 const AUTH_USER = JSON.stringify({
@@ -92,6 +93,7 @@ function storageEntries(theme: ThemeSeed, authenticated: boolean) {
     ["darkAccentChroma", LS_KEYS.darkAccentChroma],
     ["tintWithAccent", LS_KEYS.tintWithAccent],
     ["font", LS_KEYS.font],
+    ["headingFont", LS_KEYS.headingFont],
   ]
   for (const [field, key] of map) {
     const value = theme[field]

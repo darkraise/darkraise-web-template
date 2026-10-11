@@ -46,6 +46,7 @@ const BRAND = [
   "Tint With Accent",
   "Style",
   "Font",
+  "Heading Font",
   "Radius",
   "Density",
   "Font Size",
