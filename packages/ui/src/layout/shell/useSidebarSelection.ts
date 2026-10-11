@@ -6,7 +6,7 @@ import { resolveSidebarSelection } from "@layout/sidebar/sidebar-selection"
 
 /**
  * The look a nav draws: the caller's override, else the theme's setting with
- * Auto resolved against the style.
+ * Auto resolved against the preset and the style.
  *
  * Reads the context directly rather than through `useTheme`, which throws
  * without a provider: a sidebar must still mount outside one.
@@ -19,6 +19,7 @@ export function useSidebarSelection(
   return resolveSidebarSelection(
     theme?.sidebarSelection ?? AXES.sidebarSelection.default,
     theme?.style ?? AXES.style.default,
+    theme?.preset ?? AXES.preset.default,
     theme?.registry,
   )
 }
