@@ -4,7 +4,8 @@
      the canvas, paints the same fill on ::before and sets the same bottom
      border, so nothing is painted twice. */
   .dr-layout-header {
-    @apply flex h-14 items-center gap-2 border-b px-4;
+    @apply flex items-center gap-2 border-b px-4;
+    height: var(--chrome-bar-height);
     background: var(--chrome-bar-bg);
     border-color: var(--chrome-edge);
   }

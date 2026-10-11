@@ -96,12 +96,21 @@ describe("chrome tokens", () => {
 
   // A gradient canvas shows through unfrosted chrome: the rails and the bar
   // give up their fill, and the seam takes a neutral derived from the engine
-  // rather than a fixed hue.
+  // rather than a fixed hue. A toned rail or bar keeps its fill, since its
+  // ink is solved on it.
   it("clears the chrome fill under a gradient background", () => {
     const gradient = block(baseLayer, /\[data-background-style="gradient"\] \{/)
-    expect(gradient.trim()).toBe(
-      "--chrome-rail-bg: transparent; --chrome-bar-bg: transparent; --chrome-edge: hsl(var(--neutral-7) / 0.6);",
+    expect(gradient.trim()).toBe("--chrome-edge: hsl(var(--neutral-7) / 0.6);")
+    const rail = block(
+      baseLayer,
+      /\[data-background-style="gradient"\]:not\(\s*\[data-rail-tone="inverse"\],\s*\[data-rail-tone="accent"\]\s*\) \{/,
     )
+    expect(rail.trim()).toBe("--chrome-rail-bg: transparent;")
+    const bar = block(
+      baseLayer,
+      /\[data-background-style="gradient"\]:not\(\s*\[data-bar-tone="inverse"\],\s*\[data-bar-tone="accent"\]\s*\) \{/,
+    )
+    expect(bar.trim()).toBe("--chrome-bar-bg: transparent;")
   })
 
   it("retires the region border token", () => {
@@ -153,41 +162,38 @@ describe("shell style rules", () => {
   })
 
   // The detached rule is (0,3,0) and replaces the region rule's box-shadow,
-  // so detached chrome restates its own layer under the separation shadow.
+  // so detached chrome restates its own layer, then the card edge a detached
+  // region reads as, under the separation shadow.
   it("keeps the chrome shadow on detached chrome", () => {
-    expect(shellStyles).toContain(
-      "box-shadow: var(--chrome-shadow), var(--shell-region-shadow);",
+    expect(rulesOf(shellStyles).map((r) => r.body)).toContain(
+      "box-shadow: var(--chrome-shadow), var(--card-edge), var(--shell-region-shadow);",
     )
   })
 
-  // The fill sits on a region's ::before, so a shell style that clears or
-  // tones the chrome rebinds the fill tokens; a background-color on the
-  // region would land under the fill and never show.
-  it("clears and tones chrome by rebinding the chrome tokens", () => {
-    const inset = rulesOf(shellStyles).find(
-      (r) =>
-        r.selector.includes(
-          '[data-shell-style="inset"] > [data-region="nav"]',
-        ) && r.body.includes("--chrome-rail-bg"),
+  // The fill sits on a region's ::before. A shell style that clears or tones
+  // the chrome drops the region's canvas and sets the ::before itself, never
+  // rebinding the chrome tokens on a region: a token rebound there would beat
+  // every style's value for it.
+  it("clears and tones chrome on the region, not through the chrome tokens", () => {
+    for (const rule of rulesOf(shellStyles)) {
+      expect(rule.body, rule.selector).not.toMatch(/(?:^|; )--chrome-[\w-]+:/)
+    }
+    for (const shell of ["inset", "flat"]) {
+      const region = rulesOf(shellStyles).find(
+        (r) =>
+          r.selector ===
+          `.dr-shell[data-shell-style="${shell}"] > :is([data-region="nav"], [data-region="subnav"], [data-region="panel"], [data-region="bar"])`,
+      )
+      expect(region?.body, shell).toBe("background: none;")
+    }
+    const painted = rulesOf(shellStyles).flatMap((r) =>
+      [...r.body.matchAll(/background(?:-color|-image)?\s*:\s*([^;]+);/g)].map(
+        (m) => m[1],
+      ),
     )
-    expect(inset?.body).toBe(
-      "--chrome-rail-bg: transparent; --chrome-bar-bg: transparent; --chrome-canvas: none;",
-    )
-    const flat = rulesOf(shellStyles).find(
-      (r) =>
-        r.selector.includes(
-          '[data-shell-style="flat"] > [data-region="nav"]',
-        ) && r.body.includes("--chrome-rail-bg"),
-    )
-    expect(flat?.body).toBe(
-      "--chrome-rail-bg: var(--shell-flat-chrome, hsl(var(--muted))); --chrome-bar-bg: var(--shell-flat-chrome, hsl(var(--muted))); --chrome-canvas: none;",
-    )
-    const painted = rulesOf(shellStyles).filter((r) =>
-      /background(?:-color|-image)?\s*:/.test(r.body),
-    )
-    for (const rule of painted) {
-      expect(rule.selector, "only the handle is painted directly").toMatch(
-        /^(?:\.dr-shell\[data-shell-style="[a-z]+"\] > \[data-region="handle"\](?:, )?)+$/,
+    for (const value of painted) {
+      expect(value).toMatch(
+        /^(?:none|transparent|var\(--chrome-flat-fill\)|var\(--shell-content-fill\))$/,
       )
     }
   })

@@ -10,7 +10,8 @@
   }
 
   .dr-sidebar-layout-aside-header {
-    @apply flex h-14 items-center border-b;
+    @apply flex items-center border-b;
+    height: var(--chrome-bar-height);
   }
 
   .dr-sidebar-layout-aside[data-collapsed="true"]
