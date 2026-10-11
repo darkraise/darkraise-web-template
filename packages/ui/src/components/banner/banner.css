@@ -55,7 +55,8 @@
   }
   /* All four severity variants share the same shape: a 4px left rail at
    * full accent saturation (Alert's convention), the neutral 1px frame on
-   * the remaining sides, and the opaque status fill. The thick
+   * the remaining sides, and the status fill, which follows
+   * --surface-fill-alpha and is opaque at its default. The thick
    * saturated left bar is what gives destructive its red — and warning its
    * amber, success its green, info its blue — without flooding the banner
    * with the variant colour. */

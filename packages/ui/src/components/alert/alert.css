@@ -37,8 +37,9 @@
     --alert-text: var(--info-text);
   }
 
-  /* The status fill is opaque and the text is solved on it, so nothing
-     reads through. */
+  /* The status fill follows --surface-fill-alpha: opaque at its default of 1,
+     translucent only where a style lowers it. The text is solved on the
+     fill. */
   .dr-alert[data-variant="destructive"],
   .dr-alert[data-variant="success"],
   .dr-alert[data-variant="warning"],

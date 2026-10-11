@@ -1180,9 +1180,10 @@
 }
 
 /* The field fill signature. `surface` paints a field in the surface it sits
-   on rather than a rung below it; `translucent` lets a frosted canvas show
-   through. Each restates the containers above, and `.dr-card`, so it wins
-   over their own rung. */
+   on rather than a rung below it, inside a card or an overlay; on the bare
+   page a field keeps the default rung. `translucent` lets a frosted canvas
+   show through. Each restates the containers above, and `.dr-card`, so it
+   wins over their own rung. */
 [data-field-fill="surface"] .dr-card {
   --control-surface: var(--card);
 }

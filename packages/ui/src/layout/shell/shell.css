@@ -91,8 +91,9 @@
      the fill's z-index: -1 above the region's background and below its
      content whether or not a backdrop filter makes the region a stacking
      context. These sit at (0,2,0); the shell styles (shell-styles.css,
-     (0,3,0)) decide which edges draw and rebind the fill tokens where a
-     region gives up or tones its surface. */
+     (0,3,0)) decide which edges draw and repaint the fill layer directly,
+     with none or the flat fill, where a region gives up or tones its
+     surface. */
   .dr-shell
     > :is(
       [data-region="nav"],
