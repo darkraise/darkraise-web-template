@@ -33,6 +33,8 @@ export interface GenerateTokensInput {
   darkAccentChroma: DarkAccentChroma
   tintWithAccent: boolean
   backgroundIntensity?: BackgroundIntensity
+  /** `alpha` draws the border tokens as the foreground ink at a solved alpha. */
+  hairlines?: "opaque" | "alpha"
 }
 
 /** The ramp every neutral step and text tier is drawn from. */
@@ -201,6 +203,42 @@ function ensureContrastAll(
   )
 }
 
+const HAIRLINE_TOKENS = [
+  "--border",
+  "--border-subtle",
+  "--border-default",
+  "--border-strong",
+] as const
+
+/**
+ * `line` redrawn as `ink` at the least alpha whose composite over each ground
+ * reaches the contrast the opaque line has against that ground, so a
+ * translucent hairline is never fainter than the opaque one it replaces and
+ * matches it on the ground that binds.
+ */
+function alphaHairline(
+  line: string,
+  ink: string,
+  grounds: readonly string[],
+): string {
+  let amount = 0
+  for (const ground of grounds) {
+    const want = contrastRatio(line, ground)
+    let low = 0
+    let high = 1
+    for (let i = 0; i < 20; i++) {
+      const mid = (low + high) / 2
+      if (contrastRatio(composite(ground, ink, mid), ground) >= want) {
+        high = mid
+      } else {
+        low = mid
+      }
+    }
+    amount = Math.max(amount, high)
+  }
+  return `${ink} / ${Math.ceil(amount * 1000) / 1000}`
+}
+
 /**
  * What a hover or press mixes into a fill: the end of the lightness range away
  * from its label. A fill sits at its label's contrast floor, so mixing toward
@@ -223,6 +261,7 @@ export function generateTokens(
     darkAccentChroma,
     tintWithAccent,
     backgroundIntensity = "balanced",
+    hairlines = "opaque",
   } = input
 
   const accent = resolveAccentScale(accentColor, surfaceColor)
@@ -357,6 +396,15 @@ export function generateTokens(
 
     ...resolveSfHueTokens(neutral, backgroundStyle),
   })
+
+  if (hairlines === "alpha") {
+    for (const token of HAIRLINE_TOKENS) {
+      tokens[token] = alphaHairline(tokens[token] as string, n(12), [
+        card,
+        background,
+      ])
+    }
+  }
 
   return tokens
 }
