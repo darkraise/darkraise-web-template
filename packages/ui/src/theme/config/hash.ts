@@ -34,8 +34,11 @@ export function fnv1a36(text: string): string {
 export function definitionsHash(definitions?: ThemeDefinitions): string {
   const styles = definitions?.styles
   const presets = definitions?.presets
+  const fonts = definitions?.fonts
   const empty = (record: object | undefined) =>
     record === undefined || Object.keys(record).length === 0
-  if (empty(styles) && empty(presets)) return ""
-  return fnv1a36(canonicalJson({ styles, presets }))
+  if (empty(styles) && empty(presets) && empty(fonts)) return ""
+  // An absent member drops out of the JSON, so a config without fonts keeps
+  // the hash it had before fonts existed.
+  return fnv1a36(canonicalJson({ styles, presets, fonts }))
 }

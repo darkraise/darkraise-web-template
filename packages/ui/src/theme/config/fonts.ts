@@ -1,0 +1,23 @@
+import type { Font } from "../types"
+import type { FontDefinition } from "./schema"
+
+const SANS_FALLBACK = "ui-sans-serif, system-ui, -apple-system, sans-serif"
+
+/** The faces the kit ships; theme.css declares each one's `[data-font]` rule. */
+export const BUILTIN_FONTS: Readonly<Record<Font, FontDefinition>> = {
+  inter: {
+    label: "Inter",
+    family: `"Inter Variable", ${SANS_FALLBACK}`,
+    role: "sans",
+  },
+  geist: {
+    label: "Geist",
+    family: `"Geist Variable", ${SANS_FALLBACK}`,
+    role: "sans",
+  },
+  "ibm-plex-sans": {
+    label: "IBM Plex Sans",
+    family: `"IBM Plex Sans Variable", ${SANS_FALLBACK}`,
+    role: "sans",
+  },
+}

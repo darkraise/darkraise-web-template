@@ -6,6 +6,7 @@ import type { ThemeDefinitions } from "./schema"
 
 export type {
   DefinableAxes,
+  FontDefinition,
   ModeTokens,
   ModeVars,
   PresetDefinition,
@@ -25,12 +26,18 @@ export {
   type SignatureValues,
   type StampedSignature,
 } from "./signatures"
-export { defineStyle, definePreset, defineThemeConfig } from "./define"
+export {
+  defineFont,
+  definePreset,
+  defineStyle,
+  defineThemeConfig,
+} from "./define"
 export { canonicalJson, definitionsHash, fnv1a36 } from "./hash"
 export {
   buildRegistry,
   resolveRegistry,
   type DefinitionIssue,
+  type ResolvedFont,
   type ResolvedPreset,
   type ResolvedStyle,
   type ThemeRegistry,
@@ -52,7 +59,7 @@ export function themeStyleText(config: ThemeDefinitions): string {
 
 /** The pre-render script `darkraisePrerender` injects, for apps that render the document themselves. */
 export function themePrerenderScript(
-  config?: Pick<ThemeConfig, "defaults" | "styles" | "presets">,
+  config?: Pick<ThemeConfig, "defaults" | "styles" | "presets" | "fonts">,
 ): string {
   return buildPrerenderScript(config)
 }

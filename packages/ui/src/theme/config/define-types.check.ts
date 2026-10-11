@@ -1,4 +1,9 @@
-import { definePreset, defineStyle, defineThemeConfig } from "./define"
+import {
+  defineFont,
+  definePreset,
+  defineStyle,
+  defineThemeConfig,
+} from "./define"
 import type { StyleDefinition } from "./schema"
 
 type Equal<A, B> =
@@ -56,6 +61,12 @@ export const rejected = [
     label: "Unknown hairlines mode",
     // @ts-expect-error -- hairlines are opaque or alpha
     hairlines: "dashed",
+  }),
+  defineFont({
+    label: "Unknown role",
+    family: "monospace",
+    // @ts-expect-error -- a font is a sans, serif or display face
+    role: "mono",
   }),
   definePreset({
     label: "Style axis",
