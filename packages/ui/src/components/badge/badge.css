@@ -1,7 +1,15 @@
+/* A style or preset may round badges past the control radius, up to a
+   pill; the default keeps the 6px cap the badge has always had. */
+@layer base {
+  :root {
+    --badge-radius: min(var(--radius-control), 0.375rem);
+  }
+}
+
 @layer components {
   .dr-badge {
     @apply inline-flex items-center gap-1 border transition-colors [&_svg]:shrink-0;
-    border-radius: min(var(--radius-control), 0.375rem);
+    border-radius: var(--badge-radius);
   }
 
   /* Sizes. A minimum height, so a label that wraps grows the badge rather
@@ -424,5 +432,30 @@
   .dr-badge-anchor-indicator--hidden,
   .dr-badge-anchor-dot[data-hidden="true"] {
     @apply scale-0 opacity-0;
+  }
+
+  /* Badge style restyles the subtle status badges, the kit's default status
+     look: tint drops the frame, chip sets the status text on a neutral
+     chip, outline keeps the frame and text and drops the fill. */
+  [data-badge-style="tint"] .dr-badge[data-variant="destructive-subtle"],
+  [data-badge-style="tint"] .dr-badge[data-variant="success-subtle"],
+  [data-badge-style="tint"] .dr-badge[data-variant="warning-subtle"],
+  [data-badge-style="tint"] .dr-badge[data-variant="info-subtle"] {
+    border-color: transparent;
+  }
+
+  [data-badge-style="chip"] .dr-badge[data-variant="destructive-subtle"],
+  [data-badge-style="chip"] .dr-badge[data-variant="success-subtle"],
+  [data-badge-style="chip"] .dr-badge[data-variant="warning-subtle"],
+  [data-badge-style="chip"] .dr-badge[data-variant="info-subtle"] {
+    background-color: hsl(var(--muted));
+    border-color: transparent;
+  }
+
+  [data-badge-style="outline"] .dr-badge[data-variant="destructive-subtle"],
+  [data-badge-style="outline"] .dr-badge[data-variant="success-subtle"],
+  [data-badge-style="outline"] .dr-badge[data-variant="warning-subtle"],
+  [data-badge-style="outline"] .dr-badge[data-variant="info-subtle"] {
+    background-color: transparent;
   }
 }

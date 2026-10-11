@@ -1,11 +1,34 @@
+/* Status surfaces a style or preset may set; Alert reads the same tokens.
+   A style's tokens are declared on :root, where no variant's status colour
+   exists, so the fill defaults to `initial` and each variant falls back to
+   its own status fill. The shadow defaults to `initial` too, so a banner
+   keeps no shadow at all and a list can still append it. */
+@layer base {
+  :root {
+    --banner-radius: var(--radius);
+    --banner-fill: initial;
+    --banner-border: hsl(var(--border));
+    --banner-shadow: initial;
+  }
+}
+
 @layer components {
   .dr-banner {
-    /* `rounded-lg` matches Alert and tracks the theme picker's radius axis
-     * via --radius-lg → --radius. */
-    @apply flex items-center gap-3 rounded-lg border px-4 py-2 text-sm;
+    @apply flex items-center gap-3 rounded-[var(--banner-radius)] border px-4 py-2 text-sm;
+    border-color: var(--banner-border);
+    box-shadow: var(--banner-shadow, none);
+    -webkit-backdrop-filter: var(--surface-backdrop);
+    backdrop-filter: var(--surface-backdrop);
+    /* The lamp mark's colour: the signal for a neutral or info banner, the
+       status colour for the others. */
+    --banner-lamp: hsl(var(--signal-fill));
   }
   .dr-banner[data-variant="default"] {
-    @apply bg-muted text-foreground border-border;
+    @apply text-foreground;
+    background: var(
+      --banner-fill,
+      hsl(var(--muted) / var(--surface-fill-alpha))
+    );
   }
 
   /* Status variants follow Alert's pattern: per-variant vars drive the
@@ -40,9 +63,16 @@
   .dr-banner[data-variant="success"],
   .dr-banner[data-variant="warning"],
   .dr-banner[data-variant="destructive"] {
-    @apply text-foreground border-border border-s-4;
-    background-color: hsl(var(--banner-subtle));
+    @apply text-foreground border-s-4;
+    background: var(
+      --banner-fill,
+      hsl(var(--banner-subtle) / var(--surface-fill-alpha))
+    );
     border-inline-start-color: hsl(var(--banner-edge));
+    --banner-lamp: hsl(var(--banner-edge));
+  }
+  .dr-banner[data-variant="info"] {
+    --banner-lamp: hsl(var(--signal-fill));
   }
   .dr-banner[data-variant="info"] .dr-banner-icon,
   .dr-banner[data-variant="success"] .dr-banner-icon,
@@ -88,5 +118,60 @@
   .dr-banner-close:not(:disabled):active::before {
     opacity: var(--state-layer-press);
     transition-duration: var(--state-layer-in);
+  }
+
+  /* Banner mark: stripe (the 4px leading rule above) is the default. Rule
+     keeps only a 3px leading rule, with no box. Icon drops the stripe and
+     frames the tinted box in its status. Lamp drops the stripe and the icon
+     for a lit dot. */
+  [data-banner-mark="rule"] .dr-banner[data-variant="info"],
+  [data-banner-mark="rule"] .dr-banner[data-variant="success"],
+  [data-banner-mark="rule"] .dr-banner[data-variant="warning"],
+  [data-banner-mark="rule"] .dr-banner[data-variant="destructive"] {
+    border-width: 0;
+    border-inline-start-width: 3px;
+    background: var(--banner-fill, transparent);
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+  }
+
+  [data-banner-mark="icon"] .dr-banner[data-variant="info"],
+  [data-banner-mark="icon"] .dr-banner[data-variant="success"],
+  [data-banner-mark="icon"] .dr-banner[data-variant="warning"],
+  [data-banner-mark="icon"] .dr-banner[data-variant="destructive"] {
+    border-inline-start-width: 1px;
+    border-color: hsl(var(--banner-edge) / 0.3);
+  }
+
+  [data-banner-mark="lamp"] .dr-banner[data-variant="info"],
+  [data-banner-mark="lamp"] .dr-banner[data-variant="success"],
+  [data-banner-mark="lamp"] .dr-banner[data-variant="warning"],
+  [data-banner-mark="lamp"] .dr-banner[data-variant="destructive"] {
+    border-inline-start-width: 1px;
+    border-inline-start-color: var(--banner-border);
+  }
+
+  [data-banner-mark="lamp"] .dr-banner::before {
+    @apply rounded-full;
+    content: "";
+    flex: none;
+    width: 0.5rem;
+    height: 0.5rem;
+    background: var(--banner-lamp);
+    box-shadow:
+      0 0 0 3px color-mix(in oklab, var(--banner-lamp) 18%, transparent),
+      0 0 8px color-mix(in oklab, var(--banner-lamp) 60%, transparent);
+  }
+
+  [data-banner-mark="lamp"] .dr-banner .dr-banner-icon {
+    display: none;
+  }
+
+  /* Banner surface: card sets every banner on the card's own surface and
+     edge, as a card at rest; tint (the status fill) is the default. */
+  [data-banner-surface="card"] .dr-banner {
+    background: var(--banner-fill, var(--surface-card-fill));
+    border-color: var(--card-border);
+    box-shadow: var(--card-edge), var(--banner-shadow, 0 0 transparent);
   }
 }
