@@ -41,6 +41,22 @@ export const rejected = [
     // @ts-expect-error -- `huge` is not a radius
     axes: { radius: "huge" },
   }),
+  defineStyle({
+    label: "Unknown signature value",
+    // @ts-expect-error -- `perforated` is not a card footer
+    signatures: { cardFooter: "perforated" },
+  }),
+  definePreset({
+    label: "Unknown signature",
+    style: "quiet",
+    // @ts-expect-error -- `cardGlow` is not a signature
+    signatures: { cardGlow: "on" },
+  }),
+  defineStyle({
+    label: "Unknown hairlines mode",
+    // @ts-expect-error -- hairlines are opaque or alpha
+    hairlines: "dashed",
+  }),
   definePreset({
     label: "Style axis",
     style: "quiet",

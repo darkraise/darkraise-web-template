@@ -24,6 +24,7 @@ describe("darkraise-ui/theme-config", () => {
       "KIT_FALLBACK",
       "LAYER_STATEMENT",
       "PAINT_TOKENS",
+      "SIGNATURES",
       "buildRegistry",
       "buildThemeJsonSchema",
       "canonicalJson",
@@ -34,6 +35,7 @@ describe("darkraise-ui/theme-config", () => {
       "definitionsHash",
       "fnv1a36",
       "resolveRegistry",
+      "signatureAttribute",
       "themePrerenderScript",
       "themeStyleText",
     ])

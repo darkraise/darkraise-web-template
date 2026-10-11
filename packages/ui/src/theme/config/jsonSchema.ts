@@ -8,6 +8,7 @@ import {
   NOT_TESTABLE,
   RESERVED_NAMES,
 } from "./registry"
+import { SIGNATURE_KEYS, SIGNATURES } from "./signatures"
 import { PAINT_TOKENS } from "./tokens"
 
 type Schema = Record<string, unknown>
@@ -88,6 +89,11 @@ export function buildThemeJsonSchema(): Record<string, unknown> {
         additionalProperties: ref("value"),
       },
       axes: closed(each(definable, axisValues)),
+      signatures: closed(
+        each(SIGNATURE_KEYS, (key) => ({
+          enum: [...SIGNATURES[key as keyof typeof SIGNATURES].values],
+        })),
+      ),
       when: closed(
         {
           axes: closed(each(testable, axisValues)),
@@ -107,6 +113,8 @@ export function buildThemeJsonSchema(): Record<string, unknown> {
           tokens: modes(ref("tokens")),
           when: { type: "array", items: ref("when") },
           forcedFallback: closed({ tokens: ref("tokens") }, ["tokens"]),
+          signatures: ref("signatures"),
+          hairlines: { enum: ["opaque", "alpha"] },
         },
         ["label"],
       ),
@@ -116,6 +124,7 @@ export function buildThemeJsonSchema(): Record<string, unknown> {
           style: { type: "string" },
           axes: ref("axes"),
           tokens: modes(ref("tokens")),
+          signatures: ref("signatures"),
           shellStyle: { enum: [...SHELL_STYLES] },
         },
         ["label", "style"],

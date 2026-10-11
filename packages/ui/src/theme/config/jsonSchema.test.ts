@@ -37,6 +37,8 @@ const VALID = {
         },
       ],
       forcedFallback: { tokens: { cardEdge: "hsl(var(--border))" } },
+      signatures: { cardFooter: "inset", navSelection: "tile" },
+      hairlines: "alpha",
     },
   },
   presets: {
@@ -45,6 +47,7 @@ const VALID = {
       style: "glass-ink",
       axes: { accentColor: "indigo" },
       tokens: { dark: { cardEdge: "black" } },
+      signatures: { bannerMark: "rule" },
       shellStyle: "inset",
     },
   },
@@ -193,6 +196,36 @@ describe("theme config JSON Schema", () => {
         keyword: "pattern",
         dataPath: ".styles['glass-ink'].vars.shared",
         params: { pattern: "^--[\\w-]+$" },
+      },
+    ],
+    [
+      "an unknown signature",
+      ["styles", "glass-ink", "signatures"],
+      { cardGlow: "on" },
+      {
+        keyword: "additionalProperties",
+        dataPath: ".styles['glass-ink'].signatures",
+        params: { additionalProperty: "cardGlow" },
+      },
+    ],
+    [
+      "an unknown preset signature value",
+      ["presets", "ink-night", "signatures"],
+      { navMarker: "led" },
+      {
+        keyword: "enum",
+        dataPath: ".presets['ink-night'].signatures.navMarker",
+        params: { allowedValues: ["auto", "none", "bar", "rule"] },
+      },
+    ],
+    [
+      "an unknown hairlines mode",
+      ["styles", "glass-ink", "hairlines"],
+      "dashed",
+      {
+        keyword: "enum",
+        dataPath: ".styles['glass-ink'].hairlines",
+        params: { allowedValues: ["opaque", "alpha"] },
       },
     ],
     [

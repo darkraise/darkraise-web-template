@@ -40,6 +40,7 @@ function opacityStep(
 /** Glass frosts shell chrome and overlays; content keeps Quiet's recipe. */
 export const glass: StyleDefinition = {
   label: "Glass",
+  signatures: { navSelection: "frosted" },
   frosted: true,
   defaults: { backgroundStyle: "gradient" },
   vars: {

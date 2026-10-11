@@ -6,6 +6,7 @@ import type { StyleDefinition } from "../../config/schema"
  */
 export const tactile: StyleDefinition = {
   label: "Tactile",
+  signatures: { navSelection: "tile" },
   tokens: {
     shared: {
       buttonEdge:
