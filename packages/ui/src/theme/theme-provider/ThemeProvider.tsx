@@ -123,11 +123,25 @@ function readMigratedInputs(): Map<string, string> {
 // script has already run, the marker is set and this finds nothing to do.
 if (isBrowser) readMigratedInputs()
 
-function applyTokens(tokens: Record<string, string>) {
+/**
+ * Writes the token set inline on `<html>` and removes the tokens of the
+ * previous set it no longer holds (the bar's own tiers exist only while the
+ * bar is toned). Returns the keys written.
+ */
+function applyTokens(
+  tokens: Record<string, string>,
+  previous: readonly string[],
+): string[] {
   const style = document.documentElement.style
+  for (const key of previous) {
+    if (!Object.prototype.hasOwnProperty.call(tokens, key)) {
+      style.removeProperty(key)
+    }
+  }
   for (const [key, value] of Object.entries(tokens)) {
     style.setProperty(key, value)
   }
+  return Object.keys(tokens)
 }
 
 /**
@@ -329,10 +343,15 @@ export function ThemeProvider({
     }
   }, [])
 
+  const appliedRef = useRef<readonly string[]>([])
   const applyTheme = useCallback(
     (current: AxisValues, resolved: ResolvedMode, cacheId: string) => {
       document.documentElement.setAttribute("data-mode", resolved)
 
+      const { railTone, barTone } = registry.signaturesFor(
+        current.style,
+        current.preset,
+      )
       const tokens = generateTokens({
         accentColor: current.accentColor,
         surfaceColor: current.surfaceColor,
@@ -345,9 +364,11 @@ export function ThemeProvider({
         backgroundIntensity: current.backgroundIntensity,
         hairlines: registry.styles[current.style]?.hairlines ?? "opaque",
         signalColor: current.signalColor,
+        railTone,
+        barTone,
       })
 
-      applyTokens(tokens)
+      appliedRef.current = applyTokens(tokens, appliedRef.current)
 
       const store = storage()
       if (store) writeTokenCache(store, cacheId, tokens)

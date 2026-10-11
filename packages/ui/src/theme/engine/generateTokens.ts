@@ -37,7 +37,13 @@ export interface GenerateTokensInput {
   hairlines?: "opaque" | "alpha"
   /** A second accent for marks and fills that must not read as the primary. */
   signalColor?: AccentColor | "none"
+  /** The ground the sidebar rail is painted on; `page` is the default chrome. */
+  railTone?: ChromeTone
+  /** The ground the top bar is painted on; `page` is the default chrome. */
+  barTone?: ChromeTone
 }
+
+export type ChromeTone = "page" | "raised" | "inverse" | "accent"
 
 /** The ramp every neutral step and text tier is drawn from. */
 export function resolveNeutralScale(surfaceColor: SurfaceColor): ColorScale {
@@ -74,6 +80,11 @@ function resolveSfHueTokens(
 
 /** A shape or boundary must be distinguishable from its ground. */
 const MARK_FLOOR = 3
+/**
+ * 4.5:1 with headroom: a solved tier at exactly 4.5 renders at 4.46-4.49
+ * once the browser rounds it to 8-bit sRGB.
+ */
+const TONED_MUTED_RATIO = 4.6
 const LEGEND_TARGET_RATIO = 4.6
 /**
  * The white a dark card face can carry: the high tonal lift (8%,
@@ -205,6 +216,84 @@ function ensureContrastAll(
   )
 }
 
+/** Hover and selected fills on a toned rail, as alpha of the rail's ink. */
+const TONED_HOVER_ALPHA = 0.08
+const TONED_ACTIVE_ALPHA = 0.14
+/** The resting nav text sits further from the fill than the muted tier. */
+const TONED_REST_RATIO = 11
+/** How deep accent chrome goes: white text reads on it at this ratio. */
+const ACCENT_CHROME_RATIO = 7
+
+/**
+ * `ink` over `fill` at the least alpha whose composite reaches `target`
+ * against the fill, as an opaque triplet; the ink itself when nothing less
+ * reaches it.
+ */
+function inkTier(fill: string, ink: string, target: number): string {
+  if (contrastRatio(ink, fill) <= target) return ink
+  let low = 0
+  let high = 1
+  for (let i = 0; i < 20; i++) {
+    const mid = (low + high) / 2
+    if (contrastRatio(composite(fill, ink, mid), fill) >= target) high = mid
+    else low = mid
+  }
+  return composite(fill, ink, high)
+}
+
+/**
+ * The fill and ink of a toned chrome region, the rail or the bar, under an
+ * inverse or accent tone. Inverse chrome is darker than the page in both
+ * modes: the near-black end of the neutral in light mode, the page pushed
+ * towards black in dark. Accent chrome is the accent's own hue as deep as
+ * white text reads on it at ACCENT_CHROME_RATIO, so the muted tier still has
+ * room under it.
+ */
+function tonedChrome(
+  tone: "inverse" | "accent",
+  n: (step: number) => string,
+  accent: ColorScale,
+  dark: boolean,
+): { fill: string; ink: string } {
+  if (tone === "accent") {
+    return {
+      fill: tierClearingAll(accent, [WHITE], ACCENT_CHROME_RATIO),
+      ink: WHITE,
+    }
+  }
+  return dark
+    ? { fill: composite(n(1), BLACK, 0.4), ink: n(12) }
+    : { fill: n(12), ink: n(1) }
+}
+
+/** A toned region's fill and the tiers its text, hover and selection use. */
+function tonedTiers(
+  tone: "inverse" | "accent",
+  n: (step: number) => string,
+  accent: ColorScale,
+  dark: boolean,
+): Record<
+  | "fill"
+  | "foreground"
+  | "foreground-hover"
+  | "foreground-muted"
+  | "border"
+  | "hover-bg"
+  | "active-bg",
+  string
+> {
+  const { fill, ink } = tonedChrome(tone, n, accent, dark)
+  return {
+    fill,
+    foreground: inkTier(fill, ink, TONED_REST_RATIO),
+    "foreground-hover": ink,
+    "foreground-muted": inkTier(fill, ink, TONED_MUTED_RATIO),
+    border: `${ink} / ${TONED_ACTIVE_ALPHA}`,
+    "hover-bg": `${ink} / ${TONED_HOVER_ALPHA}`,
+    "active-bg": `${ink} / ${TONED_ACTIVE_ALPHA}`,
+  }
+}
+
 const HAIRLINE_TOKENS = [
   "--border",
   "--border-subtle",
@@ -265,6 +354,8 @@ export function generateTokens(
     backgroundIntensity = "balanced",
     hairlines = "opaque",
     signalColor = "none",
+    railTone = "page",
+    barTone = "page",
   } = input
 
   const accent = resolveAccentScale(accentColor, surfaceColor)
@@ -418,6 +509,26 @@ export function generateTokens(
 
     ...resolveSfHueTokens(neutral, backgroundStyle),
   })
+
+  if (railTone === "raised") tokens["--surface-sidebar"] = card
+  if (barTone === "raised") tokens["--surface-header"] = card
+  if (railTone === "inverse" || railTone === "accent") {
+    const { fill, ...tiers } = tonedTiers(railTone, n, accent, dark)
+    tokens["--surface-sidebar"] = fill
+    for (const [tier, value] of Object.entries(tiers)) {
+      tokens[`--sidebar-${tier}`] = value
+    }
+  }
+  // The bar's own tiers, so a bar in another tone than the rail's keeps its
+  // text at the floors on its own fill; in the rail's tone they equal the
+  // rail's.
+  if (barTone === "inverse" || barTone === "accent") {
+    const { fill, ...tiers } = tonedTiers(barTone, n, accent, dark)
+    tokens["--surface-header"] = fill
+    for (const [tier, value] of Object.entries(tiers)) {
+      tokens[`--bar-${tier}`] = value
+    }
+  }
 
   if (hairlines === "alpha") {
     for (const token of HAIRLINE_TOKENS) {
