@@ -5,12 +5,29 @@
     --btn-edge: 0 0 transparent;
     --btn-sheen: none;
     --btn-shadow: 0 0 transparent;
+    --btn-danger-shadow: 0 0 transparent;
     --btn-neutral-edge: 0 0 transparent;
     --btn-neutral-sheen: none;
     --btn-neutral-shadow: 0 0 transparent;
+    --btn-neutral-fill: hsl(var(--card));
     --field-shadow: 0 0 transparent;
     --check-well-shadow: 0 0 transparent;
+    --thumb-shadow: 0 0 0 1px rgb(0 0 0 / 0.14);
+    --selected-view-shadow: 0 0 0 1px hsl(var(--border));
+    --check-radius: calc(var(--radius) / 4);
+    --card-radius: calc(var(--radius) * 1.625);
+    --overlay-radius: calc(var(--radius) * 1.625);
+    --shadow-dropdown: 0 0 transparent;
+    --modal-shadow: 0 0 transparent;
+    --scrim: color-mix(in oklab, #000 42%, transparent);
+    --badge-radius: calc(var(--radius-control) * 0.625);
+    --banner-radius: calc(var(--radius-control) * 0.625);
+  }
+}
+
+@layer style.mode {
+  [data-mode="dark"][data-style="flat"] {
     --thumb-shadow: 0 0 transparent;
-    --selected-view-shadow: 0 0 transparent;
+    --scrim: color-mix(in oklab, #000 55%, transparent);
   }
 }

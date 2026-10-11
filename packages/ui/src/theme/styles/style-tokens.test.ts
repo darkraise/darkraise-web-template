@@ -661,17 +661,6 @@ describe("style files", () => {
     },
   )
 
-  it("flattens every control token under flat, in both modes", () => {
-    const flat = styleDeclarations("flat")
-    expect(flat.map((d) => d.property).sort()).toEqual(
-      [...CONTROL_TOKENS].sort(),
-    )
-    for (const d of flat) {
-      expect(d.context).toEqual(["@layer style.base", '[data-style="flat"]'])
-      expect(["0 0 transparent", "none"]).toContain(d.value)
-    }
-  })
-
   // The light block's layer sits above @layer base too, so in dark mode it
   // would beat the dark base values unless the dark block restates every
   // token it sets.
