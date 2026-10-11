@@ -105,6 +105,11 @@ export const defaultLabels: UiLabels = {
       pill: "Pill",
       tile: "Tile",
       frosted: "Frosted",
+      tint: "Tint",
+      accent: "Accent",
+      rule: "Rule",
+      key: "Key",
+      tab: "Tab",
     },
   },
   errors: {

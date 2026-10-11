@@ -8,7 +8,17 @@ import { contrast, pixel, rgbOf, settle, type Rgb } from "./helpers/measure"
  * styles, because Glass paints translucent layers over a gradient.
  */
 
-const LOOKS = ["chip", "pill", "tile", "frosted"] as const
+const LOOKS = [
+  "chip",
+  "pill",
+  "tile",
+  "frosted",
+  "tint",
+  "accent",
+  "rule",
+  "key",
+  "tab",
+] as const
 const MODES = ["light", "dark"] as const
 /** Blue is the default accent; neutral is the faintest on a light rail. */
 const ACCENTS = ["blue", "neutral"] as const
@@ -55,7 +65,7 @@ async function cue(page: Page, look: (typeof LOOKS)[number]): Promise<Rgb> {
         .evaluate((el) => getComputedStyle(el).backgroundColor),
     )
   }
-  if (look === "pill") {
+  if (look === "pill" || look === "rule") {
     return rgbOf(
       await indicator(page).evaluate(
         (el) => getComputedStyle(el, "::before").backgroundColor,
@@ -90,6 +100,14 @@ for (const style of STYLES) {
           const edge = await pixel(page, x, Math.floor(row.y) - 1)
           // The group label row above "Orders" is empty at the row's far end.
           const rail = await pixel(page, x, Math.round(row.y) - 14)
+          // The rule look has no surface: its marker carries the row.
+          if (look === "rule") {
+            expect(
+              contrast(await cue(page, look), rail),
+              "rule against the rail",
+            ).toBeGreaterThanOrEqual(CUE_FLOOR)
+            return
+          }
           expect(
             Math.max(contrast(surface, rail), contrast(edge, rail)),
             "surface or edge against the rail",
@@ -390,4 +408,184 @@ test("a stored indicator migrates to a look", async ({ page }) => {
       localStorage.getItem("theme-sidebar-selection"),
     ]),
   ).toEqual([null, "pill"])
+})
+
+test.describe("selection tokens and signatures", () => {
+  async function arrive(page: Page, look: string) {
+    await seedApp(page, {
+      style: "quiet",
+      mode: "light",
+      sidebarSelection: look,
+    })
+    await gotoApp(page, "/orders")
+    await expect(nav(page)).toHaveAttribute("data-indicator", "ready")
+    await settle(page)
+  }
+
+  async function stamp(page: Page, name: string, value: string) {
+    await page.evaluate(
+      ([n, v]) => document.documentElement.setAttribute(n, v),
+      [name, value] as const,
+    )
+    await settle(page)
+  }
+
+  const marker = (page: Page, property: string) =>
+    indicator(page).evaluate(
+      (el, name) => getComputedStyle(el, "::before").getPropertyValue(name),
+      property,
+    )
+
+  test("a style's selection tokens override the look", async ({ page }) => {
+    await arrive(page, "chip")
+    await page.addStyleTag({
+      content: `@layer style.base { :root {
+        --nav-selection-fill: rgb(1, 2, 3);
+        --nav-selection-edge: rgb(4, 5, 6);
+        --nav-selection-shadow: rgb(7, 8, 9) 0px 2px 0px 0px;
+        --nav-selection-glow: rgb(10, 11, 12) 0px 0px 6px 0px;
+        --nav-item-radius: 5px;
+      } }`,
+    })
+    await settle(page)
+    expect(
+      await indicator(page).evaluate(
+        (el) => getComputedStyle(el).backgroundColor,
+      ),
+    ).toBe("rgb(1, 2, 3)")
+    expect(
+      await indicator(page).evaluate((el) => getComputedStyle(el).boxShadow),
+    ).toBe(
+      "rgb(4, 5, 6) 0px 0px 0px 1px, rgb(7, 8, 9) 0px 2px 0px 0px, rgb(10, 11, 12) 0px 0px 6px 0px",
+    )
+    expect(
+      await indicator(page).evaluate(
+        (el) => getComputedStyle(el).borderTopLeftRadius,
+      ),
+    ).toBe("5px")
+    expect(
+      await current(page).evaluate(
+        (el) => getComputedStyle(el).borderTopLeftRadius,
+      ),
+    ).toBe("5px")
+  })
+
+  for (const look of ["tint", "rule"]) {
+    test(`the ${look} look sets the label in the accent`, async ({ page }) => {
+      await arrive(page, look)
+      const [accent] = await resolveColours(current(page), [
+        "hsl(var(--primary-text))",
+      ])
+      expect(
+        await current(page).evaluate((el) => getComputedStyle(el).color),
+      ).toBe(accent)
+    })
+  }
+
+  test("the marker follows the marker signature", async ({ page }) => {
+    await arrive(page, "pill")
+    const [accent] = await resolveColours(nav(page), [
+      "hsl(var(--primary-text))",
+    ])
+    expect(await marker(page, "background-color")).toBe(accent)
+    expect(await marker(page, "width")).toBe("3px")
+
+    await stamp(page, "data-nav-marker", "none")
+    expect(await marker(page, "background-color")).toBe("rgba(0, 0, 0, 0)")
+
+    await stamp(page, "data-nav-marker", "rule")
+    const row = await box(current(page))
+    expect(await marker(page, "background-color")).toBe(accent)
+    expect(await marker(page, "width")).toBe("2px")
+    expect(parseFloat(await marker(page, "height"))).toBeCloseTo(row.height, 0)
+    const offset = async () =>
+      parseFloat(await marker(page, "top")) +
+      parseFloat(await marker(page, "margin-top"))
+    expect(await offset()).toBeCloseTo(0, 0)
+
+    await stamp(page, "data-nav-marker", "bar")
+    expect(await marker(page, "width")).toBe("3px")
+    expect(await marker(page, "height")).toBe("16px")
+    expect(await offset()).toBeCloseTo((row.height - 16) / 2, 0)
+  })
+
+  test("a chip draws the bar under the bar marker", async ({ page }) => {
+    await arrive(page, "chip")
+    expect(await marker(page, "background-color")).toBe("rgba(0, 0, 0, 0)")
+    await stamp(page, "data-nav-marker", "bar")
+    const [accent] = await resolveColours(nav(page), [
+      "hsl(var(--primary-text))",
+    ])
+    expect(await marker(page, "background-color")).toBe(accent)
+  })
+
+  test("group labels follow the label case signature", async ({ page }) => {
+    await arrive(page, "chip")
+    const label = nav(page).locator(".dr-sidebar-nav-group-label").first()
+    const transform = () =>
+      label.evaluate((el) => getComputedStyle(el).textTransform)
+    expect(await transform()).toBe("uppercase")
+    await stamp(page, "data-label-case", "upper")
+    expect(await transform()).toBe("uppercase")
+    await stamp(page, "data-label-case", "none")
+    expect(await transform()).toBe("none")
+    expect(
+      await label.evaluate((el) => getComputedStyle(el).letterSpacing),
+    ).toBe("normal")
+    await stamp(page, "data-label-case", "lower")
+    expect(await transform()).toBe("lowercase")
+  })
+
+  test("the top nav draws the selection look", async ({ page }) => {
+    await page.addInitScript(() =>
+      localStorage.setItem("layout-variant", "top-nav"),
+    )
+    await seedApp(page, {
+      style: "quiet",
+      mode: "light",
+      sidebarSelection: "accent",
+    })
+    await gotoApp(page, "/orders")
+    const topNav = page.locator(".dr-top-nav-layout-nav")
+    await expect(topNav).toHaveAttribute("data-sidebar-selection", "accent")
+    const active = topNav.locator(".dr-top-nav-layout-nav-item.active")
+    await expect(active).toHaveCount(1)
+    await settle(page)
+    const [fill, edge] = await resolveColours(topNav, [
+      "hsl(var(--primary) / 0.12)",
+      "hsl(var(--primary) / 0.3)",
+    ])
+    expect(
+      await active.evaluate((el) => getComputedStyle(el).backgroundColor),
+    ).toBe(fill)
+    expect(
+      await active.evaluate((el) => getComputedStyle(el).boxShadow),
+    ).toContain(`${edge} 0px 0px 0px 1px`)
+  })
+
+  test("the rule look keeps a fill on the top nav's active item", async ({
+    page,
+  }) => {
+    await page.addInitScript(() =>
+      localStorage.setItem("layout-variant", "top-nav"),
+    )
+    await seedApp(page, {
+      style: "quiet",
+      mode: "light",
+      sidebarSelection: "rule",
+    })
+    await gotoApp(page, "/orders")
+    const topNav = page.locator(".dr-top-nav-layout-nav")
+    await expect(topNav).toHaveAttribute("data-sidebar-selection", "rule")
+    const active = topNav.locator(".dr-top-nav-layout-nav-item.active")
+    await expect(active).toHaveCount(1)
+    await settle(page)
+    const [fill] = await resolveColours(topNav, [
+      "hsl(var(--sidebar-active-bg))",
+    ])
+    expect(fill).not.toBe("rgba(0, 0, 0, 0)")
+    expect(
+      await active.evaluate((el) => getComputedStyle(el).backgroundColor),
+    ).toBe(fill)
+  })
 })

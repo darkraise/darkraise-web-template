@@ -14,7 +14,11 @@ import { SkipLink } from "@layout/skip-link"
 import { useRouteFocus } from "@layout/useRouteFocus"
 import { flattenNavItems } from "@layout/navTree"
 import type { LayoutProps } from "@layout/types"
-import { useShellStyle } from "@layout/shell"
+import {
+  useShellStyle,
+  useSidebarSelection,
+  useSidebarShadow,
+} from "@layout/shell"
 import type { ShellStyle } from "@theme"
 import { useUiLabels } from "@labels"
 
@@ -61,6 +65,8 @@ export function TopNavLayout({
 
   const labels = useUiLabels()
   const shellStyle = useShellStyle(shellStyleProp, defaultShellStyle)
+  const look = useSidebarSelection()
+  const shadow = useSidebarShadow()
   // The sidebar* names predate the layouts that have no sidebar; both still
   // work, and the new name wins when a caller passes each.
   const resolvedNavHeader = navHeader ?? sidebarHeader
@@ -101,7 +107,12 @@ export function TopNavLayout({
         }
       >
         <BrandLogo />
-        <nav aria-label={uiText("Primary")} className="dr-top-nav-layout-nav">
+        <nav
+          aria-label={uiText("Primary")}
+          className="dr-top-nav-layout-nav"
+          data-sidebar-selection={look}
+          data-sidebar-shadow={shadow}
+        >
           {nav.flatMap((group) =>
             group.items.map((item) =>
               item.children?.length ? (

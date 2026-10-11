@@ -48,13 +48,18 @@ describe("shell style", () => {
 })
 
 describe("sidebarSelection axis", () => {
-  it("leads with auto, then the four looks", () => {
+  it("leads with auto, then the four kit looks and the five newer ones", () => {
     expect(SIDEBAR_SELECTIONS).toEqual([
       "auto",
       "chip",
       "pill",
       "tile",
       "frosted",
+      "tint",
+      "accent",
+      "rule",
+      "key",
+      "tab",
     ])
   })
 

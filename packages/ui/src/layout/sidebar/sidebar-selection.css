@@ -1,3 +1,16 @@
+/* The selection paints a style or preset may set over whichever look the
+   nav draws. Each look has its own paints, so the public tokens default to
+   `initial` and every look reads them with its own paint as the fallback. */
+@layer base {
+  :root {
+    --nav-selection-fill: initial;
+    --nav-selection-edge: initial;
+    --nav-selection-shadow: initial;
+    --nav-selection-glow: initial;
+    --nav-item-radius: calc(var(--radius) - 2px);
+  }
+}
+
 @layer components {
   /* Mode-dependent surfaces the looks draw from. Kept apart from the look
      tokens so a dark rule never has to outrank a look rule. */
@@ -14,6 +27,13 @@
     --sidebar-frost: hsl(0 0% 100% / 0.72);
     --sidebar-frost-edge: hsl(0 0% 0% / 0.1);
     --sidebar-frost-highlight: inset 0 1px 0 hsl(0 0% 100% / 0.9);
+    --sidebar-tab-shadow:
+      0 1px 2px hsl(0 0% 0% / 0.14), 0 4px 8px -4px hsl(0 0% 0% / 0.22);
+    --sidebar-active-text: hsl(var(--sidebar-foreground-hover));
+    --sidebar-marker-start: 3px;
+    --sidebar-marker-width: 3px;
+    --sidebar-marker-height: 16px;
+    --sidebar-marker-radius: calc(var(--radius) - 4px);
   }
 
   /* In dark the rail is the card colour, so the chip lifts by lightening.
@@ -36,13 +56,18 @@
     --sidebar-frost: hsl(0 0% 100% / 0.1);
     --sidebar-frost-edge: hsl(0 0% 100% / 0.14);
     --sidebar-frost-highlight: inset 0 1px 0 hsl(0 0% 100% / 0.07);
+    --sidebar-tab-shadow:
+      inset 0 1px 0 hsl(0 0% 100% / 0.05), 0 4px 8px -4px hsl(0 0% 0% / 0.6);
   }
 
   [data-sidebar-selection="chip"] {
-    --sidebar-active-surface: var(--sidebar-chip);
-    --sidebar-active-edge: var(--sidebar-chip-edge);
-    --sidebar-active-shadow: var(--sidebar-chip-shadow);
-    --sidebar-active-glow: 0 0 transparent;
+    --sidebar-active-surface: var(--nav-selection-fill, var(--sidebar-chip));
+    --sidebar-active-edge: var(--nav-selection-edge, var(--sidebar-chip-edge));
+    --sidebar-active-shadow: var(
+      --nav-selection-shadow,
+      var(--sidebar-chip-shadow)
+    );
+    --sidebar-active-glow: var(--nav-selection-glow, 0 0 transparent);
     --sidebar-active-backdrop: none;
     --sidebar-active-marker: transparent;
     --sidebar-active-tile: transparent;
@@ -52,10 +77,10 @@
   /* A neutral tint, so it clears the rail by the same step on any accent or
      tinted glass rail; the pill carries the accent. */
   [data-sidebar-selection="pill"] {
-    --sidebar-active-surface: var(--sidebar-tint);
-    --sidebar-active-edge: transparent;
-    --sidebar-active-shadow: 0 0 transparent;
-    --sidebar-active-glow: 0 0 transparent;
+    --sidebar-active-surface: var(--nav-selection-fill, var(--sidebar-tint));
+    --sidebar-active-edge: var(--nav-selection-edge, transparent);
+    --sidebar-active-shadow: var(--nav-selection-shadow, 0 0 transparent);
+    --sidebar-active-glow: var(--nav-selection-glow, 0 0 transparent);
     --sidebar-active-backdrop: none;
     --sidebar-active-marker: hsl(var(--primary-text));
     --sidebar-active-tile: transparent;
@@ -63,10 +88,13 @@
   }
 
   [data-sidebar-selection="tile"] {
-    --sidebar-active-surface: var(--sidebar-chip);
-    --sidebar-active-edge: var(--sidebar-chip-edge);
-    --sidebar-active-shadow: var(--sidebar-tile-shadow);
-    --sidebar-active-glow: 0 0 transparent;
+    --sidebar-active-surface: var(--nav-selection-fill, var(--sidebar-chip));
+    --sidebar-active-edge: var(--nav-selection-edge, var(--sidebar-chip-edge));
+    --sidebar-active-shadow: var(
+      --nav-selection-shadow,
+      var(--sidebar-tile-shadow)
+    );
+    --sidebar-active-glow: var(--nav-selection-glow, 0 0 transparent);
     --sidebar-active-backdrop: none;
     --sidebar-active-marker: transparent;
     --sidebar-active-tile: hsl(var(--primary-fill));
@@ -79,14 +107,138 @@
   }
 
   [data-sidebar-selection="frosted"] {
-    --sidebar-active-surface: var(--sidebar-frost);
-    --sidebar-active-edge: var(--sidebar-frost-edge);
-    --sidebar-active-shadow: var(--sidebar-frost-highlight);
-    --sidebar-active-glow: 0 8px 20px -8px hsl(var(--primary) / 0.55);
+    --sidebar-active-surface: var(--nav-selection-fill, var(--sidebar-frost));
+    --sidebar-active-edge: var(--nav-selection-edge, var(--sidebar-frost-edge));
+    --sidebar-active-shadow: var(
+      --nav-selection-shadow,
+      var(--sidebar-frost-highlight)
+    );
+    --sidebar-active-glow: var(
+      --nav-selection-glow,
+      0 8px 20px -8px hsl(var(--primary) / 0.55)
+    );
     --sidebar-active-backdrop: blur(10px) saturate(1.3);
     --sidebar-active-marker: transparent;
     --sidebar-active-tile: transparent;
     --sidebar-active-icon: hsl(var(--primary-text));
+  }
+
+  /* A neutral wash with the label in the accent: the row needs no edge to
+     read as current. */
+  [data-sidebar-selection="tint"] {
+    --sidebar-active-surface: var(--nav-selection-fill, var(--sidebar-tint));
+    --sidebar-active-edge: var(--nav-selection-edge, transparent);
+    --sidebar-active-shadow: var(--nav-selection-shadow, 0 0 transparent);
+    --sidebar-active-glow: var(--nav-selection-glow, 0 0 transparent);
+    --sidebar-active-backdrop: none;
+    --sidebar-active-marker: transparent;
+    --sidebar-active-tile: transparent;
+    --sidebar-active-icon: hsl(var(--primary-text));
+    --sidebar-active-text: hsl(var(--primary-text));
+  }
+
+  /* An accent wash behind an accent edge. */
+  [data-sidebar-selection="accent"] {
+    --sidebar-active-surface: var(
+      --nav-selection-fill,
+      hsl(var(--primary) / 0.12)
+    );
+    --sidebar-active-edge: var(--nav-selection-edge, hsl(var(--primary) / 0.3));
+    --sidebar-active-shadow: var(--nav-selection-shadow, 0 0 transparent);
+    --sidebar-active-glow: var(--nav-selection-glow, 0 0 transparent);
+    --sidebar-active-backdrop: none;
+    --sidebar-active-marker: transparent;
+    --sidebar-active-tile: transparent;
+    --sidebar-active-icon: hsl(var(--primary-text));
+  }
+
+  /* No fill: a full-height accent rule on the row's leading edge, and the
+     label in the accent. */
+  [data-sidebar-selection="rule"] {
+    --sidebar-active-surface: var(--nav-selection-fill, transparent);
+    --sidebar-active-edge: var(--nav-selection-edge, transparent);
+    --sidebar-active-shadow: var(--nav-selection-shadow, 0 0 transparent);
+    --sidebar-active-glow: var(--nav-selection-glow, 0 0 transparent);
+    --sidebar-active-backdrop: none;
+    --sidebar-active-marker: hsl(var(--primary-text));
+    --sidebar-active-tile: transparent;
+    --sidebar-active-icon: hsl(var(--primary-text));
+    --sidebar-active-text: hsl(var(--primary-text));
+    --sidebar-marker-start: 0px;
+    --sidebar-marker-width: 2px;
+    --sidebar-marker-height: 100%;
+    --sidebar-marker-radius: 0px;
+  }
+
+  /* The neutral button's face, so the current row reads as a pressed key
+     beside the style's own buttons. The fill is layered over the opaque
+     card fill, since a style may leave the button's own fill clear. */
+  [data-sidebar-selection="key"] {
+    --sidebar-active-surface: var(
+      --nav-selection-fill,
+      var(--btn-neutral-sheen),
+      linear-gradient(var(--btn-neutral-fill), var(--btn-neutral-fill)),
+      var(--surface-card-fill-opaque)
+    );
+    --sidebar-active-edge: var(
+      --nav-selection-edge,
+      var(--btn-neutral-border, var(--field-edge))
+    );
+    --sidebar-active-shadow: var(
+      --nav-selection-shadow,
+      var(--btn-neutral-edge),
+      var(--btn-neutral-shadow)
+    );
+    --sidebar-active-glow: var(--nav-selection-glow, 0 0 transparent);
+    --sidebar-active-backdrop: none;
+    --sidebar-active-marker: transparent;
+    --sidebar-active-tile: transparent;
+    --sidebar-active-icon: hsl(var(--sidebar-foreground-hover));
+  }
+
+  /* An opaque card face lifted off the rail. */
+  [data-sidebar-selection="tab"] {
+    --sidebar-active-surface: var(
+      --nav-selection-fill,
+      var(--sidebar-chip-opaque)
+    );
+    --sidebar-active-edge: var(--nav-selection-edge, var(--sidebar-chip-edge));
+    --sidebar-active-shadow: var(
+      --nav-selection-shadow,
+      var(--sidebar-tab-shadow)
+    );
+    --sidebar-active-glow: var(--nav-selection-glow, 0 0 transparent);
+    --sidebar-active-backdrop: none;
+    --sidebar-active-marker: transparent;
+    --sidebar-active-tile: transparent;
+    --sidebar-active-icon: hsl(var(--primary-text));
+  }
+
+  /* The marker signature: none hides the marker on every look, bar draws
+     the pill's 3px bar on every look, rule a full-height leading rule. Auto
+     leaves each look's own marker. One attribute deeper than the looks, so
+     it wins over each. */
+  [data-nav-marker="none"] [data-sidebar-selection] {
+    --sidebar-active-marker: transparent;
+  }
+
+  [data-nav-marker="bar"] [data-sidebar-selection] {
+    --sidebar-active-marker: hsl(var(--primary-text));
+  }
+
+  [data-nav-marker="bar"] [data-sidebar-selection="rule"] {
+    --sidebar-marker-start: 3px;
+    --sidebar-marker-width: 3px;
+    --sidebar-marker-height: 16px;
+    --sidebar-marker-radius: calc(var(--radius) - 4px);
+  }
+
+  [data-nav-marker="rule"] [data-sidebar-selection] {
+    --sidebar-active-marker: hsl(var(--primary-text));
+    --sidebar-marker-start: 0px;
+    --sidebar-marker-width: 2px;
+    --sidebar-marker-height: 100%;
+    --sidebar-marker-radius: 0px;
   }
 
   /* In an icon-only rail the square row is the item, so Tile shows the tile
@@ -143,7 +295,7 @@
   }
 
   .dr-sidebar-nav-indicator {
-    @apply rounded-md;
+    @apply rounded-[var(--nav-item-radius)];
     position: absolute;
     top: 0;
     left: 0;
@@ -184,14 +336,13 @@
   }
 
   .dr-sidebar-nav-indicator::before {
-    @apply rounded-sm;
     content: "";
     position: absolute;
-    inset-inline-start: 3px;
-    top: 50%;
-    width: 3px;
-    height: 16px;
-    margin-top: -8px;
+    inset-inline-start: var(--sidebar-marker-start);
+    top: calc(50% - var(--sidebar-marker-height) / 2);
+    width: var(--sidebar-marker-width);
+    height: var(--sidebar-marker-height);
+    border-radius: var(--sidebar-marker-radius);
     background: var(--sidebar-active-marker);
   }
 
@@ -207,14 +358,13 @@
      itself. */
   [data-sidebar-selection]:not([data-indicator="ready"])
     .dr-sidebar-nav-current::before {
-    @apply rounded-sm;
     content: "";
     position: absolute;
-    inset-inline-start: 3px;
-    top: 50%;
-    width: 3px;
-    height: 16px;
-    margin-top: -8px;
+    inset-inline-start: var(--sidebar-marker-start);
+    top: calc(50% - var(--sidebar-marker-height) / 2);
+    width: var(--sidebar-marker-width);
+    height: var(--sidebar-marker-height);
+    border-radius: var(--sidebar-marker-radius);
     background: var(--sidebar-active-marker);
   }
 
@@ -226,7 +376,7 @@
       var(--sidebar-active-glow);
     -webkit-backdrop-filter: var(--sidebar-active-backdrop);
     backdrop-filter: var(--sidebar-active-backdrop);
-    color: hsl(var(--sidebar-foreground-hover));
+    color: var(--sidebar-active-text);
     font-weight: 600;
   }
 

@@ -4,7 +4,7 @@
   }
 
   .dr-top-nav-layout-nav-item {
-    @apply focus-ring-inset text-muted-foreground flex shrink-0 items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors;
+    @apply focus-ring-inset text-muted-foreground flex shrink-0 items-center gap-2 rounded-[var(--nav-item-radius)] px-3 py-1.5 text-sm transition-colors;
     transition-duration: var(--duration-fast);
   }
   @media (hover: hover) {
@@ -17,6 +17,29 @@
   .dr-top-nav-layout-nav-item[data-active="true"] {
     background-color: var(--selected-nav-bg);
     color: var(--selected-nav-fg);
+  }
+
+  /* The bar's nav draws the same selection look as a rail: the look's
+     surface, edge, shadow, glow and backdrop on the active item. A
+     horizontal row has no leading edge for the marker, and no icon tile, so
+     its icon keeps the label's colour. */
+  .dr-top-nav-layout-nav[data-sidebar-selection]
+    .dr-top-nav-layout-nav-item:is(.active, [data-active="true"]) {
+    background: var(--sidebar-active-surface);
+    box-shadow:
+      0 0 0 1px var(--sidebar-active-edge),
+      var(--sidebar-active-shadow),
+      var(--sidebar-active-glow);
+    -webkit-backdrop-filter: var(--sidebar-active-backdrop);
+    backdrop-filter: var(--sidebar-active-backdrop);
+    color: hsl(var(--foreground));
+  }
+
+  /* The rule look has no surface, and a horizontal row has no leading
+     edge for its rule, so the active item keeps the bar's selected fill. */
+  .dr-top-nav-layout-nav[data-sidebar-selection="rule"]
+    .dr-top-nav-layout-nav-item:is(.active, [data-active="true"]) {
+    background: var(--nav-selection-fill, var(--selected-nav-bg));
   }
 
   .dr-top-nav-layout-nav-chevron {
