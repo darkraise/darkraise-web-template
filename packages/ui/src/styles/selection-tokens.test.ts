@@ -299,7 +299,12 @@ describe("nav row family: sidebar", () => {
   it("paints the current row from the look's tokens and keeps its own text", () => {
     const body = bodyOf(SELECTION, current)
     expect(body).toContain("background: var(--sidebar-active-surface);")
-    expect(body).toContain("color: hsl(var(--sidebar-foreground-hover));")
+    // A look may set the label in the accent; every other look keeps the
+    // rail's own text, the default of --sidebar-active-text.
+    expect(body).toContain("color: var(--sidebar-active-text);")
+    expect(bodyOf(SELECTION, "[data-sidebar-selection]")).toContain(
+      "--sidebar-active-text: hsl(var(--sidebar-foreground-hover));",
+    )
     expect(body).toContain("font-weight: 600;")
   })
 

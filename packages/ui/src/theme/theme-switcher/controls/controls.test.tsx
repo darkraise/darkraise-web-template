@@ -193,7 +193,20 @@ describe("ChoiceControl", () => {
       within(group)
         .getAllByRole("radio")
         .map((radio) => radio.textContent),
-    ).toEqual(["Auto", "Chip", "Pill", "Tile", "Frosted"])
+    ).toEqual([
+      "Auto",
+      "Chip",
+      "Pill",
+      "Tile",
+      "Frosted",
+      "Tint",
+      "Accent",
+      "Rule",
+      "Key",
+      "Tab",
+    ])
+    // Ten looks wrap to a second row of the same five-cell grid.
+    expect(group).toHaveAttribute("data-cols", "5")
   })
 
   it("takes sidebar selection labels from their own group", () => {

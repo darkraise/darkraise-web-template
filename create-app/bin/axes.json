@@ -342,7 +342,12 @@
       "chip",
       "pill",
       "tile",
-      "frosted"
+      "frosted",
+      "tint",
+      "accent",
+      "rule",
+      "key",
+      "tab"
     ],
     "default": "auto",
     "storageKey": "theme-sidebar-selection",

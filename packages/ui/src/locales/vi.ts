@@ -123,6 +123,11 @@ const messages: UiMessages = {
       pill: "Vạch chỉ báo",
       tile: "Ô biểu tượng",
       frosted: "Kính mờ",
+      tint: "Phủ màu",
+      accent: "Màu nhấn",
+      rule: "Vạch dọc",
+      key: "Phím nổi",
+      tab: "Thẻ tab",
     },
   },
   errors: {

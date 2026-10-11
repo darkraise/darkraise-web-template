@@ -16,6 +16,19 @@
     color: hsl(var(--sidebar-foreground-muted));
   }
 
+  /* Label case: auto and upper keep the uppercase label; none sets it as
+     written and lower in lower case, both without the wide tracking that
+     only uppercase needs. */
+  [data-label-case="none"] .dr-sidebar-nav-group-label {
+    text-transform: none;
+    letter-spacing: normal;
+  }
+
+  [data-label-case="lower"] .dr-sidebar-nav-group-label {
+    text-transform: lowercase;
+    letter-spacing: normal;
+  }
+
   /* Collapsed rail has no room for the label text. `invisible` used to keep
      the full label box in flow, so each group reserved a ~24px empty strip
      on top of its own top margin — a lot of dead rail. Remove it from flow
@@ -25,7 +38,7 @@
   }
 
   .dr-sidebar-nav-link {
-    @apply focus-ring-inset flex min-h-[var(--control-height-default)] items-center gap-3 rounded-md p-[var(--density-row-py)] text-sm transition-colors;
+    @apply focus-ring-inset flex min-h-[var(--control-height-default)] items-center gap-3 rounded-[var(--nav-item-radius)] p-[var(--density-row-py)] text-sm transition-colors;
     transition-duration: var(--duration-fast);
   }
 
@@ -80,7 +93,7 @@
   .dr-sidebar-nav-popover-trigger {
     /* Icon-only popover trigger keeps symmetric `p-[var(--density-row-py)]`
      * so it stays square — same reasoning as the collapsed nav link. */
-    @apply focus-ring-inset mx-auto flex min-h-[var(--control-height)] w-[var(--control-height)] cursor-pointer items-center justify-center gap-3 rounded-md p-[var(--density-row-py)] transition-colors;
+    @apply focus-ring-inset mx-auto flex min-h-[var(--control-height)] w-[var(--control-height)] cursor-pointer items-center justify-center gap-3 rounded-[var(--nav-item-radius)] p-[var(--density-row-py)] transition-colors;
     transition-duration: var(--duration-fast);
   }
 
@@ -110,7 +123,7 @@
      with a button parked beside it. Its children paint no background of their
      own. */
   .dr-sidebar-nav-collapsible-row {
-    @apply flex items-center gap-1 rounded-md transition-colors;
+    @apply flex items-center gap-1 rounded-[var(--nav-item-radius)] transition-colors;
     transition-duration: var(--duration-fast);
   }
 
@@ -123,7 +136,7 @@
   }
 
   .dr-sidebar-nav-chevron-button {
-    @apply focus-ring-inset flex size-[var(--control-height-default)] shrink-0 cursor-pointer items-center justify-center rounded-md transition-colors;
+    @apply focus-ring-inset flex size-[var(--control-height-default)] shrink-0 cursor-pointer items-center justify-center rounded-[var(--nav-item-radius)] transition-colors;
     transition-duration: var(--duration-fast);
   }
 

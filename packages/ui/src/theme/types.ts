@@ -115,8 +115,12 @@ export const SHELL_STYLES = [
 export type ShellStyle = (typeof SHELL_STYLES)[number]
 
 /**
- * How the active sidebar row is drawn. `auto` follows the style: Quiet draws
- * a chip, Flat a pill, Tactile a tile and Glass a frosted chip.
+ * How the active nav row is drawn. `auto` takes the preset's look, else the
+ * style's (Quiet draws a chip, Flat a pill, Tactile a tile and Glass a
+ * frosted chip). `tint` washes the row and sets its label in the accent,
+ * `accent` washes it in the accent behind an accent edge, `rule` marks it
+ * with a full-height accent rule, `key` raises it on the neutral button's
+ * face, and `tab` lifts it as an opaque card face.
  */
 export const SIDEBAR_SELECTIONS = [
   "auto",
@@ -124,6 +128,11 @@ export const SIDEBAR_SELECTIONS = [
   "pill",
   "tile",
   "frosted",
+  "tint",
+  "accent",
+  "rule",
+  "key",
+  "tab",
 ] as const
 export type SidebarSelectionSetting = (typeof SIDEBAR_SELECTIONS)[number]
 /** A look a nav can draw; `auto` is resolved to one of these first. */
