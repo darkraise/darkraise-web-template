@@ -1,9 +1,11 @@
 @layer components {
   .dr-sheet-content {
     @apply modal-surface text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 gap-4 p-6 ease-in-out;
-    /* Modal-tier surface: bg + border from style-driven tokens;
-       --elevation-high stays via .modal-surface. */
+    /* Modal-tier surface: the dialog's fill and border; the shadow
+       stays via .modal-surface. */
     @apply overlay-surface;
+    background: var(--dialog-fill);
+    border-color: var(--dialog-border);
   }
 
   .dr-sheet-content[data-state="closed"] {
@@ -75,27 +77,27 @@
   .dr-sheet-content[data-side="top"] {
     @apply data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0;
     border-width: 0 0 1px;
-    border-radius: 0 0 var(--overlay-radius) var(--overlay-radius);
+    border-radius: 0 0 var(--dialog-radius) var(--dialog-radius);
     max-height: calc(100dvh - 2rem);
   }
 
   .dr-sheet-content[data-side="bottom"] {
     @apply data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0;
     border-width: 1px 0 0;
-    border-radius: var(--overlay-radius) var(--overlay-radius) 0 0;
+    border-radius: var(--dialog-radius) var(--dialog-radius) 0 0;
     max-height: calc(100dvh - 2rem);
   }
 
   .dr-sheet-content[data-side="left"] {
     @apply data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 sm:max-w-sm;
     border-width: 0 1px 0 0;
-    border-radius: 0 var(--overlay-radius) var(--overlay-radius) 0;
+    border-radius: 0 var(--dialog-radius) var(--dialog-radius) 0;
   }
 
   .dr-sheet-content[data-side="right"] {
     @apply data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 sm:max-w-sm;
     border-width: 0 0 0 1px;
-    border-radius: var(--overlay-radius) 0 0 var(--overlay-radius);
+    border-radius: var(--dialog-radius) 0 0 var(--dialog-radius);
   }
 
   /* The logical sides take their slide from tw-animate's :dir() rules, whose
@@ -105,8 +107,8 @@
     border-width: 0;
     border-inline-end-width: 1px;
     border-radius: 0;
-    border-start-end-radius: var(--overlay-radius);
-    border-end-end-radius: var(--overlay-radius);
+    border-start-end-radius: var(--dialog-radius);
+    border-end-end-radius: var(--dialog-radius);
   }
 
   .dr-sheet-content[data-side="end"] {
@@ -114,8 +116,8 @@
     border-width: 0;
     border-inline-start-width: 1px;
     border-radius: 0;
-    border-start-start-radius: var(--overlay-radius);
-    border-end-start-radius: var(--overlay-radius);
+    border-start-start-radius: var(--dialog-radius);
+    border-end-start-radius: var(--dialog-radius);
   }
 
   /* Pinned layout, opted into by rendering a <SheetBody>: header and footer

@@ -1,8 +1,23 @@
+/* Modal and scrim paint a style may set. Each default reproduces the
+   overlay family the modals shared before, so a style that sets none of
+   them changes nothing. */
+@layer base {
+  :root {
+    --dialog-fill: var(--overlay-bg);
+    --dialog-border: var(--overlay-border);
+    --dialog-radius: var(--overlay-radius);
+    --modal-shadow: var(--elevation-high);
+    --scrim: color-mix(in oklab, #000 50%, transparent);
+    --scrim-backdrop: var(--overlay-backdrop);
+  }
+}
+
 @layer components {
   .dr-overlay-backdrop {
-    @apply data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50;
-    -webkit-backdrop-filter: var(--overlay-backdrop);
-    backdrop-filter: var(--overlay-backdrop);
+    @apply data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50;
+    background-color: var(--scrim);
+    -webkit-backdrop-filter: var(--scrim-backdrop);
+    backdrop-filter: var(--scrim-backdrop);
   }
 
   .dr-overlay-header {
@@ -15,6 +30,35 @@
        flush against each other on exactly the interaction where a mis-tap is
        most expensive. */
     @apply flex flex-col-reverse gap-2 sm:flex-row sm:justify-end;
+  }
+
+  /* Header and footer signatures. Modal content pads 1.5rem on every side
+     (p-6), so a band or rule reaches the edges through matching negative
+     margins; the content's overflow clips it to the rounded corners. */
+  [data-dialog-header="band"] .dr-overlay-header {
+    margin: -1.5rem -1.5rem 0;
+    padding: 1rem 1.5rem;
+    background: hsl(var(--background));
+    border-bottom: 1px solid hsl(var(--border));
+  }
+
+  [data-dialog-footer="ruled"] .dr-overlay-footer {
+    margin-inline: -1.5rem;
+    padding: 1rem 1.5rem 0;
+    border-top: 1px solid hsl(var(--border));
+  }
+
+  [data-dialog-footer="band"] .dr-overlay-footer {
+    margin: 0 -1.5rem -1.5rem;
+    padding: 1rem 1.5rem;
+    background: hsl(var(--background));
+    border-top: 1px solid hsl(var(--border));
+  }
+
+  @media (width >= 40rem) {
+    [data-dialog-footer="band"] .dr-overlay-footer > * {
+      flex: 1;
+    }
   }
 
   .dr-overlay-description {

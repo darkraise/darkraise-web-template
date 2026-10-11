@@ -88,7 +88,8 @@ export type PaintToken = keyof typeof PAINT_TOKENS
 
 /**
  * Opaque, unblurred values the kit restores under reduced transparency or
- * more contrast, whatever the style or preset set. Each equals the token's
+ * more contrast, whatever the style or preset set: every backdrop and the
+ * canvas `none`, the card plane at full alpha, and the overlay fill at its
  * light `@layer base` value in theme.css.
  */
 export const KIT_FALLBACK: Readonly<Partial<Record<PaintToken, string>>> = {
@@ -98,4 +99,7 @@ export const KIT_FALLBACK: Readonly<Partial<Record<PaintToken, string>>> = {
   overlayFillLayers: "",
   overlayFillBase: "hsl(var(--popover))",
   overlayFillBlend: "normal",
+  surfaceFillAlpha: "1",
+  surfaceBackdrop: "none",
+  scrimBackdrop: "none",
 }

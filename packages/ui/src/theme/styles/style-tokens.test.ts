@@ -229,13 +229,21 @@ describe("paint token schema", () => {
     )
   })
 
-  it("falls back to each token's light base value", () => {
+  // Opaque and unblurred: the surface and scrim backdrops fall back to
+  // `none` (their defaults live in card.css or read the overlay's); every
+  // other token, the surface fill alpha included, to its light base value
+  // in theme.css.
+  it("falls back to each token's opaque, unblurred value", () => {
     const base = declarations(THEME).filter((d) =>
       sameContext(d.context, LIGHT_BASE),
     )
     for (const [token, value] of Object.entries(KIT_FALLBACK)) {
       const name = PAINT_TOKENS[token as keyof typeof PAINT_TOKENS]
-      expect(base.find((d) => d.property === name)?.value, name).toBe(value)
+      if (token === "surfaceBackdrop" || token === "scrimBackdrop") {
+        expect(value, name).toBe("none")
+      } else {
+        expect(base.find((d) => d.property === name)?.value, name).toBe(value)
+      }
     }
   })
 
