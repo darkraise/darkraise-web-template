@@ -338,14 +338,12 @@ describe("generateTokens", () => {
       "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
     )
     const glassCss = "src/theme/styles/generated/glass.css"
-    expect(declared(glassCss, '[data-style="glass"]')).toEqual([
-      "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
-    ])
     expect(
       declared(glassCss, '[data-style="glass"]:not([data-mode="dark"])'),
-    ).toEqual([
-      "0 10px 15px -3px rgb(16 24 40 / 0.1), 0 4px 6px -4px rgb(16 24 40 / 0.1)",
-    ])
+    ).toEqual(["0 10px 30px -10px rgb(0 0 0 / 0.25)"])
+    expect(
+      declared(glassCss, '[data-mode="dark"][data-style="glass"]'),
+    ).toEqual(["0 10px 30px -10px rgb(0 0 0 / 0.6)"])
   })
 
   it("paints a frosted sidebar on the page ground in dark mode", () => {

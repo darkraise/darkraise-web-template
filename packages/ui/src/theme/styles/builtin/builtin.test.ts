@@ -34,7 +34,7 @@ describe("built-in style definitions", () => {
       ["flat", false, { elevation: "flat" }],
       ["quiet", false, {}],
       ["tactile", false, {}],
-      ["glass", true, { backgroundStyle: "gradient" }],
+      ["glass", true, { backgroundStyle: "gradient", gradientPattern: "dots" }],
     ])
   })
 

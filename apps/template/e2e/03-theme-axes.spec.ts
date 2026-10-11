@@ -18,7 +18,6 @@ import {
 } from "./fixtures/theme"
 import {
   applyTheme,
-  boxOf,
   gotoApp,
   readThemeAttrs,
   readToken,
@@ -26,10 +25,9 @@ import {
   reloadApp,
   seedApp,
   watchConsole,
-  type Box,
   type ThemeSeed,
 } from "./helpers/app"
-import { alphaOf, minContrastOver, settle } from "./helpers/measure"
+import { alphaOf } from "./helpers/measure"
 import { shadowLayers } from "./helpers/showcase"
 
 /** A page that renders enough chrome to prove tokens reach real components. */
@@ -83,11 +81,14 @@ const STYLE_SIGNATURES: Record<
     tokens: {
       "--btn-shadow": "0 1px 2px rgb(0 0 0 / 0.1)",
       "--field-shadow": "0 0 transparent",
-      "--chrome-backdrop": "blur(18px) saturate(140%)",
+      "--overlay-backdrop": "blur(20px) saturate(180%)",
+      "--scrim-backdrop": "blur(4px)",
     },
     attrs: {
       "data-elevation": "standard",
       "data-background-style": "gradient",
+      "data-gradient-pattern": "dots",
+      "data-bar-edge": "veil",
     },
   },
 }
@@ -99,24 +100,6 @@ async function expectSurface(page: Page, surface: string) {
     "stored surface",
   ).toBe(surface)
   await expect(page.locator("html")).toHaveAttribute("data-surface", surface)
-}
-
-/**
- * Contrast between the lightest and the darkest pixel in `clip`, after the
- * blur minContrastOver applies. The lowest contrast against black gives the
- * darkest luminance and the lowest against white the lightest, so the spread
- * between them is 21 / (black ratio x white ratio).
- */
-async function luminanceSpread(page: Page, clip: Box): Promise<number> {
-  const [againstBlack = 0, againstWhite = 0] = await minContrastOver(
-    page,
-    clip,
-    [
-      [0, 0, 0],
-      [255, 255, 255],
-    ],
-  )
-  return 21 / (againstBlack * againstWhite)
 }
 
 /** Blur radii of the outset shadow layers that paint, in order. */
@@ -213,55 +196,58 @@ test.describe("style axis", () => {
 })
 
 test.describe("glass axes", () => {
-  test("glass opacity thins the chrome fog from subtle to strong", async ({
+  /** Each value resolved on a throwaway element under <html>. */
+  function resolved(page: Page, css: string, property: string) {
+    return page.evaluate(
+      ([text, name]) => {
+        const el = document.createElement("div")
+        el.setAttribute("style", text)
+        document.body.append(el)
+        const value = getComputedStyle(el).getPropertyValue(name)
+        el.remove()
+        return value
+      },
+      [css, property] as const,
+    )
+  }
+
+  test("glass opacity thins the overlay from subtle to strong", async ({
     page,
   }) => {
-    // Light glass pins a loud accent canvas under its chrome fog. The thinner
-    // the fog, the more of that canvas shows, so the luminance spread of the nav
-    // grows with each step. Dark fog over the dark canvas moves too little to
-    // order the steps.
     const consoleWatch = watchConsole(page)
     await seedApp(page, { style: "glass", mode: "light" })
     await gotoApp(page, PROBE)
-    const nav = page.locator('.dr-shell > [data-region="nav"]')
-    const spreads: number[] = []
+    const alphas: number[] = []
     for (const glassOpacity of GLASS_OPACITIES) {
       await applyTheme(page, { glassOpacity })
       await reloadApp(page)
       expect((await readThemeAttrs(page))["data-glass-opacity"]).toBe(
         glassOpacity,
       )
-      await page.addStyleTag({
-        content:
-          '.dr-shell > [data-region="nav"] > * { visibility: hidden !important; }',
-      })
-      await settle(page)
-      const box = await boxOf(nav)
-      spreads.push(
-        await luminanceSpread(page, {
-          x: box.x + 8,
-          y: box.y + 8,
-          width: box.width - 16,
-          height: box.height - 16,
-        }),
+      const colour = await resolved(
+        page,
+        "background-color: var(--surface-overlay-base)",
+        "background-color",
       )
+      alphas.push(Number(/,\s*([\d.]+)\)$/.exec(colour)?.[1] ?? 1))
     }
-    const readings = spreads.map((spread) => spread.toFixed(3)).join(", ")
-    for (let i = 1; i < spreads.length; i++) {
+    const readings = alphas.join(", ")
+    for (let i = 1; i < alphas.length; i++) {
       expect(
-        spreads[i],
-        `${GLASS_OPACITIES[i]} spread above ${GLASS_OPACITIES[i - 1]}: ${readings}`,
-      ).toBeGreaterThan(spreads[i - 1] ?? Number.POSITIVE_INFINITY)
+        alphas[i],
+        `${GLASS_OPACITIES[i]} thinner than ${GLASS_OPACITIES[i - 1]}: ${readings}`,
+      ).toBeLessThan(alphas[i - 1] ?? 0)
     }
     consoleWatch.assertClean()
   })
 
-  // Chrome blurs half again as hard as overlays (theme/styles/builtin/glass.ts).
-  const chromeBlur: Record<(typeof GLASS_BLURS)[number], string> = {
-    none: "none",
-    low: "blur(9px) saturate(1.4)",
-    medium: "blur(18px) saturate(1.4)",
-    high: "blur(36px) saturate(1.4)",
+  // The scrim blurs the app a fifth as hard as an overlay blurs what it
+  // covers (theme/styles/builtin/glass.ts); the chrome takes no blur.
+  const blurs: Record<(typeof GLASS_BLURS)[number], [string, string]> = {
+    none: ["none", "none"],
+    low: ["blur(10px) saturate(1.6)", "blur(2px)"],
+    medium: ["blur(20px) saturate(1.8)", "blur(4px)"],
+    high: ["blur(32px) saturate(1.8)", "blur(8px)"],
   }
   for (const glassBlur of GLASS_BLURS) {
     test(`glass blur = ${glassBlur}`, async ({ page }) => {
@@ -270,12 +256,25 @@ test.describe("glass axes", () => {
       await gotoApp(page, PROBE)
       const attrs = await readThemeAttrs(page)
       expect(attrs["data-glass-blur"]).toBe(glassBlur)
-      for (const name of ["nav", "bar"]) {
-        await expect(
-          page.locator(`.dr-shell > [data-region="${name}"]`),
-          name,
-        ).toHaveCSS("backdrop-filter", chromeBlur[glassBlur])
-      }
+      const [overlay, scrim] = blurs[glassBlur]
+      expect(
+        await resolved(
+          page,
+          "backdrop-filter: var(--overlay-backdrop)",
+          "backdrop-filter",
+        ),
+      ).toBe(overlay)
+      expect(
+        await resolved(
+          page,
+          "backdrop-filter: var(--scrim-backdrop)",
+          "backdrop-filter",
+        ),
+      ).toBe(scrim)
+      await expect(page.locator('.dr-shell > [data-region="nav"]')).toHaveCSS(
+        "backdrop-filter",
+        "none",
+      )
       consoleWatch.assertClean()
     })
   }

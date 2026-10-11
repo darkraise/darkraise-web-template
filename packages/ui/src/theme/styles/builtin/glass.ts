@@ -37,12 +37,27 @@ function opacityStep(
   }
 }
 
-/** Glass frosts shell chrome and overlays; content keeps Quiet's recipe. */
+/**
+ * Glass only where content passes under chrome: opaque, calm content on a
+ * dot canvas, a docked solid rail, a top bar that dissolves what scrolls
+ * beneath it, and menus as the one floating glass. The scrim frosts the app
+ * rather than the dialog.
+ */
 export const glass: StyleDefinition = {
   label: "Glass",
-  signatures: { navSelection: "frosted" },
+  signatures: {
+    navSelection: "chip",
+    barEdge: "veil",
+    menuHighlight: "tint",
+    tooltipTone: "inverse",
+    bannerMark: "icon",
+    fieldFill: "surface",
+    tableHead: "plain",
+  },
   frosted: true,
-  defaults: { backgroundStyle: "gradient" },
+  defaults: { backgroundStyle: "gradient", gradientPattern: "dots" },
+  // The fog and edge-light tables are no longer painted by Glass itself; a
+  // style that extends Glass reads them for its own frosted surfaces.
   vars: {
     shared: {
       "--glass-noise": `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.08 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")`,
@@ -50,38 +65,32 @@ export const glass: StyleDefinition = {
   },
   tokens: {
     shared: {
-      dropdownShadow:
-        "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
-      chromeRailFill:
-        "linear-gradient(135deg, var(--glass-fog-5), var(--glass-fog-3))",
-      chromeBarFill:
-        "linear-gradient(180deg, var(--glass-fog-5), var(--glass-fog-3))",
-      chromeEdge: "var(--glass-fog-4)",
-      chromeShadow: "var(--glass-inset)",
-      overlayFillBlend: "overlay, normal",
-      overlayBorder: "var(--glass-fog-4)",
+      chromeBarFill: "hsl(var(--surface-header))",
+      chromeEdge: "hsl(var(--sidebar-border))",
+      cardRadius: "calc(var(--radius) * 1.5)",
+      overlayRadius: "calc(var(--radius) * 1.25)",
+      dialogRadius: "calc(var(--radius) * 1.75)",
+      overlayBorder: "hsl(var(--foreground) / 0.08)",
+      dialogFill: "hsl(var(--popover))",
+      buttonNeutralFill: "hsl(var(--card))",
+      fieldFocusRing: "0 0 0 3px hsl(var(--primary) / 0.15)",
+      scrim: "hsl(var(--foreground) / 0.3)",
     },
-    // Light overlays drop one fog tier: at the dark tiers' alphas a light
-    // overlay read as opaque white and hid the blur behind it. At rest
-    // nothing scrolls under the chrome, so the light chrome fog has to let
-    // its own canvas through to read as glass.
+    // The docked rail is solid on the grounds every selection look clears at
+    // 1.2:1: the page in light, the card tone in dark.
     light: {
-      dropdownShadow:
-        "0 10px 15px -3px rgb(16 24 40 / 0.1), 0 4px 6px -4px rgb(16 24 40 / 0.1)",
-      overlayFillLayers:
-        "var(--glass-noise), linear-gradient(135deg, var(--glass-fog-3), var(--glass-fog-1))",
-      overlayShadow:
-        "var(--elevation-medium), var(--glass-inset-strong), inset 0 0 32px color-mix(in oklab, hsl(var(--surface-tint)) 2%, transparent), var(--glow-outer), var(--glow-inner)",
-      chromeRailFill:
-        "linear-gradient(135deg, var(--glass-fog-3), var(--glass-fog-1))",
-      chromeBarFill:
-        "linear-gradient(180deg, var(--glass-fog-3), var(--glass-fog-1))",
+      chromeRailFill: "hsl(var(--background))",
+      cardBorder: "hsl(var(--border))",
+      cardEdge: "0 1px 2px rgb(0 0 0 / 0.04)",
+      dialogBorder: "hsl(var(--border))",
+      dropdownShadow: "0 10px 30px -10px rgb(0 0 0 / 0.25)",
     },
     dark: {
-      overlayFillLayers:
-        "var(--glass-noise), linear-gradient(135deg, var(--glass-fog-4), var(--glass-fog-2))",
-      overlayShadow:
-        "var(--elevation-medium), var(--glass-inset-strong), inset 0 0 40px color-mix(in oklab, hsl(var(--surface-tint)) 28%, transparent), var(--glow-outer), var(--glow-inner)",
+      chromeRailFill: "hsl(var(--card))",
+      dialogBorder: "hsl(var(--foreground) / 0.1)",
+      dropdownShadow: "0 10px 30px -10px rgb(0 0 0 / 0.6)",
+      fieldFocusRing: "0 0 0 3px hsl(var(--primary) / 0.2)",
+      scrim: "rgb(0 0 0 / 0.5)",
     },
   },
   when: [
@@ -121,68 +130,51 @@ export const glass: StyleDefinition = {
       [2, 4, 6, 9, 13, 24],
       ["0.08", "0.05", "0.1", "0.06"],
     ),
-    // The overlay keeps a popover-coloured base under its fog, so it stays
-    // readable where the blur is unavailable.
+    // The overlay is the popover colour itself, let through by the opacity
+    // step, so it stays readable where the blur is unavailable.
     {
       axes: { glassOpacity: "subtle" },
       tokens: { overlayFillBase: "hsl(var(--popover) / 0.88)" },
     },
     {
       axes: { glassOpacity: "medium" },
-      tokens: { overlayFillBase: "hsl(var(--popover) / 0.76)" },
+      tokens: { overlayFillBase: "hsl(var(--popover) / 0.8)" },
     },
     {
       axes: { glassOpacity: "strong" },
       tokens: { overlayFillBase: "hsl(var(--popover) / 0.62)" },
     },
     // `none` rather than blur(0): any filter value creates a containing
-    // block for fixed descendants. Chrome blurs half again as hard as
-    // overlays.
+    // block for fixed descendants. The scrim blurs the app a fifth as hard
+    // as an overlay blurs what it covers.
     {
       axes: { glassBlur: "none" },
-      tokens: { overlayBackdrop: "none", chromeBackdrop: "none" },
+      tokens: { overlayBackdrop: "none", scrimBackdrop: "none" },
     },
     {
       axes: { glassBlur: "low" },
       tokens: {
-        overlayBackdrop: "blur(6px) saturate(140%)",
-        chromeBackdrop: "blur(9px) saturate(140%)",
+        overlayBackdrop: "blur(10px) saturate(160%)",
+        scrimBackdrop: "blur(2px)",
       },
     },
     {
       axes: { glassBlur: "medium" },
       tokens: {
-        overlayBackdrop: "blur(12px) saturate(140%)",
-        chromeBackdrop: "blur(18px) saturate(140%)",
+        overlayBackdrop: "blur(20px) saturate(180%)",
+        scrimBackdrop: "blur(4px)",
       },
     },
     {
       axes: { glassBlur: "high" },
       tokens: {
-        overlayBackdrop: "blur(24px) saturate(140%)",
-        chromeBackdrop: "blur(36px) saturate(140%)",
-      },
-    },
-    {
-      axes: { backgroundStyle: "gradient" },
-      tokens: {
-        chromeCanvas:
-          "var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c), var(--canvas-blob-d), var(--canvas-ink)",
-      },
-    },
-    // Pinned to the viewport so the rail and the bar show one field.
-    {
-      axes: { backgroundStyle: "gradient" },
-      mode: "light",
-      tokens: {
-        chromeCanvas:
-          "radial-gradient(520px 380px at 0% 0%, color-mix(in oklab, hsl(var(--primary-8)) 50%, transparent), transparent 70%) fixed, radial-gradient(700px 300px at 60% 0%, color-mix(in oklab, hsl(var(--primary-6)) 40%, transparent), transparent 70%) fixed, radial-gradient(480px 520px at 0% 85%, color-mix(in oklab, hsl(var(--primary-9)) 40%, transparent), transparent 70%) fixed, var(--canvas-ink)",
+        overlayBackdrop: "blur(32px) saturate(180%)",
+        scrimBackdrop: "blur(8px)",
       },
     },
   ],
   forcedFallback: {
     tokens: {
-      chromeRailFill: "hsl(var(--surface-sidebar))",
       chromeBarFill: "hsl(var(--surface-header))",
       chromeEdge: "hsl(var(--sidebar-border))",
       chromeBackdrop: "none",

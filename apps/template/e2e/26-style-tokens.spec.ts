@@ -262,12 +262,14 @@ test.describe("tactile surfaces", () => {
 })
 
 test.describe("glass light chrome", () => {
-  test("the canvas shows through the rail and bar", async ({ page }) => {
+  test("docks a solid rail and runs the content under the bar", async ({
+    page,
+  }) => {
     await seedApp(page, { style: "glass", mode: "light", accent: "blue" })
     await gotoApp(page, "/")
     await settle(page)
     const rail = await boxOf(page.locator(".dr-sidebar-layout-aside").first())
-    const bar = await boxOf(page.locator("header").first())
+    const bar = await boxOf(page.locator('.dr-shell > [data-region="bar"]'))
     const samples: Rgb[] = []
     for (const x of [rail.x + 5, rail.x + rail.width - 6]) {
       for (
@@ -278,12 +280,15 @@ test.describe("glass light chrome", () => {
         samples.push(await pixel(page, Math.round(x), Math.round(y)))
       }
     }
-    for (let x = rail.x + rail.width + 4; x < bar.x + bar.width - 4; x += 20) {
-      samples.push(await pixel(page, Math.round(x), Math.round(bar.y + 3)))
-    }
     const lums = samples.map(luminance)
     const range = (Math.max(...lums) + 0.05) / (Math.min(...lums) + 0.05)
-    expect(range).toBeGreaterThanOrEqual(1.18)
+    expect(range, "the rail is one flat tone").toBeLessThan(1.02)
+    const content = await boxOf(
+      page.locator('.dr-shell > [data-region="content"]'),
+    )
+    expect(content.y, "the content starts under the bar").toBeLessThanOrEqual(
+      bar.y + 1,
+    )
   })
 
   for (const accent of ["blue", "violet", "green", "neutral"] as const) {

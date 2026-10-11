@@ -118,10 +118,20 @@ describe("glass fog and specular", () => {
   })
 })
 
+/** Whether Glass's rule `selector` in `layer` declares `name` at all. */
+function declares(layer: string, selector: string, name: string): boolean {
+  return RULES.some(
+    (r) =>
+      r.layer === `@layer ${layer}` &&
+      r.selector === selector &&
+      r.body.includes(`${name}:`),
+  )
+}
+
 describe("glass overlays", () => {
   it.each([
     ["subtle", "0.88"],
-    ["medium", "0.76"],
+    ["medium", "0.8"],
     ["strong", "0.62"],
   ] as const)("bases a %s overlay on the popover at %s", (opacity, alpha) => {
     expect(
@@ -133,37 +143,45 @@ describe("glass overlays", () => {
     ).toBe(`hsl(var(--popover) / ${alpha})`)
   })
 
-  it.each([
-    ["light", "style.base", "--glass-fog-3", "--glass-fog-1", "32px", "2%"],
-    ["dark", "style.mode", "--glass-fog-4", "--glass-fog-2", "40px", "28%"],
-  ] as const)(
-    "frosts the %s overlay with noise, fog and the strong specular",
-    (mode, layer, from, to, spread, tint) => {
-      const selector = inMode(mode)
-      expect(valueOf(layer, selector, "--surface-overlay-layers")).toBe(
-        `var(--glass-noise), linear-gradient(135deg, var(${from}), var(${to}))`,
-      )
-      expect(valueOf(layer, selector, "--overlay-shadow")).toBe(
-        `var(--elevation-medium), var(--glass-inset-strong), inset 0 0 ${spread} color-mix(in oklab, hsl(var(--surface-tint)) ${tint}, transparent), var(--glow-outer), var(--glow-inner)`,
-      )
-    },
-  )
+  it("paints no fog or noise layers over the overlay colour", () => {
+    for (const name of [
+      "--surface-overlay-layers",
+      "--surface-overlay-blend-mode",
+      "--overlay-shadow",
+    ]) {
+      expect(declares("style.base", GLASS_ROOT, name), name).toBe(false)
+      expect(declares("style.base", inMode("light"), name), name).toBe(false)
+      expect(declares("style.mode", inMode("dark"), name), name).toBe(false)
+    }
+  })
 
-  it("blends the noise over the fog and rims overlays with the fog", () => {
-    expect(
-      valueOf("style.base", GLASS_ROOT, "--surface-overlay-blend-mode"),
-    ).toBe("overlay, normal")
+  it("rims overlays with a hairline of the ink", () => {
     expect(valueOf("style.base", GLASS_ROOT, "--overlay-border")).toBe(
-      "var(--glass-fog-4)",
+      "hsl(var(--foreground) / 0.08)",
     )
   })
 
-  it("tints light glass's dropdown shadow and keeps dark's black", () => {
-    expect(valueOf("style.base", GLASS_ROOT, "--shadow-dropdown")).toBe(
-      "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
-    )
+  it("drops a long soft shadow under menus, deeper in dark", () => {
     expect(valueOf("style.base", inMode("light"), "--shadow-dropdown")).toBe(
-      "0 10px 15px -3px rgb(16 24 40 / 0.1), 0 4px 6px -4px rgb(16 24 40 / 0.1)",
+      "0 10px 30px -10px rgb(0 0 0 / 0.25)",
+    )
+    expect(valueOf("style.mode", inMode("dark"), "--shadow-dropdown")).toBe(
+      "0 10px 30px -10px rgb(0 0 0 / 0.6)",
+    )
+  })
+
+  it("keeps dialogs opaque and rounds them past popovers and cards", () => {
+    expect(valueOf("style.base", GLASS_ROOT, "--dialog-fill")).toBe(
+      "hsl(var(--popover))",
+    )
+    expect(valueOf("style.base", GLASS_ROOT, "--overlay-radius")).toBe(
+      "calc(var(--radius) * 1.25)",
+    )
+    expect(valueOf("style.base", GLASS_ROOT, "--card-radius")).toBe(
+      "calc(var(--radius) * 1.5)",
+    )
+    expect(valueOf("style.base", GLASS_ROOT, "--dialog-radius")).toBe(
+      "calc(var(--radius) * 1.75)",
     )
   })
 })
@@ -171,49 +189,54 @@ describe("glass overlays", () => {
 describe("glass blur", () => {
   const BLUR = {
     none: ["none", "none"],
-    low: ["blur(6px) saturate(140%)", "blur(9px) saturate(140%)"],
-    medium: ["blur(12px) saturate(140%)", "blur(18px) saturate(140%)"],
-    high: ["blur(24px) saturate(140%)", "blur(36px) saturate(140%)"],
+    low: ["blur(10px) saturate(160%)", "blur(2px)"],
+    medium: ["blur(20px) saturate(180%)", "blur(4px)"],
+    high: ["blur(32px) saturate(180%)", "blur(8px)"],
   } as const
 
   it("covers every blur step", () => {
     expect(Object.keys(BLUR)).toEqual([...GLASS_BLURS])
   })
 
-  it.each(GLASS_BLURS)("blurs overlays and chrome at %s", (blur) => {
+  it.each(GLASS_BLURS)("blurs overlays and the scrim at %s", (blur) => {
     const selector = `${GLASS_ROOT}[data-glass-blur="${blur}"]`
-    const [overlay, chrome] = BLUR[blur]
+    const [overlay, scrim] = BLUR[blur]
     expect(valueOf("style.when", selector, "--overlay-backdrop")).toBe(overlay)
-    expect(valueOf("style.when", selector, "--chrome-backdrop")).toBe(chrome)
+    expect(valueOf("style.when", selector, "--scrim-backdrop")).toBe(scrim)
+    expect(declares("style.when", selector, "--chrome-backdrop")).toBe(false)
   })
 })
 
 describe("glass chrome", () => {
-  it.each([
-    [
-      "--chrome-rail-bg",
-      "linear-gradient(135deg, var(--glass-fog-5), var(--glass-fog-3))",
-    ],
-    [
-      "--chrome-bar-bg",
-      "linear-gradient(180deg, var(--glass-fog-5), var(--glass-fog-3))",
-    ],
-    ["--chrome-edge", "var(--glass-fog-4)"],
-    ["--chrome-shadow", "var(--glass-inset)"],
-  ])("sets %s to %s", (name, value) => {
-    expect(valueOf("style.base", GLASS_ROOT, name)).toBe(value)
+  it("veils the bar and docks a solid rail", () => {
+    expect(valueOf("style.base", inMode("light"), "--chrome-rail-bg")).toBe(
+      "hsl(var(--background))",
+    )
+    expect(valueOf("style.mode", inMode("dark"), "--chrome-rail-bg")).toBe(
+      "hsl(var(--card))",
+    )
+    expect(valueOf("style.base", GLASS_ROOT, "--chrome-bar-bg")).toBe(
+      "hsl(var(--surface-header))",
+    )
+    expect(valueOf("style.base", GLASS_ROOT, "--chrome-edge")).toBe(
+      "hsl(var(--sidebar-border))",
+    )
   })
 
-  it("shows the canvas behind chrome on a gradient background", () => {
-    expect(
-      valueOf(
-        "style.when",
-        `${GLASS_ROOT}[data-background-style="gradient"]`,
-        "--chrome-canvas",
-      ),
-    ).toBe(
-      "var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c), var(--canvas-blob-d), var(--canvas-ink)",
-    )
+  it("paints no canvas, fog or specular behind the chrome", () => {
+    for (const name of [
+      "--chrome-canvas",
+      "--chrome-shadow",
+      "--chrome-backdrop",
+    ]) {
+      expect(
+        RULES.filter(
+          (r) =>
+            r.layer !== "@layer style.fallback" && r.body.includes(`${name}:`),
+        ).map((r) => r.selector),
+        name,
+      ).toEqual([])
+    }
   })
 })
 
@@ -225,7 +248,6 @@ describe("reduced transparency and more contrast", () => {
   })
 
   it.each([
-    ["--chrome-rail-bg", "hsl(var(--surface-sidebar))"],
     ["--chrome-bar-bg", "hsl(var(--surface-header))"],
     ["--chrome-edge", "hsl(var(--sidebar-border))"],
     ["--chrome-backdrop", "none"],

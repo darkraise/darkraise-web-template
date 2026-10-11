@@ -168,7 +168,7 @@ test.describe("example consumer style and preset", () => {
       .toBe("glass")
     expect(await readToken(page, "--glass-ink-line")).toBe("")
     expect(await readToken(page, "--chrome-edge")).toBe(
-      await computedAs(page, "var(--glass-fog-4)"),
+      await computedAs(page, "hsl(var(--sidebar-border))"),
     )
   })
 
