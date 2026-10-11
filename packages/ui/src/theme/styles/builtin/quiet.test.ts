@@ -35,7 +35,15 @@ describe("quiet, the Ledger base", () => {
 
   it("keeps every other signature at the kit default", () => {
     const signatures = registry.signaturesFor("quiet", "base")
-    const set = new Set(Object.keys(quiet?.signatures ?? {}))
+    const set = new Set([
+      "navSelection",
+      "railTone",
+      "barTone",
+      "dialogHeader",
+      "tableHead",
+      "avatarShape",
+      "bannerMark",
+    ])
     for (const [key, spec] of Object.entries(SIGNATURES)) {
       if (set.has(key)) continue
       expect([key, signatures[key as keyof typeof signatures]]).toEqual([
