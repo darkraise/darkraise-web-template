@@ -35,6 +35,13 @@
     color: hsl(var(--foreground));
   }
 
+  /* The rule look has no surface, and a horizontal row has no leading
+     edge for its rule, so the active item keeps the bar's selected fill. */
+  .dr-top-nav-layout-nav[data-sidebar-selection="rule"]
+    .dr-top-nav-layout-nav-item:is(.active, [data-active="true"]) {
+    background: var(--nav-selection-fill, var(--selected-nav-bg));
+  }
+
   .dr-top-nav-layout-nav-chevron {
     @apply size-[var(--icon-size-sm)] opacity-60;
   }

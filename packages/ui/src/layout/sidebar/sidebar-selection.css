@@ -339,10 +339,9 @@
     content: "";
     position: absolute;
     inset-inline-start: var(--sidebar-marker-start);
-    top: 50%;
+    top: calc(50% - var(--sidebar-marker-height) / 2);
     width: var(--sidebar-marker-width);
     height: var(--sidebar-marker-height);
-    margin-top: calc(var(--sidebar-marker-height) / -2);
     border-radius: var(--sidebar-marker-radius);
     background: var(--sidebar-active-marker);
   }
@@ -362,10 +361,9 @@
     content: "";
     position: absolute;
     inset-inline-start: var(--sidebar-marker-start);
-    top: 50%;
+    top: calc(50% - var(--sidebar-marker-height) / 2);
     width: var(--sidebar-marker-width);
     height: var(--sidebar-marker-height);
-    margin-top: calc(var(--sidebar-marker-height) / -2);
     border-radius: var(--sidebar-marker-radius);
     background: var(--sidebar-active-marker);
   }

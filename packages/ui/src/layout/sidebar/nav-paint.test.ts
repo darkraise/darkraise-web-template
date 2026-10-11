@@ -270,8 +270,9 @@ describe("nav marker signature", () => {
     expect(marker).toContain("width: var(--sidebar-marker-width);")
     expect(marker).toContain("height: var(--sidebar-marker-height);")
     expect(marker).toContain(
-      "margin-top: calc(var(--sidebar-marker-height) / -2);",
+      "top: calc(50% - var(--sidebar-marker-height) / 2);",
     )
+    expect(marker).not.toContain("margin-top")
     expect(marker).toContain("border-radius: var(--sidebar-marker-radius);")
   })
 })

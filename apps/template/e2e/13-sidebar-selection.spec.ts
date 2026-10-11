@@ -498,10 +498,15 @@ test.describe("selection tokens and signatures", () => {
     expect(await marker(page, "background-color")).toBe(accent)
     expect(await marker(page, "width")).toBe("2px")
     expect(parseFloat(await marker(page, "height"))).toBeCloseTo(row.height, 0)
+    const offset = async () =>
+      parseFloat(await marker(page, "top")) +
+      parseFloat(await marker(page, "margin-top"))
+    expect(await offset()).toBeCloseTo(0, 0)
 
     await stamp(page, "data-nav-marker", "bar")
     expect(await marker(page, "width")).toBe("3px")
     expect(await marker(page, "height")).toBe("16px")
+    expect(await offset()).toBeCloseTo((row.height - 16) / 2, 0)
   })
 
   test("a chip draws the bar under the bar marker", async ({ page }) => {
@@ -556,5 +561,31 @@ test.describe("selection tokens and signatures", () => {
     expect(
       await active.evaluate((el) => getComputedStyle(el).boxShadow),
     ).toContain(`${edge} 0px 0px 0px 1px`)
+  })
+
+  test("the rule look keeps a fill on the top nav's active item", async ({
+    page,
+  }) => {
+    await page.addInitScript(() =>
+      localStorage.setItem("layout-variant", "top-nav"),
+    )
+    await seedApp(page, {
+      style: "quiet",
+      mode: "light",
+      sidebarSelection: "rule",
+    })
+    await gotoApp(page, "/orders")
+    const topNav = page.locator(".dr-top-nav-layout-nav")
+    await expect(topNav).toHaveAttribute("data-sidebar-selection", "rule")
+    const active = topNav.locator(".dr-top-nav-layout-nav-item.active")
+    await expect(active).toHaveCount(1)
+    await settle(page)
+    const [fill] = await resolveColours(topNav, [
+      "hsl(var(--sidebar-active-bg))",
+    ])
+    expect(fill).not.toBe("rgba(0, 0, 0, 0)")
+    expect(
+      await active.evaluate((el) => getComputedStyle(el).backgroundColor),
+    ).toBe(fill)
   })
 })
