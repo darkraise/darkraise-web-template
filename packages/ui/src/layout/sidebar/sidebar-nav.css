@@ -179,6 +179,78 @@
     color: hsl(var(--primary-text));
   }
 
+  /* Under an inverse or accent tone the engine solves a region's tiers on
+     its own fill: the sidebar tiers for the rail, the bar tiers for the top
+     bar. Everything in a toned rail, a toned bar, and the phone drawer that
+     stands in for the rail reads those tiers instead of the page's generic
+     tokens: the search trigger, ghost buttons and brand as much as the nav.
+     The drawer is a sheet, so it also takes the rail fill. */
+  :root:is([data-rail-tone="inverse"], [data-rail-tone="accent"])
+    :is(
+      .dr-shell > [data-region="nav"],
+      .dr-shell > [data-region="subnav"],
+      .dr-shell > [data-region="panel"]
+    ) {
+    --foreground: var(--sidebar-foreground-hover);
+    --muted-foreground: var(--sidebar-foreground-muted);
+    --primary-text: var(--sidebar-foreground-hover);
+    --border: var(--sidebar-border);
+    --muted: var(--sidebar-active-bg);
+    --accent: var(--sidebar-hover-bg);
+    --accent-foreground: var(--sidebar-foreground-hover);
+    --field-edge: hsl(var(--sidebar-foreground-muted));
+    color: hsl(var(--foreground));
+  }
+
+  :root:is([data-bar-tone="inverse"], [data-bar-tone="accent"])
+    :is(.dr-shell > [data-region="bar"], .dr-layout-header) {
+    --foreground: var(--bar-foreground-hover);
+    --muted-foreground: var(--bar-foreground-muted);
+    --primary-text: var(--bar-foreground-hover);
+    --border: var(--bar-border);
+    --muted: var(--bar-active-bg);
+    --accent: var(--bar-hover-bg);
+    --accent-foreground: var(--bar-foreground-hover);
+    --field-edge: hsl(var(--bar-foreground-muted));
+    color: hsl(var(--foreground));
+  }
+
+  :root:is([data-rail-tone="inverse"], [data-rail-tone="accent"])
+    .dr-mobile-drawer-content {
+    --foreground: var(--sidebar-foreground-hover);
+    --muted-foreground: var(--sidebar-foreground-muted);
+    --primary-text: var(--sidebar-foreground-hover);
+    --border: var(--sidebar-border);
+    --muted: var(--sidebar-active-bg);
+    --accent: var(--sidebar-hover-bg);
+    --accent-foreground: var(--sidebar-foreground-hover);
+    --field-edge: hsl(var(--sidebar-foreground-muted));
+    color: hsl(var(--foreground));
+    background: var(--chrome-rail-bg);
+  }
+
+  /* The selection looks lift with the rail's own ink, as they do on the
+     dark rail; the page's white chip would vanish under its light text. */
+  :root:is([data-rail-tone="inverse"], [data-rail-tone="accent"])
+    [data-sidebar-selection] {
+    --sidebar-chip: hsl(var(--sidebar-foreground-hover) / 0.12);
+    --sidebar-chip-opaque: color-mix(
+      in srgb,
+      hsl(var(--surface-sidebar)) 88%,
+      hsl(var(--sidebar-foreground-hover))
+    );
+    --sidebar-chip-edge: hsl(var(--sidebar-foreground-hover) / 0.14);
+    --sidebar-chip-shadow:
+      inset 0 1px 0 hsl(0 0% 100% / 0.05), 0 1px 2px hsl(0 0% 0% / 0.45);
+    --sidebar-tile-shadow:
+      inset 0 1px 0 hsl(0 0% 100% / 0.07), 0 1px 0 hsl(0 0% 0% / 0.4),
+      0 4px 8px -3px hsl(0 0% 0% / 0.6);
+    --sidebar-tint: hsl(var(--sidebar-foreground-hover) / 0.12);
+    --sidebar-frost: hsl(var(--sidebar-foreground-hover) / 0.12);
+    --sidebar-frost-edge: hsl(var(--sidebar-foreground-hover) / 0.16);
+    --sidebar-frost-highlight: inset 0 1px 0 hsl(0 0% 100% / 0.07);
+  }
+
   .dr-sidebar-popover-child {
     @apply focus-ring-inset flex items-center rounded-md px-2 py-1.5 text-sm transition-colors;
   }
