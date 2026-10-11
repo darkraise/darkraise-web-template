@@ -215,7 +215,7 @@ describe("interaction state layer", () => {
   it("snaps on hover and press by overriding the duration", () => {
     const css = flat(BUTTON)
     expect(css).toMatch(
-      /:hover::before \{ opacity: var\(--state-layer-hover\); transition-duration: var\(--state-layer-in\)/,
+      /:hover::before \{ opacity: var\(--btn-hover-layer, var\(--state-layer-hover\)\); transition-duration: var\(--state-layer-in\)/,
     )
     expect(css).toMatch(
       /:active::before \{ opacity: var\(--state-layer-press\); transition-duration: var\(--state-layer-in\)/,
@@ -227,7 +227,7 @@ describe("interaction state layer", () => {
     // same wash on a neutral surface, so default and destructive were hard to
     // read at the shared value.
     expect(flat(BUTTON)).toMatch(
-      /\.dr-btn\[data-variant="default"\], \.dr-btn\[data-variant="destructive"\] \{ --state-layer-hover: 0\.16; --state-layer-press: 0\.28/,
+      /\.dr-btn\[data-variant="default"\], \.dr-btn\[data-variant="destructive"\] \{ --btn-hover-layer: 0\.16; --state-layer-press: 0\.28/,
     )
   })
 
@@ -250,7 +250,7 @@ describe("interaction state layer", () => {
 
   it("washes the current page toward its fill's wash at the filled strengths", () => {
     expect(flat("src/components/pagination/pagination.css")).toMatch(
-      /\.dr-pagination-link\[data-active="true"\]\[data-variant="ghost"\] \{[^}]*--state-layer-color: hsl\(var\(--primary-fill-wash\)\); --state-layer-hover: 0\.16; --state-layer-press: 0\.28;/,
+      /\.dr-pagination-link\[data-active="true"\]\[data-variant="ghost"\] \{[^}]*--state-layer-color: hsl\(var\(--primary-fill-wash\)\); --btn-hover-layer: 0\.16; --state-layer-press: 0\.28;/,
     )
   })
 

@@ -352,16 +352,22 @@ const CROPPER = join("src", "components", "image-cropper", "image-cropper.css")
 
 const FILLED_SHADOW =
   "box-shadow: var(--btn-edge), var(--btn-shadow), var(--glow-outer), var(--glow-inner);"
+/** The destructive fill composes the filled edge with its own shadow. */
+const DANGER_SHADOW =
+  "box-shadow: var(--btn-edge), var(--btn-danger-shadow), var(--glow-outer), var(--glow-inner);"
 const NEUTRAL_SHADOW =
   "box-shadow: var(--btn-neutral-edge), var(--btn-neutral-shadow), var(--glow-outer), var(--glow-inner);"
 
 describe("button families", () => {
-  it.each(["default", "destructive"])(
+  it.each([
+    ["default", FILLED_SHADOW],
+    ["destructive", DANGER_SHADOW],
+  ])(
     "the %s button composes the filled family with the glows",
-    (variant) => {
+    (variant, shadow) => {
       const body = bodyOf(BUTTON, `.dr-btn[data-variant="${variant}"]`)
       expect(body).toContain("background-image: var(--btn-sheen);")
-      expect(body).toContain(FILLED_SHADOW)
+      expect(body).toContain(shadow)
     },
   )
 
@@ -381,10 +387,12 @@ describe("button families", () => {
       .filter((rule) => rule.body.includes("box-shadow:"))
       .filter((rule) => {
         const selector = rule.selectors.join(", ")
-        const filled = /data-variant="(?:default|destructive)"/.test(selector)
+        const filled = /data-variant="default"/.test(selector)
+        const danger = /data-variant="destructive"/.test(selector)
         const neutral = /data-variant="(?:outline|secondary)"/.test(selector)
         return (
           (filled && !rule.body.includes(FILLED_SHADOW)) ||
+          (danger && !rule.body.includes(DANGER_SHADOW)) ||
           (neutral && !rule.body.includes(NEUTRAL_SHADOW))
         )
       })

@@ -1,6 +1,21 @@
+/* Kit defaults of the button paint tokens a style or preset may set. */
+@layer base {
+  :root {
+    --btn-border: transparent;
+    --btn-danger-shadow: var(--btn-shadow);
+    --btn-neutral-fill: transparent;
+    /* Unset: the outline border follows --field-edge, which cards and
+       overlays rebind, and a root value would freeze the page's edge. Each
+       reader carries its own default as the var() fallback. */
+    --btn-neutral-border: initial;
+    --btn-font-weight: 500;
+  }
+}
+
 @layer components {
   .dr-btn {
-    @apply focus-ring inline-flex cursor-pointer items-center justify-center gap-2 rounded-[var(--btn-radius)] text-sm font-medium whitespace-nowrap transition-[background-image,background-color,border-color,color,text-decoration-color,box-shadow] disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)] aria-disabled:cursor-not-allowed aria-disabled:opacity-[var(--disabled-opacity)] [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
+    @apply focus-ring inline-flex cursor-pointer items-center justify-center gap-2 rounded-[var(--btn-radius)] text-sm whitespace-nowrap transition-[background-image,background-color,border-color,color,text-decoration-color,box-shadow] disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)] aria-disabled:cursor-not-allowed aria-disabled:opacity-[var(--disabled-opacity)] [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
+    font-weight: var(--btn-font-weight);
     transition-duration: var(--duration-fast);
     position: relative;
     isolation: isolate;
@@ -47,7 +62,7 @@
     .dr-btn:not([data-variant="link"]):not(:disabled):not(
         [aria-disabled="true"]
       ):hover::before {
-      opacity: var(--state-layer-hover);
+      opacity: var(--btn-hover-layer, var(--state-layer-hover));
       transition-duration: var(--state-layer-in);
     }
   }
@@ -60,10 +75,12 @@
 
   /* Filled variants carry a saturated mid-tone, where the shared 8% wash is a
      much smaller perceptual step than it is on a neutral surface — `default`
-     and `destructive` were hard to read at that value. */
+     and `destructive` were hard to read at that value. The strength goes
+     through the button's own --btn-hover-layer, because --state-layer-hover
+     is a style token: a rule on an element must not redeclare it. */
   .dr-btn[data-variant="default"],
   .dr-btn[data-variant="destructive"] {
-    --state-layer-hover: 0.16;
+    --btn-hover-layer: 0.16;
     --state-layer-press: 0.28;
   }
 
@@ -77,6 +94,7 @@
     --hue: hsl(var(--primary-fill));
     background-color: var(--hue);
     background-image: var(--btn-sheen);
+    border-color: var(--btn-border);
     box-shadow:
       var(--btn-edge), var(--btn-shadow), var(--glow-outer), var(--glow-inner);
   }
@@ -86,20 +104,23 @@
     --hue: hsl(var(--destructive-solid));
     background-color: var(--hue);
     background-image: var(--btn-sheen);
+    border-color: var(--btn-border);
     box-shadow:
-      var(--btn-edge), var(--btn-shadow), var(--glow-outer), var(--glow-inner);
+      var(--btn-edge), var(--btn-danger-shadow), var(--glow-outer),
+      var(--glow-inner);
   }
 
   /* outline + secondary: neutral filled variants (was .btn-glass-neutral) */
   .dr-btn[data-variant="outline"] {
-    @apply text-foreground border bg-transparent;
+    @apply text-foreground border;
+    background-color: var(--btn-neutral-fill);
     background-image: var(--btn-neutral-sheen);
     box-shadow:
       var(--btn-neutral-edge), var(--btn-neutral-shadow), var(--glow-outer),
       var(--glow-inner);
     /* The neutral edge solved to 3:1 on every ground: accent is kept for
        action, focus, checked and selected states. */
-    border-color: var(--field-edge);
+    border-color: var(--btn-neutral-border, var(--field-edge));
   }
   .dr-btn[data-variant="secondary"] {
     @apply bg-secondary text-secondary-foreground;
@@ -107,6 +128,7 @@
     box-shadow:
       var(--btn-neutral-edge), var(--btn-neutral-shadow), var(--glow-outer),
       var(--glow-inner);
+    border-color: var(--btn-neutral-border, transparent);
   }
   /* In dark mode `--secondary` (217 33% 17%) shares the hue family of the
    * page background. Without a border the button dissolves into the page
@@ -114,13 +136,33 @@
    * legible at rest. Light mode keeps the borderless look — the white page
    * gives slate-100 enough contrast on its own. */
   [data-mode="dark"] .dr-btn[data-variant="secondary"] {
-    @apply border-border border;
+    @apply border;
+    border-color: var(--btn-neutral-border, hsl(var(--border)));
   }
 
   /* ghost: foreground text at rest; hover and press come from the state
      layer alone. */
   .dr-btn[data-variant="ghost"] {
     @apply text-foreground border border-transparent;
+  }
+
+  /* The link ghost signature: a text button in the accent, underlined on
+     hover instead of washed. An icon-only ghost keeps its wash, since it has
+     no label to underline. */
+  [data-ghost-button="link"]
+    .dr-btn[data-variant="ghost"]:not([data-size="icon"]) {
+    @apply text-primary-text underline-offset-4;
+    --btn-hover-layer: 0;
+    --state-layer-press: 0;
+  }
+
+  @media (hover: hover) {
+    [data-ghost-button="link"]
+      .dr-btn[data-variant="ghost"]:not([data-size="icon"]):where(
+        :not(:disabled):not([aria-disabled="true"])
+      ):hover {
+      text-decoration-line: underline;
+    }
   }
 
   /* link */

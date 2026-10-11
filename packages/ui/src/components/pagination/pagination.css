@@ -25,7 +25,7 @@
     background-color: var(--selected-check-bg);
     color: var(--selected-check-fg);
     --state-layer-color: hsl(var(--primary-fill-wash));
-    --state-layer-hover: 0.16;
+    --btn-hover-layer: 0.16;
     --state-layer-press: 0.28;
     box-shadow:
       var(--btn-neutral-edge), var(--btn-neutral-shadow), var(--affordance-glow);
@@ -35,7 +35,7 @@
      solved to 3:1 on every ground; the current page keeps its fill. */
   .dr-pagination[data-variant="outline"]
     .dr-pagination-link:not([data-active="true"]) {
-    border-color: var(--field-edge);
+    border-color: var(--btn-neutral-border, var(--field-edge));
   }
 
   .dr-pagination-previous {

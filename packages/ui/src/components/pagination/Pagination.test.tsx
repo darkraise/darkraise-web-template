@@ -62,7 +62,7 @@ describe("Pagination", () => {
       "utf8",
     ).replace(/\s+/g, " ")
     expect(css).toContain(
-      '.dr-pagination[data-variant="outline"] .dr-pagination-link:not([data-active="true"]) { border-color: var(--field-edge); }',
+      '.dr-pagination[data-variant="outline"] .dr-pagination-link:not([data-active="true"]) { border-color: var(--btn-neutral-border, var(--field-edge)); }',
     )
   })
 })
