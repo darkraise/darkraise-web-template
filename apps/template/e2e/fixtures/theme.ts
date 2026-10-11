@@ -104,6 +104,7 @@ export const LS_KEYS = {
   darkAccentChroma: "theme-dark-accent-chroma",
   tintWithAccent: "theme-tint-with-accent",
   font: "theme-font",
+  headingFont: "theme-heading-font",
 } as const
 
 /** localStorage key the layout store reads on boot for the user's shell style. */

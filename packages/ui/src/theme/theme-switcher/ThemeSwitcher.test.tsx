@@ -8,6 +8,7 @@ import {
 } from "@testing-library/react"
 import { ThemeProvider } from "../theme-provider/ThemeProvider"
 import { ThemeSwitcher } from "./ThemeSwitcher"
+import { themeConfig } from "../themeConfig"
 
 // Match the storage + matchMedia mocking pattern from useTheme.test.tsx.
 const storageMock = (() => {
@@ -166,8 +167,47 @@ describe("ThemeSwitcher brand part", () => {
   it("switches the font", () => {
     renderSwitcher()
     openSwitcher()
-    fireEvent.click(screen.getByRole("radio", { name: "Geist" }))
+    const font = screen.getByRole("radiogroup", { name: "Font" })
+    fireEvent.click(within(font).getByRole("radio", { name: "Geist" }))
     expect(document.documentElement.getAttribute("data-font")).toBe("geist")
+  })
+
+  it("switches the heading font, offering the config's fonts by label", () => {
+    render(
+      <ThemeProvider
+        config={{
+          ...themeConfig,
+          fonts: {
+            newsreader: {
+              label: "Newsreader",
+              family: "'Newsreader', serif",
+              role: "serif",
+            },
+          },
+        }}
+      >
+        <ThemeSwitcher />
+      </ThemeProvider>,
+    )
+    openSwitcher()
+    const heading = screen.getByRole("radiogroup", { name: "Heading Font" })
+    // Face names are long, so a font axis wraps after three cells.
+    expect(heading).toHaveAttribute("data-cols", "3")
+    expect(
+      within(heading)
+        .getAllByRole("radio")
+        .map((radio) => radio.textContent),
+    ).toEqual(["body", "Inter", "Geist", "IBM Plex Sans", "Newsreader"])
+    fireEvent.click(within(heading).getByRole("radio", { name: "Newsreader" }))
+    expect(document.documentElement.getAttribute("data-heading-font")).toBe(
+      "newsreader",
+    )
+    expect(
+      within(screen.getByRole("radiogroup", { name: "Font" })).getByRole(
+        "radio",
+        { name: "Newsreader" },
+      ),
+    ).toBeInTheDocument()
   })
 
   it("renders Tint With Accent as a switch", () => {

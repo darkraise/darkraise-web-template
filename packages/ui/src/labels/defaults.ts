@@ -76,6 +76,7 @@ export const defaultLabels: UiLabels = {
       glassOpacity: "Opacity",
       glassBlur: "Backdrop Blur",
       font: "Font",
+      headingFont: "Heading Font",
       backgroundStyle: "Background",
       backgroundIntensity: "Background Intensity",
       gradientPattern: "Gradient Pattern",

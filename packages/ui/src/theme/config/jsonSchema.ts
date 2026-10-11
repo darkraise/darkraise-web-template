@@ -25,10 +25,10 @@ const closed = (properties: Record<string, Schema>, required?: string[]) => ({
 const each = (keys: readonly string[], schema: (key: string) => Schema) =>
   Object.fromEntries(keys.map((key) => [key, schema(key)]))
 
-// A config may register fonts, so the font axis takes any name; the registry
+// A config may register fonts, so the font axes take any name; the registry
 // checks it.
 const axisValues = (key: string): Schema =>
-  key === "font"
+  key === "font" || key === "headingFont"
     ? { type: "string" }
     : { enum: [...AXES[key as keyof typeof AXES].values] }
 

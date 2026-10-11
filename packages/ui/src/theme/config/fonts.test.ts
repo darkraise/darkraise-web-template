@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { FONTS, type Font } from "../types"
+import { FONTS } from "../types"
 import { compileThemeCss, LAYER_STATEMENT } from "./compile"
 import { defineFont } from "./define"
 import { canonicalJson, definitionsHash, fnv1a36 } from "./hash"
@@ -12,21 +12,17 @@ const newsreader = defineFont({
   role: "serif",
 })
 
-// The font axis is still typed to the built-in faces; the registry accepts a
-// config font all the same.
-const NEWSREADER = "newsreader" as Font
-
 const DEFINITIONS: ThemeDefinitions = {
   fonts: { newsreader },
   styles: {
     paper: {
       label: "Paper",
       extends: "quiet",
-      defaults: { font: NEWSREADER },
+      defaults: { headingFont: "newsreader" },
     },
   },
   presets: {
-    ink: { label: "Ink", style: "paper", axes: { font: NEWSREADER } },
+    ink: { label: "Ink", style: "paper", axes: { font: "newsreader" } },
   },
 }
 
@@ -52,18 +48,25 @@ describe("font registry", () => {
     expect(registry.fonts.inter?.builtIn).toBe(true)
   })
 
-  it("serves the font names as font values", () => {
+  it("serves the font names as font values and body plus them as heading values", () => {
     const registry = resolveRegistry(DEFINITIONS)
     expect(registry.values("font")).toEqual([...FONTS, "newsreader"])
-    expect(resolveRegistry().values("font")).toEqual([...FONTS])
-    expect(registry.isValue("font", "newsreader")).toBe(true)
+    expect(registry.values("headingFont")).toEqual([
+      "body",
+      ...FONTS,
+      "newsreader",
+    ])
+    expect(resolveRegistry().values("headingFont")).toEqual(["body", ...FONTS])
+    expect(registry.isValue("headingFont", "body")).toBe(true)
     expect(registry.isValue("font", "body")).toBe(false)
   })
 
   it("lets a style and a preset name a config font", () => {
     const registry = resolveRegistry(DEFINITIONS)
     expect(registry.issues).toEqual([])
-    expect(registry.styles.paper?.defaults).toEqual({ font: "newsreader" })
+    expect(registry.styles.paper?.defaults).toEqual({
+      headingFont: "newsreader",
+    })
     expect(registry.presets.ink?.axes).toEqual({ font: "newsreader" })
   })
 
@@ -71,7 +74,7 @@ describe("font registry", () => {
     expect(
       messages({
         presets: {
-          ink: { label: "Ink", style: "quiet", axes: { font: NEWSREADER } },
+          ink: { label: "Ink", style: "quiet", axes: { font: "newsreader" } },
         },
       }),
     ).toContainEqual([
@@ -144,6 +147,9 @@ describe("font stylesheet", () => {
 @layer style.base {
   [data-font="newsreader"] {
     --font-family-sans: 'Newsreader', serif;
+  }
+  [data-heading-font="newsreader"] {
+    --font-family-heading: 'Newsreader', serif;
   }
 }
 `,

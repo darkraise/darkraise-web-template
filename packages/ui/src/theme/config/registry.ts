@@ -508,8 +508,12 @@ export function buildRegistry(
   }
   const fontNames = Object.keys(fonts)
   const accepts = (key: AxisKey, value: unknown): boolean => {
-    if (key === "font") {
-      return typeof value === "string" && fontNames.includes(value)
+    if (key === "font" || key === "headingFont") {
+      return (
+        typeof value === "string" &&
+        ((key === "headingFont" && value === "body") ||
+          fontNames.includes(value))
+      )
     }
     return isAxisValue(key, value)
   }
@@ -711,10 +715,12 @@ export function buildRegistry(
 
   const styleNames = Object.keys(orderedStyles)
   const presetValues = ["base", ...Object.keys(presets)]
+  const headingValues = ["body", ...fontNames]
   const values = <K extends AxisKey>(key: K): readonly string[] => {
     if (key === "style") return styleNames
     if ((key as string) === "preset") return presetValues
     if (key === "font") return fontNames
+    if (key === "headingFont") return headingValues
     return AXES[key].values
   }
 

@@ -94,6 +94,7 @@ const messages: UiMessages = {
       glassOpacity: "Độ đục",
       glassBlur: "Độ mờ nền",
       font: "Phông chữ",
+      headingFont: "Phông tiêu đề",
       backgroundStyle: "Nền",
       backgroundIntensity: "Cường độ nền",
       gradientPattern: "Kiểu chuyển màu",

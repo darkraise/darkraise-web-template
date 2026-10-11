@@ -15,7 +15,7 @@ const VALID = {
     style: "glass-ink",
     preset: "ink-night",
     radius: "subtle",
-    font: "newsreader",
+    headingFont: "newsreader",
   },
   switcher: { enabled: true, axes: { glassBlur: false }, advanced: false },
   styles: {

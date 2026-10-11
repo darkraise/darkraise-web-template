@@ -22,6 +22,25 @@ const ICONS: Partial<Record<AxisKey, Readonly<Record<string, typeof Sun>>>> = {
 const themeOption: OptionLabel = (value, labels) =>
   labels.themeOptions[value as keyof UiMessages["themeOptions"]] ?? value
 
+// A built-in face's name is translated; a config font brings its own label.
+const fontOption: OptionLabel = (value, labels, registry) => {
+  const font = registry.fonts[value]
+  return font && !font.builtIn
+    ? font.label
+    : themeOption(value, labels, registry)
+}
+
+// Face names are long ("IBM Plex Sans"), so the font axes wrap after three
+// cells instead of squeezing four into a row.
+const FACE_AXES: ReadonlySet<AxisKey> = new Set(["font", "headingFont"])
+
+/** Whether a value's label is the app's own text, whose casing must stay. */
+function ownLabel(axis: AxisKey, value: string, registry: ThemeRegistry) {
+  if (axis === "style") return registry.styles[value]?.builtIn === false
+  if (FACE_AXES.has(axis)) return registry.fonts[value]?.builtIn === false
+  return false
+}
+
 // `themeOptions` is one map keyed by value, so an axis whose values are
 // labelled elsewhere, or whose value means something else on another axis,
 // overrides it here.
@@ -39,6 +58,8 @@ const OPTION_LABELS: Partial<Record<AxisKey, OptionLabel>> = {
   // as a shape; the looks carry their own group.
   sidebarSelection: (value, labels) =>
     labels.theme.sidebarSelections[value as SidebarSelectionSetting],
+  font: fontOption,
+  headingFont: fontOption,
 }
 
 export function ChoiceControl({ axis }: { axis: AxisKey }) {
@@ -61,18 +82,17 @@ export function ChoiceControl({ axis }: { axis: AxisKey }) {
       size="sm"
       aria-label={labels.theme.axisLabels[axis]}
       className="dr-theme-switcher-toggle-group"
-      data-cols={Math.min(values.length, 5)}
+      data-cols={Math.min(values.length, FACE_AXES.has(axis) ? 3 : 5)}
     >
       {values.map((value) => {
         const Icon = icons?.[value]
-        // A config style's label is the app's own text; keep its casing.
-        const ownLabel =
-          axis === "style" && theme.registry.styles[value]?.builtIn === false
         return (
           <ToggleGroupItem
             key={value}
             value={value}
-            className={ownLabel ? undefined : "capitalize"}
+            className={
+              ownLabel(axis, value, theme.registry) ? undefined : "capitalize"
+            }
           >
             {Icon && <Icon className="dr-theme-switcher-row-icon" />}
             {optionLabel(value, labels, theme.registry)}

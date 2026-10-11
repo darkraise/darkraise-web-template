@@ -38,6 +38,7 @@ const BRAND_SECTIONS = [
   "Tint With Accent",
   "Style",
   "Font",
+  "Heading Font",
   "Radius",
   "Density",
   "Font Size",

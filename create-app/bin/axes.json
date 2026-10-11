@@ -140,6 +140,20 @@
     "label": "Font",
     "groupLabel": "Brand"
   },
+  "headingFont": {
+    "values": [
+      "body",
+      "inter",
+      "geist",
+      "ibm-plex-sans"
+    ],
+    "default": "body",
+    "storageKey": "theme-heading-font",
+    "attribute": "data-heading-font",
+    "layer": "brand",
+    "label": "Heading Font",
+    "groupLabel": "Brand"
+  },
   "radius": {
     "values": [
       "sharp",
