@@ -50,6 +50,11 @@ export interface SolveInput {
   contrast: Contrast
   darkAccentChroma: DarkAccentChroma
   tintWithAccent: boolean
+  /**
+   * The ramp `tintWithAccent` takes its hue from, when that is not `accent`:
+   * a second accent solved against the same neutral grounds as the first.
+   */
+  tintScale?: ColorScale | null
   /** Set under a gradient background; `strip` when the content strip paints. */
   gradient: {
     surfaceHue: string
@@ -322,9 +327,11 @@ const solveCache = new Map<string, Steps>()
 
 function cacheKey(input: SolveInput): string {
   const { accent, neutral, gradient, status } = input
+  const tint = input.tintScale === undefined ? accent : input.tintScale
   return [
     input.mode,
     accent ? scaleId(accent) : "neutral",
+    tint ? scaleId(tint) : "untinted",
     scaleId(neutral),
     input.contrast,
     input.darkAccentChroma,
@@ -368,10 +375,10 @@ function solve(input: SolveInput): Steps {
     if (!r.ok) misses.push({ step, ratio: minRatio(value, grounds), target })
     return r.value
   }
+  const tintScale =
+    input.tintScale === undefined ? input.accent : input.tintScale
   const tintHue =
-    input.tintWithAccent && input.accent
-      ? hslStringToOklch(input.accent[500])
-      : null
+    input.tintWithAccent && tintScale ? hslStringToOklch(tintScale[500]) : null
   const neutralAt = (position: number): string => {
     const c = sampleScale(input.neutral, position)
     return oklchToHslString(

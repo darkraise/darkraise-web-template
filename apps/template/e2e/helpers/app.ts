@@ -51,6 +51,7 @@ export interface ThemeSeed {
   contrast?: string
   darkAccentChroma?: string
   tintWithAccent?: string
+  signalColor?: string
   font?: Font
   headingFont?: string
 }
@@ -92,6 +93,7 @@ function storageEntries(theme: ThemeSeed, authenticated: boolean) {
     ["contrast", LS_KEYS.contrast],
     ["darkAccentChroma", LS_KEYS.darkAccentChroma],
     ["tintWithAccent", LS_KEYS.tintWithAccent],
+    ["signalColor", LS_KEYS.signalColor],
     ["font", LS_KEYS.font],
     ["headingFont", LS_KEYS.headingFont],
   ]

@@ -9,7 +9,7 @@ export const TOKEN_CACHE_STORAGE_KEY = "theme-token-cache"
  * Part of every cache id. Raise it when the set of tokens a paint writes
  * changes shape, so a set cached by an older kit build never matches.
  */
-export const TOKEN_CACHE_SCHEMA = 3
+export const TOKEN_CACHE_SCHEMA = 4
 
 export interface TokenCache {
   id: string

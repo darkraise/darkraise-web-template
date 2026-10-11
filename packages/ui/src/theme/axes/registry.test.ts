@@ -22,6 +22,7 @@ describe("axis registry", () => {
       "accentColor",
       "surfaceColor",
       "tintWithAccent",
+      "signalColor",
       "style",
       "preset",
       "glassOpacity",
@@ -52,7 +53,11 @@ describe("axis registry", () => {
   it("assigns each axis its control kind", () => {
     const byKind = (kind: AxisControlKind) =>
       AXIS_KEYS.filter((key) => AXES[key].control === kind)
-    expect(byKind("swatch")).toEqual(["accentColor", "surfaceColor"])
+    expect(byKind("swatch")).toEqual([
+      "accentColor",
+      "surfaceColor",
+      "signalColor",
+    ])
     expect(byKind("choice")).toEqual([
       "mode",
       "style",
@@ -99,6 +104,7 @@ describe("axis registry", () => {
   it("declares a visibility rule only where another axis gates the control", () => {
     expect(AXIS_KEYS.filter((key) => AXES[key].visibleWhen)).toEqual([
       "tintWithAccent",
+      "signalColor",
       "preset",
       "glassOpacity",
       "glassBlur",
@@ -116,6 +122,12 @@ describe("axis registry", () => {
       ).toBe(true)
       expect(visible?.({ style: "quiet" }, ["quiet"]), key).toBe(false)
     }
+  })
+
+  it("shows the signal colour only while one is set", () => {
+    const visible = AXES.signalColor.visibleWhen
+    expect(visible?.({ signalColor: "lime" }, [])).toBe(true)
+    expect(visible?.({ signalColor: "none" }, [])).toBe(false)
   })
 
   it("shows the gradient pattern only under the gradient style", () => {

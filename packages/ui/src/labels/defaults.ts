@@ -90,6 +90,7 @@ export const defaultLabels: UiLabels = {
       contrast: "Contrast",
       darkAccentChroma: "Dark Accent Chroma",
       tintWithAccent: "Tint With Accent",
+      signalColor: "Signal Color",
     },
     modes: { light: "Light", dark: "Dark", system: "System" },
     styles: {

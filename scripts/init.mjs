@@ -59,6 +59,7 @@ const defaultConfig = {
       contrast: "standard",
       darkAccentChroma: "standard",
       tintWithAccent: "off",
+      signalColor: "none",
     },
     switcher: {
       enabled: true,
@@ -85,6 +86,7 @@ const defaultConfig = {
         contrast: true,
         darkAccentChroma: true,
         tintWithAccent: true,
+        signalColor: true,
       },
     },
   },
@@ -132,6 +134,7 @@ export const themeConfig: ThemeConfig = {
     contrast: "${config.theme.defaults.contrast}",
     darkAccentChroma: "${config.theme.defaults.darkAccentChroma}",
     tintWithAccent: "${config.theme.defaults.tintWithAccent}",
+    signalColor: "${config.theme.defaults.signalColor}",
   },
   switcher: {
     enabled: ${config.theme.switcher.enabled},
@@ -158,6 +161,7 @@ export const themeConfig: ThemeConfig = {
       contrast: ${config.theme.switcher.axes.contrast},
       darkAccentChroma: ${config.theme.switcher.axes.darkAccentChroma},
       tintWithAccent: ${config.theme.switcher.axes.tintWithAccent},
+      signalColor: ${config.theme.switcher.axes.signalColor},
     },
   },
 }

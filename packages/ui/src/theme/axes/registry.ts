@@ -15,6 +15,7 @@ import {
   MODES,
   RADII,
   SIDEBAR_SELECTIONS,
+  SIGNAL_COLORS,
   SURFACE_COLORS,
   TINT_WITH_ACCENT,
 } from "@theme/types"
@@ -90,6 +91,17 @@ export const AXES = {
     control: "switch",
     // There is no hue to mix in under the neutral accent.
     visibleWhen: (settings) => settings.accentColor !== "neutral",
+  }),
+  /** Second accent for marks and fills that must not read as the primary; `none` repeats the accent. */
+  signalColor: axis({
+    values: SIGNAL_COLORS,
+    default: "none",
+    storageKey: "theme-signal-color",
+    attribute: "data-signal-color",
+    layer: "brand",
+    control: "swatch",
+    // Shown once a preset, a style or the user sets one.
+    visibleWhen: (settings) => settings.signalColor !== "none",
   }),
   /** Visual style: one token set for every control; `glass` frosts the shell chrome and overlays. */
   style: axis({

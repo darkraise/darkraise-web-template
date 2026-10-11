@@ -35,7 +35,7 @@ describe("scaffold axes.json", () => {
     }
   })
 
-  it("leaves ten axes to prompt: the brand layer and the style axis", () => {
+  it("leaves eleven axes to prompt: the brand layer and the style axis", () => {
     const axes = scaffoldAxes()
     expect(
       Object.keys(axes).filter(
@@ -46,6 +46,7 @@ describe("scaffold axes.json", () => {
       "accentColor",
       "surfaceColor",
       "tintWithAccent",
+      "signalColor",
       "style",
       "font",
       "headingFont",

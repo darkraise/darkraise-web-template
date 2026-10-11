@@ -75,6 +75,36 @@
     "label": "Tint With Accent",
     "groupLabel": "Brand"
   },
+  "signalColor": {
+    "values": [
+      "none",
+      "red",
+      "coral",
+      "orange",
+      "amber",
+      "yellow",
+      "lime",
+      "green",
+      "emerald",
+      "teal",
+      "cyan",
+      "sky",
+      "blue",
+      "indigo",
+      "violet",
+      "purple",
+      "fuchsia",
+      "pink",
+      "rose",
+      "neutral"
+    ],
+    "default": "none",
+    "storageKey": "theme-signal-color",
+    "attribute": "data-signal-color",
+    "layer": "brand",
+    "label": "Signal Color",
+    "groupLabel": "Brand"
+  },
   "style": {
     "values": [
       "flat",

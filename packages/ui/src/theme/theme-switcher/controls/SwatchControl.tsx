@@ -36,6 +36,21 @@ const SWATCHES: Partial<Record<AxisKey, SwatchSpec>> = {
     color: (value) => surfaceColors[value as SurfaceColor][500],
     title: themeOption,
   },
+  signalColor: {
+    // `none` repeats the accent, so its swatch is the quiet neutral.
+    color: (value, surface, dark) =>
+      value === "none"
+        ? surfaceColors[surface][200]
+        : resolveAccentScale(value as AccentColor, surface)[
+            value === "neutral" ? (dark ? 50 : 900) : 500
+          ],
+    title: (value, labels, dark) =>
+      value === "neutral"
+        ? dark
+          ? labels.themeOptions.neutralAccentDark
+          : labels.themeOptions.neutralAccent
+        : themeOption(value, labels),
+  },
 }
 
 export function SwatchControl({ axis }: { axis: AxisKey }) {

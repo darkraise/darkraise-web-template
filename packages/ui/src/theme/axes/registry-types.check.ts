@@ -5,6 +5,7 @@ import type {
   GlassOpacity,
   GlowLevel,
   Mode,
+  SignalColor,
   SidebarSelectionSetting,
   ThemeContextValue,
   ThemeSettings,
@@ -25,6 +26,10 @@ export type RegistryTypeChecks = [
   Expect<Equal<ThemeContextValue["font"], string>>,
   Expect<Equal<ThemeContextValue["setFont"], (value: string) => void>>,
   Expect<Equal<ThemeContextValue["headingFont"], string>>,
+  Expect<Equal<ThemeContextValue["signalColor"], SignalColor>>,
+  Expect<
+    Equal<ThemeContextValue["setSignalColor"], (value: SignalColor) => void>
+  >,
   Expect<Equal<ThemeContextValue["setHeadingFont"], (value: string) => void>>,
   Expect<Equal<ThemeContextValue["style"], string>>,
   Expect<Equal<ThemeContextValue["setStyle"], (value: string) => void>>,

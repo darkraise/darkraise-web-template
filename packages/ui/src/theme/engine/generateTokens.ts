@@ -35,6 +35,8 @@ export interface GenerateTokensInput {
   backgroundIntensity?: BackgroundIntensity
   /** `alpha` draws the border tokens as the foreground ink at a solved alpha. */
   hairlines?: "opaque" | "alpha"
+  /** A second accent for marks and fills that must not read as the primary. */
+  signalColor?: AccentColor | "none"
 }
 
 /** The ramp every neutral step and text tier is drawn from. */
@@ -262,6 +264,7 @@ export function generateTokens(
     tintWithAccent,
     backgroundIntensity = "balanced",
     hairlines = "opaque",
+    signalColor = "none",
   } = input
 
   const accent = resolveAccentScale(accentColor, surfaceColor)
@@ -276,7 +279,7 @@ export function generateTokens(
   const redish =
     accentColor === "red" || accentColor === "rose" || accentColor === "pink"
 
-  const steps = solveSteps({
+  const solveInput = {
     mode,
     accent: accentColor === "neutral" ? null : accent,
     neutral,
@@ -298,9 +301,24 @@ export function generateTokens(
       warning: accentColors.amber,
       info: accentColors.blue,
     },
-  })
+  }
+  const steps = solveSteps(solveInput)
   const n = (step: number) => steps.neutral[step - 1] as string
   const p = (step: number) => steps.primary[step - 1] as string
+  // The signal ramp is solved like the primary, against the same neutral
+  // grounds: the neutral keeps the primary accent's tint.
+  const signal =
+    signalColor === "none"
+      ? steps
+      : solveSteps({
+          ...solveInput,
+          accent:
+            signalColor === "neutral"
+              ? null
+              : resolveAccentScale(signalColor, surfaceColor),
+          tintScale: solveInput.accent,
+        })
+  const s = (step: number) => signal.primary[step - 1] as string
   const sidebarMark = accentColor === "neutral" ? accent[500] : p(8)
 
   const background = n(1)
@@ -334,6 +352,10 @@ export function generateTokens(
     "--primary-fill": p(9),
     "--primary-foreground": steps.primaryLabel,
     "--primary-fill-wash": washFor(steps.primaryLabel),
+    "--signal-fill": s(9),
+    "--signal-text": s(11),
+    "--signal-subtle": s(3),
+    "--signal-foreground": signal.primaryLabel,
     "--focus-ring": ensureContrastAll(
       accent[dark ? 200 : 300],
       [background, ...stripGrounds],

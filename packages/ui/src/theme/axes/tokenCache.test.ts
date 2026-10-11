@@ -28,12 +28,12 @@ describe("token cache", () => {
   })
 
   it("builds the id from the kit version, the schema, the resolved mode, the stored values, the defaults hash and the definitions hash", () => {
-    expect(TOKEN_CACHE_SCHEMA).toBe(3)
+    expect(TOKEN_CACHE_SCHEMA).toBe(4)
     const id = tokenCacheId(
       (k) => (k === "theme-density" ? "spacious" : null),
       "dark",
     )
-    expect(id.startsWith(`${KIT_VERSION}|3|dark|`)).toBe(true)
+    expect(id.startsWith(`${KIT_VERSION}|4|dark|`)).toBe(true)
     expect(id.split("|")).toHaveLength(5 + cacheInputKeys().length)
     expect(id).toContain("spacious")
     expect(tokenCacheId(() => null, "light")).not.toBe(

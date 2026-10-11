@@ -344,6 +344,7 @@ export function ThemeProvider({
         tintWithAccent: current.tintWithAccent === "on",
         backgroundIntensity: current.backgroundIntensity,
         hairlines: registry.styles[current.style]?.hairlines ?? "opaque",
+        signalColor: current.signalColor,
       })
 
       applyTokens(tokens)

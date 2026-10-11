@@ -217,6 +217,21 @@ describe("ThemeSettingsPanel", () => {
     ).not.toBeInTheDocument()
   })
 
+  it("shows Signal Color only while a signal colour is set", () => {
+    const { container, unmount } = renderPanel(
+      <ThemeSettingsPanel layout="page" />,
+    )
+    expect(sectionLabels(container)).not.toContain("Signal Color")
+    unmount()
+
+    localStorage.setItem("theme-signal-color", "lime")
+    const shown = renderPanel(<ThemeSettingsPanel layout="page" />)
+    expect(sectionLabels(shown.container)).toContain("Signal Color")
+    fireEvent.click(screen.getByTitle("none"))
+    expect(sectionLabels(shown.container)).not.toContain("Signal Color")
+    expect(localStorage.getItem("theme-signal-color")).toBe("none")
+  })
+
   it("shows no preset control", () => {
     for (const style of ["quiet", "glass"]) {
       localStorage.setItem("theme-style", style)

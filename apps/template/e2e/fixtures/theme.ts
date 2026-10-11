@@ -103,6 +103,7 @@ export const LS_KEYS = {
   contrast: "theme-contrast",
   darkAccentChroma: "theme-dark-accent-chroma",
   tintWithAccent: "theme-tint-with-accent",
+  signalColor: "theme-signal-color",
   font: "theme-font",
   headingFont: "theme-heading-font",
 } as const
