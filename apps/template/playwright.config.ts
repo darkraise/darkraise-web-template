@@ -6,6 +6,10 @@ const mobileSpec = "**/21-mobile-layout.spec.ts"
    cause is lost. E2E_TRACE=1 (and CI) keep the trace of the first failed
    attempt instead; local runs stay cheap by default. */
 const traceFirstFailure = process.env.E2E_TRACE === "1" || !!process.env.CI
+/* E2E_PORT lets runs from several worktrees each own a dev server; the
+   default matches vite.config.ts, so a server started by hand is reused. */
+const port = Number(process.env.E2E_PORT ?? 5176)
+const origin = `http://localhost:${port}`
 
 export default defineConfig({
   testDir: "./e2e",
@@ -30,7 +34,7 @@ export default defineConfig({
   timeout: 45_000,
   expect: { timeout: 10_000 },
   use: {
-    baseURL: "http://localhost:5176",
+    baseURL: origin,
     trace: traceFirstFailure ? "retain-on-first-failure" : "on-first-retry",
     screenshot: "only-on-failure",
   },
@@ -54,8 +58,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "pnpm dev",
-    url: "http://localhost:5176",
+    command: `pnpm dev --port ${port} --strictPort`,
+    url: origin,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },
