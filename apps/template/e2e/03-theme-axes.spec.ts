@@ -63,7 +63,7 @@ const STYLE_SIGNATURES: Record<
   },
   quiet: {
     tokens: {
-      "--btn-shadow": "0 1px 2px rgb(0 0 0 / 0.1)",
+      "--btn-shadow": "0 0 transparent",
       "--field-shadow": "0 0 transparent",
       "--chrome-backdrop": "none",
     },
@@ -198,11 +198,12 @@ test.describe("style axis", () => {
       shadows.set(style, await readToken(page, "--btn-shadow"))
     }
     expect(shadows.get("flat")).toContain("transparent")
-    expect(shadows.get("quiet")).not.toContain("transparent")
+    // Quiet's depth is tint steps and rules: its buttons cast no shadow.
+    expect(shadows.get("quiet")).toContain("transparent")
     expect(shadows.get("tactile")).not.toContain("transparent")
     expect(shadows.get("tactile")).not.toBe(shadows.get("quiet"))
-    // Glass restyles no content control, so its buttons are Quiet's.
-    expect(shadows.get("glass")).toBe(shadows.get("quiet"))
+    // Glass restyles no button, so its buttons keep the kit's shadow.
+    expect(shadows.get("glass")).not.toContain("transparent")
   })
 })
 

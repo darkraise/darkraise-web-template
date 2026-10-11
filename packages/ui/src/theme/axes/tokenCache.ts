@@ -1,5 +1,6 @@
 import type { ResolvedMode } from "@theme/types"
-import { fnv1a36 } from "../config/hash"
+import { BUILTIN_STYLES } from "@theme/styles"
+import { canonicalJson, fnv1a36 } from "../config/hash"
 import { AXES, AXIS_KEYS, type AxisValues } from "./registry"
 import { KIT_VERSION } from "./version"
 
@@ -10,6 +11,14 @@ export const TOKEN_CACHE_STORAGE_KEY = "theme-token-cache"
  * changes shape, so a set cached by an older kit build never matches.
  */
 export const TOKEN_CACHE_SCHEMA = 4
+
+/**
+ * A short hash of the built-in style definitions, part of every cache id. A
+ * definition picks engine inputs (chrome tones, hairlines, frosting), so a
+ * kit build that redraws a built-in style under the same version must not
+ * match a token set cached under the old definition.
+ */
+export const BUILTIN_STYLES_HASH = fnv1a36(canonicalJson(BUILTIN_STYLES))
 
 export interface TokenCache {
   id: string
@@ -37,7 +46,8 @@ export function defaultsHash(defaults: Readonly<AxisValues>): string {
 
 /**
  * The pre-render script builds the same string from the migrated values, so
- * the two must stay byte-identical: raw values, "" for absent, then the
+ * the two must stay byte-identical: the kit version, the schema, the resolved
+ * mode, the built-in styles hash, raw values, "" for absent, then the
  * defaults hash, then `definitions` (the theme registry's hash, "" when the
  * config defines no styles or presets), joined with "|".
  */
@@ -51,6 +61,7 @@ export function tokenCacheId(
     KIT_VERSION,
     String(TOKEN_CACHE_SCHEMA),
     resolved,
+    BUILTIN_STYLES_HASH,
     ...cacheInputKeys().map((k) => read(k) ?? ""),
     defaultsHash(defaults),
     definitions,

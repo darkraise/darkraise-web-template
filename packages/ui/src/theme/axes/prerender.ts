@@ -13,6 +13,7 @@ import {
 } from "./legacy"
 import { AXES, AXIS_KEYS, type AxisKey, type AxisValues } from "./registry"
 import {
+  BUILTIN_STYLES_HASH,
   TOKEN_CACHE_SCHEMA,
   TOKEN_CACHE_STORAGE_KEY,
   cacheInputKeys,
@@ -166,9 +167,9 @@ export function buildPrerenderScript(
     'Q=q==="base"?{}:P[q][1];Z=q==="base"?{}:P[q][2];Y=S[p][0];',
     "for(i=0;i<A.length;i++){v=g(A[i][0]);if(A[i][3].indexOf(v)===-1)v=h(Q,A[i][2])?Q[A[i][2]]:h(Y,A[i][2])?Y[A[i][2]]:A[i][4];d.setAttribute(A[i][1],v)}",
     "for(i=0;i<G.length;i++)d.setAttribute(G[i][1],h(Z,G[i][0])?Z[G[i][0]]:S[p][1][G[i][0]]);",
-    // tokenCacheId's form: kit version, schema, resolved mode, raw values,
-    // the defaults hash, the definitions hash.
-    `if(s){var K=${json(cacheInputKeys())},id=[${json(KIT_VERSION)},${json(String(TOKEN_CACHE_SCHEMA))},r],c;`,
+    // tokenCacheId's form: kit version, schema, resolved mode, the built-in
+    // styles hash, raw values, the defaults hash, the definitions hash.
+    `if(s){var K=${json(cacheInputKeys())},id=[${json(KIT_VERSION)},${json(String(TOKEN_CACHE_SCHEMA))},r,${json(BUILTIN_STYLES_HASH)}],c;`,
     `for(i=0;i<K.length;i++)id.push(g(K[i])||"");id.push(${json(defaultsHash(defaults))},${json(registry.hash)});id=id.join("|");`,
     `c=JSON.parse(s.getItem(${json(TOKEN_CACHE_STORAGE_KEY)})||"null");`,
     "if(c&&c.id===id&&c.tokens){for(var t in c.tokens)d.style.setProperty(t,c.tokens[t])}}",

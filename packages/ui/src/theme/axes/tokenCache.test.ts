@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 import {
+  BUILTIN_STYLES_HASH,
   TOKEN_CACHE_SCHEMA,
   TOKEN_CACHE_STORAGE_KEY,
   cacheInputKeys,
@@ -34,7 +35,8 @@ describe("token cache", () => {
       "dark",
     )
     expect(id.startsWith(`${KIT_VERSION}|4|dark|`)).toBe(true)
-    expect(id.split("|")).toHaveLength(5 + cacheInputKeys().length)
+    expect(id.split("|")).toHaveLength(6 + cacheInputKeys().length)
+    expect(id.split("|")[3]).toBe(BUILTIN_STYLES_HASH)
     expect(id).toContain("spacious")
     expect(tokenCacheId(() => null, "light")).not.toBe(
       tokenCacheId(() => null, "dark"),

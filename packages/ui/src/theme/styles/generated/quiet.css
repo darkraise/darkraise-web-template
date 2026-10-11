@@ -1,1 +1,39 @@
 @layer properties, theme, base, style.base, style.mode, style.when, style.preset, style.fallback, components, utilities, overrides;
+
+@layer style.base {
+  [data-style="quiet"] {
+    --quiet-rule: color-mix(in oklab, hsl(var(--border)) 72%, hsl(var(--border-strong)));
+    --quiet-ring: color-mix(in oklab, hsl(var(--border)) 85%, hsl(var(--border-strong)));
+    --btn-edge: 0 0 transparent;
+    --btn-sheen: none;
+    --btn-shadow: 0 0 transparent;
+    --btn-danger-shadow: 0 0 transparent;
+    --btn-neutral-edge: 0 0 transparent;
+    --btn-neutral-sheen: none;
+    --btn-neutral-shadow: 0 0 transparent;
+    --btn-neutral-fill: hsl(var(--card));
+    --field-shadow: 0 0 transparent;
+    --field-focus-ring: 0 0 0 3px hsl(var(--primary) / 0.12);
+    --selected-view-shadow: 0 0 0 1px var(--quiet-rule);
+    --card-border: hsl(var(--border));
+    --overlay-border: var(--quiet-ring);
+    --shadow-dropdown: 0 6px 16px hsl(var(--foreground) / 0.08);
+    --dialog-border: transparent;
+    --modal-shadow: 0 0 0 1px var(--quiet-ring), 0 16px 40px hsl(var(--foreground) / 0.14);
+    --dialog-radius: calc(var(--radius) + 0.25rem);
+    --scrim: hsl(var(--foreground) / 0.3);
+    --figure-weight: 300;
+    --type-page-title-weight: 300;
+    --type-page-title-tracking: -0.02em;
+  }
+}
+
+@layer style.mode {
+  [data-mode="dark"][data-style="quiet"] {
+    --quiet-ring: var(--quiet-rule);
+    --field-focus-ring: 0 0 0 3px hsl(var(--primary) / 0.18);
+    --shadow-dropdown: 0 6px 16px rgb(0 0 0 / 0.5);
+    --modal-shadow: 0 0 0 1px var(--quiet-ring), 0 16px 40px rgb(0 0 0 / 0.5);
+    --scrim: rgb(0 0 0 / 0.5);
+  }
+}
