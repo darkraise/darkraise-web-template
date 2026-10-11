@@ -81,7 +81,7 @@
   }
 
   .dr-combobox-item {
-    @apply relative flex cursor-pointer items-center justify-between gap-2 rounded-sm px-2 py-[var(--density-row-py)] text-sm transition-colors outline-none select-none;
+    @apply relative flex cursor-pointer items-center justify-between gap-2 rounded-[var(--menu-item-radius)] px-2 py-[var(--density-row-py)] text-sm transition-colors outline-none select-none;
   }
 
   /* The active row is tracked with aria-activedescendant, so DOM focus never
@@ -121,5 +121,18 @@
      and a multi-select's control and chips, read the token as 1. */
   .dr-combobox[data-disabled="true"] > * {
     --disabled-opacity: 1;
+  }
+
+  /* Highlight signature: the row under the pointer or the keyboard.
+     `neutral` is the accent wash above; `tint` takes the brand hue at low
+     strength with brand text, `solid` the brand fill with its foreground. */
+  [data-menu-highlight="tint"] .dr-combobox-item[data-highlighted="true"] {
+    background-color: hsl(var(--primary) / 0.12);
+    color: hsl(var(--primary-text));
+  }
+
+  [data-menu-highlight="solid"] .dr-combobox-item[data-highlighted="true"] {
+    background-color: hsl(var(--primary-fill));
+    color: hsl(var(--primary-foreground));
   }
 }

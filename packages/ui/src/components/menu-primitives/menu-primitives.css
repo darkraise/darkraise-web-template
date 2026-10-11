@@ -1,3 +1,11 @@
+/* A style's corner for menu rows; the default is the `rounded-sm` step
+   below the overlay's radius the rows used before. */
+@layer base {
+  :root {
+    --menu-item-radius: calc(var(--radius) - 4px);
+  }
+}
+
 @layer components {
   .dr-menu-content {
     @apply text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 min-w-[8rem] origin-[var(--popup-transform-origin)] overflow-x-hidden overflow-y-auto rounded-[var(--overlay-radius)] border p-1 outline-none;
@@ -14,19 +22,19 @@
   }
 
   .dr-menu-sub-trigger {
-    @apply focus:bg-accent data-[state=open]:bg-accent flex cursor-pointer items-center gap-2 rounded-sm px-2 py-[var(--density-row-py)] text-sm outline-none select-none [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
+    @apply focus:bg-accent data-[state=open]:bg-accent flex cursor-pointer items-center gap-2 rounded-[var(--menu-item-radius)] px-2 py-[var(--density-row-py)] text-sm outline-none select-none [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
   }
 
   .dr-menu-item {
-    @apply focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center gap-2 rounded-sm px-2 py-[var(--density-row-py)] text-sm transition-colors outline-none select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-[var(--disabled-opacity)] [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
+    @apply focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center gap-2 rounded-[var(--menu-item-radius)] px-2 py-[var(--density-row-py)] text-sm transition-colors outline-none select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-[var(--disabled-opacity)] [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
   }
 
   .dr-menu-checkbox-item {
-    @apply focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm py-[var(--density-row-py)] ps-8 pe-2 text-sm transition-colors outline-none select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-[var(--disabled-opacity)];
+    @apply focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-[var(--menu-item-radius)] py-[var(--density-row-py)] ps-8 pe-2 text-sm transition-colors outline-none select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-[var(--disabled-opacity)];
   }
 
   .dr-menu-radio-item {
-    @apply focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm py-[var(--density-row-py)] ps-8 pe-2 text-sm transition-colors outline-none select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-[var(--disabled-opacity)];
+    @apply focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-[var(--menu-item-radius)] py-[var(--density-row-py)] ps-8 pe-2 text-sm transition-colors outline-none select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-[var(--disabled-opacity)];
   }
 
   .dr-menu-label {
@@ -54,5 +62,82 @@
   .dr-menu-radio-item:focus-visible {
     outline: 2px solid hsl(var(--focus-ring));
     outline-offset: -2px;
+  }
+
+  /* Tone signature: `inverse` paints the menu in the text colour with the
+     page colour on it; labels, shortcuts and separators follow it at
+     reduced strength, and the highlighted row is a wash of the page
+     colour. */
+  [data-menu-tone="inverse"] :is(.dr-menu-content, .dr-menu-sub-content) {
+    background: hsl(var(--foreground));
+    background-blend-mode: normal;
+    border-color: transparent;
+    color: hsl(var(--background));
+  }
+
+  [data-menu-tone="inverse"]
+    :is(.dr-menu-content, .dr-menu-sub-content)
+    :is(.dr-menu-label, .dr-menu-shortcut) {
+    color: hsl(var(--background) / 0.7);
+  }
+
+  [data-menu-tone="inverse"]
+    :is(.dr-menu-content, .dr-menu-sub-content)
+    .dr-menu-separator {
+    background-color: hsl(var(--background) / 0.16);
+  }
+
+  [data-menu-tone="inverse"]
+    :is(
+      .dr-menu-item,
+      .dr-menu-checkbox-item,
+      .dr-menu-radio-item,
+      .dr-menu-sub-trigger
+    ):focus,
+  [data-menu-tone="inverse"] .dr-menu-sub-trigger[data-state="open"] {
+    background-color: hsl(var(--background) / 0.14);
+    color: hsl(var(--background));
+  }
+
+  /* Highlight signature: the row under the pointer or the keyboard.
+     `neutral` is the accent wash above; `tint` takes the brand hue at low
+     strength with brand text, `solid` the brand fill with its foreground. */
+  [data-menu-highlight="tint"] .dr-menu-item:focus,
+  [data-menu-highlight="tint"] .dr-menu-checkbox-item:focus,
+  [data-menu-highlight="tint"] .dr-menu-radio-item:focus,
+  [data-menu-highlight="tint"] .dr-menu-sub-trigger:focus,
+  [data-menu-highlight="tint"] .dr-menu-sub-trigger[data-state="open"] {
+    background-color: hsl(var(--primary) / 0.12);
+    color: hsl(var(--primary-text));
+  }
+
+  [data-menu-highlight="solid"] .dr-menu-item:focus,
+  [data-menu-highlight="solid"] .dr-menu-checkbox-item:focus,
+  [data-menu-highlight="solid"] .dr-menu-radio-item:focus,
+  [data-menu-highlight="solid"] .dr-menu-sub-trigger:focus,
+  [data-menu-highlight="solid"] .dr-menu-sub-trigger[data-state="open"] {
+    background-color: hsl(var(--primary-fill));
+    color: hsl(var(--primary-foreground));
+  }
+
+  [data-menu-highlight="solid"]
+    :is(
+      .dr-menu-item,
+      .dr-menu-checkbox-item,
+      .dr-menu-radio-item,
+      .dr-menu-sub-trigger
+    ):focus
+    .dr-menu-shortcut {
+    color: inherit;
+  }
+
+  /* Label case signature: menu labels are set as written under `auto` and
+     `none`; `upper` and `lower` change them. */
+  [data-label-case="upper"] .dr-menu-label {
+    text-transform: uppercase;
+  }
+
+  [data-label-case="lower"] .dr-menu-label {
+    text-transform: lowercase;
   }
 }
