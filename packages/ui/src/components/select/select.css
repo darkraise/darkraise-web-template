@@ -29,7 +29,7 @@
   }
 
   .dr-select-item {
-    @apply focus:bg-accent focus:text-accent-foreground relative flex w-full cursor-pointer items-center rounded-sm py-[var(--density-row-py)] ps-8 pe-2 text-sm outline-none select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-[var(--disabled-opacity)];
+    @apply focus:bg-accent focus:text-accent-foreground relative flex w-full cursor-pointer items-center rounded-[var(--menu-item-radius)] py-[var(--density-row-py)] ps-8 pe-2 text-sm outline-none select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-[var(--disabled-opacity)];
   }
 
   .dr-select-separator {
@@ -46,5 +46,27 @@
   .dr-select-item:focus-visible {
     outline: 2px solid hsl(var(--focus-ring));
     outline-offset: -2px;
+  }
+
+  /* Highlight signature: the row under the pointer or the keyboard.
+     `neutral` is the accent wash above; `tint` takes the brand hue at low
+     strength with brand text, `solid` the brand fill with its foreground. */
+  [data-menu-highlight="tint"] .dr-select-item:focus {
+    background-color: hsl(var(--primary) / 0.12);
+    color: hsl(var(--primary-text));
+  }
+
+  [data-menu-highlight="solid"] .dr-select-item:focus {
+    background-color: hsl(var(--primary-fill));
+    color: hsl(var(--primary-foreground));
+  }
+
+  /* Label case signature: see menu-primitives.css. */
+  [data-label-case="upper"] .dr-select-label {
+    text-transform: uppercase;
+  }
+
+  [data-label-case="lower"] .dr-select-label {
+    text-transform: lowercase;
   }
 }

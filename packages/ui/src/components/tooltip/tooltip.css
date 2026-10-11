@@ -34,4 +34,43 @@
       fill: var(--elevation-lift-tint-medium);
     }
   }
+
+  /* Tone signature: `inverse` paints the tooltip in the text colour with
+     the page colour on it, `accent` in the brand fill. The arrow follows the
+     face, and the dark tonal lift goes: the face is no longer a popup
+     surface. */
+  [data-tooltip-tone="inverse"] .dr-tooltip-content {
+    background: hsl(var(--foreground));
+    background-blend-mode: normal;
+    border-color: transparent;
+    color: hsl(var(--background));
+  }
+
+  [data-tooltip-tone="accent"] .dr-tooltip-content {
+    background: hsl(var(--primary-fill));
+    background-blend-mode: normal;
+    border-color: transparent;
+    color: hsl(var(--primary-foreground));
+  }
+
+  [data-tooltip-tone="inverse"] .dr-tooltip-arrow:not([fill]) {
+    fill: hsl(var(--foreground));
+    stroke: transparent;
+  }
+
+  [data-tooltip-tone="accent"] .dr-tooltip-arrow:not([fill]) {
+    fill: hsl(var(--primary-fill));
+    stroke: transparent;
+  }
+
+  @media (forced-colors: none) {
+    [data-tooltip-tone="inverse"]
+      .dr-tooltip-arrow:not([fill])
+      > path:nth-child(2),
+    [data-tooltip-tone="accent"]
+      .dr-tooltip-arrow:not([fill])
+      > path:nth-child(2) {
+      fill: transparent;
+    }
+  }
 }

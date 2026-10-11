@@ -34,7 +34,7 @@
   }
 
   .dr-command-item {
-    @apply data-[selected='true']:bg-accent data-[selected=true]:text-accent-foreground relative flex cursor-pointer items-center gap-2 rounded-sm px-2 py-[var(--density-row-py)] text-sm outline-none select-none data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-[var(--disabled-opacity)] [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
+    @apply data-[selected='true']:bg-accent data-[selected=true]:text-accent-foreground relative flex cursor-pointer items-center gap-2 rounded-[var(--menu-item-radius)] px-2 py-[var(--density-row-py)] text-sm outline-none select-none data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-[var(--disabled-opacity)] [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
   }
 
   /* Command drives its active option with aria-activedescendant, so DOM focus
@@ -84,5 +84,27 @@
 
   .dr-command-dialog {
     @apply [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:size-[var(--icon-size-lg)] [&_[cmdk-input]]:py-[var(--field-py)] [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-[var(--density-row-py)] [&_[cmdk-item]_svg]:size-[var(--icon-size-lg)];
+  }
+
+  /* Highlight signature: the row under the pointer or the keyboard.
+     `neutral` is the accent wash above; `tint` takes the brand hue at low
+     strength with brand text, `solid` the brand fill with its foreground. */
+  [data-menu-highlight="tint"] .dr-command-item[data-selected="true"] {
+    background-color: hsl(var(--primary) / 0.12);
+    color: hsl(var(--primary-text));
+  }
+
+  [data-menu-highlight="solid"] .dr-command-item[data-selected="true"] {
+    background-color: hsl(var(--primary-fill));
+    color: hsl(var(--primary-foreground));
+  }
+
+  /* Label case signature: see menu-primitives.css. */
+  [data-label-case="upper"] .dr-command-group [cmdk-group-heading] {
+    text-transform: uppercase;
+  }
+
+  [data-label-case="lower"] .dr-command-group [cmdk-group-heading] {
+    text-transform: lowercase;
   }
 }

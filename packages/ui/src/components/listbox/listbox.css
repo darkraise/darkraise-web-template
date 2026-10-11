@@ -3,7 +3,7 @@
     @apply focus-ring border-border max-h-72 min-w-32 overflow-auto rounded-md border p-1 outline-none;
   }
   .dr-listbox-item {
-    @apply cursor-pointer rounded-sm px-2 py-[var(--density-row-py)] text-sm transition-colors select-none;
+    @apply cursor-pointer rounded-[var(--menu-item-radius)] px-2 py-[var(--density-row-py)] text-sm transition-colors select-none;
   }
   /* The active row is tracked with aria-activedescendant, so DOM focus never
      reaches it and `:focus-visible` cannot match. `bg-accent` alone sits at
@@ -84,5 +84,20 @@
      reads the token as 1. */
   .dr-listbox[data-disabled] > * {
     --disabled-opacity: 1;
+  }
+
+  /* Highlight signature: the row under the pointer or the keyboard.
+     `neutral` is the accent wash above; `tint` takes the brand hue at low
+     strength with brand text, `solid` the brand fill with its foreground. */
+  [data-menu-highlight="tint"]
+    .dr-listbox-item[data-focused="true"]:not([data-selected="true"]) {
+    background-color: hsl(var(--primary) / 0.12);
+    color: hsl(var(--primary-text));
+  }
+
+  [data-menu-highlight="solid"]
+    .dr-listbox-item[data-focused="true"]:not([data-selected="true"]) {
+    background-color: hsl(var(--primary-fill));
+    color: hsl(var(--primary-foreground));
   }
 }

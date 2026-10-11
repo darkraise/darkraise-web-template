@@ -396,9 +396,24 @@ const ALLOWED: Array<[string, string, string]> = [
     "a carousel position dot is media chrome",
   ],
   [
+    "components/cascade-select/cascade-select.css",
+    "[data-menu-highlight=",
+    "the menu highlight signature marks the row under the pointer or the keyboard, not a selection",
+  ],
+  [
     "components/color-picker/color-picker.css",
     '.dr-color-picker-swatch-item[data-active="true"]',
     "a colour swatch ring is tool chrome around a colour",
+  ],
+  [
+    "components/combobox/combobox.css",
+    "[data-menu-highlight=",
+    "the menu highlight signature marks the row under the pointer or the keyboard, not a selection",
+  ],
+  [
+    "components/command/command.css",
+    "[data-menu-highlight=",
+    "the menu highlight signature marks the row under the pointer or the keyboard, not a selection",
   ],
   [
     "components/field/field.css",
@@ -444,6 +459,16 @@ const ALLOWED: Array<[string, string, string]> = [
     "components/listbox/listbox.css",
     '.dr-listbox[data-variant="outline"]',
     "the outline variant rings the selected row in the accent text colour over no fill; the checked fill would hide a ring",
+  ],
+  [
+    "components/listbox/listbox.css",
+    "[data-menu-highlight=",
+    "the menu highlight signature marks the row under the pointer or the keyboard, not a selection",
+  ],
+  [
+    "components/menu-primitives/menu-primitives.css",
+    "[data-menu-highlight=",
+    "the menu highlight signature marks the row under the pointer or the keyboard, not a selection",
   ],
   [
     "components/progress/progress.css",

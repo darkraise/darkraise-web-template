@@ -20,7 +20,7 @@
     @apply m-0 max-h-72 min-w-44 list-none overflow-auto p-1;
   }
   .dr-cascade-item {
-    @apply flex cursor-pointer items-center gap-2 rounded-sm px-2 py-[var(--density-row-py)] text-sm transition-colors outline-none;
+    @apply flex cursor-pointer items-center gap-2 rounded-[var(--menu-item-radius)] px-2 py-[var(--density-row-py)] text-sm transition-colors outline-none;
   }
   /* The active item (the one whose subtree shows in the next column) takes
      the highlighted-row treatment its hover uses. Keyboard focus adds a ring
@@ -45,5 +45,32 @@
   .dr-cascade-item[aria-disabled="true"] {
     @apply cursor-not-allowed;
     opacity: var(--disabled-opacity);
+  }
+
+  /* Highlight signature: the row under the pointer or the keyboard.
+     `neutral` is the accent wash above; `tint` takes the brand hue at low
+     strength with brand text, `solid` the brand fill with its foreground. */
+  [data-menu-highlight="tint"] .dr-cascade-item[data-active="true"] {
+    background-color: hsl(var(--primary) / 0.12);
+    color: hsl(var(--primary-text));
+  }
+  @media (hover: hover) {
+    [data-menu-highlight="tint"]
+      .dr-cascade-item:not([aria-disabled="true"]):hover {
+      background-color: hsl(var(--primary) / 0.12);
+      color: hsl(var(--primary-text));
+    }
+  }
+
+  [data-menu-highlight="solid"] .dr-cascade-item[data-active="true"] {
+    background-color: hsl(var(--primary-fill));
+    color: hsl(var(--primary-foreground));
+  }
+  @media (hover: hover) {
+    [data-menu-highlight="solid"]
+      .dr-cascade-item:not([aria-disabled="true"]):hover {
+      background-color: hsl(var(--primary-fill));
+      color: hsl(var(--primary-foreground));
+    }
   }
 }
