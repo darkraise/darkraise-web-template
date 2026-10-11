@@ -177,6 +177,7 @@ test("the bar edge drops the rule or veils the content", async ({ page }) => {
 
   const barBox = await boxOf(bar)
   const firstLine = page.locator("main#main-content > *").first()
+  await expect(firstLine).toBeVisible()
   const restingTop = (await boxOf(firstLine)).y
 
   await stamp(page, "data-bar-edge", "veil")
