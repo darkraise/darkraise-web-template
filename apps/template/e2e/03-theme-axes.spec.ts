@@ -507,6 +507,8 @@ test.describe("background style axis", () => {
     aurora: "radial-gradient(1600px 280px at 20% 22%,",
     spotlight: "radial-gradient(2000px 1200px at 50% -15%,",
     mesh: "radial-gradient(700px 600px at 18% 18%,",
+    dots: "radial-gradient(oklab(",
+    grain: "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0))",
   }
 
   for (const pattern of GRADIENT_PATTERNS) {
@@ -528,6 +530,53 @@ test.describe("background style axis", () => {
       consoleWatch.assertClean()
     })
   }
+
+  test("grain draws the canvas noise at twice its usual strength", async ({
+    page,
+  }) => {
+    await seedApp(page, {
+      backgroundStyle: "gradient",
+      gradientPattern: "grain",
+      style: "quiet",
+    })
+    await gotoApp(page, PROBE)
+    expect((await readThemeAttrs(page))["data-gradient-pattern"]).toBe("grain")
+    const usual = Number(
+      await page.evaluate(() =>
+        getComputedStyle(document.documentElement).getPropertyValue(
+          "--noise-opacity",
+        ),
+      ),
+    )
+    expect(usual).toBeGreaterThan(0)
+    await expect
+      .poll(() =>
+        page.evaluate(() =>
+          Number(getComputedStyle(document.body, "::before").opacity),
+        ),
+      )
+      .toBeCloseTo(Math.min(1, usual * 2), 5)
+  })
+
+  test("dots tile the canvas every 16px", async ({ page }) => {
+    await seedApp(page, {
+      backgroundStyle: "gradient",
+      gradientPattern: "dots",
+      style: "quiet",
+    })
+    await gotoApp(page, PROBE)
+    await expect
+      .poll(() =>
+        page.evaluate(() => getComputedStyle(document.body).backgroundSize),
+      )
+      .toMatch(/^16px 16px, /)
+    // The content strip repaints the canvas and keeps the same tile.
+    const strip = await page.evaluate(() => {
+      const main = document.querySelector("main[data-content]")
+      return main ? getComputedStyle(main, "::before").backgroundSize : null
+    })
+    expect(strip).toMatch(/^16px 16px, /)
+  })
 })
 
 test.describe("density axis", () => {

@@ -73,6 +73,8 @@ export const GRADIENT_PATTERNS = [
   "aurora",
   "spotlight",
   "mesh",
+  "dots",
+  "grain",
 ] as const
 export const DENSITIES = ["compact", "cozy", "comfortable", "spacious"] as const
 export const ELEVATIONS = ["flat", "standard", "high"] as const
