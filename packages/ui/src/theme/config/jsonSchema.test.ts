@@ -11,7 +11,12 @@ const validate = new Ajv({ allErrors: true }).compile(buildThemeJsonSchema())
 
 const VALID = {
   $schema: "./node_modules/darkraise-ui/dist/theme.schema.json",
-  defaults: { style: "glass-ink", preset: "ink-night", radius: "subtle" },
+  defaults: {
+    style: "glass-ink",
+    preset: "ink-night",
+    radius: "subtle",
+    font: "newsreader",
+  },
   switcher: { enabled: true, axes: { glassBlur: false }, advanced: false },
   styles: {
     "glass-ink": {
@@ -39,6 +44,13 @@ const VALID = {
       forcedFallback: { tokens: { cardEdge: "hsl(var(--border))" } },
       signatures: { cardFooter: "inset", navSelection: "tile" },
       hairlines: "alpha",
+    },
+  },
+  fonts: {
+    newsreader: {
+      label: "Newsreader",
+      family: "'Newsreader', serif",
+      role: "serif",
     },
   },
   presets: {
@@ -229,6 +241,26 @@ describe("theme config JSON Schema", () => {
       },
     ],
     [
+      "an unknown font role",
+      ["fonts", "newsreader", "role"],
+      "mono",
+      {
+        keyword: "enum",
+        dataPath: ".fonts['newsreader'].role",
+        params: { allowedValues: ["sans", "serif", "display"] },
+      },
+    ],
+    [
+      "a font without a family",
+      ["fonts", "newsreader", "family"],
+      undefined,
+      {
+        keyword: "required",
+        dataPath: ".fonts['newsreader']",
+        params: { missingProperty: "family" },
+      },
+    ],
+    [
       "a style without a label",
       ["styles", "glass-ink", "label"],
       undefined,
@@ -249,9 +281,16 @@ describe("theme config JSON Schema", () => {
     ["styles", "base", "not"],
     ["presets", "default", "not"],
     ["presets", "quiet", "not"],
+    ["fonts", "inter", "not"],
+    ["fonts", "body", "not"],
+    ["fonts", "News_reader", "pattern"],
   ])("rejects the %s name %j", (group, name, keyword) => {
     const definition =
-      group === "styles" ? { label: "X" } : VALID.presets["ink-night"]
+      group === "styles"
+        ? { label: "X" }
+        : group === "fonts"
+          ? VALID.fonts.newsreader
+          : VALID.presets["ink-night"]
     const errors = errorsOf({ ...VALID, [group]: { [name]: definition } })
     expect(errors).toContainEqual(
       expect.objectContaining({

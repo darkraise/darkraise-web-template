@@ -1,6 +1,6 @@
 import { AXES, AXIS_KEYS } from "../axes/registry"
 import { STYLE_NAMES } from "../styles"
-import { SHELL_STYLES } from "../types"
+import { FONTS, SHELL_STYLES } from "../types"
 import {
   CUSTOM_PROPERTY,
   KEBAB,
@@ -25,9 +25,12 @@ const closed = (properties: Record<string, Schema>, required?: string[]) => ({
 const each = (keys: readonly string[], schema: (key: string) => Schema) =>
   Object.fromEntries(keys.map((key) => [key, schema(key)]))
 
-const axisValues = (key: string): Schema => ({
-  enum: [...AXES[key as keyof typeof AXES].values],
-})
+// A config may register fonts, so the font axis takes any name; the registry
+// checks it.
+const axisValues = (key: string): Schema =>
+  key === "font"
+    ? { type: "string" }
+    : { enum: [...AXES[key as keyof typeof AXES].values] }
 
 const modes = (inner: Schema) =>
   closed({ shared: inner, light: inner, dark: inner })
@@ -69,6 +72,11 @@ export function buildThemeJsonSchema(): Record<string, unknown> {
           propertyNames: ref("name"),
           additionalProperties: ref("preset"),
         },
+        fonts: {
+          type: "object",
+          propertyNames: ref("fontName"),
+          additionalProperties: ref("font"),
+        },
       },
       ["defaults", "switcher"],
     ),
@@ -78,6 +86,19 @@ export function buildThemeJsonSchema(): Record<string, unknown> {
         pattern: KEBAB.source,
         not: { enum: [...RESERVED_NAMES, ...STYLE_NAMES] },
       },
+      fontName: {
+        type: "string",
+        pattern: KEBAB.source,
+        not: { enum: [...RESERVED_NAMES, "body", ...FONTS] },
+      },
+      font: closed(
+        {
+          label: { type: "string" },
+          family: ref("value"),
+          role: { enum: ["sans", "serif", "display"] },
+        },
+        ["label", "family", "role"],
+      ),
       value: {
         type: "string",
         not: { pattern: "[{}]|<\\/[Ss][Tt][Yy][Ll][Ee]" },

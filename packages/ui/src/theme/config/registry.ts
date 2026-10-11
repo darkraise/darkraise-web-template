@@ -2,9 +2,11 @@ import { AXES, isAxisValue, type AxisKey } from "../axes/registry"
 import { generateTokens } from "../engine/generateTokens"
 import { BUILTIN_STYLES } from "../styles/builtin"
 import { SHELL_STYLES, type ShellStyle } from "../types"
+import { BUILTIN_FONTS } from "./fonts"
 import { definitionsHash } from "./hash"
 import type {
   DefinableAxes,
+  FontDefinition,
   ModeTokens,
   ModeVars,
   PresetDefinition,
@@ -50,6 +52,14 @@ export interface ResolvedPreset {
   shellStyle?: ShellStyle
 }
 
+export interface ResolvedFont {
+  name: string
+  label: string
+  builtIn: boolean
+  family: string
+  role: FontDefinition["role"]
+}
+
 export interface DefinitionIssue {
   level: "error" | "warning"
   path: string
@@ -60,6 +70,8 @@ export interface ThemeRegistry {
   /** Built-ins in the order given, then consumer styles in config order. */
   styles: Readonly<Record<string, ResolvedStyle>>
   presets: Readonly<Record<string, ResolvedPreset>>
+  /** Built-in faces in `FONTS` order, then the config's. */
+  fonts: Readonly<Record<string, ResolvedFont>>
   issues: readonly DefinitionIssue[]
   /** `definitionsHash` of the consumer definitions. */
   hash: string
@@ -190,6 +202,8 @@ class Issues {
 interface Checker {
   issues: Issues
   owner: string
+  /** Whether `value` is a value of the axis; fonts include the config's own. */
+  accepts: (key: AxisKey, value: unknown) => boolean
 }
 
 /**
@@ -329,7 +343,7 @@ function checkAxes(c: Checker, path: string, axes: unknown): void {
         `${path}.${key}`,
         `"${key}" is not an axis a definition can set`,
       )
-    } else if (!isAxisValue(key as AxisKey, value)) {
+    } else if (!c.accepts(key as AxisKey, value)) {
       c.issues.error(
         c.owner,
         `${path}.${key}`,
@@ -363,7 +377,7 @@ function checkWhen(
             `${at}.axes.${key}`,
             `"${key}" is not an axis`,
           )
-        } else if (!isAxisValue(key as AxisKey, value)) {
+        } else if (!c.accepts(key as AxisKey, value)) {
           c.issues.error(
             c.owner,
             `${at}.axes.${key}`,
@@ -443,6 +457,18 @@ function mergeModes<T extends string>(
 
 const EMPTY_MODES = { shared: {}, light: {}, dark: {} } as const
 
+const FONT_ROLES: readonly string[] = ["sans", "serif", "display"]
+
+/** `body` is the heading font value for "the sans face". */
+function fontNameError(name: string): string | null {
+  if (!KEBAB.test(name)) return `"${name}" is not a kebab-case name`
+  if (RESERVED_NAMES.has(name) || name === "body") {
+    return `"${name}" is a reserved name`
+  }
+  if (has(BUILTIN_FONTS, name)) return `"${name}" is a built-in font name`
+  return null
+}
+
 export function buildRegistry(
   builtins: Readonly<Record<string, StyleDefinition>>,
   definitions?: ThemeDefinitions,
@@ -450,6 +476,43 @@ export function buildRegistry(
   const issues = new Issues()
   const consumerStyles = definitions?.styles ?? {}
   const consumerPresets = definitions?.presets ?? {}
+
+  const fonts: Record<string, ResolvedFont> = {}
+  for (const [name, font] of Object.entries(BUILTIN_FONTS)) {
+    fonts[name] = { name, ...font, builtIn: true }
+  }
+  for (const [name, font] of Object.entries(definitions?.fonts ?? {})) {
+    const owner = `fonts.${name}`
+    const problem = fontNameError(name)
+    if (problem) {
+      issues.error(owner, owner, problem)
+      continue
+    }
+    const c: Checker = { issues, owner, accepts: () => true }
+    checkValue(c, `${owner}.family`, font.family)
+    if (!FONT_ROLES.includes(font.role)) {
+      issues.error(
+        owner,
+        `${owner}.role`,
+        `"${String(font.role)}" is not a font role (expected sans, serif or display)`,
+      )
+    }
+    if (issues.has(owner)) continue
+    fonts[name] = {
+      name,
+      label: font.label,
+      builtIn: false,
+      family: font.family,
+      role: font.role,
+    }
+  }
+  const fontNames = Object.keys(fonts)
+  const accepts = (key: AxisKey, value: unknown): boolean => {
+    if (key === "font") {
+      return typeof value === "string" && fontNames.includes(value)
+    }
+    return isAxisValue(key, value)
+  }
 
   const raw = new Map<
     string,
@@ -517,7 +580,7 @@ export function buildRegistry(
   for (const name of order) {
     const owner = `styles.${name}`
     const { definition } = raw.get(name) as { definition: StyleDefinition }
-    const c: Checker = { issues, owner }
+    const c: Checker = { issues, owner, accepts }
     const prefixes = (lineages.get(name) ?? [name]).map((n) => `--${n}-`)
     checkAxes(c, `${owner}.defaults`, definition.defaults)
     checkModes(c, `${owner}.vars`, definition.vars, (path, vars) =>
@@ -600,7 +663,7 @@ export function buildRegistry(
   const presets: Record<string, ResolvedPreset> = {}
   for (const [name, definition] of Object.entries(consumerPresets)) {
     const owner = `presets.${name}`
-    const c: Checker = { issues, owner }
+    const c: Checker = { issues, owner, accepts }
     const problem = nameError(name, builtins)
     if (problem) issues.error(owner, owner, problem)
     const style = has(orderedStyles, definition.style)
@@ -651,6 +714,7 @@ export function buildRegistry(
   const values = <K extends AxisKey>(key: K): readonly string[] => {
     if (key === "style") return styleNames
     if ((key as string) === "preset") return presetValues
+    if (key === "font") return fontNames
     return AXES[key].values
   }
 
@@ -662,6 +726,7 @@ export function buildRegistry(
   return {
     styles: orderedStyles,
     presets,
+    fonts,
     issues: issues.list,
     hash: definitionsHash(definitions),
     values,

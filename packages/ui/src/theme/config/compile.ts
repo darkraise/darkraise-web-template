@@ -62,6 +62,21 @@ export function compileThemeCss(
     options.styles === undefined || options.styles.includes(style)
   const blocks: string[][] = []
 
+  if (!builtIn && options.styles === undefined) {
+    blocks.push(
+      block(
+        "@layer style.base",
+        Object.values(registry.fonts)
+          .filter((font) => !font.builtIn)
+          .flatMap((font) => [
+            ...block(`[data-font="${font.name}"]`, [
+              `--font-family-sans: ${font.family};`,
+            ]),
+          ]),
+      ),
+    )
+  }
+
   for (const style of Object.values(registry.styles)) {
     if (style.builtIn !== builtIn || !listed(style.name)) continue
     const self = `[data-style="${style.name}"]`

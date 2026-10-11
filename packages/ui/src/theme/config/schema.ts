@@ -73,7 +73,17 @@ export interface PresetDefinition {
   shellStyle?: ShellStyle
 }
 
+/** A face the app loads itself; the kit only names it. */
+export interface FontDefinition {
+  label: string
+  /** A CSS `font-family` list. */
+  family: string
+  role: "sans" | "serif" | "display"
+}
+
 export interface ThemeDefinitions {
   styles?: Readonly<Record<string, StyleDefinition>>
   presets?: Readonly<Record<string, PresetDefinition>>
+  /** Values the `font` axis accepts beside the built-in faces. */
+  fonts?: Readonly<Record<string, FontDefinition>>
 }

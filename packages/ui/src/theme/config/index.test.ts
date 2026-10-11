@@ -29,6 +29,7 @@ describe("darkraise-ui/theme-config", () => {
       "buildThemeJsonSchema",
       "canonicalJson",
       "compileThemeCss",
+      "defineFont",
       "definePreset",
       "defineStyle",
       "defineThemeConfig",
