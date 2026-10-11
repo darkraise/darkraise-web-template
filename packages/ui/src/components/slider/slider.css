@@ -5,6 +5,7 @@
 
   .dr-slider-track {
     @apply bg-secondary relative h-[var(--track-height)] w-full grow overflow-hidden rounded-full;
+    box-shadow: var(--track-well);
   }
 
   .dr-slider-range {
@@ -26,7 +27,8 @@
   }
 
   .dr-slider-thumb {
-    @apply border-primary bg-primary-foreground hit-area-24 block h-5 w-5 cursor-pointer rounded-full border-2 data-[disabled]:cursor-not-allowed;
+    @apply border-primary hit-area-24 block h-5 w-5 cursor-pointer rounded-full border-2 data-[disabled]:cursor-not-allowed;
+    background-color: var(--thumb-fill, hsl(var(--primary-foreground)));
     /* The thumb's lift, then the affordance glow, which marks the current
        value as the active one without a focus event. */
     box-shadow: var(--thumb-shadow), var(--affordance-glow);

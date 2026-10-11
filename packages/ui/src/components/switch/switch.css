@@ -1,6 +1,19 @@
+/* Kit defaults of the switch paint tokens a style or preset may set. */
+@layer base {
+  :root {
+    /* A pill under every radius step, as Tailwind's rounded-full. */
+    --switch-radius: calc(infinity * 1px);
+    /* Unset: a thumb falls back to its own fill (the page tone on a switch,
+       --field-edge on an unchecked one, the accent's foreground on a slider),
+       which no single root value can reproduce. */
+    --thumb-fill: initial;
+  }
+}
+
 @layer components {
   .dr-switch {
-    @apply data-[state=unchecked]:bg-input focus-ring hit-area-24 inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
+    @apply data-[state=unchecked]:bg-input focus-ring hit-area-24 inline-flex h-5 w-9 shrink-0 cursor-pointer items-center border-2 border-transparent transition-colors disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
+    border-radius: var(--switch-radius);
   }
 
   .dr-switch[data-state="checked"] {
@@ -16,7 +29,10 @@
      transition list beside transform. translate is physical, so the
      checked offset flips sign in a right-to-left context. */
   .dr-switch-thumb {
-    @apply bg-background pointer-events-none block h-4 w-4 rounded-full ring-0 transition-[transform,translate,background-color];
+    @apply pointer-events-none block h-4 w-4 ring-0 transition-[transform,translate,background-color];
+    background-color: var(--thumb-fill, hsl(var(--background)));
+    /* Concentric with the track, inside its 2px border. */
+    border-radius: max(0px, calc(var(--switch-radius) - 2px));
     box-shadow: var(--thumb-shadow);
     translate: var(--switch-thumb-x, 0) 0;
   }
@@ -30,7 +46,7 @@
   }
 
   .dr-switch[data-state="unchecked"] .dr-switch-thumb {
-    background-color: var(--field-edge);
+    background-color: var(--thumb-fill, var(--field-edge));
   }
 
   /* Compose the style-driven --affordance-glow on top of the thumb's

@@ -43,8 +43,6 @@ const FULL_ROUND = new Map<string, string>([
   ["dr-slider-step", "step dots"],
   ["dr-spinner-circle", "spinner ring"],
   ["dr-steps-indicator", "circular step number"],
-  ["dr-switch", "the track is a capsule"],
-  ["dr-switch-thumb", "switch thumb"],
   ["dr-timeline-indicator", "timeline dot"],
   ["dr-user-menu-trigger", "avatar trigger"],
 ])

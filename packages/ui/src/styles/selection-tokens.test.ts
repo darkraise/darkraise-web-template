@@ -94,7 +94,7 @@ describe("view switch family", () => {
     [
       TABS,
       '.dr-tabs-indicator[data-variant="default"]',
-      "background-color: var(--selected-view-bg);",
+      "background: var(--selected-view-bg);",
     ],
     [
       TABS,
@@ -104,7 +104,7 @@ describe("view switch family", () => {
     [
       TABS,
       '.dr-tabs-indicator[data-variant="outline"]',
-      "background-color: var(--selected-view-bg);",
+      "background: var(--selected-view-bg);",
     ],
     [
       TABS,
@@ -114,7 +114,7 @@ describe("view switch family", () => {
     [
       SEGMENT,
       ".dr-segment-group-indicator",
-      "background-color: var(--selected-view-bg);",
+      "background: var(--selected-view-bg);",
     ],
     [
       SEGMENT,
@@ -566,7 +566,7 @@ describe("checked family on Checkbox and Switch", () => {
       '.dr-checkbox[data-state="checked"]',
       [
         "background-color: var(--selected-check-bg);",
-        "border-color: var(--selected-check-bg);",
+        "border-color: var(--check-checked-border);",
         "color: var(--selected-check-fg);",
       ],
     ],

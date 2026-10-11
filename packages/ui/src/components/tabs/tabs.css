@@ -96,7 +96,7 @@
   /* View switch: a neutral raised pill, not the accent. */
   .dr-tabs-indicator[data-variant="default"] {
     @apply rounded-sm;
-    background-color: var(--selected-view-bg);
+    background: var(--selected-view-bg);
     box-shadow: var(--selected-view-shadow), var(--affordance-glow);
   }
 
@@ -107,7 +107,7 @@
      shipped style) so the halo emanates downward from the bar. */
   .dr-tabs-indicator[data-variant="outline"] {
     @apply rounded-sm;
-    background-color: var(--selected-view-bg);
+    background: var(--selected-view-bg);
     box-shadow:
       var(--selected-view-shadow),
       inset 0 0 0 1px hsl(var(--border-strong)),

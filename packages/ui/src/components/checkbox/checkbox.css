@@ -1,6 +1,15 @@
+/* Kit defaults of the checkbox paint tokens a style or preset may set. */
+@layer base {
+  :root {
+    --check-checked-border: var(--selected-check-bg);
+    --check-radius: calc(var(--radius) - 4px);
+  }
+}
+
 @layer components {
   .dr-checkbox {
-    @apply border-primary focus-ring hit-area-24 grid shrink-0 cursor-pointer place-content-center rounded-sm border disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
+    @apply border-primary focus-ring hit-area-24 grid shrink-0 cursor-pointer place-content-center border disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
+    border-radius: var(--check-radius);
   }
 
   .dr-checkbox[data-state="unchecked"] {
@@ -11,7 +20,7 @@
   .dr-checkbox[data-state="checked"],
   .dr-checkbox[data-state="indeterminate"] {
     background-color: var(--selected-check-bg);
-    border-color: var(--selected-check-bg);
+    border-color: var(--check-checked-border);
     color: var(--selected-check-fg);
   }
 

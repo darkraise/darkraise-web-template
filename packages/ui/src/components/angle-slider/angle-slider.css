@@ -12,7 +12,8 @@
     @apply absolute inset-0 origin-center;
   }
   .dr-angle-slider-pointer {
-    @apply border-primary bg-primary-foreground absolute top-1 left-1/2 h-3.5 w-3.5 -translate-x-1/2 rounded-full border-2;
+    @apply border-primary absolute top-1 left-1/2 h-3.5 w-3.5 -translate-x-1/2 rounded-full border-2;
+    background-color: var(--thumb-fill, hsl(var(--primary-foreground)));
     box-shadow: var(--thumb-shadow);
   }
 }

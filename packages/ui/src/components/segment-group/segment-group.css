@@ -1,6 +1,14 @@
+/* Kit default of the segment radius a style or preset may set. */
+@layer base {
+  :root {
+    --segment-radius: calc(var(--radius) - 2px);
+  }
+}
+
 @layer components {
   .dr-segment-group {
-    @apply bg-muted relative inline-flex rounded-md p-1;
+    @apply bg-muted relative inline-flex p-1;
+    border-radius: var(--segment-radius);
     box-shadow: var(--track-well);
   }
 
@@ -19,7 +27,9 @@
      exceed that specificity — chaining `.dr-segment-group` parent class
      brings us to (0,2,0) and the later source order wins. */
   .dr-segment-group .dr-segment-group-item {
-    @apply focus-ring-inset text-muted-foreground relative z-10 inline-flex cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent px-3 text-sm font-medium transition-colors;
+    @apply focus-ring-inset text-muted-foreground relative z-10 inline-flex cursor-pointer items-center justify-center border-0 bg-transparent px-3 text-sm font-medium transition-colors;
+    /* Inside the track's 0.25rem padding, concentric with it. */
+    border-radius: calc(var(--segment-radius) - 2px);
     height: var(--btn-height);
     width: auto;
     aspect-ratio: auto;
@@ -90,8 +100,10 @@
        (`surface[700]`), the only token there that's *lighter* than
        `bg-muted` (`surface[800]`), so the pill still reads as raised
        instead of recessed. */
-    @apply absolute z-0 rounded-sm;
-    background-color: var(--selected-view-bg);
+    @apply absolute z-0;
+    border-radius: calc(var(--segment-radius) - 2px);
+    /* `background`, so a style can give the pill a gradient face. */
+    background: var(--selected-view-bg);
     /* Compose the family shadow with the style-driven --affordance-glow so
        the sliding indicator pill can gain a primary halo from a style
        (it stays visually unchanged in every shipped style). */
