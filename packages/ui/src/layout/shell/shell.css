@@ -1,3 +1,22 @@
+/* Shell paint a style or preset may set. Defaults reproduce the unstyled
+   shell. A token whose today's value depends on the shell element (the
+   region shadow and ground are rebound per [data-shell-style], the content
+   edge follows the chrome edge) defaults to `initial`, and each reader
+   carries that value as its fallback: a :root alias would resolve on :root
+   and miss the per-shell binding. */
+@layer base {
+  :root {
+    --chrome-flat-fill: var(--shell-flat-chrome, hsl(var(--muted)));
+    --chrome-bar-height: 3.5rem;
+    --shell-shadow: initial;
+    --shell-content-fill: transparent;
+    --shell-content-edge: initial;
+    --shell-content-shadow: initial;
+    --shell-ground-fill: initial;
+    --shell-frame-edge: hsl(var(--border));
+  }
+}
+
 @layer components {
   /* The grid every app shell structure is laid out on. Area names are the
      region names, so a template line reads as the regions it places.
@@ -9,7 +28,7 @@
     @apply grid h-dvh overflow-hidden;
     gap: var(--shell-gap);
     padding: var(--shell-pad);
-    background-color: hsl(var(--shell-ground));
+    background: var(--shell-ground-fill, hsl(var(--shell-ground)));
   }
 
   .dr-shell[data-structure="sidebar"] {
@@ -165,6 +184,93 @@
     .dr-shell[data-structure="split-panel"] {
       grid-template-columns: 1fr;
       grid-template-areas: "bar" "content";
+    }
+  }
+
+  /* The bar spans the rails: it runs the full width above them from md up,
+     where the rails are shown. */
+  @media (width >= 48rem) {
+    [data-bar-span="full"] .dr-shell[data-structure="sidebar"] {
+      grid-template-areas: "bar bar" "nav content";
+    }
+
+    [data-bar-span="full"] .dr-shell[data-structure="stacked"] {
+      grid-template-areas: "bar bar bar" "nav subnav content";
+    }
+  }
+
+  /* The bar edge: no rule, or a veil. Transparent rather than zero width,
+     so the bar keeps its height. */
+  [data-bar-edge="none"]
+    :is(.dr-shell > [data-region="bar"], .dr-layout-header) {
+    border-bottom-color: transparent;
+  }
+
+  /* A veiled bar has no rule and no fill of its own: the content runs up
+     under it, and the bar dissolves what scrolls beneath through two blur
+     layers masked to fade lower down, under a tint of the bar's surface.
+     The content's top padding (every layout's p-6) grows by the bar's
+     height, so its first line rests clear of the bar; floating content
+     already reserves that room. The bar drops its own backdrop filter: an
+     element with one is a backdrop root, which would show its layers only
+     the bar itself, never the content. */
+  [data-bar-edge="veil"]
+    .dr-shell:not([data-shell-style="floating"])
+    > [data-region="content"] {
+    grid-row-start: 1;
+    padding-block-start: calc(var(--chrome-bar-height) + var(--spacing) * 6);
+  }
+
+  [data-bar-edge="veil"] .dr-shell > [data-region="bar"] {
+    border-bottom-color: transparent;
+    background: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  [data-bar-edge="veil"] .dr-shell > [data-region="bar"]::before {
+    inset: 0 0 -1.625rem 0;
+    background: linear-gradient(
+      hsl(var(--surface-header) / 0.85),
+      hsl(var(--surface-header) / 0.55) 55%,
+      hsl(var(--surface-header) / 0)
+    );
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    -webkit-mask-image: linear-gradient(#000 0 60%, transparent 100%);
+    mask-image: linear-gradient(#000 0 60%, transparent 100%);
+  }
+
+  [data-bar-edge="veil"] .dr-shell > [data-region="bar"]::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 -1.625rem 0;
+    z-index: -1;
+    pointer-events: none;
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    -webkit-mask-image: linear-gradient(#000 0 30%, transparent 62%);
+    mask-image: linear-gradient(#000 0 30%, transparent 62%);
+  }
+
+  /* Without transparency the veil is an opaque bar with its rule back; the
+     content still runs beneath it, out of sight. */
+  @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+    [data-bar-edge="veil"] .dr-shell > [data-region="bar"]::before {
+      inset: 0;
+      background: var(--chrome-bar-bg);
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+
+    [data-bar-edge="veil"] .dr-shell > [data-region="bar"]::after {
+      content: none;
+    }
+
+    [data-bar-edge="veil"] .dr-shell > [data-region="bar"] {
+      border-bottom-color: var(--chrome-edge);
     }
   }
 }

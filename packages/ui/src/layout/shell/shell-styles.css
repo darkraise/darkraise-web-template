@@ -6,13 +6,35 @@
      when welded. It was an inset box-shadow, but an inset shadow paints with
      the element's background, beneath its children, so content scrolling
      inside the region slid over the edge and erased it. A border sits outside
-     the scrollport and stays on top. */
+     the scrollport and stays on top.
+
+     A detached region reads as a card: it takes the card's edge, and the
+     shell radius moves by whatever the style adds to or takes from the card
+     radius, so the radius axis and the shell's pill clamp still apply. Under
+     the sharp radius --radius is a bare 0, which makes the sum invalid and
+     the corners square, as sharp asks. */
   .dr-shell[data-shell-style="island"] > [data-region],
   .dr-shell[data-shell-style="floating"] > [data-region],
   .dr-shell[data-shell-style="inset"] > [data-region="content"] {
     border: 1px solid var(--chrome-edge);
-    border-radius: var(--shell-radius);
-    box-shadow: var(--shell-region-shadow);
+    border-radius: calc(
+      var(--shell-radius) + var(--card-radius) - var(--radius)
+    );
+    box-shadow: var(--card-edge), var(--shell-region-shadow);
+  }
+
+  /* A detached content pane paints from the content tokens; its fallbacks
+     are the shared recipe above, read where the shell binds them. */
+  .dr-shell:is(
+      [data-shell-style="island"],
+      [data-shell-style="floating"],
+      [data-shell-style="inset"]
+    )
+    > [data-region="content"] {
+    background: var(--shell-content-fill);
+    border-color: var(--shell-content-edge, var(--chrome-edge));
+    box-shadow:
+      var(--card-edge), var(--shell-content-shadow, var(--shell-region-shadow));
   }
 
   /* The rule above replaces the region rule's box-shadow, so detached
@@ -24,7 +46,8 @@
       [data-region="panel"],
       [data-region="bar"]
     ) {
-    box-shadow: var(--chrome-shadow), var(--shell-region-shadow);
+    box-shadow:
+      var(--chrome-shadow), var(--card-edge), var(--shell-region-shadow);
   }
 
   /* Chrome that stays welded but gives up its surface (inset) or its rules
@@ -53,14 +76,35 @@
   }
 
   /* inset — chrome stays welded to the viewport and gives up its own surface
-     so the shell ground shows through; only the content detaches. */
-  .dr-shell[data-shell-style="inset"] > [data-region="nav"],
-  .dr-shell[data-shell-style="inset"] > [data-region="subnav"],
-  .dr-shell[data-shell-style="inset"] > [data-region="bar"],
-  .dr-shell[data-shell-style="inset"] > [data-region="panel"] {
-    --chrome-rail-bg: transparent;
-    --chrome-bar-bg: transparent;
-    --chrome-canvas: none;
+     so the shell ground shows through; only the content detaches. The
+     region drops its canvas and its ::before its fill, rather than the
+     chrome tokens being rebound here, so a style's chrome tokens keep
+     reaching every other shell. A rail or bar under an inverse or accent
+     tone keeps its fill: its ink is solved on that fill, not on the ground. */
+  .dr-shell[data-shell-style="inset"]
+    > :is(
+      [data-region="nav"],
+      [data-region="subnav"],
+      [data-region="panel"],
+      [data-region="bar"]
+    ) {
+    background: none;
+  }
+
+  :root:not([data-rail-tone="inverse"], [data-rail-tone="accent"])
+    .dr-shell[data-shell-style="inset"]
+    > :is(
+      [data-region="nav"],
+      [data-region="subnav"],
+      [data-region="panel"]
+    )::before {
+    background: none;
+  }
+
+  :root:not([data-bar-tone="inverse"], [data-bar-tone="accent"])
+    .dr-shell[data-shell-style="inset"]
+    > [data-region="bar"]::before {
+    background: none;
   }
 
   .dr-shell[data-shell-style="inset"] > [data-region="handle"] {
@@ -108,7 +152,7 @@
         1.5rem
     );
     padding-block-start: calc(
-      3.5rem + var(--shell-float-inset, 0.75rem) * 2 + 1.5rem
+      var(--chrome-bar-height) + var(--shell-float-inset, 0.75rem) * 2 + 1.5rem
     );
   }
 
@@ -129,7 +173,7 @@
   .dr-shell[data-shell-style="floating"][data-structure="top-nav"]
     > [data-region="content"] {
     padding-block-start: calc(
-      3.5rem + var(--shell-float-inset, 0.75rem) * 2 + 1.5rem
+      var(--chrome-bar-height) + var(--shell-float-inset, 0.75rem) * 2 + 1.5rem
     );
   }
 
@@ -139,7 +183,7 @@
       4rem + 14rem + var(--shell-float-inset, 0.75rem) + 1.5rem
     );
     padding-block-start: calc(
-      3.5rem + var(--shell-float-inset, 0.75rem) * 2 + 1.5rem
+      var(--chrome-bar-height) + var(--shell-float-inset, 0.75rem) * 2 + 1.5rem
     );
   }
 
@@ -149,7 +193,7 @@
       var(--panel-width, 20rem) + var(--shell-float-inset, 0.75rem) + 1.5rem
     );
     padding-block-start: calc(
-      3.5rem + var(--shell-float-inset, 0.75rem) * 2 + 1.5rem
+      var(--chrome-bar-height) + var(--shell-float-inset, 0.75rem) * 2 + 1.5rem
     );
   }
 
@@ -178,17 +222,36 @@
        so they would cover it entirely — computed, but never visible. The
        ring sits in the gutter the margin already reserves. */
     box-shadow:
-      0 0 0 1px hsl(var(--border)),
+      0 0 0 1px var(--shell-frame-edge),
       var(--shell-region-shadow);
   }
 
-  /* flat — tone alone separates the regions. */
-  .dr-shell[data-shell-style="flat"] > [data-region="nav"],
-  .dr-shell[data-shell-style="flat"] > [data-region="subnav"],
-  .dr-shell[data-shell-style="flat"] > [data-region="bar"],
-  .dr-shell[data-shell-style="flat"] > [data-region="panel"] {
-    --chrome-rail-bg: var(--shell-flat-chrome, hsl(var(--muted)));
-    --chrome-bar-bg: var(--shell-flat-chrome, hsl(var(--muted)));
-    --chrome-canvas: none;
+  /* flat — tone alone separates the regions: the chrome drops its canvas
+     and fills from the flat fill. A toned rail or bar keeps its own fill,
+     which its ink is solved on. */
+  .dr-shell[data-shell-style="flat"]
+    > :is(
+      [data-region="nav"],
+      [data-region="subnav"],
+      [data-region="panel"],
+      [data-region="bar"]
+    ) {
+    background: none;
+  }
+
+  :root:not([data-rail-tone="inverse"], [data-rail-tone="accent"])
+    .dr-shell[data-shell-style="flat"]
+    > :is(
+      [data-region="nav"],
+      [data-region="subnav"],
+      [data-region="panel"]
+    )::before {
+    background: var(--chrome-flat-fill);
+  }
+
+  :root:not([data-bar-tone="inverse"], [data-bar-tone="accent"])
+    .dr-shell[data-shell-style="flat"]
+    > [data-region="bar"]::before {
+    background: var(--chrome-flat-fill);
   }
 }
