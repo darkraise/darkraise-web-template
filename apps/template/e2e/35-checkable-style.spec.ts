@@ -71,19 +71,20 @@ for (const mode of MODES) {
         await resolved(
           page,
           "border-top-left-radius",
-          "calc(var(--radius) - 4px)",
+          "max(calc(var(--radius) - 4px), calc(var(--radius) / 2))",
         ),
-      )
-      const pill = await resolved(
-        page,
-        "border-top-left-radius",
-        "calc(infinity * 1px)",
       )
       expect(
         await computed(first(page, SWITCH), "border-top-left-radius"),
-      ).toBe(pill)
+      ).toBe(
+        await resolved(page, "border-top-left-radius", "var(--radius-pill)"),
+      )
       expect(await computed(first(page, THUMB), "border-top-left-radius")).toBe(
-        pill,
+        await resolved(
+          page,
+          "border-top-left-radius",
+          "max(0px, calc(var(--radius-pill) - 2px))",
+        ),
       )
       expect(await computed(first(page, THUMB), "background-color")).toBe(
         await resolved(page, "background-color", "var(--field-edge)"),
