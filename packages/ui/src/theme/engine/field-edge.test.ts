@@ -37,6 +37,42 @@ const GROUNDS = [
 // Fields are opaque under every style, so the mark floor applies everywhere.
 const FLOOR = 3
 
+// The share of white a --card-sheen value lays over the card: each gradient
+// layer counts its brightest white stop, and a grain layer counts the mean of
+// its noise, which is half the alpha its colour matrix scales the noise by.
+function whiteCover(sheen: string): number {
+  const layers: string[] = []
+  let depth = 0
+  let start = 0
+  for (let i = 0; i < sheen.length; i++) {
+    const char = sheen[i]
+    if (char === "(") depth++
+    else if (char === ")") depth--
+    else if (char === "," && depth === 0) {
+      layers.push(sheen.slice(start, i))
+      start = i + 1
+    }
+  }
+  layers.push(sheen.slice(start))
+  let clear = 1
+  for (const layer of layers) {
+    let alpha = 0
+    if (layer.trim().startsWith("url(")) {
+      for (const m of layer.matchAll(/feColorMatrix values='([^']+)'/g)) {
+        const matrix = (m[1] as string).split(/\s+/).map(Number)
+        const whiteInk = [4, 9, 14].every((index) => matrix[index] === 1)
+        if (whiteInk) alpha = Math.max(alpha, (matrix[15] as number) / 2)
+      }
+    } else {
+      for (const m of layer.matchAll(/rgb\(255 255 255 \/ ([\d.]+)\)/g)) {
+        alpha = Math.max(alpha, Number(m[1]))
+      }
+    }
+    clear *= 1 - alpha
+  }
+  return 1 - clear
+}
+
 describe("--field-edge-color", () => {
   it("clears 3:1 on every ground, frosted or not", () => {
     const failures: string[] = []
@@ -250,7 +286,7 @@ describe("--field-edge-lifted-color", () => {
     )
     const declared = normalised
       .flatMap((css) =>
-        [...css.matchAll(/--card-sheen: ([^;]+);/g)].map((m) =>
+        [...css.matchAll(/--card-sheen: ((?:"[^"]*"|[^;"])+);/g)].map((m) =>
           (m[1] as string).trim(),
         ),
       )
@@ -265,7 +301,7 @@ describe("--field-edge-lifted-color", () => {
       parsed.length,
       `unparsed --card-sheen declarations: ${declared.join(" | ")}`,
     ).toBe(declared.length)
-    const sheen = Math.max(0, ...parsed)
+    const sheen = Math.max(0, ...declared.map(whiteCover))
     expect(lift).toBeGreaterThan(0)
     expect(1 - (1 - lift) * (1 - sheen)).toBeLessThanOrEqual(LIFTED_FACE_TINT)
   })
