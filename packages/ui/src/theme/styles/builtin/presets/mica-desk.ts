@@ -54,7 +54,6 @@ export const micaDesk: PresetDefinition = {
       // adds the second inside it.
       fieldFocusBorder: "hsl(var(--primary))",
       fieldFocusRing: "inset 0 -1px 0 hsl(var(--primary))",
-      bannerBorder: "rgb(0 0 0 / 0.06)",
       scrim: "rgb(0 0 0 / 0.3)",
       pageTitleTracking: "0",
     },
@@ -73,6 +72,7 @@ export const micaDesk: PresetDefinition = {
       selectedViewShadow: "0 0 0 1px rgb(0 0 0 / 0.06)",
       overlayBorder: "rgb(0 0 0 / 0.06)",
       dialogBorder: "rgb(0 0 0 / 0.06)",
+      bannerBorder: "rgb(0 0 0 / 0.06)",
       dropdownShadow: "0 0 2px rgb(0 0 0 / 0.12), 0 8px 16px rgb(0 0 0 / 0.14)",
       modalShadow: "0 0 8px rgb(0 0 0 / 0.12), 0 32px 64px rgb(0 0 0 / 0.14)",
     },
@@ -87,6 +87,7 @@ export const micaDesk: PresetDefinition = {
       ghostHover: "0.06",
       overlayBorder: "rgb(0 0 0 / 0.2)",
       dialogBorder: "hsl(var(--foreground) / 0.08)",
+      bannerBorder: "hsl(var(--foreground) / 0.08)",
       dropdownShadow: "0 0 2px rgb(0 0 0 / 0.24), 0 8px 16px rgb(0 0 0 / 0.28)",
       modalShadow: "0 0 8px rgb(0 0 0 / 0.3), 0 32px 64px rgb(0 0 0 / 0.37)",
     },

@@ -153,7 +153,6 @@
     --btn-neutral-shadow: 0 0 transparent;
     --field-focus-border: hsl(var(--primary));
     --field-focus-ring: inset 0 -1px 0 hsl(var(--primary));
-    --banner-border: rgb(0 0 0 / 0.06);
     --scrim: rgb(0 0 0 / 0.3);
     --type-page-title-tracking: 0;
   }
@@ -169,6 +168,7 @@
     --selected-view-shadow: 0 0 0 1px rgb(0 0 0 / 0.06);
     --overlay-border: rgb(0 0 0 / 0.06);
     --dialog-border: rgb(0 0 0 / 0.06);
+    --banner-border: rgb(0 0 0 / 0.06);
     --shadow-dropdown: 0 0 2px rgb(0 0 0 / 0.12), 0 8px 16px rgb(0 0 0 / 0.14);
     --modal-shadow: 0 0 8px rgb(0 0 0 / 0.12), 0 32px 64px rgb(0 0 0 / 0.14);
   }
@@ -182,6 +182,7 @@
     --state-layer-hover: 0.06;
     --overlay-border: rgb(0 0 0 / 0.2);
     --dialog-border: hsl(var(--foreground) / 0.08);
+    --banner-border: hsl(var(--foreground) / 0.08);
     --shadow-dropdown: 0 0 2px rgb(0 0 0 / 0.24), 0 8px 16px rgb(0 0 0 / 0.28);
     --modal-shadow: 0 0 8px rgb(0 0 0 / 0.3), 0 32px 64px rgb(0 0 0 / 0.37);
   }

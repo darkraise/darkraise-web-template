@@ -95,6 +95,12 @@ describe("Mica Desk", () => {
     expect(shared.fieldFocusRing).toBe("inset 0 -1px 0 hsl(var(--primary))")
   })
 
+  it("edges banners in the ink of each mode, so a dark banner keeps its edge", () => {
+    expect(shared.bannerBorder).toBeUndefined()
+    expect(light.bannerBorder).toBe("rgb(0 0 0 / 0.06)")
+    expect(dark.bannerBorder).toBe(dark.dialogBorder)
+  })
+
   it("rounds cards, menus and dialogs at twice the control radius", () => {
     for (const token of [
       "cardRadius",
