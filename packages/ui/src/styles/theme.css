@@ -1506,6 +1506,9 @@
    --field-radius, so they can go fully pill-shaped at the highest level
    without making cards circular. */
 [data-radius="sharp"] {
+  /* Unitless on purpose: calc(var(--radius) + 0.25rem) is then invalid, so a
+     style or preset radius that adds a fixed length still computes to 0.
+     Writing 0px would leave those panels rounded under sharp. */
   --radius: 0;
   --radius-control: 0;
   --shell-radius-scale: 0px;
