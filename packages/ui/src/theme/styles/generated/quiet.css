@@ -37,3 +37,34 @@
     --scrim: rgb(0 0 0 / 0.5);
   }
 }
+
+@layer style.preset {
+  [data-preset="paper-ink"] {
+    --chrome-flat-fill: hsl(var(--background));
+    --btn-edge: inset 0 1px 0 rgb(255 255 255 / 0.1);
+    --btn-shadow: 0 1px 1px hsl(var(--foreground) / 0.2);
+    --btn-danger-shadow: 0 1px 1px hsl(var(--foreground) / 0.2);
+    --btn-neutral-shadow: 0 1px 0 hsl(var(--foreground) / 0.05);
+    --thumb-shadow: 0 1px 2px hsl(var(--foreground) / 0.25);
+    --card-edge: 0 1px 0 hsl(var(--foreground) / 0.04);
+    --shadow-dropdown: 0 2px 4px hsl(var(--foreground) / 0.05), 0 12px 28px -8px hsl(var(--foreground) / 0.18);
+    --modal-shadow: 0 0 0 1px var(--quiet-ring), 0 4px 8px hsl(var(--foreground) / 0.04), 0 32px 64px -16px hsl(var(--foreground) / 0.28);
+    --banner-border: transparent;
+    --badge-radius: calc(var(--radius-control) * 2);
+    --menu-item-radius: calc(var(--radius) - 2px);
+    --type-page-title-weight: 500;
+    --type-page-title-tracking: -0.01em;
+    --type-section-title-weight: 500;
+    --type-dialog-title-weight: 500;
+    --figure-weight: 500;
+  }
+  [data-mode="dark"][data-preset="paper-ink"] {
+    --btn-shadow: 0 1px 1px rgb(0 0 0 / 0.5);
+    --btn-danger-shadow: 0 1px 1px rgb(0 0 0 / 0.5);
+    --btn-neutral-shadow: 0 1px 0 rgb(0 0 0 / 0.125);
+    --thumb-shadow: 0 1px 2px rgb(0 0 0 / 0.5);
+    --card-edge: 0 1px 0 rgb(0 0 0 / 0.1);
+    --shadow-dropdown: 0 2px 4px rgb(0 0 0 / 0.125), 0 12px 28px -8px rgb(0 0 0 / 0.45);
+    --modal-shadow: 0 0 0 1px var(--quiet-ring), 0 4px 8px rgb(0 0 0 / 0.1), 0 32px 64px -16px rgb(0 0 0 / 0.6);
+  }
+}
