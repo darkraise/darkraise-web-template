@@ -88,7 +88,7 @@ Several hooks are adapted from [react-hookz/web](https://github.com/react-hookz/
 
 ### Theming
 
-A 20-axis theming system in three layers. Scaffolded projects configure it through `src/theme.config.ts`, which imports the `ThemeConfig` type from `darkraise-ui/theme`; in this monorepo the type and defaults live in `packages/ui/src/theme/themeConfig.ts`.
+A 23-axis theming system in three layers. Scaffolded projects configure it through `src/theme.config.ts`, which imports the `ThemeConfig` type from `darkraise-ui/theme`; in this monorepo the type and defaults live in `packages/ui/src/theme/themeConfig.ts`.
 
 Brand:
 
@@ -96,7 +96,9 @@ Brand:
 - **Accent color** (`accentColor`) -- 18 colors plus `neutral` (near-black in light, near-white in dark); blue by default
 - **Surface color** (`surfaceColor`) -- one of 12 neutral palettes; zinc by default
 - **Tint with accent** (`tintWithAccent`) -- off or on (tints the neutral surfaces toward the accent; hidden under the neutral accent)
+- **Signal color** (`signalColor`) -- none or any accent color (a second accent for marks; its control shows once a preset, a style or the user sets one)
 - **Font** (`font`) -- Inter, Geist, IBM Plex Sans, or the serif Newsreader (body and heading text)
+- **Heading font** (`headingFont`) -- body or any font (a separate face for headings; body keeps the body face)
 - **Radius** (`radius`) -- sharp, subtle, rounded, or pill
 - **Density** (`density`) -- compact, cozy, comfortable, or spacious
 - **Font size** (`fontSize`) -- small, medium, large, or extra-large (scales type, icons, and minimum control heights)
@@ -104,6 +106,7 @@ Brand:
 Style:
 
 - **Style** (`style`) -- flat, quiet, tactile, or glass; quiet by default. Glass frosts the shell chrome and overlays.
+- **Preset** (`preset`) -- base (the style alone) or one of the active style's presets; the kit ships fifteen across the four styles, and a theme config can define more
 - **Glass opacity** (`glassOpacity`) and **glass blur** (`glassBlur`) -- shown under the Style control while Glass is chosen
 
 Advanced:
@@ -114,10 +117,10 @@ Advanced:
 - **Outer glow** and **inner glow** (`outerGlow`, `innerGlow`) -- none, subtle, balanced, or vivid
 - **Background style** (`backgroundStyle`) -- solid or gradient
 - **Background intensity** (`backgroundIntensity`) -- neutral, subtle, balanced, vivid, or intense
-- **Gradient pattern** (`gradientPattern`) -- blobs, aurora, spotlight, or mesh
-- **Sidebar selection** (`sidebarSelection`) -- auto, chip, pill, tile, or frosted
+- **Gradient pattern** (`gradientPattern`) -- blobs, aurora, spotlight, mesh, dots, or grain
+- **Sidebar selection** (`sidebarSelection`) -- auto, chip, pill, tile, frosted, tint, accent, rule, key, or tab
 
-An axis left out of `theme.config.ts` keeps the kit's default, and a style's own defaults (Glass's gradient background, for example) win over the config's for users with nothing stored. An axis left out of `switcher.axes` is shown, and `switcher.advanced: false` removes the Advanced part of the panel.
+An axis left out of `theme.config.ts` keeps the kit's default, and a style's own defaults (Glass's gradient background, for example) and the active preset's values win over the config's for users with nothing stored. An axis left out of `switcher.axes` is shown, and `switcher.advanced: false` removes the Advanced part of the panel.
 
 Monospace text always uses JetBrains Mono. Font size is adjustable via the axis above. The five font families ship as woff2 files with `darkraise-ui/styles.css`, so no font request leaves the app's origin and no font link is needed in `index.html`.
 

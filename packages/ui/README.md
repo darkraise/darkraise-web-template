@@ -251,6 +251,9 @@ export const themeConfig: ThemeConfig = {
     axes: { sidebarSelection: false },
     // `false` removes the Advanced part of the theme switcher.
     advanced: true,
+    // The presets the Preset control offers beside `base`; left out, it
+    // offers every preset of the active style.
+    presets: ["paper-ink", "linen-teal"],
   },
 }
 ```
@@ -258,9 +261,22 @@ export const themeConfig: ThemeConfig = {
 A default outside its axis's values falls back to the kit default. In
 development the provider warns once about such a value and about each removed
 key (`surfaceIntensity`, `borderIntensity`, `accentIntensity`, `controlDepth`,
-`buttonElevation`, `shellStyle`, `preset`, and `switcher.axes.presetAxes`),
-naming its replacement, and ignores the key. The glass opacity and blur
-controls show under the Style control while the style is Glass.
+`buttonElevation`, `shellStyle`, `sidebarActiveBar`, and
+`switcher.axes.presetAxes`), naming its replacement, and ignores the key.
+
+`defaults.style` picks one of the four styles and `defaults.preset` one of that
+style's presets; `base`, the default, is the style alone. The kit ships fifteen
+presets: four for Quiet, two for Flat, three for Tactile and six for Glass. The
+theme switcher lists the active style's presets in a Preset control directly
+under the Style control, and shows a Reset to preset action there while the
+user has a value of their own on an axis the preset or style sets. The glass
+opacity and blur controls follow while the style is Glass. A `defaults.preset`
+that belongs to another style than `defaults.style` is ignored with a warning.
+
+An app defines its own styles, presets and fonts in the same config. The
+[custom styles and presets guide](https://github.com/darkraise/darkraise-web-template/blob/master/docs/custom-styles.md)
+covers the definitions, the paint tokens and signatures they set, and how the
+compiled styles reach the page.
 
 ## Shell styles
 
@@ -314,18 +330,20 @@ choice in that layout's switcher:
 </SidebarLayout>
 ```
 
-A layout resolves `shellStyle ?? stored pick ?? defaultShellStyle ?? "classic"`
-and stamps the result on its own root, so a pinned shell ignores the stored
-pick without any CSS specificity fight.
+A layout resolves `shellStyle`, then the stored pick, then the active theme
+preset's shell style, then `defaultShellStyle`, then `"classic"`, and stamps
+the result on its own root, so a pinned shell ignores the stored pick without
+any CSS specificity fight.
 
 ## Sidebar selection
 
-`sidebarSelection` is a theme axis with five values: `auto`, `chip`, `pill`,
-`tile` and `frosted`. The active row is drawn as one surface that slides
-between rows as the route changes. `auto`, the default, follows the style:
-Quiet draws a chip, Flat a pill, Tactile a tile and Glass a frosted chip; the
-other four force one look everywhere. It appears in the theme panel as
-**Sidebar Selection**.
+`sidebarSelection` is a theme axis with ten values: `auto`, `chip`, `pill`,
+`tile`, `frosted`, `tint`, `accent`, `rule`, `key` and `tab`. The active row is
+drawn as one surface that slides between rows as the route changes. `auto`, the
+default, follows the active preset and then the style: Quiet draws a tint, Flat
+an accent wash, and Tactile and Glass a chip, unless the preset names another
+look. The other nine force one look everywhere. It appears in the theme panel
+as **Sidebar Selection**.
 
 `SidebarLayout`, `SidebarNav` and `MobileDrawer` take a `selection` prop that
 pins one look and ignores the axis.
@@ -350,7 +368,7 @@ axes.
 
 ## Upgrading to 7.0
 
-Presets became styles, several theme axes were replaced, and the scaffold's flags changed. The [7.0 upgrade guide](https://github.com/darkraise/darkraise-web-template/blob/master/docs/upgrade-7.0.md) lists every change with its replacement.
+The 6.x presets became styles, several theme axes were replaced, and the scaffold's flags changed. The [7.0 upgrade guide](https://github.com/darkraise/darkraise-web-template/blob/master/docs/upgrade-7.0.md) lists every change with its replacement.
 
 ## Migrating to 2.0.0
 
