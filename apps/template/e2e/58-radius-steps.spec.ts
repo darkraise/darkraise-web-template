@@ -22,6 +22,8 @@ const STEPS: [string, (r: number) => number][] = [
   ["dr-checkbox", (r) => Math.max(r - 4, r / 2)],
   // the template's dashboard uses rounded-xl
   ["rounded-xl", (r) => r + 4],
+  // the auth layout uses rounded-2xl
+  ["rounded-2xl", (r) => r + 8],
 ]
 
 const CAPSULES = [
@@ -37,6 +39,7 @@ const CAPSULES = [
   "dr-empty-state-icon",
   "dr-drawer-handle",
   "dr-switch",
+  "dr-switch-thumb",
 ]
 
 /** The corner and height of a bare 40×20 element carrying `className`. */

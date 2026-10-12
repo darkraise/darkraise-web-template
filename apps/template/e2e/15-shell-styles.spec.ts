@@ -10,7 +10,7 @@ import {
   reloadApp,
   seedApp,
 } from "./helpers/app"
-import { contrast, pixel, settle } from "./helpers/measure"
+import { contrast, pixel, settle, textContrast } from "./helpers/measure"
 import { shadowLayers } from "./helpers/showcase"
 
 const SHELL_STYLES = [
@@ -336,6 +336,34 @@ test.describe("shell style axis", () => {
           )
         })
       }
+    }
+  }
+
+  // Inset chrome has no surface of its own, so its text sits on the recessed
+  // ground, which the engine does not solve contrast against.
+  for (const look of STYLES) {
+    for (const mode of MODES) {
+      test(`inset chrome text stays readable on the recessed ground · ${look} · ${mode}`, async ({
+        page,
+      }) => {
+        await seedApp(page, { shellStyle: "inset", style: look, mode })
+        await gotoApp(page, "/")
+        await expect(shell(page)).toHaveAttribute("data-shell-style", "inset")
+        await settle(page)
+        for (const [name, selector] of [
+          [
+            "an idle rail item",
+            ".dr-sidebar-nav-link:not(.active) .dr-sidebar-nav-label",
+          ],
+          ["a rail group label", ".dr-sidebar-nav-group-label"],
+          ["the bar's ink", ".dr-layout-header .dr-layout-switcher-trigger"],
+        ] as const) {
+          const ratio = await textContrast(page.locator(selector).first(), {
+            ground: "painted",
+          })
+          expect.soft(ratio, name).toBeGreaterThanOrEqual(4.5)
+        }
+      })
     }
   }
 
