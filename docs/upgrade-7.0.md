@@ -1,6 +1,6 @@
 # Upgrading to darkraise-ui 7.0
 
-7.0 renames presets to styles, rebuilds the colour engine and rebuilds the `create-darkraise-ui` scaffold. Most stored user settings migrate on first load, so users keep what they chose.
+7.0 renames presets to styles, adds presets as named variants of a style, rebuilds the colour engine and rebuilds the `create-darkraise-ui` scaffold. Most stored user settings migrate on first load, so users keep what they chose.
 
 ## Theme config
 
@@ -78,17 +78,66 @@ Style tokens sit in cascade layers. `darkraise-ui/styles.css` opens with `@layer
 
 ## Style storage key and the preset axis
 
-The style is stored under `theme-style`; `theme-preset`, its 6.x key, now stores a new `preset` axis. A preset is a named variant of a style; `base`, the default, is the style alone, and `<html>` carries `data-preset="base"`. `useTheme()` returns `preset` and `setPreset` for it, `ThemeSettings` and synced payloads carry it, and `ThemeConfig` takes `defaults.preset` and `switcher.axes.preset`. The switcher shows no Preset control yet, and `create-darkraise-ui` offers no `--preset` flag. Code that reads `localStorage` directly must read `theme-style` for the style.
+The style is stored under `theme-style`; `theme-preset`, its 6.x key, now stores a new `preset` axis. A preset is a named variant of a style; `base`, the default, is the style alone, and `<html>` carries the active preset's name in `data-preset` (`data-preset="base"` for the style alone). `useTheme()` returns `preset` and `setPreset` for it, `ThemeSettings` and synced payloads carry it, and `ThemeConfig` takes `defaults.preset` and `switcher.axes.preset`. The kit ships fifteen presets and the switcher offers them (see Built-in presets below). `create-darkraise-ui` has no flag for the axis: `--preset` exits with an error naming `--style`. Code that reads `localStorage` directly must read `theme-style` for the style.
 
 ## Rebuilt styles and the style vocabulary
 
-The four built-in styles keep their names and change their look. Quiet is a ledger: tint steps and 1px rules instead of shadows, chrome on the card tone, light page titles and figures. Flat is a set of tool panels with no shadow anywhere, a solid accent row in menus and dark tooltips. Tactile bevels every raised surface under a dark, full-width top bar. Glass keeps its translucency for menus, popovers, the scrim and the veiled top bar, over opaque cards on a dot canvas; `glassOpacity` and `glassBlur` no longer reach the sidebar. None of them sets an accent, surface, font, radius or density, so your `defaults` for those axes apply under every style. Review each screen under the style you ship.
+The four built-in styles keep their names and change their look. Quiet is a ledger: tint steps and 1px rules instead of shadows, chrome on the card tone, light page titles and figures. Flat is a set of tool panels with no shadow anywhere, a solid accent row in menus and dark tooltips. Tactile bevels every raised surface under a dark, full-width top bar. Glass keeps its translucency for menus, popovers, the scrim and the veiled top bar, over opaque cards on a dot canvas; `glassOpacity` and `glassBlur` no longer reach the sidebar. None of them sets an accent, surface, font, radius or density, so your `defaults` for those axes apply under every style; a built-in preset does set some of them (see Built-in presets below). Review each screen under the style you ship.
 
 A style or preset definition can now set 82 paint tokens and 24 signatures (the enumerated choices such as `navSelection`, `barTone` or `fieldBorder`); `darkraise-ui/theme-config` exports both lists as `PAINT_TOKENS` and `SIGNATURES`. To keep part of a 6.x look, define a style that extends the built-in one and sets the tokens or signatures back, for example `defineStyle({ label: "Quiet, raised", extends: "quiet", tokens: { shared: { buttonShadow: "0 1px 2px rgb(0 0 0 / 0.1)" } } })`.
 
 Paints that a stylesheet used to set on an element are internal now. Replace `--sidebar-chip`, `--sidebar-tint` and `--sidebar-frost` with `--nav-selection-fill`; `--sidebar-chip-edge` and `--sidebar-frost-edge` with `--nav-selection-edge`; `--sidebar-chip-shadow`, `--sidebar-tile-shadow` and `--sidebar-frost-highlight` with `--nav-selection-shadow`; `--sidebar-active-glow` with `--nav-selection-glow`; and `--shell-region-shadow` with `--shell-shadow`, each set on `:root` or in a style definition. The flat and inset shells no longer rebind `--chrome-rail-bg` and `--chrome-bar-bg` on their regions, so a rule that relied on that rebinding should set `--chrome-flat-fill`.
 
 New axes: `headingFont` (`body` or a font name, key `theme-heading-font`) and `signalColor` (`none` or an accent name, key `theme-signal-color`). `gradientPattern` gains `dots` and `grain`. An exhaustive `switch` over `SidebarSelection` or `GradientPattern` needs the new cases.
+
+## Built-in presets
+
+The kit ships fifteen presets. Each belongs to one built-in style and sets paint tokens, signatures and some axes over it; its colours come from the kit's existing accent and neutral ramps.
+
+| Style     | Preset            | Label            | Shell style |
+| --------- | ----------------- | ---------------- | ----------- |
+| `quiet`   | `paper-ink`       | Paper & Ink      | `flat`      |
+| `quiet`   | `linen-teal`      | Linen & Teal     | `flat`      |
+| `quiet`   | `red-graphite`    | Red Graphite     | not set     |
+| `quiet`   | `studio-green`    | Studio Green     | not set     |
+| `flat`    | `pastel-soft`     | Pastel Soft-Flat | `flat`      |
+| `flat`    | `forest-lime`     | Forest & Lime    | `framed`    |
+| `tactile` | `braun-panel`     | Braun Panel      | `framed`    |
+| `tactile` | `dark-instrument` | Dark Instrument  | not set     |
+| `tactile` | `card-stock`      | Card Stock       | `inset`     |
+| `glass`   | `mica-desk`       | Mica Desk        | `inset`     |
+| `glass`   | `smoked-obsidian` | Smoked Obsidian  | not set     |
+| `glass`   | `milk-glass`      | Milk Glass       | `flat`      |
+| `glass`   | `aurora-night`    | Aurora Night     | `flat`      |
+| `glass`   | `coral-space`     | Coral Space      | `inset`     |
+| `glass`   | `dusk-haze`       | Dusk Haze        | `flat`      |
+
+Nothing changes until an app or a user picks one: the default preset is `base`. To start an app on a preset, name it together with its style in the theme config:
+
+```ts
+import type { ThemeConfig } from "darkraise-ui/theme"
+
+export const themeConfig: ThemeConfig = {
+  defaults: { style: "glass", preset: "mica-desk" },
+  switcher: { enabled: true },
+}
+```
+
+`defaults.preset` applies only to a preset of the default style, so `style` is needed for every preset outside Quiet. With the Vite plugin a preset of another style fails the build; without it the provider warns and uses `base`.
+
+While a preset is active, an axis the user never set takes the preset's value before the style's default and your config default. Every built-in preset sets `accentColor`, `surfaceColor`, `tintWithAccent`, `signalColor`, `font` and `headingFont`, so your `defaults` for those six axes do not apply under one. Some presets also set `radius`, `density`, `darkAccentChroma`, `gradientPattern`, `backgroundIntensity`, `glassOpacity` or `glassBlur`. A preset's shell style applies to the four layouts unless the user picked one or the layout pins `shellStyle`, and it beats `defaultShellStyle`.
+
+A value the user stored still wins over the preset's, so a user who chose an accent in 6.x keeps it under every preset. While such a value exists the switcher shows a Reset to preset button under the Preset control; `useTheme().resetToPreset()` does the same from code, and `useTheme().canResetToPreset` says whether there is anything to clear.
+
+The theme switcher gains a Preset control under the Style control, listing `base` and the presets of the active style. Set `switcher.axes.preset: false` to leave it out, or `switcher.presets`, for example `["paper-ink", "linen-teal"]`, to offer only the presets you name.
+
+Three things can need a change in your code:
+
+- A style, preset or font in your theme config may not take the name of a built-in preset, and a font may not be named `newsreader`. The registry reports `"<name>" is a built-in preset name` or `"newsreader" is a built-in font name`, and the Vite plugin fails the build. Rename the definition.
+- `labels.theme` gains `presets` (`base` and the fifteen preset names) and `resetToPreset`, and `labels.themeOptions` gains `newsreader`. Partial labels need no change: a missing key falls back to the kit's own string. An object typed as the whole of `UiLabels` or `UiMessages` must add them.
+- `ThemeContextValue` gains `canResetToPreset` and `resetToPreset`, and the `useLayoutStore` state gains `clearShellStyle`. A test that mocks `useTheme` with a whole context value, or replaces the layout store's whole state, must add them.
+
+The [custom styles and presets guide](custom-styles.md) describes how to define your own styles, presets and fonts.
 
 ## Sidebar selection
 
@@ -176,7 +225,7 @@ In forced-colours mode chosen items are painted `Highlight`. A stylesheet that s
 
 ## Fonts
 
-The `font` axis takes `inter`, `geist` or `ibm-plex-sans`, with `inter` the default, plus any font a theme config registers under `fonts`; the `headingFont` axis sets a separate family for headings. The four faces the kit uses (Inter, Geist, IBM Plex Sans and JetBrains Mono) ship as woff2 files declared in `darkraise-ui/styles.css`, and no font request leaves the app's origin. Delete any Google Fonts link for these families from `index.html`.
+The `font` axis takes `inter`, `geist`, `ibm-plex-sans` or `newsreader`, with `inter` the default, plus any font a theme config registers under `fonts`; the `headingFont` axis sets a separate family for headings and takes `body` or any of the same fonts. Newsreader is the kit's serif and ships upright with its weight axis only. The five faces the kit uses (Inter, Geist, IBM Plex Sans, Newsreader and JetBrains Mono) ship as woff2 files declared in `darkraise-ui/styles.css`, and no font request leaves the app's origin. Delete any Google Fonts link for these families from `index.html`. A font registered in a theme config may not be named `newsreader`.
 
 ## Pre-render script
 
@@ -199,7 +248,7 @@ Every kit entry except `darkraise-ui/lib`, `darkraise-ui/locales/en`, `darkraise
 
 ## create-darkraise-ui
 
-The scaffold asks only for the brand axes and the style, every theme axis has a flag, and `--help` lists them. The generated `theme.config.ts` lists only the choices made. These 6.x flags now exit with an error naming the replacement:
+The scaffold asks only for the brand axes and the style, every theme axis except `preset` has a flag, and `--help` lists them. The generated `theme.config.ts` lists only the choices made; to start a new app on a built-in preset, add `style` and `preset` to its `defaults` (see Built-in presets above). These 6.x flags now exit with an error naming the replacement:
 
 | 6.x flag                                | 7.0                                                   |
 | --------------------------------------- | ----------------------------------------------------- |
