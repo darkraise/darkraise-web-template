@@ -463,7 +463,7 @@ const EMPTY_MODES = { shared: {}, light: {}, dark: {} } as const
 
 const FONT_ROLES: readonly string[] = ["sans", "serif", "display"]
 
-/** `body` is the heading font value for "the sans face". */
+/** `body` is the heading font value for "the body face". */
 function fontNameError(
   name: string,
   builtinPresets: Readonly<Record<string, unknown>>,

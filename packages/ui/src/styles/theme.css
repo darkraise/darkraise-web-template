@@ -1281,7 +1281,7 @@
 }
 
 /* Heading-font axis. `body` declares no block: --font-family-heading keeps
-   reading the sans face the font axis picked. */
+   reading the body face the font axis picked. */
 [data-heading-font="inter"] {
   --font-family-heading:
     "Inter Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
