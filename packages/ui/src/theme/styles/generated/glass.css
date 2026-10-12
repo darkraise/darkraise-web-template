@@ -186,3 +186,48 @@
     --modal-shadow: 0 0 8px rgb(0 0 0 / 0.3), 0 32px 64px rgb(0 0 0 / 0.37);
   }
 }
+
+@layer style.preset {
+  [data-preset="smoked-obsidian"] {
+    --chrome-rail-bg: hsl(var(--surface-sidebar));
+    --chrome-edge: hsl(var(--primary) / 0.3);
+    --surface-fill-alpha: 0.7;
+    --card-rim: linear-gradient(200deg, hsl(var(--primary) / 0.4), rgb(255 255 255 / 0.04) 40%, rgb(255 255 255 / 0.02) 70%, hsl(var(--primary) / 0.12));
+    --card-radius: calc(var(--radius) * 1.75);
+    --overlay-radius: calc(var(--radius) * 1.5);
+    --dialog-radius: calc(var(--radius) * 2);
+    --banner-radius: calc(var(--radius) * 1.25);
+    --badge-radius: calc(var(--radius-control) * 3);
+    --nav-item-radius: var(--radius);
+    --btn-edge: inset 0 1px 0 rgb(255 255 255 / 0.35);
+    --btn-border: rgb(0 0 0 / 0.18);
+    --type-section-title-tracking: -0.015em;
+    --type-dialog-title-tracking: -0.015em;
+  }
+  [data-preset="smoked-obsidian"]:not([data-mode="dark"]) {
+    --shell-ground-fill: radial-gradient(70% 55% at 80% -10%, hsl(var(--primary) / 0.14), transparent 60%);
+    --surface-backdrop: blur(20px) saturate(90%);
+    --card-border: hsl(var(--foreground) / 0.1);
+    --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.7), 0 12px 32px -8px hsl(var(--foreground) / 0.18);
+    --btn-neutral-fill: hsl(var(--foreground) / 0.04);
+    --field-shadow: inset 0 1px 2px hsl(var(--foreground) / 0.14);
+    --selected-view-bg: hsl(var(--card) / 0.9);
+    --selected-view-shadow: inset 0 1px 0 rgb(255 255 255 / 0.7), 0 1px 2px hsl(var(--foreground) / 0.12);
+    --shadow-dropdown: 0 16px 40px -10px hsl(var(--foreground) / 0.3);
+    --modal-shadow: 0 24px 60px -12px hsl(var(--foreground) / 0.4);
+    --scrim: hsl(var(--foreground) / 0.35);
+  }
+  [data-mode="dark"][data-preset="smoked-obsidian"] {
+    --shell-ground-fill: radial-gradient(70% 55% at 80% -10%, hsl(var(--primary) / 0.2), transparent 60%);
+    --surface-backdrop: blur(20px) saturate(110%) brightness(0.7);
+    --card-border: rgb(255 255 255 / 0.07);
+    --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 20px 50px -12px rgb(0 0 0 / 0.6);
+    --btn-neutral-fill: rgb(255 255 255 / 0.04);
+    --field-shadow: inset 0 1px 2px rgb(0 0 0 / 0.5);
+    --selected-view-bg: rgb(255 255 255 / 0.08);
+    --selected-view-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
+    --shadow-dropdown: 0 20px 50px rgb(0 0 0 / 0.6);
+    --modal-shadow: 0 30px 70px rgb(0 0 0 / 0.7);
+    --scrim: rgb(0 0 0 / 0.6);
+  }
+}
