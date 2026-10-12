@@ -278,6 +278,59 @@ test.describe("preset selection through the UI", () => {
       .toContain("Signal Color")
     expect((await readThemeAttrs(page))["data-signal-color"]).toBe("yellow")
   })
+
+  test("Reset to preset clears the user's overrides and the stored shell style", async ({
+    page,
+  }) => {
+    const consoleWatch = watchConsole(page)
+    await seedApp(page, { style: "glass", mode: "light", shellStyle: "island" })
+    await gotoApp(page, PROBE)
+    const panel = await openThemeSwitcher(page)
+    const reset = panel.getByRole("button", {
+      name: "Reset to preset",
+      exact: true,
+    })
+    const shell = page.locator(".dr-shell").first()
+    const micaDesk = presetControl(page).getByRole("radio", {
+      name: "Mica Desk",
+      exact: true,
+    })
+    // Under base nothing stored hides a value Glass sets.
+    await expect(presetControl(page)).toBeVisible()
+    await expect(reset).toHaveCount(0)
+
+    // Mica Desk sets an inset shell, which the stored island pick hides.
+    await micaDesk.click()
+    await expect(reset).toBeVisible()
+    await expect(shell).toHaveAttribute("data-shell-style", "island")
+    await panel
+      .locator(".dr-theme-switcher-row", { hasText: "Accent Color" })
+      .locator('.dr-theme-switcher-swatch[title="rose"]')
+      .click()
+    await expect
+      .poll(async () => (await readThemeAttrs(page))["data-accent"])
+      .toBe("rose")
+
+    await reset.click()
+    await expect(reset).toHaveCount(0)
+    await expect(shell).toHaveAttribute("data-shell-style", "inset")
+    const attrs = await readThemeAttrs(page)
+    expect(attrs["data-accent"]).toBe("blue")
+    expect(attrs["data-style"]).toBe("glass")
+    expect(attrs["data-preset"]).toBe("mica-desk")
+    expect(
+      await page.evaluate(() => [
+        localStorage.getItem("theme-accent"),
+        localStorage.getItem("theme-shell-style"),
+      ]),
+    ).toEqual([null, null])
+    await expect(micaDesk).toBeFocused()
+
+    await reloadApp(page)
+    expect((await readThemeAttrs(page))["data-accent"]).toBe("blue")
+    await expect(shell).toHaveAttribute("data-shell-style", "inset")
+    consoleWatch.assertClean()
+  })
 })
 
 test.describe("mode selection through the UI", () => {
