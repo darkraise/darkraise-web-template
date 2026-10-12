@@ -1,7 +1,8 @@
 /* Shell paint a style or preset may set. Defaults reproduce the unstyled
    shell. A token whose today's value depends on the shell element (the
    region shadow and ground are rebound per [data-shell-style], the content
-   edge follows the chrome edge) defaults to `initial`, and each reader
+   edge follows the chrome edge, the content fill differs between the
+   detached shells) defaults to `initial`, and each reader
    carries that value as its fallback: a :root alias would resolve on :root
    and miss the per-shell binding. */
 @layer base {
@@ -9,7 +10,7 @@
     --chrome-flat-fill: var(--shell-flat-chrome, hsl(var(--muted)));
     --chrome-bar-height: 3.5rem;
     --shell-shadow: initial;
-    --shell-content-fill: transparent;
+    --shell-content-fill: initial;
     --shell-content-edge: initial;
     --shell-content-shadow: initial;
     --shell-ground-fill: initial;

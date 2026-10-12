@@ -24,17 +24,34 @@
   }
 
   /* A detached content pane paints from the content tokens; its fallbacks
-     are the shared recipe above, read where the shell binds them. */
+     are the shared recipe above, read where the shell binds them. Left
+     unset, an island or inset pane is a sheet of page colour on the
+     recessed ground below, at the surface alpha so a translucent look's
+     canvas still shows through; a floating pane is the page plane itself
+     and stays clear (its rule follows). */
   .dr-shell:is(
       [data-shell-style="island"],
       [data-shell-style="floating"],
       [data-shell-style="inset"]
     )
     > [data-region="content"] {
-    background: var(--shell-content-fill);
+    background: var(
+      --shell-content-fill,
+      hsl(var(--background) / var(--surface-fill-alpha))
+    );
     border-color: var(--shell-content-edge, var(--chrome-edge));
     box-shadow:
       var(--card-edge), var(--shell-content-shadow, var(--shell-region-shadow));
+  }
+
+  /* The ground under island and inset recesses a step toward the ink, so
+     the page-coloured pane stands on it as a sheet. A style's or preset's
+     own ground fill still wins. */
+  .dr-shell:is([data-shell-style="island"], [data-shell-style="inset"]) {
+    background: var(
+      --shell-ground-fill,
+      color-mix(in oklab, hsl(var(--shell-ground)) 95%, hsl(var(--foreground)))
+    );
   }
 
   /* The rule above replaces the region rule's box-shadow, so detached
@@ -131,6 +148,7 @@
      over it. */
   .dr-shell[data-shell-style="floating"] > [data-region="content"] {
     grid-area: 1 / 1 / -1 / -1;
+    background: var(--shell-content-fill, transparent);
   }
 
   .dr-shell[data-shell-style="floating"] > [data-region="nav"],

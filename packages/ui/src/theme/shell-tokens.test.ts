@@ -192,8 +192,10 @@ describe("shell style rules", () => {
       ),
     )
     for (const value of painted) {
-      expect(value).toMatch(
-        /^(?:none|transparent|var\(--chrome-flat-fill\)|var\(--shell-content-fill\))$/,
+      expect(
+        (value ?? "").replace(/\(\s+/g, "(").replace(/\s+\)/g, ")"),
+      ).toMatch(
+        /^(?:none|transparent|var\(--chrome-flat-fill\)|var\(--shell-content-fill, (?:hsl\(var\(--background\) \/ var\(--surface-fill-alpha\)\)|transparent)\)|var\(--shell-ground-fill, color-mix\(in oklab, hsl\(var\(--shell-ground\)\) 95%, hsl\(var\(--foreground\)\)\)\))$/,
       )
     }
   })

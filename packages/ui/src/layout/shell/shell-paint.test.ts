@@ -82,7 +82,7 @@ describe("shell token defaults", () => {
     ["--chrome-flat-fill", "var(--shell-flat-chrome, hsl(var(--muted)))"],
     ["--chrome-bar-height", "3.5rem"],
     ["--shell-shadow", "initial"],
-    ["--shell-content-fill", "transparent"],
+    ["--shell-content-fill", "initial"],
     ["--shell-content-edge", "initial"],
     ["--shell-content-shadow", "initial"],
     ["--shell-ground-fill", "initial"],
@@ -105,7 +105,29 @@ describe("shell token readers", () => {
     expect(
       bodyOf("styles", `.dr-shell${DETACHED} > [data-region="content"]`),
     ).toBe(
-      "background: var(--shell-content-fill); border-color: var(--shell-content-edge, var(--chrome-edge)); box-shadow: var(--card-edge), var(--shell-content-shadow, var(--shell-region-shadow));",
+      "background: var(--shell-content-fill, hsl(var(--background) / var(--surface-fill-alpha))); border-color: var(--shell-content-edge, var(--chrome-edge)); box-shadow: var(--card-edge), var(--shell-content-shadow, var(--shell-region-shadow));",
+    )
+  })
+
+  it("keeps a floating content plane clear unless a style fills it", () => {
+    expect(
+      bodyOf(
+        "styles",
+        '.dr-shell[data-shell-style="floating"] > [data-region="content"]',
+      ),
+    ).toBe(
+      "grid-area: 1 / 1 / -1 / -1; background: var(--shell-content-fill, transparent);",
+    )
+  })
+
+  it("recesses the ground under the island and inset panes", () => {
+    expect(
+      bodyOf(
+        "styles",
+        '.dr-shell:is([data-shell-style="island"], [data-shell-style="inset"])',
+      ),
+    ).toBe(
+      "background: var(--shell-ground-fill, color-mix(in oklab, hsl(var(--shell-ground)) 95%, hsl(var(--foreground))));",
     )
   })
 
