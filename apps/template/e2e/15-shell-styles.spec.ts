@@ -34,6 +34,8 @@ const region = (page: Page, name: string) =>
 interface RegionPaint {
   /** The token the nav fill resolves to; null where the nav drops its fill. */
   navFill: string | null
+  /** The colour the content pane fills with; null where it stays clear. */
+  contentFill: string | null
   /** A colour that replaces navFill in light mode. */
   lightNavColor?: string
   navBorder: string
@@ -52,6 +54,7 @@ const RAIL_RULE = "0px 1px 0px 0px"
 const REGION_PAINT: Record<ShellStyle, RegionPaint> = {
   classic: {
     navFill: "--surface-sidebar",
+    contentFill: null,
     navBorder: RAIL_RULE,
     contentBorder: WELDED,
     navRadius: "0px",
@@ -60,6 +63,7 @@ const REGION_PAINT: Record<ShellStyle, RegionPaint> = {
   },
   inset: {
     navFill: null,
+    contentFill: "hsl(var(--background))",
     navBorder: WELDED,
     contentBorder: DETACHED,
     navRadius: "0px",
@@ -68,6 +72,7 @@ const REGION_PAINT: Record<ShellStyle, RegionPaint> = {
   },
   island: {
     navFill: "--surface-sidebar",
+    contentFill: "hsl(var(--background))",
     navBorder: DETACHED,
     contentBorder: DETACHED,
     navRadius: "8px",
@@ -76,6 +81,7 @@ const REGION_PAINT: Record<ShellStyle, RegionPaint> = {
   },
   floating: {
     navFill: "--surface-sidebar",
+    contentFill: null,
     navBorder: DETACHED,
     contentBorder: DETACHED,
     navRadius: "8px",
@@ -84,6 +90,7 @@ const REGION_PAINT: Record<ShellStyle, RegionPaint> = {
   },
   framed: {
     navFill: "--surface-sidebar",
+    contentFill: null,
     navBorder: RAIL_RULE,
     contentBorder: WELDED,
     navRadius: "0px",
@@ -92,6 +99,7 @@ const REGION_PAINT: Record<ShellStyle, RegionPaint> = {
   },
   flat: {
     navFill: "--muted",
+    contentFill: null,
     lightNavColor: "var(--shell-flat-chrome)",
     navBorder: WELDED,
     contentBorder: WELDED,
@@ -266,7 +274,12 @@ test.describe("shell style axis", () => {
             ),
           )
           .toBe(navFill)
-        await expect(content).toHaveCSS("background-color", "rgba(0, 0, 0, 0)")
+        await expect(content).toHaveCSS(
+          "background-color",
+          paint.contentFill
+            ? await resolvedColor(page, paint.contentFill)
+            : "rgba(0, 0, 0, 0)",
+        )
         await expect
           .poll(() => borderWidths(nav), { message: "nav border" })
           .toBe(paint.navBorder)
@@ -289,6 +302,40 @@ test.describe("shell style axis", () => {
           }
         }
       })
+    }
+  }
+
+  // Under island and inset the ground recesses toward the ink, so the
+  // page-coloured pane reads as a sheet on it.
+  for (const look of ["quiet", "tactile"] as const) {
+    for (const style of ["island", "inset"] as const) {
+      for (const mode of MODES) {
+        test(`the ${style} ground recesses under the pane · ${look} · ${mode}`, async ({
+          page,
+        }) => {
+          await seedApp(page, { shellStyle: style, style: look, mode })
+          await gotoApp(page, "/")
+          await expect(shell(page)).toHaveAttribute("data-shell-style", style)
+          const ground = await resolvedColor(
+            page,
+            "color-mix(in oklab, hsl(var(--background)) 95%, hsl(var(--foreground)))",
+          )
+          const pane = await resolvedColor(page, "hsl(var(--background))")
+          await expect(shell(page)).toHaveCSS("background-color", ground)
+          await expect(region(page, "content")).toHaveCSS(
+            "background-color",
+            pane,
+          )
+          // color-mix() computes in oklab and hsl() in rgb, so the page
+          // colour is put in the ground's space before the two are compared.
+          expect(ground).not.toBe(
+            await resolvedColor(
+              page,
+              "color-mix(in oklab, hsl(var(--background)) 100%, hsl(var(--foreground)))",
+            ),
+          )
+        })
+      }
     }
   }
 

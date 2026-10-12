@@ -1,6 +1,6 @@
 import { test, expect, type Page } from "@playwright/test"
 import { boxOf, gotoApp, kitLook, seedApp } from "./helpers/app"
-import { computed, settle } from "./helpers/measure"
+import { alphaOf, computed, settle } from "./helpers/measure"
 
 /**
  * The shell paints from style tokens, and the bar span and bar edge
@@ -205,18 +205,155 @@ test("the bar edge drops the rule or veils the content", async ({ page }) => {
   )
 })
 
-for (const shellStyle of ["flat", "inset"]) {
-  test(`the veil holds on a ${shellStyle} shell`, async ({ page }) => {
-    await openShell(page, shellStyle)
-    await stamp(page, "data-bar-edge", "veil")
-    expect(await pseudo(page, "bar", "::before", "background-image")).toMatch(
-      /^linear-gradient\(/,
-    )
+test("the veil holds on a flat shell", async ({ page }) => {
+  await openShell(page, "flat")
+  await stamp(page, "data-bar-edge", "veil")
+  expect(await pseudo(page, "bar", "::before", "background-image")).toMatch(
+    /^linear-gradient\(/,
+  )
 
-    await page.emulateMedia({ contrast: "more" })
-    await settle(page)
-    const fill = await pseudo(page, "bar", "::before", "background-color")
-    expect(fill).toBe(await resolved(page, "var(--chrome-bar-bg)"))
-    expect(fill).not.toBe("rgba(0, 0, 0, 0)")
+  await page.emulateMedia({ contrast: "more" })
+  await settle(page)
+  const fill = await pseudo(page, "bar", "::before", "background-color")
+  expect(fill).toBe(await resolved(page, "var(--chrome-bar-bg)"))
+  expect(fill).not.toBe("rgba(0, 0, 0, 0)")
+})
+
+// Under island and inset the content is its own pane below the bar, so the
+// veil stands down and the bar keeps its shell's paint.
+for (const shellStyle of ["island", "inset"]) {
+  test(`a veiled bar stays out of the ${shellStyle} pane`, async ({ page }) => {
+    await openShell(page, shellStyle)
+    const bar = region(page, "bar")
+    const content = region(page, "content")
+    const resting = await boxOf(content)
+
+    await stamp(page, "data-bar-edge", "veil")
+    const barBox = await boxOf(bar)
+    const pane = await boxOf(content)
+    expect(pane.y).toBeCloseTo(resting.y, 0)
+    expect(pane.y).toBeGreaterThanOrEqual(barBox.y + barBox.height - 0.5)
+    expect(await pseudo(page, "bar", "::before", "backdrop-filter")).toBe(
+      "none",
+    )
+    expect(await pseudo(page, "bar", "::after", "content")).toBe("none")
+    expect(await pseudo(page, "bar", "::before", "background-color")).toBe(
+      shellStyle === "island"
+        ? await resolved(page, "var(--chrome-bar-bg)")
+        : "rgba(0, 0, 0, 0)",
+    )
+  })
+}
+
+test("a detached island bar keeps its full edge without a bar rule", async ({
+  page,
+}) => {
+  await openShell(page, "island")
+  await stamp(page, "data-bar-edge", "none")
+  expect(await computed(region(page, "bar"), "border-bottom-color")).toBe(
+    await resolved(page, "var(--chrome-edge)"),
+  )
+})
+
+/**
+ * Seeds a built-in style, and a preset when one is named, as a returning
+ * user's stored choice. Unlike openShell it keeps the look's signatures.
+ */
+async function openPreset(
+  page: Page,
+  preset: string | null,
+  style: string,
+  shellStyle: string,
+  mode: string,
+) {
+  await page.setViewportSize({ width: 1280, height: 800 })
+  await seedApp(page, { style, shellStyle, mode })
+  if (preset) {
+    await page.addInitScript((name) => {
+      if (localStorage.getItem("theme-preset") === null) {
+        localStorage.setItem("theme-preset", name)
+      }
+    }, preset)
+  }
+  await gotoApp(page, "/")
+  await expect(shell(page)).toHaveAttribute("data-shell-style", shellStyle)
+  await settle(page)
+}
+
+for (const shellStyle of ["island", "inset"]) {
+  test(`card stock lays a card sheet in light mode · ${shellStyle}`, async ({
+    page,
+  }) => {
+    await openPreset(page, "card-stock", "tactile", shellStyle, "light")
+    expect(await computed(region(page, "content"), "background-color")).toBe(
+      await resolved(page, "hsl(var(--card))"),
+    )
+  })
+
+  test(`card stock's borderless dark pane shows the backdrop · ${shellStyle}`, async ({
+    page,
+  }) => {
+    await openPreset(page, "card-stock", "tactile", shellStyle, "dark")
+    expect(await computed(region(page, "content"), "background-color")).toBe(
+      "rgba(0, 0, 0, 0)",
+    )
+  })
+}
+
+// The looks that carry the veil signature: under island and inset their
+// bar stays above the pane, and an island bar keeps a fill of its own.
+const VEIL_LOOKS: [string | null, string][] = [
+  [null, "base glass"],
+  ["milk-glass", "milk glass"],
+  ["aurora-night", "aurora night"],
+  ["dusk-haze", "dusk haze"],
+]
+for (const [preset, label] of VEIL_LOOKS) {
+  for (const shellStyle of ["island", "inset"]) {
+    test(`${label}'s veiled bar stays above the ${shellStyle} pane`, async ({
+      page,
+    }) => {
+      await openPreset(page, preset, "glass", shellStyle, "light")
+      await expect(page.locator("html")).toHaveAttribute(
+        "data-bar-edge",
+        "veil",
+      )
+      const barBox = await boxOf(region(page, "bar"))
+      const pane = await boxOf(region(page, "content"))
+      expect(pane.y).toBeGreaterThanOrEqual(barBox.y + barBox.height - 0.5)
+      expect(await pseudo(page, "bar", "::after", "content")).toBe("none")
+      if (shellStyle === "island") {
+        expect(
+          await pseudo(page, "bar", "::before", "background-color"),
+        ).not.toBe("rgba(0, 0, 0, 0)")
+      }
+    })
+  }
+}
+
+// The floating pane is the page plane itself: a translucent look's pane
+// fallback stays out of it.
+test("a floating glass plane stays clear", async ({ page }) => {
+  await openPreset(page, "aurora-night", "glass", "floating", "light")
+  expect(await computed(region(page, "content"), "background-color")).toBe(
+    "rgba(0, 0, 0, 0)",
+  )
+})
+
+// Base Glass keeps --surface-fill-alpha at 1, so its pane is opaque; Aurora
+// Night lowers it (0.62 light, 0.55 dark) and its pane lets the canvas in.
+for (const mode of ["light", "dark"]) {
+  test(`a glass pane is translucent page colour · ${mode}`, async ({
+    page,
+  }) => {
+    await openPreset(page, "aurora-night", "glass", "island", mode)
+    const fill = await computed(region(page, "content"), "background-color")
+    expect(fill).toBe(
+      await resolved(
+        page,
+        "hsl(var(--background) / var(--surface-fill-alpha))",
+      ),
+    )
+    expect(alphaOf(fill)).toBeLessThan(1)
   })
 }
