@@ -156,13 +156,15 @@ describe("ChoiceControl", () => {
     expect(group).toHaveAttribute("data-cols", "5")
   })
 
-  it("offers the three fonts and sets one", () => {
+  it("offers the four fonts and sets one", () => {
     renderControl(<ChoiceControl axis="font" />)
     const group = screen.getByRole("radiogroup", { name: "Font" })
     expect(group).toHaveAttribute("data-cols", "3")
-    for (const name of ["Inter", "Geist", "IBM Plex Sans"]) {
-      expect(within(group).getByRole("radio", { name })).toBeInTheDocument()
-    }
+    expect(
+      within(group)
+        .getAllByRole("radio")
+        .map((radio) => radio.textContent),
+    ).toEqual(["Inter", "Geist", "IBM Plex Sans", "Newsreader"])
     fireEvent.click(within(group).getByRole("radio", { name: "Geist" }))
     expect(html.getAttribute("data-font")).toBe("geist")
   })

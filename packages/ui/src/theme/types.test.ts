@@ -73,7 +73,7 @@ describe("sidebarSelection axis", () => {
 })
 
 describe("font faces", () => {
-  it("lists Inter first, then Geist and IBM Plex Sans", () => {
-    expect(FONTS).toEqual(["inter", "geist", "ibm-plex-sans"])
+  it("lists Inter first, then Geist, IBM Plex Sans and Newsreader", () => {
+    expect(FONTS).toEqual(["inter", "geist", "ibm-plex-sans", "newsreader"])
   })
 })

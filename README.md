@@ -96,7 +96,7 @@ Brand:
 - **Accent color** (`accentColor`) -- 18 colors plus `neutral` (near-black in light, near-white in dark); blue by default
 - **Surface color** (`surfaceColor`) -- one of 12 neutral palettes; zinc by default
 - **Tint with accent** (`tintWithAccent`) -- off or on (tints the neutral surfaces toward the accent; hidden under the neutral accent)
-- **Font** (`font`) -- Inter, Geist, or IBM Plex Sans (body and heading text)
+- **Font** (`font`) -- Inter, Geist, IBM Plex Sans, or the serif Newsreader (body and heading text)
 - **Radius** (`radius`) -- sharp, subtle, rounded, or pill
 - **Density** (`density`) -- compact, cozy, comfortable, or spacious
 - **Font size** (`fontSize`) -- small, medium, large, or extra-large (scales type, icons, and minimum control heights)
@@ -119,7 +119,7 @@ Advanced:
 
 An axis left out of `theme.config.ts` keeps the kit's default, and a style's own defaults (Glass's gradient background, for example) win over the config's for users with nothing stored. An axis left out of `switcher.axes` is shown, and `switcher.advanced: false` removes the Advanced part of the panel.
 
-Monospace text always uses JetBrains Mono. Font size is adjustable via the axis above. The four font families ship as woff2 files with `darkraise-ui/styles.css`, so no font request leaves the app's origin and no font link is needed in `index.html`.
+Monospace text always uses JetBrains Mono. Font size is adjustable via the axis above. The five font families ship as woff2 files with `darkraise-ui/styles.css`, so no font request leaves the app's origin and no font link is needed in `index.html`.
 
 The `ThemeSwitcher` component renders controls for whichever axes are enabled in the config. The `ThemeProvider` accepts an optional `onChange` callback for persisting theme settings to a backend. Theme defaults and axis visibility are set at scaffold time and can be changed later by editing `theme.config.ts`.
 

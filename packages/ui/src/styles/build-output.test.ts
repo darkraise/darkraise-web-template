@@ -20,7 +20,7 @@ describe("published stylesheet", () => {
     expect(css).not.toMatch(/url\(\s*["']?(?:https?:)?\/\//i)
   })
 
-  it("ends with the kit's four font families", () => {
+  it("ends with the kit's five font families", () => {
     const css = builtStylesheet()
     const tail = css.slice(css.indexOf("@font-face"))
     expect(tail.replace(/@font-face\s*\{[^}]*\}/g, "").trim()).toBe("")
@@ -33,6 +33,7 @@ describe("published stylesheet", () => {
       "Geist Variable",
       "IBM Plex Sans Variable",
       "JetBrains Mono Variable",
+      "Newsreader Variable",
     ])
   })
 
@@ -49,7 +50,13 @@ describe("published stylesheet", () => {
 
   it("ships each font's licence beside its files", () => {
     const files = readdirSync(resolve(distDir, "fonts"))
-    for (const name of ["inter", "geist", "ibm-plex-sans", "jetbrains-mono"]) {
+    for (const name of [
+      "inter",
+      "geist",
+      "ibm-plex-sans",
+      "jetbrains-mono",
+      "newsreader",
+    ]) {
       expect(files).toContain(`${name}-LICENSE`)
     }
   })

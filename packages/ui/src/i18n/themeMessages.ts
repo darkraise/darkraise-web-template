@@ -77,4 +77,5 @@ export const themeMessages = {
   inter: "Inter",
   geist: "Geist",
   "ibm-plex-sans": "IBM Plex Sans",
+  newsreader: "Newsreader",
 }

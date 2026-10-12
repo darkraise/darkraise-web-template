@@ -161,7 +161,8 @@
     "values": [
       "inter",
       "geist",
-      "ibm-plex-sans"
+      "ibm-plex-sans",
+      "newsreader"
     ],
     "default": "inter",
     "storageKey": "theme-font",
@@ -175,7 +176,8 @@
       "body",
       "inter",
       "geist",
-      "ibm-plex-sans"
+      "ibm-plex-sans",
+      "newsreader"
     ],
     "default": "body",
     "storageKey": "theme-heading-font",

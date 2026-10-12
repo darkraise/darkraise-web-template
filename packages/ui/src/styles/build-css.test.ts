@@ -41,7 +41,7 @@ describe("kit font packages", () => {
     }
   })
 
-  it("appends the four families after everything else", () => {
+  it("appends the five families after everything else", () => {
     const css = buildStylesheet()
     const tail = css.slice(css.indexOf("@font-face"))
     expect(tail.replace(/@font-face\s*\{[^}]*\}/g, "").trim()).toBe("")
@@ -54,6 +54,23 @@ describe("kit font packages", () => {
       "Geist Variable",
       "IBM Plex Sans Variable",
       "JetBrains Mono Variable",
+      "Newsreader Variable",
     ])
+  })
+
+  // The optical-size files are more than twice the size, and the kit sets
+  // no italic text in its own face.
+  it("ships Newsreader's weight axis only, upright", () => {
+    const newsreader = readFontPackages().find(
+      (font) => font.name === "newsreader",
+    )
+    expect(newsreader?.faces.map((face) => face.file).sort()).toEqual([
+      "newsreader-latin-ext-wght-normal.woff2",
+      "newsreader-latin-wght-normal.woff2",
+      "newsreader-vietnamese-wght-normal.woff2",
+    ])
+    expect(new Set(newsreader?.faces.map((face) => face.weight))).toEqual(
+      new Set(["200 800"]),
+    )
   })
 })

@@ -22,6 +22,7 @@ export const FONT_PACKAGES = [
   "geist",
   "ibm-plex-sans",
   "jetbrains-mono",
+  "newsreader",
 ] as const
 
 export interface FontPackage {

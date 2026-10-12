@@ -178,9 +178,9 @@ describe("ThemeSwitcher brand part", () => {
         config={{
           ...themeConfig,
           fonts: {
-            newsreader: {
-              label: "Newsreader",
-              family: "'Newsreader', serif",
+            fraunces: {
+              label: "Fraunces",
+              family: "'Fraunces', serif",
               role: "serif",
             },
           },
@@ -197,15 +197,22 @@ describe("ThemeSwitcher brand part", () => {
       within(heading)
         .getAllByRole("radio")
         .map((radio) => radio.textContent),
-    ).toEqual(["body", "Inter", "Geist", "IBM Plex Sans", "Newsreader"])
-    fireEvent.click(within(heading).getByRole("radio", { name: "Newsreader" }))
+    ).toEqual([
+      "body",
+      "Inter",
+      "Geist",
+      "IBM Plex Sans",
+      "Newsreader",
+      "Fraunces",
+    ])
+    fireEvent.click(within(heading).getByRole("radio", { name: "Fraunces" }))
     expect(document.documentElement.getAttribute("data-heading-font")).toBe(
-      "newsreader",
+      "fraunces",
     )
     expect(
       within(screen.getByRole("radiogroup", { name: "Font" })).getByRole(
         "radio",
-        { name: "Newsreader" },
+        { name: "Fraunces" },
       ),
     ).toBeInTheDocument()
   })

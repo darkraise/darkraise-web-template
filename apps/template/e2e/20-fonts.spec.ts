@@ -45,6 +45,16 @@ const SEEDED_FONTS: { font: Font; family: string; file: RegExp }[] = [
     family: "IBM Plex Sans Variable",
     file: /\/ibm-plex-sans-[\w-]+\.woff2$/,
   },
+  {
+    font: "newsreader",
+    family: "Newsreader Variable",
+    file: /\/newsreader-[\w-]+\.woff2$/,
+  },
+]
+
+const HEADING_FONTS: { font: Font; family: string }[] = [
+  { font: "geist", family: "Geist Variable" },
+  { font: "newsreader", family: "Newsreader Variable" },
 ]
 
 test.describe("kit fonts", () => {
@@ -85,25 +95,64 @@ test.describe("kit fonts", () => {
     expect(foreign).toEqual([])
   })
 
-  test("a stored heading font sets the headings and leaves the body face", async ({
+  for (const { font, family } of HEADING_FONTS) {
+    test(`a stored ${font} heading font sets the headings in ${family} and leaves the body face`, async ({
+      page,
+    }) => {
+      await seedApp(page, {
+        style: "quiet",
+        mode: "light",
+        headingFont: font,
+      })
+      await gotoApp(page, PROBE)
+
+      await expect(page.locator("html")).toHaveAttribute(
+        "data-heading-font",
+        font,
+      )
+      const heading = page.locator("h1").first()
+      await expect
+        .poll(() => heading.evaluate((el) => getComputedStyle(el).fontFamily))
+        .toMatch(new RegExp(`^"${family}"`))
+      await expect.poll(() => faceLoaded(page, family)).toBe(true)
+      expect(await bodyFont(page)).toMatch(/^"Inter Variable"/)
+    })
+  }
+
+  test("the switcher offers the kit's faces for the body and the headings", async ({
     page,
   }) => {
-    await seedApp(page, {
-      style: "quiet",
-      mode: "light",
-      headingFont: "geist",
-    })
+    await seedApp(page, { style: "quiet", mode: "light" })
     await gotoApp(page, PROBE)
+    await openThemeSwitcher(page)
 
+    const faces = ["Inter", "Geist", "IBM Plex Sans", "Newsreader"]
+    await expect(
+      themeSwitcher(page)
+        .getByRole("radiogroup", { name: "Font", exact: true })
+        .getByRole("radio"),
+    ).toHaveText(faces)
+    const headings = themeSwitcher(page).getByRole("radiogroup", {
+      name: "Heading Font",
+      exact: true,
+    })
+    await expect(headings.getByRole("radio")).toHaveText(["body", ...faces])
+
+    await headings
+      .getByRole("radio", { name: "Newsreader", exact: true })
+      .click()
     await expect(page.locator("html")).toHaveAttribute(
       "data-heading-font",
-      "geist",
+      "newsreader",
     )
-    const heading = page.locator("h1").first()
     await expect
-      .poll(() => heading.evaluate((el) => getComputedStyle(el).fontFamily))
-      .toMatch(/^"Geist Variable"/)
-    expect(await bodyFont(page)).toMatch(/^"Inter Variable"/)
+      .poll(() =>
+        page
+          .locator("h1")
+          .first()
+          .evaluate((el) => getComputedStyle(el).fontFamily),
+      )
+      .toMatch(/^"Newsreader Variable"/)
   })
 
   for (const { font, family, file } of SEEDED_FONTS) {

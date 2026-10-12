@@ -16,7 +16,7 @@ const VALID = {
     style: "glass-ink",
     preset: "ink-night",
     radius: "subtle",
-    headingFont: "newsreader",
+    headingFont: "fraunces",
   },
   switcher: { enabled: true, axes: { glassBlur: false }, advanced: false },
   styles: {
@@ -48,9 +48,9 @@ const VALID = {
     },
   },
   fonts: {
-    newsreader: {
-      label: "Newsreader",
-      family: "'Newsreader', serif",
+    fraunces: {
+      label: "Fraunces",
+      family: "'Fraunces', serif",
       role: "serif",
     },
   },
@@ -256,21 +256,21 @@ describe("theme config JSON Schema", () => {
     ],
     [
       "an unknown font role",
-      ["fonts", "newsreader", "role"],
+      ["fonts", "fraunces", "role"],
       "mono",
       {
         keyword: "enum",
-        dataPath: ".fonts['newsreader'].role",
+        dataPath: ".fonts['fraunces'].role",
         params: { allowedValues: ["sans", "serif", "display"] },
       },
     ],
     [
       "a font without a family",
-      ["fonts", "newsreader", "family"],
+      ["fonts", "fraunces", "family"],
       undefined,
       {
         keyword: "required",
-        dataPath: ".fonts['newsreader']",
+        dataPath: ".fonts['fraunces']",
         params: { missingProperty: "family" },
       },
     ],
@@ -296,6 +296,7 @@ describe("theme config JSON Schema", () => {
     ["presets", "default", "not"],
     ["presets", "quiet", "not"],
     ["fonts", "inter", "not"],
+    ["fonts", "newsreader", "not"],
     ["fonts", "body", "not"],
     ["fonts", "News_reader", "pattern"],
   ])("rejects the %s name %j", (group, name, keyword) => {
@@ -303,7 +304,7 @@ describe("theme config JSON Schema", () => {
       group === "styles"
         ? { label: "X" }
         : group === "fonts"
-          ? VALID.fonts.newsreader
+          ? VALID.fonts.fraunces
           : VALID.presets["ink-night"]
     const errors = errorsOf({ ...VALID, [group]: { [name]: definition } })
     expect(errors).toContainEqual(
