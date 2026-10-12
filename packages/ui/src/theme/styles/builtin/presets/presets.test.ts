@@ -1,4 +1,4 @@
-import { readdirSync } from "node:fs"
+import { readdirSync, readFileSync } from "node:fs"
 import { join } from "node:path"
 import { describe, expect, it } from "vitest"
 import { defaultLabels } from "@labels"
@@ -10,6 +10,8 @@ import {
 } from "@theme/axes/registry"
 import { effectiveSettings } from "@theme/axes/resolve"
 import { resolveRegistry } from "@theme/config/registry"
+import { finalTokens, presetCombos } from "@test/contrast-matrix"
+import { stripCssComments } from "@test/strip-css-comments"
 import { vi as viLocale } from "../../../../locales/vi"
 import { BUILTIN_PRESETS, PRESET_NAMES } from "."
 
@@ -215,6 +217,27 @@ function tokenValues(): [string, string, string][] {
   )
 }
 
+/**
+ * Every custom property a preset value can read: those the kit's stylesheets
+ * declare, generated style sheets included, and the engine's tokens for
+ * every preset in both modes.
+ */
+function knownVariables(): Set<string> {
+  const names = new Set<string>()
+  const css = readdirSync("src", { recursive: true, encoding: "utf8" })
+    .filter((file) => file.endsWith(".css"))
+    .map((file) => stripCssComments(readFileSync(join("src", file), "utf8")))
+  for (const sheet of css) {
+    for (const [, name] of sheet.matchAll(/(--[\w-]+)\s*:/g)) {
+      names.add(name as string)
+    }
+  }
+  for (const combo of presetCombos()) {
+    for (const name of Object.keys(finalTokens(combo))) names.add(name)
+  }
+  return names
+}
+
 describe("built-in presets", () => {
   it("ships the fifteen presets, grouped by style, in catalogue order", () => {
     const names = CATALOGUE.map(([name]) => name)
@@ -351,6 +374,15 @@ describe("built-in presets", () => {
   it("writes no hue: token colours are black, white, transparent or engine tokens", () => {
     for (const [where, , value] of tokenValues()) {
       expect(colourProblems(value), `${where}: ${value}`).toEqual([])
+    }
+  })
+
+  it("reads only custom properties the kit or the engine defines", () => {
+    const known = knownVariables()
+    for (const [where, , value] of tokenValues()) {
+      for (const [, name] of value.matchAll(/var\(\s*(--[\w-]+)/g)) {
+        expect(known.has(name as string), `${where}: ${name}`).toBe(true)
+      }
     }
   })
 
