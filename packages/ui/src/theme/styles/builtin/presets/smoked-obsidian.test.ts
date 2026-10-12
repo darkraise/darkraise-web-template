@@ -1,0 +1,126 @@
+import { describe, expect, it } from "vitest"
+import { resolveRegistry } from "../../../config/registry"
+import type { ModeTokens } from "../../../config/schema"
+import { KIT_FALLBACK, type PaintToken } from "../../../config/tokens"
+import { glass } from "../glass"
+import { smokedObsidian } from "./smoked-obsidian"
+
+const MODES = ["shared", "light", "dark"] as const
+
+/** Every token the preset writes, in any mode. */
+function written(tokens: ModeTokens | undefined): PaintToken[] {
+  return MODES.flatMap(
+    (mode) => Object.keys(tokens?.[mode] ?? {}) as PaintToken[],
+  )
+}
+
+describe("Smoked Obsidian", () => {
+  const registry = resolveRegistry()
+  const { shared = {}, light = {}, dark = {} } = smokedObsidian.tokens ?? {}
+
+  it("resolves as a Glass preset that leaves the shell to the layout", () => {
+    expect(registry.issues).toEqual([])
+    expect(registry.presets["smoked-obsidian"]).toMatchObject({
+      style: "glass",
+      builtIn: true,
+    })
+    expect(registry.presets["smoked-obsidian"]?.shellStyle).toBeUndefined()
+  })
+
+  it("tones the chrome inverse, rules the bar and washes the nav in the accent", () => {
+    expect(smokedObsidian.signatures).toEqual({
+      navSelection: "accent",
+      railTone: "inverse",
+      barTone: "inverse",
+      barEdge: "rule",
+      menuHighlight: "neutral",
+      cardDivider: "hairline",
+      bannerMark: "stripe",
+      badgeStyle: "chip",
+      fieldFill: "well",
+    })
+    expect(registry.signaturesFor("glass", "smoked-obsidian")).toMatchObject({
+      ...smokedObsidian.signatures,
+      tooltipTone: "inverse",
+      tableHead: "plain",
+    })
+  })
+
+  it("sets a calm dark accent on a grain canvas under nearly opaque menus", () => {
+    expect(smokedObsidian.axes).toEqual({
+      accentColor: "amber",
+      surfaceColor: "neutral",
+      tintWithAccent: "off",
+      signalColor: "none",
+      font: "geist",
+      headingFont: "body",
+      darkAccentChroma: "calm",
+      gradientPattern: "grain",
+      glassOpacity: "subtle",
+    })
+  })
+
+  // Glass docks its rail on the page colour; the inverse tone's ink is
+  // solved on the sidebar surface, so the rail must be painted in it.
+  it("paints the toned rail in the fill its ink is solved on, rimmed in the accent", () => {
+    expect(shared.chromeRailFill).toBe("hsl(var(--surface-sidebar))")
+    expect(shared.chromeEdge).toBe("hsl(var(--primary) / 0.3)")
+    for (const tokens of [light, dark]) {
+      expect(tokens.chromeRailFill).toBeUndefined()
+      expect(tokens.chromeBarFill).toBeUndefined()
+    }
+  })
+
+  it("lights the page and the card rims from the top right", () => {
+    for (const tokens of [light, dark]) {
+      expect(tokens.shellGroundFill).toMatch(
+        /^radial-gradient\(70% 55% at 80% -10%, hsl\(var\(--primary\) \/ 0\.\d+\), transparent 60%\)$/,
+      )
+    }
+    expect(shared.shellGroundFill).toBeUndefined()
+    expect(shared.cardRim).toMatch(
+      /^linear-gradient\(200deg, hsl\(var\(--primary\) \/ 0\.4\), /,
+    )
+  })
+
+  it("makes cards dimming glass through tokens the kit's fallback resets", () => {
+    expect(shared.surfaceFillAlpha).toBe("0.7")
+    expect(light.surfaceBackdrop).toBe("blur(20px) saturate(90%)")
+    expect(dark.surfaceBackdrop).toBe(
+      "blur(20px) saturate(110%) brightness(0.7)",
+    )
+    const translucency = written(smokedObsidian.tokens).filter((token) =>
+      /Backdrop$|Alpha$/.test(token),
+    )
+    expect([...new Set(translucency)].sort()).toEqual([
+      "surfaceBackdrop",
+      "surfaceFillAlpha",
+    ])
+    for (const token of translucency) {
+      expect(KIT_FALLBACK[token], token).toBeDefined()
+    }
+  })
+
+  it("recesses fields with an inner top shadow", () => {
+    for (const tokens of [light, dark]) {
+      expect(tokens.fieldShadow).toMatch(/^inset 0 1px 2px /)
+    }
+  })
+
+  // Glass keys these on the glassOpacity and glassBlur axes; a preset that
+  // set one would take the axis away from the user.
+  it("leaves the overlay fill and every overlay blur to the glass axes", () => {
+    const owned = [
+      ...new Set(
+        glass.when?.flatMap((entry) => Object.keys(entry.tokens ?? {})),
+      ),
+    ]
+    expect(owned).toEqual([
+      "overlayFillBase",
+      "overlayBackdrop",
+      "scrimBackdrop",
+    ])
+    const tokens = written(smokedObsidian.tokens)
+    expect(tokens.filter((token) => owned.includes(token))).toEqual([])
+  })
+})
