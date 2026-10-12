@@ -706,6 +706,18 @@ region; a page taller than 16384px throws.
   the host theme, the tree view's Empty placeholder lines up with leaf text,
   and a half star fills its inline-start side in both directions.
 
+### 31 · Scroll lock (`31-scroll-lock.spec.ts`)
+
+With classic scrollbars shown (headless Chromium hides them by default), in a
+left-to-right and a right-to-left document:
+
+- Opening a modal dialog or a drawer hides the document scrollbar and pads the
+  body by its width, so the header's controls stay within 1px of where they
+  were.
+- A transform on `<html>` or `<body>` makes it the containing block of fixed
+  descendants; the lock then leaves the body's padding alone and the controls
+  still do not move.
+
 ### 32 · Consumer style (`32-consumer-style.spec.ts`)
 
 The template's own `glass-ink` style (extending Glass) and `ink-night` preset,
