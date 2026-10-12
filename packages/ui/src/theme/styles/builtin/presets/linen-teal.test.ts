@@ -101,7 +101,7 @@ describe("Linen & Teal", () => {
     expect(dark.fieldFocusBorder).toBeUndefined()
   })
 
-  it("washes the page behind a dialog in a page tone rather than in black", () => {
+  it("washes the page behind a dialog in a grey, not black", () => {
     expect(shared.scrim).toBe("hsl(var(--neutral-6) / 0.7)")
     expect(dark.scrim).toBe("hsl(var(--background) / 0.7)")
   })

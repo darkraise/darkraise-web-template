@@ -63,6 +63,9 @@ describe("Studio Green", () => {
   it("draws the chrome rule and the card edge as the text colour at 8%", () => {
     expect(shared.chromeEdge).toBe("hsl(var(--foreground) / 0.08)")
     expect(shared.cardBorder).toBe("hsl(var(--foreground) / 0.08)")
+  })
+
+  it("sets a low top bar", () => {
     expect(shared.chromeBarHeight).toBe("3rem")
   })
 

@@ -58,7 +58,7 @@ describe("Aurora Night", () => {
     })
   })
 
-  it("pools accent light at the top right of a clear shell ground", () => {
+  it("pools accent light along the top of a clear shell ground, from its middle rightward", () => {
     const pool = (token: string) =>
       new RegExp(
         `(?:radial-gradient\\(\\d+% \\d+% at (?:[5-9]\\d)% (?:1?\\d)%, hsl\\(var\\(--${token}\\) / 0\\.\\d+\\), transparent 70%\\)(?:, )?){3}$`,
