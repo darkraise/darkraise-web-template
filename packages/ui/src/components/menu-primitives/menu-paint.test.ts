@@ -84,7 +84,7 @@ const ROWS: Array<[string, string]> = [
 describe("menu item radius", () => {
   it("declares --menu-item-radius on the layered :root", () => {
     expect(bodyOf(MENU, ":root", ["@layer base"])).toBe(
-      "--menu-item-radius: calc(var(--radius) - 4px);",
+      "--menu-item-radius: max(calc(var(--radius) - 4px), calc(var(--radius) / 2));",
     )
   })
 

@@ -2,7 +2,7 @@
 @layer base {
   :root {
     --check-checked-border: var(--selected-check-bg);
-    --check-radius: calc(var(--radius) - 4px);
+    --check-radius: max(calc(var(--radius) - 4px), calc(var(--radius) / 2));
   }
 }
 

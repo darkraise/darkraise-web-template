@@ -1,7 +1,10 @@
 /* Kit default of the segment radius a style or preset may set. */
 @layer base {
   :root {
-    --segment-radius: calc(var(--radius) - 2px);
+    --segment-radius: max(
+      calc(var(--radius) - 2px),
+      calc(var(--radius) * 0.75)
+    );
   }
 }
 

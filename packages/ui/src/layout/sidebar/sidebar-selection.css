@@ -7,7 +7,10 @@
     --nav-selection-edge: initial;
     --nav-selection-shadow: initial;
     --nav-selection-glow: initial;
-    --nav-item-radius: calc(var(--radius) - 2px);
+    --nav-item-radius: max(
+      calc(var(--radius) - 2px),
+      calc(var(--radius) * 0.75)
+    );
   }
 }
 
@@ -33,7 +36,10 @@
     --sidebar-marker-start: 3px;
     --sidebar-marker-width: 3px;
     --sidebar-marker-height: 16px;
-    --sidebar-marker-radius: calc(var(--radius) - 4px);
+    --sidebar-marker-radius: max(
+      calc(var(--radius) - 4px),
+      calc(var(--radius) / 2)
+    );
   }
 
   /* In dark the rail is the card colour, so the chip lifts by lightening.
@@ -230,7 +236,10 @@
     --sidebar-marker-start: 3px;
     --sidebar-marker-width: 3px;
     --sidebar-marker-height: 16px;
-    --sidebar-marker-radius: calc(var(--radius) - 4px);
+    --sidebar-marker-radius: max(
+      calc(var(--radius) - 4px),
+      calc(var(--radius) / 2)
+    );
   }
 
   [data-nav-marker="rule"] [data-sidebar-selection] {

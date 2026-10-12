@@ -106,7 +106,10 @@ describe("selection tokens", () => {
     ["--nav-selection-edge", "initial"],
     ["--nav-selection-shadow", "initial"],
     ["--nav-selection-glow", "initial"],
-    ["--nav-item-radius", "calc(var(--radius) - 2px)"],
+    [
+      "--nav-item-radius",
+      "max(calc(var(--radius) - 2px), calc(var(--radius) * 0.75))",
+    ],
   ])("declares %s as %s on the layered :root", (token, value) => {
     expect(bodyOf("selection", ":root", ["@layer base"])).toContain(
       `${token}: ${value};`,
@@ -260,7 +263,7 @@ describe("nav marker signature", () => {
         '[data-nav-marker="bar"] [data-sidebar-selection="rule"]',
       ),
     ).toBe(
-      "--sidebar-marker-start: 3px; --sidebar-marker-width: 3px; --sidebar-marker-height: 16px; --sidebar-marker-radius: calc(var(--radius) - 4px);",
+      "--sidebar-marker-start: 3px; --sidebar-marker-width: 3px; --sidebar-marker-height: 16px; --sidebar-marker-radius: max(calc(var(--radius) - 4px), calc(var(--radius) / 2));",
     )
   })
 

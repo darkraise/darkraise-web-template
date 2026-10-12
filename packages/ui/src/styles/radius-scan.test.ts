@@ -385,6 +385,22 @@ describe("radius scan", () => {
     expect(offenders).toEqual([])
   })
 
+  // `calc(var(--radius) - 4px)` is 0 under subtle, the same as sharp. A
+  // step below --radius keeps the floor --radius-sm and --radius-md use.
+  it("writes no step below --radius without a floor", () => {
+    const bare = RULES.flatMap((rule) =>
+      [
+        ...rule.body
+          .replace(/\s+/g, " ")
+          .replace(/\(\s+/g, "(")
+          .matchAll(/(max\()?calc\(var\(--radius\) - \d+px\)/g),
+      ]
+        .filter((match) => match[1] === undefined)
+        .map(() => label(rule)),
+    )
+    expect(bare).toEqual([])
+  })
+
   it("draws full circles only where the allowlist says so", () => {
     const offenders = RULES.filter(
       (rule) => FULL.test(rule.body) && !exempt(rule, FULL_ROUND),

@@ -2,7 +2,7 @@
    below the overlay's radius the rows used before. */
 @layer base {
   :root {
-    --menu-item-radius: calc(var(--radius) - 4px);
+    --menu-item-radius: max(calc(var(--radius) - 4px), calc(var(--radius) / 2));
   }
 }
 
