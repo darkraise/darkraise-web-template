@@ -1,5 +1,6 @@
 import { AXES, AXIS_KEYS } from "../axes/registry"
 import { STYLE_NAMES } from "../styles"
+import { BUILTIN_PRESETS } from "../styles/builtin/presets"
 import { FONTS, SHELL_STYLES } from "../types"
 import {
   CUSTOM_PROPERTY,
@@ -46,6 +47,9 @@ export function buildThemeJsonSchema(): Record<string, unknown> {
   const testable = AXIS_KEYS.filter((key) => !NOT_TESTABLE.has(key))
   const named = (key: string): Schema =>
     key === "style" || key === "preset" ? { type: "string" } : axisValues(key)
+  // A built-in preset's name is closed to the config's styles, presets and
+  // fonts, as the registry closes it.
+  const presetNames = Object.keys(BUILTIN_PRESETS)
 
   return {
     $schema: "http://json-schema.org/draft-07/schema#",
@@ -84,12 +88,12 @@ export function buildThemeJsonSchema(): Record<string, unknown> {
       name: {
         type: "string",
         pattern: KEBAB.source,
-        not: { enum: [...RESERVED_NAMES, ...STYLE_NAMES] },
+        not: { enum: [...RESERVED_NAMES, ...STYLE_NAMES, ...presetNames] },
       },
       fontName: {
         type: "string",
         pattern: KEBAB.source,
-        not: { enum: [...RESERVED_NAMES, "body", ...FONTS] },
+        not: { enum: [...RESERVED_NAMES, "body", ...FONTS, ...presetNames] },
       },
       font: closed(
         {
