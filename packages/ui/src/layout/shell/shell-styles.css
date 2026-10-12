@@ -98,8 +98,8 @@
      chrome tokens being rebound here, so a style's chrome tokens keep
      reaching every other shell. A rail or bar under an inverse or accent
      tone keeps its fill: its ink is solved on that fill, not on the ground.
-     A veiled bar is left to the veil's rules, which are less specific than
-     these. */
+     The veil stands down under inset (shell.css), so a veiled bar clears
+     like any other. */
   .dr-shell[data-shell-style="inset"]
     > :is(
       [data-region="nav"],
@@ -120,11 +120,7 @@
     background: none;
   }
 
-  :root:not(
-      [data-bar-tone="inverse"],
-      [data-bar-tone="accent"],
-      [data-bar-edge="veil"]
-    )
+  :root:not([data-bar-tone="inverse"], [data-bar-tone="accent"])
     .dr-shell[data-shell-style="inset"]
     > [data-region="bar"]::before {
     background: none;

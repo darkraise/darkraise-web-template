@@ -76,6 +76,10 @@ const BAR_TONED =
   ':root:not([data-bar-tone="inverse"], [data-bar-tone="accent"], [data-bar-edge="veil"])'
 const DETACHED =
   ':is([data-shell-style="island"], [data-shell-style="floating"], [data-shell-style="inset"])'
+const INSET_BAR_TONED =
+  ':root:not([data-bar-tone="inverse"], [data-bar-tone="accent"])'
+const VEIL_BAR =
+  '[data-bar-edge="veil"] .dr-shell:where(:not([data-shell-style="island"], [data-shell-style="inset"])) > [data-region="bar"]'
 
 describe("shell token defaults", () => {
   it.each([
@@ -228,7 +232,7 @@ describe("chrome that gives up or tones its surface", () => {
     expect(
       bodyOf(
         "styles",
-        `${BAR_TONED} .dr-shell[data-shell-style="inset"] > [data-region="bar"]::before`,
+        `${INSET_BAR_TONED} .dr-shell[data-shell-style="inset"] > [data-region="bar"]::before`,
       ),
     ).toBe("background: none;")
   })
@@ -296,58 +300,38 @@ describe("bar edge signature", () => {
 
   it("runs the content up under a veiled bar", () => {
     const content =
-      '[data-bar-edge="veil"] .dr-shell:not([data-shell-style="floating"]) > [data-region="content"]'
+      '[data-bar-edge="veil"] .dr-shell:not([data-shell-style="floating"], [data-shell-style="island"], [data-shell-style="inset"]) > [data-region="content"]'
     expect(bodyOf("shell", content)).toBe(
       "grid-row-start: 1; padding-block-start: calc(var(--chrome-bar-height) + var(--spacing) * 6);",
     )
   })
 
   it("veils the bar with two masked blur layers over a fading tint", () => {
-    expect(
-      bodyOf("shell", '[data-bar-edge="veil"] .dr-shell > [data-region="bar"]'),
-    ).toBe(
+    expect(bodyOf("shell", VEIL_BAR)).toBe(
       "border-bottom-color: transparent; background: none; -webkit-backdrop-filter: none; backdrop-filter: none;",
     )
-    const layers = bodyOf(
-      "shell",
-      '[data-bar-edge="veil"] .dr-shell > [data-region="bar"]::before',
-    )
+    const layers = bodyOf("shell", `${VEIL_BAR}::before`)
     expect(layers).toContain("inset: 0 0 -1.625rem 0;")
     expect(layers).toContain(
       "background: linear-gradient(hsl(var(--surface-header) / 0.85), hsl(var(--surface-header) / 0.55) 55%, hsl(var(--surface-header) / 0));",
     )
     expect(layers).toContain("backdrop-filter: blur(4px);")
-    expect(
-      bodyOf(
-        "shell",
-        '[data-bar-edge="veil"] .dr-shell > [data-region="bar"]::after',
-      ),
-    ).toContain("backdrop-filter: blur(14px);")
+    expect(bodyOf("shell", `${VEIL_BAR}::after`)).toContain(
+      "backdrop-filter: blur(14px);",
+    )
   })
 
   it("falls back to an opaque ruled bar without transparency", () => {
     expect(
-      bodyOf(
-        "shell",
-        '[data-bar-edge="veil"] .dr-shell > [data-region="bar"]::before',
-        ["@layer components", FORCED],
-      ),
+      bodyOf("shell", `${VEIL_BAR}::before`, ["@layer components", FORCED]),
     ).toBe(
       "inset: 0; background: var(--chrome-bar-bg); -webkit-backdrop-filter: none; backdrop-filter: none; -webkit-mask-image: none; mask-image: none;",
     )
     expect(
-      bodyOf(
-        "shell",
-        '[data-bar-edge="veil"] .dr-shell > [data-region="bar"]::after',
-        ["@layer components", FORCED],
-      ),
+      bodyOf("shell", `${VEIL_BAR}::after`, ["@layer components", FORCED]),
     ).toBe("content: none;")
-    expect(
-      bodyOf(
-        "shell",
-        '[data-bar-edge="veil"] .dr-shell > [data-region="bar"]',
-        ["@layer components", FORCED],
-      ),
-    ).toBe("border-bottom-color: var(--chrome-edge);")
+    expect(bodyOf("shell", VEIL_BAR, ["@layer components", FORCED])).toBe(
+      "border-bottom-color: var(--chrome-edge);",
+    )
   })
 })
