@@ -231,3 +231,67 @@
     --scrim: rgb(0 0 0 / 0.6);
   }
 }
+
+@layer style.preset {
+  [data-preset="milk-glass"] {
+    --surface-backdrop: blur(32px) saturate(180%);
+    --card-radius: calc(var(--radius) * 2.75);
+    --overlay-radius: calc(var(--radius) * 2);
+    --dialog-radius: calc(var(--radius) * 3.5);
+    --banner-radius: calc(var(--radius) * 2);
+    --badge-radius: calc(var(--radius) * 1.5);
+    --nav-item-radius: calc(var(--radius) * 1.5);
+    --menu-item-radius: calc(var(--radius) * 1.25);
+    --segment-radius: calc(var(--radius) * 1.5);
+    --check-radius: calc(var(--radius) * 0.75);
+    --nav-selection-edge: transparent;
+    --nav-selection-glow: 0 0 transparent;
+    --btn-shadow: 0 6px 16px -4px hsl(var(--primary) / 0.35);
+    --btn-danger-shadow: 0 6px 16px -4px hsl(var(--destructive-solid) / 0.35);
+    --thumb-shadow: 0 1px 3px rgb(0 0 0 / 0.2);
+    --type-page-title-weight: 700;
+    --type-page-title-tracking: -0.025em;
+    --type-section-title-weight: 700;
+    --type-section-title-tracking: -0.025em;
+    --type-dialog-title-weight: 700;
+    --type-dialog-title-tracking: -0.025em;
+    --figure-weight: 700;
+  }
+  [data-preset="milk-glass"]:not([data-mode="dark"]) {
+    --shell-ground-fill: radial-gradient(45% 40% at 12% 18%, hsl(var(--primary) / 0.26), transparent 70%), radial-gradient(40% 40% at 88% 12%, hsl(var(--primary) / 0.14), transparent 70%), radial-gradient(50% 45% at 70% 92%, hsl(var(--primary) / 0.18), transparent 70%);
+    --surface-fill-alpha: 0.78;
+    --chrome-flat-fill: hsl(var(--card) / calc(var(--surface-fill-alpha) * 1.75 - 0.75));
+    --card-border: rgb(255 255 255 / 0.9);
+    --card-edge: 0 0 0 1px hsl(var(--foreground) / 0.04), 0 1px 1px hsl(var(--foreground) / 0.03), 0 8px 24px -6px hsl(var(--foreground) / 0.08), 0 24px 48px -12px hsl(var(--foreground) / 0.08);
+    --nav-selection-fill: hsl(var(--card) / 0.92);
+    --nav-selection-shadow: 0 1px 2px hsl(var(--foreground) / 0.05), 0 6px 14px -6px hsl(var(--foreground) / 0.12);
+    --btn-neutral-fill: hsl(var(--card) / 0.7);
+    --btn-neutral-shadow: 0 1px 2px hsl(var(--foreground) / 0.06);
+    --state-layer-hover: 0.05;
+    --field-focus-ring: 0 0 0 4px hsl(var(--primary) / 0.15);
+    --selected-view-shadow: 0 1px 3px hsl(var(--foreground) / 0.1);
+    --banner-shadow: 0 8px 20px -10px hsl(var(--foreground) / 0.15);
+    --overlay-border: rgb(255 255 255 / 0.9);
+    --shadow-dropdown: 0 0 0 1px hsl(var(--foreground) / 0.04), 0 16px 40px -8px hsl(var(--foreground) / 0.18);
+    --modal-shadow: 0 30px 60px -12px hsl(var(--foreground) / 0.22);
+    --scrim: hsl(var(--background) / 0.45);
+  }
+  [data-mode="dark"][data-preset="milk-glass"] {
+    --shell-ground-fill: radial-gradient(45% 40% at 12% 18%, hsl(var(--primary) / 0.2), transparent 70%), radial-gradient(40% 40% at 88% 12%, hsl(var(--primary) / 0.1), transparent 70%), radial-gradient(50% 45% at 70% 92%, hsl(var(--primary) / 0.12), transparent 70%);
+    --surface-fill-alpha: 0.8;
+    --chrome-flat-fill: hsl(var(--card) / calc(var(--surface-fill-alpha) * 1.5 - 0.5));
+    --card-border: rgb(255 255 255 / 0.1);
+    --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 24px 48px -12px rgb(0 0 0 / 0.55);
+    --nav-selection-fill: rgb(255 255 255 / 0.14);
+    --nav-selection-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1);
+    --btn-neutral-fill: rgb(255 255 255 / 0.08);
+    --btn-neutral-edge: inset 0 1px 0 rgb(255 255 255 / 0.06);
+    --state-layer-hover: 0.07;
+    --field-focus-ring: 0 0 0 4px hsl(var(--primary) / 0.18);
+    --selected-view-bg: rgb(255 255 255 / 0.14);
+    --overlay-border: rgb(255 255 255 / 0.1);
+    --shadow-dropdown: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 16px 40px -8px rgb(0 0 0 / 0.6);
+    --modal-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 30px 60px -12px rgb(0 0 0 / 0.65);
+    --scrim: hsl(var(--background) / 0.45);
+  }
+}
