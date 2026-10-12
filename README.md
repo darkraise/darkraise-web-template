@@ -117,8 +117,8 @@ Advanced:
 - **Outer glow** and **inner glow** (`outerGlow`, `innerGlow`) -- none, subtle, balanced, or vivid
 - **Background style** (`backgroundStyle`) -- solid or gradient
 - **Background intensity** (`backgroundIntensity`) -- neutral, subtle, balanced, vivid, or intense
-- **Gradient pattern** (`gradientPattern`) -- blobs, aurora, spotlight, or mesh
-- **Sidebar selection** (`sidebarSelection`) -- auto, chip, pill, tile, or frosted
+- **Gradient pattern** (`gradientPattern`) -- blobs, aurora, spotlight, mesh, dots, or grain
+- **Sidebar selection** (`sidebarSelection`) -- auto, chip, pill, tile, frosted, tint, accent, rule, key, or tab
 
 An axis left out of `theme.config.ts` keeps the kit's default, and a style's own defaults (Glass's gradient background, for example) and the active preset's values win over the config's for users with nothing stored. An axis left out of `switcher.axes` is shown, and `switcher.advanced: false` removes the Advanced part of the panel.
 
