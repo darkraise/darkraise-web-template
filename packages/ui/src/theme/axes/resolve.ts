@@ -43,6 +43,27 @@ export function effectiveSettings(
 }
 
 /**
+ * The axes on which the user's own value hides one the active preset or
+ * style sets: the preset's `axes` and the style's defaults, its own and
+ * inherited. No definition can set mode, style or preset, so they are
+ * never among them.
+ */
+export function presetOverrides(
+  stored: Partial<AxisValues>,
+  defaults: AxisValues,
+  registry: ThemeRegistry,
+): AxisKey[] {
+  const { style, preset } = effectiveSettings(stored, defaults, registry)
+  const set: Partial<Record<AxisKey, string>> = {
+    ...registry.styles[style]?.defaults,
+    ...registry.presets[preset]?.axes,
+  }
+  return AXIS_KEYS.filter(
+    (key) => stored[key] !== undefined && set[key] !== undefined,
+  )
+}
+
+/**
  * The stored values after the user picks `value` for `key`. A preset other
  * than `base` brings its style along; a new style starts from its base.
  */

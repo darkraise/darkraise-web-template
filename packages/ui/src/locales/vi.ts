@@ -135,6 +135,7 @@ const messages: UiMessages = {
       "coral-space": "Coral Space",
       "dusk-haze": "Dusk Haze",
     },
+    resetToPreset: "Đặt lại về cài đặt sẵn",
     sidebarSelections: {
       auto: "Tự động",
       chip: "Thẻ nổi",

@@ -199,4 +199,16 @@ export interface ThemeContextValue extends AxisValues, AxisSetters {
   syncStatus: ThemeSyncStatus
   /** Sets any axis by key; the named setters are shorthands for it. */
   setAxis: <K extends AxisKey>(key: K, value: AxisValue<K>) => void
+  /**
+   * Whether `resetToPreset` would clear anything: the user has a value of
+   * their own on an axis the active preset or style sets, or a stored shell
+   * style under a preset that sets one.
+   */
+  canResetToPreset: boolean
+  /**
+   * Clears the user's own value on every axis the active preset or style
+   * sets, so their values apply again, and the stored shell style when the
+   * preset sets one. Mode, style and preset stay as they are.
+   */
+  resetToPreset: () => void
 }

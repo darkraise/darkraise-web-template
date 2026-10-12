@@ -83,6 +83,8 @@ export interface UiLabels {
     styles: Record<StyleName, string>
     /** Option labels of the preset axis; a config preset brings its own. */
     presets: Record<"base" | PresetName, string>
+    /** The action that clears the user's overrides of the active preset. */
+    resetToPreset: string
     /** Option labels of the sidebar selection setting. */
     sidebarSelections: Record<SidebarSelectionSetting, string>
   }

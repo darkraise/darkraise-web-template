@@ -22,3 +22,11 @@ it("shows the stored values on a client-only first render", () => {
   expect(seen[0]).toBe("top-nav:island")
   act(() => root.unmount())
 })
+
+it("forgets the stored shell style and nothing else", () => {
+  useLayoutStore.getState().clearShellStyle()
+  expect(useLayoutStore.getState().shellStyle).toBeNull()
+  expect(localStorage.getItem("theme-shell-style")).toBeNull()
+  expect(useLayoutStore.getState().layout).toBe("top-nav")
+  expect(localStorage.getItem("layout-variant")).toBe("top-nav")
+})

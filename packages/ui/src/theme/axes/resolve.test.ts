@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { resolveRegistry } from "@theme/config/registry"
 import { AXES, AXIS_KEYS, type AxisValues } from "./registry"
-import { applyAxisChange, effectiveSettings } from "./resolve"
+import { applyAxisChange, effectiveSettings, presetOverrides } from "./resolve"
 
 const registry = resolveRegistry({
   styles: {
@@ -200,5 +200,86 @@ describe("applyAxisChange", () => {
       applyAxisChange(stored, "preset", "night", registry),
     ).not.toThrow()
     expect(stored).toEqual({ style: "quiet" })
+  })
+})
+
+describe("presetOverrides", () => {
+  it.each<[string, Partial<AxisValues>, Partial<AxisValues>, string[]]>([
+    [
+      "the user's values on the axes the preset and its style set",
+      {
+        mode: "dark",
+        style: "ink",
+        preset: "night",
+        accentColor: "rose",
+        elevation: "standard",
+        radius: "pill",
+      },
+      {},
+      ["accentColor", "elevation"],
+    ],
+    [
+      "a value on an axis the style inherits a default for",
+      { style: "ink", preset: "night", backgroundStyle: "solid" },
+      {},
+      ["backgroundStyle"],
+    ],
+    [
+      "what the style sets under base",
+      {
+        style: "ink",
+        elevation: "high",
+        gradientPattern: "mesh",
+        font: "geist",
+      },
+      {},
+      ["elevation", "gradientPattern"],
+    ],
+    [
+      "nothing under a style that sets no axis",
+      { style: "quiet", radius: "pill", accentColor: "rose" },
+      {},
+      [],
+    ],
+    [
+      "a value equal to the preset's",
+      { preset: "dusk", radius: "pill" },
+      {},
+      ["radius"],
+    ],
+    [
+      "the axes of a config default preset",
+      { radius: "sharp", density: "compact" },
+      { preset: "dusk" },
+      ["radius"],
+    ],
+    [
+      "nothing for a stored preset of another style",
+      { style: "quiet", preset: "night", accentColor: "rose" },
+      {},
+      [],
+    ],
+    ["nothing when nothing is stored", {}, { style: "ink" }, []],
+  ])("lists %s", (_title, stored, config, expected) => {
+    expect(presetOverrides(stored, defaults(config), registry)).toEqual(
+      expected,
+    )
+  })
+
+  it("never lists mode, style or preset", () => {
+    const everything = Object.fromEntries(
+      AXIS_KEYS.map((key) => [key, AXES[key].default]),
+    ) as AxisValues
+    const listed = presetOverrides(
+      { ...everything, style: "ink", preset: "night" },
+      DEFAULTS,
+      registry,
+    )
+    expect(listed).toEqual([
+      "accentColor",
+      "elevation",
+      "backgroundStyle",
+      "gradientPattern",
+    ])
   })
 })

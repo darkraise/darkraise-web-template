@@ -117,6 +117,7 @@ export const defaultLabels: UiLabels = {
       "coral-space": "Coral Space",
       "dusk-haze": "Dusk Haze",
     },
+    resetToPreset: "Reset to preset",
     sidebarSelections: {
       auto: "Auto",
       chip: "Chip",

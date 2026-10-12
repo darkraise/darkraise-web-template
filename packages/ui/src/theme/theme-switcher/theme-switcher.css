@@ -50,6 +50,19 @@
     @apply me-1.5 size-[var(--icon-size-sm)];
   }
 
+  /* The reset action sits under the Preset control and lines up with the
+     controls: once rows seat their label beside the control, it clears the
+     8rem label column and the row gap. */
+  .dr-theme-switcher-reset {
+    margin-top: 0.375rem;
+  }
+
+  @container (min-width: 26rem) {
+    .dr-theme-switcher-reset {
+      margin-inline-start: 8.75rem;
+    }
+  }
+
   /* Nine swatches per row wherever nine fit, wrapping to fewer instead of
      clipping the trailing columns when the control area is narrower. The
      max-width caps the track count at 9 so wide containers keep the

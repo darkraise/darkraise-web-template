@@ -19,6 +19,8 @@ interface LayoutState {
   /** The user's pick; `null` when nothing is stored or the stored value is unknown. */
   shellStyle: ShellStyle | null
   setShellStyle: (style: ShellStyle) => void
+  /** Forgets the user's pick, so the preset's or the layout's default applies. */
+  clearShellStyle: () => void
 }
 
 const getStoredLayout = (): LayoutVariant => {
@@ -65,6 +67,15 @@ export const useLayoutStore = create<LayoutState>((set) => ({
       // updates in memory for the current session.
     }
     set({ shellStyle })
+  },
+  clearShellStyle: () => {
+    try {
+      localStorage.removeItem(SHELL_STYLE_STORAGE_KEY)
+    } catch {
+      // localStorage unavailable (SSR or private browsing); state still
+      // updates in memory for the current session.
+    }
+    set({ shellStyle: null })
   },
 }))
 
