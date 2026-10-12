@@ -1,18 +1,9 @@
 import { describe, expect, it } from "vitest"
+import { written } from "@test/preset-tokens"
 import { resolveRegistry } from "../../../config/registry"
-import type { ModeTokens } from "../../../config/schema"
-import { KIT_FALLBACK, type PaintToken } from "../../../config/tokens"
+import { KIT_FALLBACK } from "../../../config/tokens"
 import { glass } from "../glass"
 import { auroraNight } from "./aurora-night"
-
-const MODES = ["shared", "light", "dark"] as const
-
-/** Every token the preset writes, in any mode. */
-function written(tokens: ModeTokens | undefined): PaintToken[] {
-  return MODES.flatMap(
-    (mode) => Object.keys(tokens?.[mode] ?? {}) as PaintToken[],
-  )
-}
 
 describe("Aurora Night", () => {
   const registry = resolveRegistry()

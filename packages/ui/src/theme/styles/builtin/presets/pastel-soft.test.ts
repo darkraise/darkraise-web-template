@@ -1,23 +1,7 @@
 import { describe, expect, it } from "vitest"
+import { SHADOW_TOKENS, blurs } from "@test/preset-tokens"
 import { resolveRegistry } from "../../../config/registry"
-import { PAINT_TOKENS, type PaintToken } from "../../../config/tokens"
 import { pastelSoft } from "./pastel-soft"
-
-const SHADOW_TOKENS = (Object.keys(PAINT_TOKENS) as PaintToken[]).filter(
-  (token) => /Shadow|Edge|Rim|Glow|Ring/.test(token),
-)
-
-/** The blur radius of each layer of a box-shadow value. */
-function blurs(value: string): number[] {
-  return value.split(/,(?![^(]*\))/).map((layer) => {
-    const lengths = layer
-      .replace(/(rgb|hsl|color-mix|var)\([^)]*(\([^)]*\))*[^)]*\)/g, "")
-      .trim()
-      .split(/\s+/)
-      .filter((part) => /^-?[\d.]+(px)?$/.test(part))
-    return lengths.length >= 3 ? Number.parseFloat(lengths[2] ?? "0") : 0
-  })
-}
 
 describe("Pastel Soft-Flat", () => {
   const registry = resolveRegistry()

@@ -1,36 +1,8 @@
 import { describe, expect, it } from "vitest"
+import { layers, written } from "@test/preset-tokens"
 import { resolveRegistry } from "../../../config/registry"
-import type { ModeTokens } from "../../../config/schema"
-import type { PaintToken } from "../../../config/tokens"
 import { glass } from "../glass"
 import { coralSpace } from "./coral-space"
-
-const MODES = ["shared", "light", "dark"] as const
-
-/** Every token the preset writes, in any mode. */
-function written(tokens: ModeTokens | undefined): PaintToken[] {
-  return MODES.flatMap(
-    (mode) => Object.keys(tokens?.[mode] ?? {}) as PaintToken[],
-  )
-}
-
-/** The layers of a background list, split at its top-level commas. */
-function layers(value: string | undefined): string[] {
-  const out: string[] = []
-  let depth = 0
-  let start = 0
-  const text = value ?? ""
-  for (let i = 0; i < text.length; i++) {
-    if (text[i] === "(") depth++
-    else if (text[i] === ")") depth--
-    else if (text[i] === "," && depth === 0) {
-      out.push(text.slice(start, i).trim())
-      start = i + 1
-    }
-  }
-  out.push(text.slice(start).trim())
-  return out
-}
 
 describe("Coral Space", () => {
   const registry = resolveRegistry()

@@ -1,16 +1,9 @@
 import { describe, expect, it } from "vitest"
+import { layers } from "@test/preset-tokens"
 import { resolveRegistry } from "@theme/config/registry"
 import type { PaintToken } from "@theme/config/tokens"
 import { quiet } from "../quiet"
 import { studioGreen } from "./studio-green"
-
-/** The layers of a box-shadow value. */
-function layers(value: string): string[] {
-  return value
-    .split(/,(?![^(]*\))/)
-    .map((layer) => layer.trim())
-    .filter((layer) => layer !== "")
-}
 
 describe("Studio Green", () => {
   const registry = resolveRegistry()

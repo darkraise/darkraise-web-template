@@ -1,11 +1,7 @@
 import { describe, expect, it } from "vitest"
+import { SHADOW_TOKENS } from "@test/preset-tokens"
 import { resolveRegistry } from "@theme/config/registry"
-import { PAINT_TOKENS, type PaintToken } from "@theme/config/tokens"
 import { paperInk } from "./paper-ink"
-
-const SHADOW_TOKENS = (Object.keys(PAINT_TOKENS) as PaintToken[]).filter(
-  (token) => /Shadow|Edge|Rim|Glow/.test(token),
-)
 
 /** The layers of a box-shadow value that cast outside the box. */
 function dropLayers(value: string): string[] {
