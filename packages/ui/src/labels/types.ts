@@ -1,5 +1,6 @@
 import type { AxisKey } from "@theme/axes/registry"
 import type { StyleName } from "@theme/styles"
+import type { PresetName } from "@theme/styles/builtin/presets"
 import type { SidebarSelectionSetting } from "@theme/types"
 import type { ThemeSettingsGroup } from "@theme/theme-switcher/useThemeSettingsSections"
 
@@ -80,6 +81,8 @@ export interface UiLabels {
     modes: { light: string; dark: string; system: string }
     /** Option labels of the style axis. */
     styles: Record<StyleName, string>
+    /** Option labels of the preset axis; a config preset brings its own. */
+    presets: Record<"base" | PresetName, string>
     /** Option labels of the sidebar selection setting. */
     sidebarSelections: Record<SidebarSelectionSetting, string>
   }

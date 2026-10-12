@@ -3,6 +3,7 @@ import { render } from "@testing-library/react"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { AXES, AXIS_KEYS, type AxisKey } from "@theme/axes/registry"
 import { resolveRegistry } from "@theme/config/registry"
+import { PRESET_NAMES } from "@theme/styles/builtin/presets"
 import { ThemeProvider } from "@theme/theme-provider"
 import { resolveDefaults, themeConfig, type ThemeConfig } from "./themeConfig"
 
@@ -239,9 +240,10 @@ describe("resolveDefaults with theme definitions", () => {
       defaults: { preset: "noon" },
       switcher: { enabled: true },
     })
+    const offered = ["base", ...PRESET_NAMES, "night", "dusk"].join(", ")
     expect(warn.mock.calls).toEqual([
       [
-        '[ThemeProvider] themeConfig.defaults.preset "noon" is not a valid preset (expected one of: base, night, dusk); using "base".',
+        `[ThemeProvider] themeConfig.defaults.preset "noon" is not a valid preset (expected one of: ${offered}); using "base".`,
       ],
     ])
   })
