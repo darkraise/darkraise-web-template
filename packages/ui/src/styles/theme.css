@@ -469,9 +469,15 @@
   --shadow-medium: var(--elevation-medium);
   --shadow-high: var(--elevation-high);
 
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-xl: calc(var(--radius) + 4px);
   --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-sm: calc(var(--radius) - 4px);
+  /* The steps below lg keep a floor of half (sm) or three quarters (md) of
+     --radius, so the subtle step stays visibly round rather than reaching
+     0. Under sharp --radius is a unitless 0, which makes every step here
+     invalid and its corner square. */
+  --radius-md: max(calc(var(--radius) - 2px), calc(var(--radius) * 0.75));
+  --radius-sm: max(calc(var(--radius) - 4px), calc(var(--radius) / 2));
 
   --animate-accordion-down: accordion-down 200ms ease-out;
   --animate-accordion-up: accordion-up 200ms ease-in;
@@ -708,6 +714,10 @@
      selectors below rebind them. */
     --radius: 0.5rem;
     --radius-control: 0.5rem;
+    /* A capsule under every step but sharp. There --radius-control is a
+       unitless 0, so the product is a number rather than a length and the
+       corner that reads it stays square, as the controls around it do. */
+    --radius-pill: calc(var(--radius-control) * 9999);
 
     --track-height: 0.5rem;
 

@@ -112,7 +112,7 @@ const SIDES = "(?:-(?:t|r|b|l|s|e|tl|tr|br|bl|ss|se|es|ee))?"
 const BARE = new RegExp(`(?<![\\w-])rounded${SIDES}(?![\\w\\[-])`, "g")
 /** Tailwind scale steps this kit does not rebind to --radius. */
 const UNBOUND_STEP = new RegExp(
-  `(?<![\\w-])rounded${SIDES}-(?:xs|xl|2xl|3xl|4xl)(?![\\w-])`,
+  `(?<![\\w-])rounded${SIDES}-(?:xs|3xl|4xl)(?![\\w-])`,
   "g",
 )
 const ARBITRARY_LITERAL = new RegExp(
@@ -209,6 +209,30 @@ function hardCoded(value: string): string {
     current = next
   }
 }
+
+// Each step follows --radius. The steps below lg keep a floor of half (sm)
+// or three quarters (md) of --radius, so subtle stays visibly round; under
+// sharp --radius is a unitless 0 and every step is invalid, hence square.
+describe("radius steps", () => {
+  it.each([
+    ["--radius-2xl", "calc(var(--radius) + 8px)"],
+    ["--radius-xl", "calc(var(--radius) + 4px)"],
+    ["--radius-lg", "var(--radius)"],
+    [
+      "--radius-md",
+      "max(calc(var(--radius) - 2px), calc(var(--radius) * 0.75))",
+    ],
+    ["--radius-sm", "max(calc(var(--radius) - 4px), calc(var(--radius) / 2))"],
+  ])("binds %s to %s", (token, value) => {
+    expect(THEME).toContain(`${token}: ${value};`)
+  })
+
+  it("rounds a pill from the control radius, square under sharp", () => {
+    expect(THEME).toMatch(
+      /:root \{[^}]*--radius-control: 0\.5rem;[^}]*--radius-pill: calc\(var\(--radius-control\) \* 9999\);/,
+    )
+  })
+})
 
 describe("control radius tokens", () => {
   it.each([
