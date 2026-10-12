@@ -4,9 +4,11 @@ import { useUiLabels } from "@labels"
 import type { AxisKey, AxisValue } from "@theme/axes/registry"
 import type { ThemeRegistry } from "@theme/config/registry"
 import type { StyleName } from "@theme/styles"
+import type { PresetName } from "@theme/styles/builtin/presets"
 import type { SidebarSelectionSetting } from "@theme/types"
 import { useTheme } from "@theme/useTheme"
 import type { UiMessages } from "../../../i18n/types"
+import { presetOptions } from "../presetOptions"
 
 type OptionLabel = (
   value: string,
@@ -34,8 +36,17 @@ const fontOption: OptionLabel = (value, labels, registry) => {
 // cells instead of squeezing four into a row.
 const FACE_AXES: ReadonlySet<AxisKey> = new Set(["font", "headingFont"])
 
-/** Whether a value's label is the app's own text, whose casing must stay. */
+/** The most cells an axis puts in one row. */
+function columns(axis: AxisKey) {
+  // Preset names are longer still ("Smoked Obsidian").
+  if (axis === "preset") return 2
+  return FACE_AXES.has(axis) ? 3 : 5
+}
+
+/** Whether a value's label is written text, whose casing must stay. */
 function ownLabel(axis: AxisKey, value: string, registry: ThemeRegistry) {
+  // A preset's label is a name in every locale, never a lower-case value.
+  if (axis === "preset") return true
   if (axis === "style") return registry.styles[value]?.builtIn === false
   if (FACE_AXES.has(axis)) return registry.fonts[value]?.builtIn === false
   return false
@@ -54,6 +65,13 @@ const OPTION_LABELS: Partial<Record<AxisKey, OptionLabel>> = {
       ? style.label
       : labels.theme.styles[value as StyleName]
   },
+  // The same split: `base` and the built-ins are translated.
+  preset: (value, labels, registry) => {
+    const preset = registry.presets[value]
+    return preset && !preset.builtIn
+      ? preset.label
+      : labels.theme.presets[value as "base" | PresetName]
+  },
   // "pill" is also a radius value, so the shared option map would label it
   // as a shape; the looks carry their own group.
   sidebarSelection: (value, labels) =>
@@ -65,7 +83,15 @@ const OPTION_LABELS: Partial<Record<AxisKey, OptionLabel>> = {
 export function ChoiceControl({ axis }: { axis: AxisKey }) {
   const labels = useUiLabels()
   const theme = useTheme()
-  const values = theme.registry.values(axis)
+  const values =
+    axis === "preset"
+      ? presetOptions(
+          theme.registry,
+          theme.style,
+          theme.preset,
+          theme.config.switcher.presets,
+        )
+      : theme.registry.values(axis)
   const icons = ICONS[axis]
   const optionLabel = OPTION_LABELS[axis] ?? themeOption
 
@@ -82,7 +108,7 @@ export function ChoiceControl({ axis }: { axis: AxisKey }) {
       size="sm"
       aria-label={labels.theme.axisLabels[axis]}
       className="dr-theme-switcher-toggle-group"
-      data-cols={Math.min(values.length, FACE_AXES.has(axis) ? 3 : 5)}
+      data-cols={Math.min(values.length, columns(axis))}
     >
       {values.map((value) => {
         const Icon = icons?.[value]

@@ -107,7 +107,6 @@ describe("axis registry", () => {
     expect(AXIS_KEYS.filter((key) => AXES[key].visibleWhen)).toEqual([
       "tintWithAccent",
       "signalColor",
-      "preset",
       "glassOpacity",
       "glassBlur",
       "gradientPattern",
@@ -183,12 +182,10 @@ describe("axis registry", () => {
     })
   })
 
-  it("hides the preset control under every style", () => {
-    const visible = AXES.preset.visibleWhen
-    expect(visible).toBeDefined()
-    for (const style of AXES.style.values) {
-      expect(visible?.({ style, preset: "base" }, [style]), style).toBe(false)
-    }
+  // Whether the control has a preset to offer depends on the theme registry
+  // and the config, which a visibility rule cannot see; the switcher decides.
+  it("declares no visibility rule for the preset axis", () => {
+    expect(AXES.preset.visibleWhen).toBeUndefined()
   })
 
   it("holds only registry axes and their values in the kit config", () => {

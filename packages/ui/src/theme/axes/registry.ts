@@ -115,14 +115,16 @@ export const AXES = {
   }),
   /** A named variant of the active style; `base` is the style alone. */
   preset: axis({
-    // Every preset comes from a theme config, so only `base` is fixed.
+    // The theme registry lists the built-in presets and the config's own;
+    // only `base` belongs to every style. The switcher shows the control
+    // when the active style has a preset to offer, which no rule here can
+    // tell.
     values: ["base"] as readonly string[],
     default: "base",
     storageKey: "theme-preset",
     attribute: "data-preset",
     layer: "style",
     control: "choice",
-    visibleWhen: () => false,
   }),
   /** How much of the canvas Glass's frosted chrome lets through. */
   glassOpacity: axis({

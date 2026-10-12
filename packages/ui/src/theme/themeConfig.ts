@@ -13,6 +13,12 @@ export interface ThemeConfig extends ThemeDefinitions {
     axes?: Partial<Record<AxisKey, boolean>>
     /** `false` removes the Advanced part of the switcher. */
     advanced?: boolean
+    /**
+     * The presets the Preset control offers beside `base`; left out, it
+     * offers every preset of the active style. The active preset is listed
+     * even when it is not named here.
+     */
+    presets?: readonly string[]
   }
 }
 
@@ -72,11 +78,24 @@ function presetWarning(
   return `[ThemeProvider] themeConfig.defaults.preset "${name}" is not a valid preset (expected one of: ${registry.values("preset").join(", ")}); using "base".`
 }
 
+function switcherPresetWarnings(
+  config: ThemeConfig,
+  registry: ThemeRegistry,
+): string[] {
+  return (config.switcher.presets ?? [])
+    .filter((name) => !registry.isValue("preset", name))
+    .map(
+      (name) =>
+        `[ThemeProvider] themeConfig.switcher.presets "${String(name)}" is not a preset (expected one of: ${registry.values("preset").join(", ")}). The name is ignored.`,
+    )
+}
+
 /**
  * Every axis's default: the config's value when `registry` accepts it, else
  * the axis registry's. The preset must also belong to the resolved style.
  * Outside production it warns, once per distinct config content, about each
- * removed key and each invalid value; both are ignored.
+ * removed key, each invalid value and each `switcher.presets` name that is
+ * not a preset; all are ignored.
  */
 export function resolveDefaults(
   config: ThemeConfig,
@@ -122,6 +141,7 @@ export function resolveDefaults(
           REMOVED_SWITCHER_AXES,
         ),
         ...invalid,
+        ...switcherPresetWarnings(config, registry),
       ]
       for (const message of warnings) console.warn(message)
     }

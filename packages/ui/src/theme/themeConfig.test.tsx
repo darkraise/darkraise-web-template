@@ -272,6 +272,36 @@ describe("resolveDefaults with theme definitions", () => {
     )
     expect(warn).not.toHaveBeenCalled()
   })
+
+  it("warns once about each switcher.presets name that is not a preset", () => {
+    const warn = silenceWarnings()
+    const config: ThemeConfig = {
+      ...definitions,
+      defaults: {},
+      switcher: {
+        enabled: true,
+        presets: ["base", "paper-ink", "noon", "night", "glass"],
+      },
+    }
+    expect(resolveDefaults(config)).toEqual(REGISTRY_DEFAULTS)
+    resolveDefaults(JSON.parse(JSON.stringify(config)) as ThemeConfig)
+    const offered = ["base", ...PRESET_NAMES, "night", "dusk"].join(", ")
+    expect(warn.mock.calls).toEqual(
+      ["noon", "glass"].map((name) => [
+        `[ThemeProvider] themeConfig.switcher.presets "${name}" is not a preset (expected one of: ${offered}). The name is ignored.`,
+      ]),
+    )
+  })
+
+  it("accepts a switcher.presets list of presets without a warning", () => {
+    const warn = silenceWarnings()
+    resolveDefaults({
+      ...definitions,
+      defaults: {},
+      switcher: { enabled: true, presets: ["mica-desk", "dusk"] },
+    })
+    expect(warn).not.toHaveBeenCalled()
+  })
 })
 
 describe("kit theme config", () => {
