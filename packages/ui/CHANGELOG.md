@@ -421,6 +421,10 @@ The neutral accent swatch shows near-white in dark mode, as the accent renders, 
 
 Fixed: the virtualized timeline's sticky header is opaque and follows the page or card it sits in (`--timeline-header-bg`); toast action buttons hover toward their fill's wash, so a dark label keeps its contrast; sidebar groups animate open and closed.
 
+The inset and island shells give the content pane the page colour on a ground recessed 5% toward the text colour; a style or preset that sets `shellContentFill` or `shellGroundFill` keeps its own. `--shell-content-fill` now defaults to `initial`. The pane takes the page colour at `--surface-fill-alpha`, so on a Glass preset that lowers it the canvas still shows through, and Card Stock's borderless pane shows the backdrop in dark mode. A veiled bar no longer runs over the content under inset and island: there the bar keeps its shell's paint.
+
+The radius axis reaches the small steps: `rounded-sm` and `rounded-md` keep a floor of half and three quarters of `--radius`, so the subtle step is 2px and 3px instead of square, and the checkbox, menu item, segment, sidebar item and marker defaults follow. `rounded-xl` and `rounded-2xl` follow the axis (`--radius` plus 4px and 8px). The new `--radius-pill` is a capsule at every step but sharp; the switch, slider, progress, scrollbar thumbs, count badges, carousel controls, empty-state medallion and drawer handle use it, so they square under sharp.
+
 ## [6.9.6] — 2026-09-30
 
 ## [6.9.5] — 2026-09-25
