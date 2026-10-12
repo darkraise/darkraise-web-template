@@ -248,7 +248,9 @@ test.describe("preset selection through the UI", () => {
       .toBe("paper-ink")
 
     await selectStyle(page, "flat")
-    expect((await readThemeAttrs(page))["data-preset"]).toBe("base")
+    await expect
+      .poll(async () => (await readThemeAttrs(page))["data-preset"])
+      .toBe("base")
     await expect(presetControl(page).getByRole("radio")).toHaveText(
       PRESET_LABELS.flat,
     )
