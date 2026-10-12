@@ -7,10 +7,10 @@ import type { PresetDefinition } from "../../../config/schema"
  *
  * An instrument panel: the chrome is flush with its ground behind a double
  * seam, every raised part carries a hard specular top edge inside a dark
- * rim, the filled key glows in the accent, and labels and figures are
- * monospace readouts. A value that holds a black, white or ink shadow is
- * written per mode: this layer sits above Tactile's dark values, so a shared
- * one would reach dark mode as well.
+ * rim, the filled key glows in the accent, and labels are uppercase and
+ * figures are monospace readouts. A value that holds a black, white or ink
+ * shadow is written per mode: this layer sits above Tactile's dark values, so
+ * a shared one would reach dark mode as well.
  *
  * Each card sheen opens with its white alpha, top down, even at 0: the
  * lifted field edge is solved for a card face no lighter than the elevation

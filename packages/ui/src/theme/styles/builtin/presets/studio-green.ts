@@ -9,8 +9,8 @@ import type { PresetDefinition } from "../../../config/schema"
  * dark they read as translucent white. The current nav row is a neutral
  * fill, banners sit on the card surface, and a field takes the fill of the
  * surface it sits on. Body text is set at weight 450 under tight 600
- * titles, and buttons, menus and dialogs cast short black shadows where
- * Quiet draws none.
+ * titles. Quiet draws no shadow on buttons, and the preset deepens menus
+ * and dialogs.
  */
 export const studioGreen: PresetDefinition = {
   label: "Studio Green",

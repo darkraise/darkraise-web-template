@@ -8,9 +8,9 @@ import type { PresetDefinition } from "../../../config/schema"
  * Every grey is the text colour at a low alpha: the chrome is the page under
  * a 3.5% wash, and cards are white panels ringed at 8% that lift on a soft
  * shadow of the same ink. A focused field glows in the accent where Quiet
- * rings it, the modal scrim is a light wash of the page rather than a dark
- * one, and panels round one step past the controls. Dark mode sets body
- * text and titles a little lighter, since light text on dark reads heavier.
+ * rings it, the modal scrim is a grey wash, not black, and panels round one
+ * step past the controls. Dark mode sets body text and titles a little
+ * lighter, since light text on dark reads heavier.
  */
 export const linenTeal: PresetDefinition = {
   label: "Linen & Teal",
