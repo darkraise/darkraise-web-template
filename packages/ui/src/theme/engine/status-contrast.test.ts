@@ -5,13 +5,25 @@ import {
   comboName,
   finalTokens,
   isOpaque,
+  presetCombos,
   reachableCombos,
 } from "../../test/contrast-matrix"
 
 const STATUSES = ["destructive", "success", "warning", "info"] as const
 
 describe("status colours", () => {
-  const combos = reachableCombos()
+  // A built-in preset can tint the neutrals, tone the chrome and paint a
+  // gradient canvas, none of which the reachable matrix does.
+  const presets = presetCombos()
+  const combos = [...reachableCombos(), ...presets]
+
+  it("covers every built-in preset in both modes beside the reachable matrix", () => {
+    expect(presets.length).toBeGreaterThan(0)
+    expect(combos).toHaveLength(reachableCombos().length + presets.length)
+    expect(combos.filter((combo) => combo.preset).map(comboName)).toEqual(
+      presets.map(comboName),
+    )
+  })
 
   it("status text clears 4.5:1 on its subtle fill, page and card", () => {
     const failures: string[] = []
@@ -95,7 +107,7 @@ describe("status colours", () => {
     expect(track).not.toBeNull()
     const trackAlpha = Number(track?.[1])
     const failures: string[] = []
-    for (const combo of reachableCombos()) {
+    for (const combo of combos) {
       const tokens = finalTokens(combo)
       const kinds: [string, string, string, string][] = STATUSES.map(
         (status) => [
