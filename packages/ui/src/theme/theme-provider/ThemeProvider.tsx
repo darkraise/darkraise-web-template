@@ -11,6 +11,7 @@ import { SHELL_STYLES, type ShellStyle } from "@theme/types"
 import { useLayoutStore } from "@layout/layoutStore"
 import { generateTokens } from "@theme/engine/generateTokens"
 import { compileThemeCss } from "@theme/config/compile"
+import { engineInput } from "@theme/config/engineInput"
 import { resolveRegistry, type ThemeRegistry } from "@theme/config/registry"
 import {
   STAMPED_SIGNATURES,
@@ -352,25 +353,7 @@ export function ThemeProvider({
     (current: AxisValues, resolved: ResolvedMode, cacheId: string) => {
       document.documentElement.setAttribute("data-mode", resolved)
 
-      const { railTone, barTone } = registry.signaturesFor(
-        current.style,
-        current.preset,
-      )
-      const tokens = generateTokens({
-        accentColor: current.accentColor,
-        surfaceColor: current.surfaceColor,
-        frosted: registry.styles[current.style]?.frosted ?? false,
-        backgroundStyle: current.backgroundStyle,
-        mode: resolved,
-        contrast: current.contrast,
-        darkAccentChroma: current.darkAccentChroma,
-        tintWithAccent: current.tintWithAccent === "on",
-        backgroundIntensity: current.backgroundIntensity,
-        hairlines: registry.styles[current.style]?.hairlines ?? "opaque",
-        signalColor: current.signalColor,
-        railTone,
-        barTone,
-      })
+      const tokens = generateTokens(engineInput(registry, current, resolved))
 
       appliedRef.current = applyTokens(tokens, appliedRef.current)
 

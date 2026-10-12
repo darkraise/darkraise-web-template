@@ -1,5 +1,6 @@
 import { effectiveSettings } from "@theme/axes/resolve"
 import { AXES, AXIS_KEYS, type AxisValues } from "@theme/axes/registry"
+import { engineInput } from "@theme/config/engineInput"
 import { resolveRegistry } from "@theme/config/registry"
 import { generateTokens, type ChromeTone } from "@theme/engine/generateTokens"
 import {
@@ -99,31 +100,14 @@ export function presetCombos(): ThemeCombo[] {
   return Object.values(registry.presets)
     .filter((preset) => preset.builtIn)
     .flatMap((preset) => {
-      const style = registry.styles[preset.style]
       const axes = effectiveSettings(
         { style: preset.style, preset: preset.name },
         defaults,
         registry,
       )
-      const { railTone, barTone } = registry.signaturesFor(
-        preset.style,
-        preset.name,
-      )
       return (["light", "dark"] as const).map((mode) => ({
         preset: preset.name,
-        mode,
-        accentColor: axes.accentColor,
-        surfaceColor: axes.surfaceColor,
-        tintWithAccent: axes.tintWithAccent === "on",
-        signalColor: axes.signalColor,
-        contrast: axes.contrast,
-        darkAccentChroma: axes.darkAccentChroma,
-        backgroundStyle: axes.backgroundStyle,
-        backgroundIntensity: axes.backgroundIntensity,
-        frosted: style?.frosted ?? false,
-        hairlines: style?.hairlines ?? "opaque",
-        railTone,
-        barTone,
+        ...engineInput(registry, axes, mode),
       }))
     })
 }
@@ -139,19 +123,9 @@ export function finalTokens(combo: ThemeCombo): Record<string, string> {
   const cached = tokenCache.get(key)
   if (cached) return cached
   const tokens = generateTokens({
-    accentColor: combo.accentColor,
-    surfaceColor: combo.surfaceColor,
-    frosted: combo.frosted,
+    ...combo,
     backgroundStyle: combo.backgroundStyle ?? "solid",
-    mode: combo.mode,
-    contrast: combo.contrast,
-    darkAccentChroma: combo.darkAccentChroma,
     tintWithAccent: combo.tintWithAccent ?? false,
-    backgroundIntensity: combo.backgroundIntensity,
-    hairlines: combo.hairlines,
-    signalColor: combo.signalColor,
-    railTone: combo.railTone,
-    barTone: combo.barTone,
   })
   tokenCache.set(key, tokens)
   return tokens

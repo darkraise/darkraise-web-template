@@ -5,6 +5,7 @@ import {
   type AxisValues,
 } from "../src/theme/axes/registry"
 import { applyAxisChange, effectiveSettings } from "../src/theme/axes/resolve"
+import { engineInput } from "../src/theme/config/engineInput"
 import { resolveRegistry } from "../src/theme/config/registry"
 import {
   STAMPED_SIGNATURES,
@@ -160,22 +161,7 @@ export function applyStoryTheme(choice: StoryThemeChoice): void {
     root.setAttribute(signatureAttribute(key), signatures[key])
   }
 
-  const style = registry.styles[current.style]
-  const tokens = generateTokens({
-    accentColor: current.accentColor,
-    surfaceColor: current.surfaceColor,
-    frosted: style?.frosted ?? false,
-    backgroundStyle: current.backgroundStyle,
-    mode: choice.mode,
-    contrast: current.contrast,
-    darkAccentChroma: current.darkAccentChroma,
-    tintWithAccent: current.tintWithAccent === "on",
-    backgroundIntensity: current.backgroundIntensity,
-    hairlines: style?.hairlines ?? "opaque",
-    signalColor: current.signalColor,
-    railTone: signatures.railTone,
-    barTone: signatures.barTone,
-  })
+  const tokens = generateTokens(engineInput(registry, current, choice.mode))
   // A toned bar has tiers of its own, which the next choice may not have.
   for (const key of paintedTokens) {
     if (!Object.prototype.hasOwnProperty.call(tokens, key)) {

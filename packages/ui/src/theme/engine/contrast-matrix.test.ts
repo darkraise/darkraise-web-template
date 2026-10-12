@@ -2,10 +2,7 @@ import { describe, it, expect } from "vitest"
 import { AXES } from "@theme/axes/registry"
 import { resolveRegistry } from "@theme/config/registry"
 import type { DefinableAxes } from "@theme/config/schema"
-import {
-  generateTokens,
-  gradientCanvasPeak,
-} from "@theme/engine/generateTokens"
+import { gradientCanvasPeak } from "@theme/engine/generateTokens"
 import { composite, contrastRatio } from "@theme/engine/oklch"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { BUILTIN_PRESETS } from "@theme/styles/builtin/presets"
@@ -218,19 +215,6 @@ describe("built-in preset matrix", () => {
         railTone,
         barTone,
       })
-    }
-  })
-
-  it("solves each preset's tokens from every input it carries", () => {
-    for (const combo of combos) {
-      const { preset, ...inputs } = combo
-      expect(finalTokens(combo), preset).toEqual(
-        generateTokens({
-          backgroundStyle: "solid",
-          tintWithAccent: false,
-          ...inputs,
-        }),
-      )
     }
   })
 
