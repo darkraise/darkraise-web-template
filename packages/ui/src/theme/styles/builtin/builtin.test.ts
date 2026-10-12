@@ -10,6 +10,19 @@ const BUILTIN_DIR = join("src", "theme", "styles", "builtin")
 const PRESETS_DIR = join(BUILTIN_DIR, "presets")
 const GENERATED_DIR = join("src", "theme", "styles", "generated")
 
+/**
+ * Every statement of `source` that loads another module: an import or a
+ * re-export with `from`, a bare side-effect import, and a dynamic import or
+ * require, which a guard below never allows.
+ */
+function moduleStatements(source: string): string[] {
+  return (
+    source.match(
+      /^import\b[^;"]*?from\s+"[^"]+"|^export\s+(?:type\s+)?(?:\*(?:\s+as\s+\w+)?|\{[^}]*\})\s+from\s+"[^"]+"|^import\s+"[^"]+"|\bimport\(|\brequire\(/gm,
+    ) ?? []
+  )
+}
+
 describe("built-in style definitions", () => {
   it("defines the four styles in STYLE_NAMES order", () => {
     expect(Object.keys(BUILTIN_STYLES)).toEqual([...STYLE_NAMES])
@@ -66,10 +79,10 @@ describe("built-in style definitions", () => {
     ])
     for (const file of files) {
       const source = readFileSync(join(BUILTIN_DIR, file), "utf8")
-      const imports = source.match(/^import\b[^;]*?from\s+"[^"]+"/gms) ?? []
+      const imports = moduleStatements(source)
       for (const statement of imports) {
         expect(
-          /^import type\b/.test(statement) ||
+          /^(?:import|export) type\b/.test(statement) ||
             /from "\.\/[a-z]+"$/.test(statement),
           `${file}: ${statement}`,
         ).toBe(true)
@@ -84,10 +97,10 @@ describe("built-in style definitions", () => {
     expect(files).toContain("index.ts")
     for (const file of files) {
       const source = readFileSync(join(PRESETS_DIR, file), "utf8")
-      const imports = source.match(/^import\b[^;]*?from\s+"[^"]+"/gms) ?? []
+      const imports = moduleStatements(source)
       for (const statement of imports) {
         expect(
-          /^import type\b/.test(statement) ||
+          /^(?:import|export) type\b/.test(statement) ||
             /from "\.\/[a-z]+(-[a-z]+)*"$/.test(statement),
           `${file}: ${statement}`,
         ).toBe(true)
