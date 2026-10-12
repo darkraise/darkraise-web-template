@@ -225,7 +225,7 @@ In forced-colours mode chosen items are painted `Highlight`. A stylesheet that s
 
 ## Fonts
 
-The `font` axis takes `inter`, `geist`, `ibm-plex-sans` or `newsreader`, with `inter` the default, plus any font a theme config registers under `fonts`; the `headingFont` axis sets a separate family for headings and takes `body` or any of the same fonts. Newsreader is the kit's serif and ships upright with its weight axis only. The five faces the kit uses (Inter, Geist, IBM Plex Sans, Newsreader and JetBrains Mono) ship as woff2 files declared in `darkraise-ui/styles.css`, and no font request leaves the app's origin. Delete any Google Fonts link for these families from `index.html`. A font registered in a theme config may not be named `newsreader`.
+The `font` axis takes `inter`, `geist`, `ibm-plex-sans` or `newsreader`, with `inter` the default, plus any font a theme config registers under `fonts`; the `headingFont` axis sets a separate family for headings and takes `body` or any of the same fonts. Newsreader is the kit's serif and ships upright with its weight axis only. The five faces the kit uses (Inter, Geist, IBM Plex Sans, Newsreader and JetBrains Mono) ship as woff2 files declared in `darkraise-ui/styles.css`, and no font request leaves the app's origin. Delete any Google Fonts link for these families from `index.html`. A font registered in a theme config may not be named `newsreader`. `FONTS` and the `Font` type gain `"newsreader"`, so a `Record<Font, …>` or an exhaustive `switch` over `Font` needs the new member.
 
 ## Pre-render script
 
