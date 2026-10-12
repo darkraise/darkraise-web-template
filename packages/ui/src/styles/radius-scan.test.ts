@@ -234,6 +234,12 @@ describe("radius steps", () => {
     expect(THEME).toContain(`${token}: ${value};`)
   })
 
+  it("still flags the steps the kit does not rebind", () => {
+    const flagged = (text: string) => text.match(UNBOUND_STEP) ?? []
+    expect(flagged("rounded-xs rounded-t-3xl rounded-4xl")).toHaveLength(3)
+    expect(flagged("rounded-xl rounded-b-2xl rounded-sm")).toEqual([])
+  })
+
   it("rounds a pill from the control radius, square under sharp", () => {
     expect(THEME).toMatch(
       /:root \{[^}]*--radius-control: 0\.5rem;[^}]*--radius-pill: calc\(var\(--radius-control\) \* 9999\);/,
