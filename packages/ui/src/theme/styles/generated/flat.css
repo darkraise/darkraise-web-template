@@ -56,3 +56,36 @@
     --shell-ground-fill: radial-gradient(hsl(var(--foreground) / 0.05) 1px, transparent 1px) 0 0 / 12px 12px, hsl(var(--background));
   }
 }
+
+@layer style.preset {
+  [data-preset="forest-lime"] {
+    --shell-ground-fill: hsl(var(--card));
+    --shell-shadow: 0 0 transparent;
+    --chrome-edge: hsl(var(--surface-sidebar));
+    --shell-frame-edge: hsl(var(--surface-sidebar));
+    --nav-item-radius: var(--radius-control);
+    --card-border: hsl(var(--border));
+    --card-radius: calc(var(--radius) * 1.5);
+    --overlay-radius: var(--radius);
+    --dialog-radius: calc(var(--radius) * 2);
+    --dialog-border: transparent;
+    --menu-item-radius: calc(var(--radius) * 0.625);
+    --banner-radius: var(--radius);
+    --banner-border: transparent;
+    --segment-radius: var(--radius-control);
+    --btn-neutral-fill: hsl(var(--foreground) / 0.08);
+    --btn-font-weight: 600;
+    --scrim: hsl(var(--foreground) / 0.55);
+    --type-page-title-weight: 800;
+    --type-page-title-tracking: -0.01em;
+    --type-section-title-tracking: -0.01em;
+    --type-dialog-title-tracking: -0.01em;
+    --figure-weight: 800;
+  }
+  [data-mode="dark"][data-preset="forest-lime"] {
+    --shell-ground-fill: hsl(var(--primary-1));
+    --card-border: transparent;
+    --dialog-border: rgb(255 255 255 / 0.2);
+    --scrim: rgb(0 0 0 / 0.7);
+  }
+}
