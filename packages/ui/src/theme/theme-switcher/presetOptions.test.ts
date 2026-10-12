@@ -72,4 +72,13 @@ describe("presetOptions", () => {
   ])("lists %s", (_title, style, active, allowed, expected) => {
     expect(presetOptions(registry, style, active, allowed)).toEqual(expected)
   })
+
+  it("lists every preset of the style when allowed is not a list", () => {
+    const allowed = "paper-ink" as unknown as readonly string[]
+    expect(presetOptions(registry, "flat", "base", allowed)).toEqual([
+      "base",
+      "pastel-soft",
+      "forest-lime",
+    ])
+  })
 })

@@ -293,6 +293,19 @@ describe("resolveDefaults with theme definitions", () => {
     )
   })
 
+  it("ignores a switcher.presets that is not a list", () => {
+    const warn = silenceWarnings()
+    expect(() =>
+      resolveDefaults(
+        cast({
+          defaults: {},
+          switcher: { enabled: true, presets: "mica-desk" },
+        }),
+      ),
+    ).not.toThrow()
+    expect(warn).not.toHaveBeenCalled()
+  })
+
   it("accepts a switcher.presets list of presets without a warning", () => {
     const warn = silenceWarnings()
     resolveDefaults({

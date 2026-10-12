@@ -82,7 +82,9 @@ function switcherPresetWarnings(
   config: ThemeConfig,
   registry: ThemeRegistry,
 ): string[] {
-  return (config.switcher.presets ?? [])
+  const { presets } = config.switcher
+  if (!Array.isArray(presets)) return []
+  return presets
     .filter((name) => !registry.isValue("preset", name))
     .map(
       (name) =>

@@ -15,7 +15,7 @@ export function presetOptions(
   const options = ["base"]
   for (const preset of Object.values(registry.presets)) {
     if (preset.style !== style) continue
-    if (allowed && !allowed.includes(preset.name)) continue
+    if (Array.isArray(allowed) && !allowed.includes(preset.name)) continue
     options.push(preset.name)
   }
   if (!options.includes(active)) options.push(active)
