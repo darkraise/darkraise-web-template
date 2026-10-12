@@ -2,9 +2,9 @@
    shell. A token whose today's value depends on the shell element (the
    region shadow and ground are rebound per [data-shell-style], the content
    edge follows the chrome edge, the content fill differs between the
-   detached shells) defaults to `initial`, and each reader
-   carries that value as its fallback: a :root alias would resolve on :root
-   and miss the per-shell binding. */
+   detached shells) defaults to `initial`, and each reader carries that value
+   as its fallback: a :root alias would resolve on :root and miss the
+   per-shell binding. */
 @layer base {
   :root {
     --chrome-flat-fill: var(--shell-flat-chrome, hsl(var(--muted)));
