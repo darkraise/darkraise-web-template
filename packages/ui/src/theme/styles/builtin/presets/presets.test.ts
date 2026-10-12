@@ -11,6 +11,7 @@ import {
 import { effectiveSettings } from "@theme/axes/resolve"
 import { resolveRegistry } from "@theme/config/registry"
 import { finalTokens, presetCombos } from "@test/contrast-matrix"
+import { resolvedTokens } from "@test/preset-tokens"
 import { stripCssComments } from "@test/strip-css-comments"
 import { vi as viLocale } from "../../../../locales/vi"
 import { BUILTIN_PRESETS, PRESET_NAMES } from "."
@@ -382,6 +383,25 @@ describe("built-in presets", () => {
     for (const [where, , value] of tokenValues()) {
       for (const [, name] of value.matchAll(/var\(\s*(--[\w-]+)/g)) {
         expect(known.has(name as string), `${where}: ${name}`).toBe(true)
+      }
+    }
+  })
+
+  it("keeps a focused field's border visible in both modes", () => {
+    const registry = resolveRegistry()
+    const kitDefault = /--field-focus-border:\s*([^;]+);/.exec(
+      readFileSync(join("src", "styles", "theme.css"), "utf8"),
+    )?.[1]
+    expect(kitDefault).toBe("hsl(var(--primary))")
+    for (const preset of Object.values(registry.presets)) {
+      const style = registry.styles[preset.style]
+      for (const mode of ["light", "dark"] as const) {
+        const border =
+          resolvedTokens(style?.tokens, preset.tokens, mode).fieldFocusBorder ??
+          kitDefault
+        expect(border, `${preset.name}.${mode}`).not.toMatch(
+          /^transparent$|\/\s*0\)$/,
+        )
       }
     }
   })
