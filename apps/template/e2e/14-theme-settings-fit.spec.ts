@@ -133,8 +133,7 @@ for (const entry of PAGE_CASES) {
     page,
   }) => {
     await page.setViewportSize({ width: entry.width, height: 900 })
-    // Gradient background so the Gradient Pattern row (the widest toggle
-    // group, at four cells) is rendered.
+    // Gradient background so the Gradient Pattern row is rendered.
     await seedApp(page, {
       style,
       mode: "dark",
@@ -175,7 +174,7 @@ test("theme switcher popover controls fit", async ({ page }) => {
   })
   await gotoApp(page, "/settings")
   await openThemeSwitcher(page)
-  // The widest toggle group, Gradient Pattern, sits under Advanced.
+  // The Gradient Pattern row sits under Advanced.
   await openAdvanced(page)
   await expect(
     themeSwitcher(page).locator(".dr-theme-switcher-row", {
