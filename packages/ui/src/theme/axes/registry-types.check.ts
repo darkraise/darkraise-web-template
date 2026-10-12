@@ -35,6 +35,8 @@ export type RegistryTypeChecks = [
   Expect<Equal<ThemeContextValue["setStyle"], (value: string) => void>>,
   Expect<Equal<ThemeContextValue["preset"], string>>,
   Expect<Equal<ThemeContextValue["setPreset"], (value: string) => void>>,
+  Expect<Equal<ThemeContextValue["canResetToPreset"], boolean>>,
+  Expect<Equal<ThemeContextValue["resetToPreset"], () => void>>,
   Expect<Equal<ThemeContextValue["glassOpacity"], GlassOpacity>>,
   Expect<Equal<ThemeContextValue["glassBlur"], GlassBlur>>,
   Expect<"activePreset" extends keyof ThemeContextValue ? false : true>,

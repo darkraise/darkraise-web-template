@@ -1,4 +1,5 @@
 import type * as React from "react"
+import { Fragment } from "react"
 import { Label } from "@components/label"
 import { useUiLabels } from "@labels"
 import {
@@ -13,6 +14,7 @@ import { OrdinalControl } from "./controls/OrdinalControl"
 import { SwatchControl } from "./controls/SwatchControl"
 import { SwitchControl } from "./controls/SwitchControl"
 import { presetOptions } from "./presetOptions"
+import { ResetToPreset } from "./ResetToPreset"
 
 export type ThemeSettingsGroup = "brand" | "advanced"
 
@@ -78,12 +80,15 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
       key,
       group,
       node: (
-        <div key={key} className="dr-theme-switcher-row">
-          <Label className="dr-theme-switcher-section-label">
-            {labels.theme.axisLabels[key]}
-          </Label>
-          <Control axis={key} />
-        </div>
+        <Fragment key={key}>
+          <div className="dr-theme-switcher-row">
+            <Label className="dr-theme-switcher-section-label">
+              {labels.theme.axisLabels[key]}
+            </Label>
+            <Control axis={key} />
+          </div>
+          {key === "preset" && <ResetToPreset />}
+        </Fragment>
       ),
     })
   }

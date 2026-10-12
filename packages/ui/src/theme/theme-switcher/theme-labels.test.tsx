@@ -144,6 +144,11 @@ describe("ThemeSwitcher labels", () => {
     })
   })
 
+  it("labels the reset action in English and Vietnamese", () => {
+    expect(defaultLabels.theme.resetToPreset).toBe("Reset to preset")
+    expect(viLocale.messages.theme.resetToPreset).toBe("Đặt lại về cài đặt sẵn")
+  })
+
   it("has Vietnamese group labels", () => {
     expect(viLocale.messages.theme.groupLabels).toEqual({
       brand: "Thương hiệu",

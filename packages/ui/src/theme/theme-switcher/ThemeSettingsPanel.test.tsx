@@ -1,6 +1,7 @@
 import type * as React from "react"
 import { fireEvent, render, screen, within } from "@testing-library/react"
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
+import { UiLabelsProvider } from "@labels"
 import { ThemeProvider } from "@theme/theme-provider"
 import { themeConfig, type ThemeConfig } from "@theme/themeConfig"
 import { ThemeSettingsPanel } from "./ThemeSettingsPanel"
@@ -298,6 +299,62 @@ describe("ThemeSettingsPanel", () => {
     expect(document.documentElement.getAttribute("data-signal-color")).toBe(
       "yellow",
     )
+  })
+
+  const resetButton = () =>
+    screen.queryByRole("button", { name: "Reset to preset" })
+
+  it("offers Reset to preset under the Preset control while the user overrides the preset", () => {
+    localStorage.setItem("theme-preset", "linen-teal")
+    renderPanel(<ThemeSettingsPanel layout="page" />)
+    const html = document.documentElement
+    expect(resetButton()).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByTitle("rose"))
+    expect(html.getAttribute("data-accent")).toBe("rose")
+    const reset = screen.getByRole("button", { name: "Reset to preset" })
+    expect(
+      reset.closest(".dr-theme-switcher-reset")?.previousElementSibling,
+    ).toBe(
+      screen
+        .getByRole("radiogroup", { name: "Preset" })
+        .closest(".dr-theme-switcher-row"),
+    )
+
+    fireEvent.click(reset)
+    expect(html.getAttribute("data-accent")).toBe("cyan")
+    expect(html.getAttribute("data-preset")).toBe("linen-teal")
+    expect(localStorage.getItem("theme-accent")).toBeNull()
+    expect(resetButton()).not.toBeInTheDocument()
+    // The button leaves with the last override, so focus moves to the
+    // active preset instead of dropping out of the panel.
+    expect(screen.getByRole("radio", { name: "Linen & Teal" })).toHaveFocus()
+  })
+
+  it("offers no reset where the preset control is hidden", () => {
+    localStorage.setItem("theme-preset", "linen-teal")
+    localStorage.setItem("theme-accent", "rose")
+    renderPanel(
+      <ThemeSettingsPanel layout="page" />,
+      withSwitcher({ axes: { preset: false } }),
+    )
+    expect(document.documentElement.getAttribute("data-accent")).toBe("rose")
+    expect(resetButton()).not.toBeInTheDocument()
+  })
+
+  it("takes the reset label from the labels", () => {
+    localStorage.setItem("theme-preset", "linen-teal")
+    localStorage.setItem("theme-accent", "rose")
+    render(
+      <UiLabelsProvider value={{ theme: { resetToPreset: "Khôi phục" } }}>
+        <ThemeProvider>
+          <ThemeSettingsPanel />
+        </ThemeProvider>
+      </UiLabelsProvider>,
+    )
+    expect(
+      screen.getByRole("button", { name: "Khôi phục" }),
+    ).toBeInTheDocument()
   })
 
   it("renders the preset, then the glass axes, right after the style control under glass", () => {

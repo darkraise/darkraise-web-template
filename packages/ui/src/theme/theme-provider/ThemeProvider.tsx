@@ -32,7 +32,11 @@ import {
   type AxisValue,
   type AxisValues,
 } from "@theme/axes/registry"
-import { applyAxisChange, effectiveSettings } from "@theme/axes/resolve"
+import {
+  applyAxisChange,
+  effectiveSettings,
+  presetOverrides,
+} from "@theme/axes/resolve"
 import {
   THEME_PAYLOAD_VERSION,
   readStoredAxes,
@@ -463,6 +467,36 @@ export function ThemeProvider({
     [commit, announce, persist, registry],
   )
 
+  const storedShellStyle = useLayoutStore((state) => state.shellStyle)
+  const canResetToPreset =
+    presetOverrides(stored, defaults, registry).length > 0 ||
+    (storedShellStyle !== null &&
+      registry.presets[settings.preset]?.shellStyle !== undefined)
+
+  const resetToPreset = useCallback(() => {
+    const current = storedRef.current
+    const { preset } = effectiveSettings(current, defaults, registry)
+    const layout = useLayoutStore.getState()
+    if (
+      layout.shellStyle !== null &&
+      registry.presets[preset]?.shellStyle !== undefined
+    ) {
+      layout.clearShellStyle()
+    }
+    const cleared = presetOverrides(current, defaults, registry)
+    // The payload carries no shell style, so clearing one alone is no
+    // change to announce.
+    if (cleared.length === 0) return
+    const next = Object.fromEntries(
+      Object.entries(current).filter(
+        ([key]) => !cleared.includes(key as AxisKey),
+      ),
+    ) as Partial<AxisValues>
+    for (const key of cleared) persist(AXES[key].storageKey, undefined)
+    commit(next, resolvedRef.current)
+    announce()
+  }, [commit, announce, persist, defaults, registry])
+
   /**
    * Applies a loaded payload. An unversioned one is from a 6.x kit: it is
    * migrated, and the migrated settings are returned for one upgrade save.
@@ -575,6 +609,8 @@ export function ThemeProvider({
       registry,
       syncStatus,
       setAxis,
+      canResetToPreset,
+      resetToPreset,
       ...setters,
     }),
     [
@@ -584,6 +620,8 @@ export function ThemeProvider({
       registry,
       syncStatus,
       setAxis,
+      canResetToPreset,
+      resetToPreset,
       setters,
     ],
   )
