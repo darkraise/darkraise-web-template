@@ -1,7 +1,8 @@
 import { describe, it, expect } from "vitest"
 import { existsSync, readFileSync, readdirSync } from "node:fs"
-import { dirname, join, resolve, sep } from "node:path"
+import { basename, dirname, join, resolve, sep } from "node:path"
 import { LAYER_STATEMENT } from "@theme/config/compile"
+import { resolveRegistry } from "@theme/config/registry"
 import { STYLE_NAMES } from "@theme/styles"
 import { stripCssComments } from "../../test/strip-css-comments"
 
@@ -187,13 +188,89 @@ function styleOf(selector: string): string | null {
     : null
 }
 
+const PRESET_LAYER = "@layer style.preset"
+
 /** The layers the compiled built-ins write to. */
 const STYLE_LAYERS = [
   "@layer style.base",
   "@layer style.mode",
   "@layer style.when",
+  PRESET_LAYER,
   "@layer style.fallback",
 ]
+
+/**
+ * Why a preset-rule selector breaks the grammar, or null when it is valid:
+ * the preset's own `[data-preset="…"]`, alone, not in dark mode, or in dark
+ * mode, for one of `presets`.
+ */
+function presetSelectorProblem(
+  selector: string,
+  presets: readonly string[],
+): string | null {
+  const preset =
+    (/^\[data-preset="([a-z0-9-]+)"\](?::not\(\[data-mode="dark"\]\))?$/.exec(
+      selector,
+    ) ??
+      /^\[data-mode="dark"\]\[data-preset="([a-z0-9-]+)"\]$/.exec(
+        selector,
+      ))?.[1]
+  if (!preset) return "is not one preset alone or with the mode"
+  return presets.includes(preset)
+    ? null
+    : "names no built-in preset of this sheet's style"
+}
+
+function selectors(block: Block): string[] {
+  return block.prelude.split(/,(?![^(]*\))/).map((selector) => selector.trim())
+}
+
+/**
+ * What breaks the grammar in a compiled sheet: a rule of the top-level preset
+ * layer must select one of `presets`, every other rule one built-in style,
+ * and the only at-rules are the style layers and `@media`.
+ */
+function sheetProblems(css: string, presets: readonly string[]): string[] {
+  const root = parse(css)
+  const presetRules = root.children
+    .filter((block) => block.prelude === PRESET_LAYER)
+    .flatMap(descendants)
+  return descendants(root).flatMap((block) => {
+    if (presetRules.includes(block)) {
+      return selectors(block)
+        .map((selector) => {
+          const problem = block.prelude.startsWith("@")
+            ? "an at-rule inside the preset layer"
+            : presetSelectorProblem(selector, presets)
+          return problem ? `${selector}: ${problem}` : null
+        })
+        .filter((problem): problem is string => problem !== null)
+    }
+    if (block.prelude.startsWith("@")) {
+      return block.prelude.startsWith("@media") ||
+        STYLE_LAYERS.includes(block.prelude)
+        ? []
+        : [`${block.prelude}: not a style layer or @media`]
+    }
+    return selectors(block)
+      .map((selector) => {
+        const style = styleOf(selector)
+        const problem = style
+          ? selectorProblem(selector, style)
+          : "names no built-in style"
+        return problem ? `${selector}: ${problem}` : null
+      })
+      .filter((problem): problem is string => problem !== null)
+  })
+}
+
+/** The built-in presets of the style a generated sheet is named after. */
+function presetsOf(path: string): string[] {
+  const style = basename(path, ".css")
+  return Object.values(resolveRegistry().presets)
+    .filter((preset) => preset.builtIn && preset.style === style)
+    .map((preset) => preset.name)
+}
 
 describe("style files", () => {
   // Besides custom properties, the compiled sheet opens with the layer
@@ -211,30 +288,88 @@ describe("style files", () => {
   })
 
   it.each(STYLE_SHEETS)(
-    "%s scopes every rule to one style and uses no at-rule but the style layers and @media",
+    "%s scopes every rule to one style, or to one of its presets in the preset layer, and uses no at-rule but the style layers and @media",
     (path) => {
-      const offenders = descendants(parse(readFileSync(path, "utf8"))).flatMap(
-        (block) =>
-          block.prelude.startsWith("@")
-            ? block.prelude.startsWith("@media") ||
-              STYLE_LAYERS.includes(block.prelude)
-              ? []
-              : [`${block.prelude}: not a style layer or @media`]
-            : block.prelude
-                .split(/,(?![^(]*\))/)
-                .map((selector) => selector.trim())
-                .map((selector) => {
-                  const style = styleOf(selector)
-                  const problem = style
-                    ? selectorProblem(selector, style)
-                    : "names no built-in style"
-                  return problem ? `${selector}: ${problem}` : null
-                })
-                .filter((problem): problem is string => problem !== null),
-      )
-      expect(offenders).toEqual([])
+      expect(
+        sheetProblems(readFileSync(path, "utf8"), presetsOf(path)),
+      ).toEqual([])
     },
   )
+
+  it("holds the preset layer's rules to the preset grammar and the rest to the style grammar", () => {
+    const sheet = (presetRules: string) => `
+      @layer style.base { [data-style="glass"] { --a: 1; } }
+      @layer style.preset { ${presetRules} }
+      @layer style.fallback {
+        @media (prefers-contrast: more) { [data-style="glass"] { --a: 2; } }
+      }
+    `
+    expect(
+      sheetProblems(
+        sheet(`
+          [data-preset="dusk"] { --a: 3; }
+          [data-preset="dusk"]:not([data-mode="dark"]) { --a: 4; }
+          [data-mode="dark"][data-preset="dusk"] { --a: 5; }
+        `),
+        ["dusk"],
+      ),
+    ).toEqual([])
+    expect(
+      sheetProblems(
+        sheet(`
+          [data-preset="dusk"] { --a: 3; }
+          [data-style="glass"] { --a: 4; }
+          @media (hover: hover) { [data-preset="dawn"] { --a: 5; } }
+        `),
+        ["dusk"],
+      ),
+    ).toEqual([
+      '[data-style="glass"]: is not one preset alone or with the mode',
+      "@media (hover: hover): an at-rule inside the preset layer",
+      '[data-preset="dawn"]: names no built-in preset of this sheet\'s style',
+    ])
+    expect(
+      sheetProblems(sheet('[data-preset="dusk"] { --a: 3; }'), []),
+    ).toEqual([
+      '[data-preset="dusk"]: names no built-in preset of this sheet\'s style',
+    ])
+    expect(
+      sheetProblems('@layer style.base { [data-preset="dusk"] { --a: 1; } }', [
+        "dusk",
+      ]),
+    ).toEqual(['[data-preset="dusk"]: names no built-in style'])
+    expect(
+      sheetProblems("@layer components { .a { --a: 1; } }", ["dusk"]),
+    ).toEqual([
+      "@layer components: not a style layer or @media",
+      ".a: names no built-in style",
+    ])
+  })
+
+  it.each([
+    '[data-preset="dusk"]',
+    '[data-preset="dusk"]:not([data-mode="dark"])',
+    '[data-mode="dark"][data-preset="dusk"]',
+  ])("accepts %s for the preset dusk", (selector) => {
+    expect(presetSelectorProblem(selector, ["dusk", "dawn"])).toBeNull()
+  })
+
+  it.each([
+    ['[data-preset="noon"]', "another style's preset"],
+    ["[data-preset]", "a preset attribute with no value"],
+    ['[data-preset="dusk"] .dr-btn', "a class"],
+    ['[data-preset="dusk"][data-preset="dawn"]', "two presets"],
+    ['[data-style="glass"][data-preset="dusk"]', "a style beside the preset"],
+    ['[data-preset="dusk"][data-radius="pill"]', "an axis"],
+    ['[data-mode="light"][data-preset="dusk"]', "another mode"],
+    [
+      '[data-mode="dark"][data-preset="dusk"]:not([data-mode="dark"])',
+      "both modes",
+    ],
+    [':root[data-preset="dusk"]', "a root prefix the compiler never writes"],
+  ])("rejects %s (%s) for the presets dusk and dawn", (selector) => {
+    expect(presetSelectorProblem(selector, ["dusk", "dawn"])).not.toBeNull()
+  })
 
   it.each([
     '[data-style="glass"]',

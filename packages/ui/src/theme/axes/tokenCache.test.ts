@@ -1,8 +1,12 @@
 import { describe, expect, it } from "vitest"
+import type { PresetDefinition } from "@theme/config/schema"
+import { BUILTIN_STYLES } from "@theme/styles"
+import { BUILTIN_PRESETS } from "@theme/styles/builtin/presets"
 import {
   BUILTIN_STYLES_HASH,
   TOKEN_CACHE_SCHEMA,
   TOKEN_CACHE_STORAGE_KEY,
+  builtinsHash,
   cacheInputKeys,
   defaultsHash,
   readTokenCache,
@@ -41,6 +45,35 @@ describe("token cache", () => {
     expect(tokenCacheId(() => null, "light")).not.toBe(
       tokenCacheId(() => null, "dark"),
     )
+  })
+
+  // A built-in preset picks engine inputs through its axes and signatures,
+  // which the stored values in the id never show.
+  it("hashes the built-in presets with the built-in styles", () => {
+    expect(BUILTIN_STYLES_HASH).toBe(
+      builtinsHash(BUILTIN_STYLES, BUILTIN_PRESETS),
+    )
+    const dusk: PresetDefinition = {
+      label: "Dusk",
+      style: "glass",
+      axes: { accentColor: "violet" },
+    }
+    const none = builtinsHash(BUILTIN_STYLES, {})
+    const one = builtinsHash(BUILTIN_STYLES, { dusk })
+    expect(one).not.toBe(none)
+    expect(
+      builtinsHash(BUILTIN_STYLES, {
+        dusk: { ...dusk, axes: { accentColor: "teal" } },
+      }),
+    ).not.toBe(one)
+    expect(
+      builtinsHash(BUILTIN_STYLES, {
+        dusk: { ...dusk, signatures: { railTone: "inverse" } },
+      }),
+    ).not.toBe(one)
+    expect(
+      builtinsHash({ ...BUILTIN_STYLES, quiet: { label: "Other" } }, {}),
+    ).not.toBe(none)
   })
 
   it("changes the id when a config default changes", () => {

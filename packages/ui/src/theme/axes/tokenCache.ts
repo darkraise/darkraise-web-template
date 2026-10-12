@@ -1,6 +1,8 @@
 import type { ResolvedMode } from "@theme/types"
 import { BUILTIN_STYLES } from "@theme/styles"
+import { BUILTIN_PRESETS } from "@theme/styles/builtin/presets"
 import { canonicalJson, fnv1a36 } from "../config/hash"
+import type { PresetDefinition, StyleDefinition } from "../config/schema"
 import { AXES, AXIS_KEYS, type AxisValues } from "./registry"
 import { KIT_VERSION } from "./version"
 
@@ -12,13 +14,21 @@ export const TOKEN_CACHE_STORAGE_KEY = "theme-token-cache"
  */
 export const TOKEN_CACHE_SCHEMA = 4
 
+export function builtinsHash(
+  styles: Readonly<Record<string, StyleDefinition>>,
+  presets: Readonly<Record<string, PresetDefinition>>,
+): string {
+  return fnv1a36(canonicalJson({ styles, presets }))
+}
+
 /**
- * A short hash of the built-in style definitions, part of every cache id. A
- * definition picks engine inputs (chrome tones, hairlines, frosting), so a
- * kit build that redraws a built-in style under the same version must not
- * match a token set cached under the old definition.
+ * A short hash of the built-in style and preset definitions, part of every
+ * cache id. A definition picks engine inputs (chrome tones, hairlines,
+ * frosting, a preset's colours), so a kit build that redraws a built-in
+ * under the same version must not match a token set cached under the old
+ * definition.
  */
-export const BUILTIN_STYLES_HASH = fnv1a36(canonicalJson(BUILTIN_STYLES))
+export const BUILTIN_STYLES_HASH = builtinsHash(BUILTIN_STYLES, BUILTIN_PRESETS)
 
 export interface TokenCache {
   id: string
@@ -47,7 +57,7 @@ export function defaultsHash(defaults: Readonly<AxisValues>): string {
 /**
  * The pre-render script builds the same string from the migrated values, so
  * the two must stay byte-identical: the kit version, the schema, the resolved
- * mode, the built-in styles hash, raw values, "" for absent, then the
+ * mode, the built-in definitions hash, raw values, "" for absent, then the
  * defaults hash, then `definitions` (the theme registry's hash, "" when the
  * config defines no styles or presets), joined with "|".
  */

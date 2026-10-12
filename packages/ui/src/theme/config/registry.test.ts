@@ -918,3 +918,191 @@ describe("bare colour triplet warning", () => {
     expect(registry.presets).toHaveProperty("ink")
   })
 })
+
+describe("built-in presets", () => {
+  const PRESETS: Record<string, PresetDefinition> = {
+    dusk: {
+      label: "Dusk",
+      style: "frost",
+      axes: { accentColor: "violet" },
+      signatures: { navSelection: "pill" },
+      tokens: { dark: { cardSheen: "none" } },
+      shellStyle: "inset",
+    },
+    dawn: { label: "Dawn", style: "plain" },
+  }
+  const withPresets = (
+    definitions?: ThemeDefinitions,
+    presets: Record<string, PresetDefinition> = PRESETS,
+    builtins: Record<string, StyleDefinition> = BUILTINS,
+  ) => buildRegistry(builtins, definitions, presets)
+
+  it("resolves them as built in, in key order, before the consumer's", () => {
+    const registry = withPresets({
+      presets: { ink: { label: "Ink", style: "frost" } },
+    })
+    expect(registry.issues).toEqual([])
+    expect(
+      Object.values(registry.presets).map((preset) => [
+        preset.name,
+        preset.builtIn,
+      ]),
+    ).toEqual([
+      ["dusk", true],
+      ["dawn", true],
+      ["ink", false],
+    ])
+    expect(registry.presets.dusk).toEqual({
+      name: "dusk",
+      label: "Dusk",
+      builtIn: true,
+      style: "frost",
+      axes: { accentColor: "violet" },
+      tokens: { shared: {}, light: {}, dark: { cardSheen: "none" } },
+      signatures: { navSelection: "pill" },
+      shellStyle: "inset",
+    })
+    expect(registry.values("preset")).toEqual(["base", "dusk", "dawn", "ink"])
+    expect(registry.isValue("preset", "dusk")).toBe(true)
+  })
+
+  it("picks one for its own style only, and resolves its signatures", () => {
+    const registry = withPresets()
+    expect(registry.presetFor("frost", "dusk")).toBe("dusk")
+    expect(registry.presetFor("plain", "dusk")).toBe("base")
+    expect(registry.signaturesFor("frost", "dusk").navSelection).toBe("pill")
+    expect(registry.signaturesFor("plain", "dusk").navSelection).toBe("chip")
+    expect(registry.signaturesFor("frost", "base").navSelection).toBe("chip")
+  })
+
+  it("keeps them out of the consumer definitions hash", () => {
+    expect(withPresets().hash).toBe("")
+    const definitions: ThemeDefinitions = {
+      presets: { ink: { label: "Ink", style: "frost" } },
+    }
+    expect(withPresets(definitions).hash).toBe(definitionsHash(definitions))
+  })
+
+  it("has none unless they are given", () => {
+    expect(build().presets).toEqual({})
+    expect(build().values("preset")).toEqual(["base"])
+  })
+
+  it.each<[string, ThemeDefinitions, string]>([
+    ["style", { styles: { dusk: { label: "X" } } }, "styles.dusk"],
+    [
+      "preset",
+      { presets: { dusk: { label: "X", style: "plain" } } },
+      "presets.dusk",
+    ],
+    [
+      "font",
+      { fonts: { dusk: { label: "X", family: "serif", role: "serif" } } },
+      "fonts.dusk",
+    ],
+  ])(
+    "rejects a consumer %s that takes a built-in preset's name",
+    (_, definitions, path) => {
+      const registry = withPresets(definitions)
+      expect(registry.issues).toEqual([
+        { level: "error", path, message: '"dusk" is a built-in preset name' },
+      ])
+      expect(registry.styles).not.toHaveProperty("dusk")
+      expect(registry.fonts).not.toHaveProperty("dusk")
+      expect(registry.presets.dusk).toMatchObject({
+        label: "Dusk",
+        builtIn: true,
+      })
+    },
+  )
+
+  it.each<[string, string, string]>([
+    ["a built-in style's name", "plain", '"plain" is a built-in style name'],
+    ["base", "base", '"base" is a reserved name'],
+    ["a 6.x style value", "default", '"default" is a reserved name'],
+    [
+      "a 6.x style value",
+      "glassmorphism",
+      '"glassmorphism" is a reserved name',
+    ],
+    ["a 6.x style value", "scifi", '"scifi" is a reserved name'],
+    [
+      "a name that is not kebab-case",
+      "Dusk",
+      '"Dusk" is not a kebab-case name',
+    ],
+  ])("rejects a built-in preset named %s (%s)", (_, name, message) => {
+    const registry = withPresets(undefined, {
+      [name]: { label: "X", style: "frost" },
+      dawn: { label: "Dawn", style: "plain" },
+    })
+    expect(registry.issues).toEqual([
+      { level: "error", path: `presets.${name}`, message },
+    ])
+    expect(Object.keys(registry.presets)).toEqual(["dawn"])
+  })
+
+  it("rejects a built-in preset of an unknown style", () => {
+    const registry = withPresets(undefined, {
+      lost: { label: "Lost", style: "missing" },
+    })
+    expect(registry.issues).toEqual([
+      {
+        level: "error",
+        path: "presets.lost.style",
+        message: '"missing" is not a style',
+      },
+    ])
+    expect(registry.presets).toEqual({})
+  })
+
+  // Built-in presets compile into their style's sheet at kit build, where no
+  // consumer style exists.
+  it("rejects a built-in preset of a consumer style", () => {
+    const registry = withPresets(
+      { styles: { mine: { label: "Mine" } } },
+      { lost: { label: "Lost", style: "mine" } },
+    )
+    expect(registry.issues).toEqual([
+      {
+        level: "error",
+        path: "presets.lost.style",
+        message: 'a built-in preset cannot belong to the consumer style "mine"',
+      },
+    ])
+    expect(registry.presets).toEqual({})
+  })
+
+  it("checks a built-in preset's axes, signatures, shell style and tokens like a consumer's", () => {
+    const loose = <T>(value: unknown) => value as T
+    const registry = withPresets(undefined, {
+      bad: {
+        label: "Bad",
+        style: "frost",
+        axes: loose({ radius: "huge" }),
+        signatures: loose({ navMarker: "led" }),
+        shellStyle: loose("cosy"),
+        tokens: loose({
+          shared: { cardGlow: "1" },
+          dark: { overlayFillBase: "x" },
+        }),
+      },
+    })
+    expect(registry.issues.map((issue) => [issue.path, issue.message])).toEqual(
+      [
+        ["presets.bad.axes.radius", '"huge" is not a valid radius'],
+        ["presets.bad.signatures.navMarker", '"led" is not a valid navMarker'],
+        ["presets.bad.shellStyle", '"cosy" is not a shell style'],
+        [
+          "presets.bad.tokens.shared.cardGlow",
+          '"cardGlow" is not a paint token',
+        ],
+        [
+          "presets.bad.tokens.dark.overlayFillBase",
+          'style "frost" sets "overlayFillBase" in a when entry, which a preset may not override',
+        ],
+      ],
+    )
+    expect(registry.presets).toEqual({})
+  })
+})
