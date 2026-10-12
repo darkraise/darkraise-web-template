@@ -106,6 +106,7 @@ E2E_TRACE=1 TMPDIR=/root/.cache/pw-tmp pnpm test:e2e
 | Helper         | Checks                                                                              |
 | -------------- | ----------------------------------------------------------------------------------- |
 | `settle`       | Throws at its 5,000 ms deadline even when the page produces no frames               |
+| `textContrast` | Reads a ground a pseudo-element paints from pixels under `ground: "painted"`        |
 | `watchConsole` | Records a `[vite]` console error, ignores a `[vite]` debug message                  |
 | `seedApp`      | Seeds once per tab, so a sign-out survives a reload; a failing iframe is not seeded |
 

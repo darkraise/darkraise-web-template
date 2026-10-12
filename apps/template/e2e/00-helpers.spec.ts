@@ -94,6 +94,22 @@ test.describe("e2e helpers", () => {
     expect(first[1]).not.toEqual(second[1])
   })
 
+  test("textContrast reads a ground a pseudo-element paints only when asked to", async ({
+    page,
+  }) => {
+    await page.setContent(
+      `<style>
+        body { margin: 0; background: white; }
+        #bar { position: relative; isolation: isolate; padding: 16px; color: white; }
+        #bar::before { content: ""; position: absolute; inset: 0; z-index: -1; background: black; }
+      </style>
+      <div id="bar"><span id="ink">Bar text</span></div>`,
+    )
+    const ink = page.locator("#ink")
+    expect(await textContrast(ink)).toBe(1)
+    expect(await textContrast(ink, { ground: "painted" })).toBe(21)
+  })
+
   test("watchConsole records a [vite] error but not a [vite] debug message", async ({
     page,
   }) => {
