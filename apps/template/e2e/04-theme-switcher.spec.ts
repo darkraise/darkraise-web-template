@@ -37,6 +37,7 @@ const BRAND_SECTIONS = [
   "Surface Color",
   "Tint With Accent",
   "Style",
+  "Preset",
   "Font",
   "Heading Font",
   "Radius",
@@ -139,7 +140,8 @@ test.describe("style selection through the UI", () => {
       const at = sections.indexOf("Style")
       expect(at).toBeGreaterThan(-1)
       if (style === "glass") {
-        expect(sections.slice(at + 1, at + 3)).toEqual([
+        expect(sections.slice(at + 1, at + 4)).toEqual([
+          "Preset",
           GLASS_OPACITY_LABEL,
           GLASS_BLUR_LABEL,
         ])
@@ -149,6 +151,133 @@ test.describe("style selection through the UI", () => {
       }
     })
   }
+})
+
+/** The Preset control's options under each built-in style, in order. */
+const PRESET_LABELS: Record<Style, string[]> = {
+  quiet: [
+    "Base",
+    "Paper & Ink",
+    "Linen & Teal",
+    "Red Graphite",
+    "Studio Green",
+  ],
+  flat: ["Base", "Pastel Soft-Flat", "Forest & Lime"],
+  tactile: ["Base", "Braun Panel", "Dark Instrument", "Card Stock"],
+  glass: [
+    "Base",
+    "Mica Desk",
+    "Smoked Obsidian",
+    "Milk Glass",
+    "Aurora Night",
+    "Coral Space",
+    "Dusk Haze",
+  ],
+}
+
+function presetControl(page: Page) {
+  return themeSwitcher(page).getByRole("radiogroup", {
+    name: "Preset",
+    exact: true,
+  })
+}
+
+test.describe("preset selection through the UI", () => {
+  for (const style of STYLES) {
+    test(`"${STYLE_LABELS[style]}" offers base and its own presets`, async ({
+      page,
+    }) => {
+      await seedApp(page, { style, mode: "light" })
+      await gotoApp(page, PROBE)
+      await openThemeSwitcher(page)
+      await expect(presetControl(page).getByRole("radio")).toHaveText(
+        PRESET_LABELS[style],
+      )
+      await expect(
+        presetControl(page).getByRole("radio", { name: "Base", exact: true }),
+      ).toBeChecked()
+    })
+  }
+
+  test("picking a preset keeps the style and paints without a reload", async ({
+    page,
+  }) => {
+    const consoleWatch = watchConsole(page)
+    await seedApp(page, { style: "quiet", mode: "light" })
+    await gotoApp(page, PROBE)
+    // Lost on any navigation, so its survival shows the page never reloaded.
+    await page.evaluate(() => {
+      ;(window as unknown as { samePage?: boolean }).samePage = true
+    })
+    const accent = await readToken(page, "--primary")
+    await openThemeSwitcher(page)
+
+    await presetControl(page)
+      .getByRole("radio", { name: "Linen & Teal", exact: true })
+      .click()
+    await expect
+      .poll(async () => (await readThemeAttrs(page))["data-preset"])
+      .toBe("linen-teal")
+    const attrs = await readThemeAttrs(page)
+    expect(attrs["data-style"]).toBe("quiet")
+    expect(attrs["data-accent"]).toBe("cyan")
+    expect(await readToken(page, "--primary")).not.toBe(accent)
+    expect(
+      await page.evaluate(
+        () => (window as unknown as { samePage?: boolean }).samePage,
+      ),
+    ).toBe(true)
+
+    await reloadApp(page)
+    const reloaded = await readThemeAttrs(page)
+    expect(reloaded["data-preset"]).toBe("linen-teal")
+    expect(reloaded["data-style"]).toBe("quiet")
+    expect(reloaded["data-accent"]).toBe("cyan")
+    consoleWatch.assertClean()
+  })
+
+  test("picking another style resets the preset to base", async ({ page }) => {
+    await seedApp(page, { style: "quiet", mode: "light" })
+    await gotoApp(page, PROBE)
+    await openThemeSwitcher(page)
+    await presetControl(page)
+      .getByRole("radio", { name: "Paper & Ink", exact: true })
+      .click()
+    await expect
+      .poll(async () => (await readThemeAttrs(page))["data-preset"])
+      .toBe("paper-ink")
+
+    await selectStyle(page, "flat")
+    expect((await readThemeAttrs(page))["data-preset"]).toBe("base")
+    await expect(presetControl(page).getByRole("radio")).toHaveText(
+      PRESET_LABELS.flat,
+    )
+    await expect(
+      presetControl(page).getByRole("radio", { name: "Base", exact: true }),
+    ).toBeChecked()
+
+    await reloadApp(page)
+    const reloaded = await readThemeAttrs(page)
+    expect(reloaded["data-style"]).toBe("flat")
+    expect(reloaded["data-preset"]).toBe("base")
+  })
+
+  test("a preset with a signal colour brings the Signal Color control", async ({
+    page,
+  }) => {
+    await seedApp(page, { style: "tactile", mode: "light" })
+    await gotoApp(page, PROBE)
+    await openThemeSwitcher(page)
+    expect(await switcherSections(page)).not.toContain("Signal Color")
+
+    await presetControl(page)
+      .getByRole("radio", { name: "Braun Panel", exact: true })
+      .click()
+    await expect
+      .poll(async () => await switcherSections(page))
+      .toContain("Signal Color")
+    expect((await readThemeAttrs(page))["data-signal-color"]).toBe("yellow")
+  })
 })
 
 test.describe("mode selection through the UI", () => {

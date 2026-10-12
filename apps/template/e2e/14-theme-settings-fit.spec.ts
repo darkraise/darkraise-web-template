@@ -112,15 +112,22 @@ const PAGE_CASES = [
   { width: 1280, language: "vi" },
   { width: 1024, language: "en", density: "spacious" },
   { width: 1024, language: "vi", density: "spacious" },
+  // Each other style's Preset row: preset names are the longest toggle labels.
+  { width: 1024, language: "en", density: "spacious", style: "flat" },
+  { width: 1024, language: "en", density: "spacious", style: "tactile" },
+  { width: 1024, language: "en", density: "spacious", style: "glass" },
 ] as const
 
 const GRADIENT_PATTERN = { en: "Gradient Pattern", vi: "Kiểu chuyển màu" }
+const PRESET = { en: "Preset", vi: "Cài đặt sẵn" }
 
 for (const entry of PAGE_CASES) {
   const density = "density" in entry ? entry.density : undefined
+  const style = "style" in entry ? entry.style : "quiet"
   const suffix = [
     entry.language === "en" ? "" : ` in ${entry.language}`,
     density ? ` at ${density} density` : "",
+    style === "quiet" ? "" : ` under ${style}`,
   ].join("")
   test(`settings appearance panel fits its columns at ${entry.width}px${suffix}`, async ({
     page,
@@ -129,7 +136,7 @@ for (const entry of PAGE_CASES) {
     // Gradient background so the Gradient Pattern row (the widest toggle
     // group, at four cells) is rendered.
     await seedApp(page, {
-      style: "quiet",
+      style,
       mode: "dark",
       backgroundStyle: "gradient",
       ...(density ? { density } : {}),
@@ -148,6 +155,9 @@ for (const entry of PAGE_CASES) {
       panel.locator(".dr-theme-switcher-row", {
         hasText: GRADIENT_PATTERN[entry.language],
       }),
+    ).toBeVisible()
+    await expect(
+      panel.getByRole("radiogroup", { name: PRESET[entry.language] }),
     ).toBeVisible()
 
     const found = await overflowingControls(page, ".dr-theme-settings-page")
