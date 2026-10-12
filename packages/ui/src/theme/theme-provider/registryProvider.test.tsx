@@ -12,6 +12,7 @@ import { buildPrerenderScript } from "@theme/axes/prerender"
 import { compileThemeCss } from "@theme/config/compile"
 import { resolveRegistry } from "@theme/config/registry"
 import { LEGACY_MARKER_KEY, LEGACY_REVISION } from "@theme/axes/legacy"
+import { PRESET_NAMES } from "@theme/styles/builtin/presets"
 import { themeConfig, type ThemeConfig } from "@theme/themeConfig"
 import { SHELL_STYLE_STORAGE_KEY, useLayoutStore } from "@layout/layoutStore"
 import type { ThemePersistenceAdapter, ThemeSettings } from "@theme/types"
@@ -1035,7 +1036,7 @@ describe("ThemeProvider theme definitions", () => {
     expect(result.current.preset).toBe("base")
     expect(localStorage.getItem("theme-preset")).toBeNull()
     expect(warn).toHaveBeenCalledWith(
-      '[ThemeProvider] "noon" is not a valid preset (expected one of: base, night).',
+      `[ThemeProvider] "noon" is not a valid preset (expected one of: ${["base", ...PRESET_NAMES, "night"].join(", ")}).`,
     )
   })
 
@@ -1093,7 +1094,11 @@ describe("ThemeProvider theme definitions", () => {
       "ink",
       "glass",
     ])
-    expect(result.current.registry.values("preset")).toEqual(["base", "night"])
+    expect(result.current.registry.values("preset")).toEqual([
+      "base",
+      ...PRESET_NAMES,
+      "night",
+    ])
   })
 })
 

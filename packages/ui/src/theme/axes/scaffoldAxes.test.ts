@@ -1,5 +1,6 @@
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 import { readFileSync } from "node:fs"
+import { resolveDefaults, type ThemeConfig } from "@theme/themeConfig"
 import { scaffoldAxes } from "./scaffoldAxes"
 import { AXES, AXIS_KEYS } from "./registry"
 import { defaultLabels } from "../../labels/defaults"
@@ -101,6 +102,27 @@ describe("scripts/init.mjs", () => {
         .sort()
     expect(written("defaults")).toEqual([...AXIS_KEYS].sort())
     expect(written("switcher\\.axes")).toEqual([...AXIS_KEYS].sort())
+  })
+
+  // The script cannot read the registry, so the config it writes by default
+  // is resolved here: `preset` and `switcher.axes.preset` are live keys, and
+  // `base` belongs to every style.
+  it("writes a config the kit takes whole, without a warning", () => {
+    const body = script.match(/^\s{4}defaults: \{([^}]*)\}/m)?.[1] ?? ""
+    const defaults = Object.fromEntries(
+      [...body.matchAll(/^\s*(\w+): "([^"]*)"/gm)].map((m) => [m[1], m[2]]),
+    )
+    const axes = Object.fromEntries(
+      keysOf(/^\s{6}axes: \{([^}]*)\}/m).map((key) => [key, true]),
+    )
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
+    try {
+      const config = { defaults, switcher: { enabled: true, axes } }
+      expect(resolveDefaults(config as ThemeConfig)).toEqual(defaults)
+      expect(warn.mock.calls).toEqual([])
+    } finally {
+      warn.mockRestore()
+    }
   })
 })
 

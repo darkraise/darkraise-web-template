@@ -1,4 +1,7 @@
-import { generateTokens } from "@theme/engine/generateTokens"
+import { effectiveSettings } from "@theme/axes/resolve"
+import { AXES, AXIS_KEYS, type AxisValues } from "@theme/axes/registry"
+import { resolveRegistry } from "@theme/config/registry"
+import { generateTokens, type ChromeTone } from "@theme/engine/generateTokens"
 import {
   ACCENT_COLORS,
   BACKGROUND_INTENSITIES,
@@ -7,9 +10,11 @@ import {
   SURFACE_COLORS,
   type AccentColor,
   type BackgroundIntensity,
+  type BackgroundStyle,
   type Contrast,
   type DarkAccentChroma,
   type ResolvedMode,
+  type SignalColor,
   type SurfaceColor,
 } from "@theme/types"
 
@@ -28,6 +33,14 @@ export interface ThemeCombo {
   frosted: boolean
   /** Off unless set; the reachable matrix leaves it off. */
   tintWithAccent?: boolean
+  /** The built-in preset a combination paints; the reachable matrix has none. */
+  preset?: string
+  /** Solid unless set. */
+  backgroundStyle?: BackgroundStyle
+  hairlines?: "opaque" | "alpha"
+  signalColor?: SignalColor
+  railTone?: ChromeTone
+  barTone?: ChromeTone
 }
 
 /**
@@ -70,6 +83,51 @@ export function reachableCombos(): ThemeCombo[] {
   )
 }
 
+/**
+ * Every built-in preset in both modes, as ThemeProvider paints it for a user
+ * who chose the preset and nothing else: the preset's axes over its style's
+ * defaults over the registry's, the style's frosting and hairlines, and the
+ * chrome tones the preset's signatures resolve to. A preset reaches inputs
+ * the reachable matrix holds still: the tint, the signal colour, the canvas
+ * and the tones.
+ */
+export function presetCombos(): ThemeCombo[] {
+  const registry = resolveRegistry()
+  const defaults = Object.fromEntries(
+    AXIS_KEYS.map((key) => [key, AXES[key].default]),
+  ) as AxisValues
+  return Object.values(registry.presets)
+    .filter((preset) => preset.builtIn)
+    .flatMap((preset) => {
+      const style = registry.styles[preset.style]
+      const axes = effectiveSettings(
+        { style: preset.style, preset: preset.name },
+        defaults,
+        registry,
+      )
+      const { railTone, barTone } = registry.signaturesFor(
+        preset.style,
+        preset.name,
+      )
+      return (["light", "dark"] as const).map((mode) => ({
+        preset: preset.name,
+        mode,
+        accentColor: axes.accentColor,
+        surfaceColor: axes.surfaceColor,
+        tintWithAccent: axes.tintWithAccent === "on",
+        signalColor: axes.signalColor,
+        contrast: axes.contrast,
+        darkAccentChroma: axes.darkAccentChroma,
+        backgroundStyle: axes.backgroundStyle,
+        backgroundIntensity: axes.backgroundIntensity,
+        frosted: style?.frosted ?? false,
+        hairlines: style?.hairlines ?? "opaque",
+        railTone,
+        barTone,
+      }))
+    })
+}
+
 const tokenCache = new Map<string, Record<string, string>>()
 
 /**
@@ -84,12 +142,16 @@ export function finalTokens(combo: ThemeCombo): Record<string, string> {
     accentColor: combo.accentColor,
     surfaceColor: combo.surfaceColor,
     frosted: combo.frosted,
-    backgroundStyle: "solid",
+    backgroundStyle: combo.backgroundStyle ?? "solid",
     mode: combo.mode,
     contrast: combo.contrast,
     darkAccentChroma: combo.darkAccentChroma,
     tintWithAccent: combo.tintWithAccent ?? false,
     backgroundIntensity: combo.backgroundIntensity,
+    hairlines: combo.hairlines,
+    signalColor: combo.signalColor,
+    railTone: combo.railTone,
+    barTone: combo.barTone,
   })
   tokenCache.set(key, tokens)
   return tokens
@@ -109,5 +171,20 @@ export function isOpaque(value: string | undefined): value is string {
 export function comboName(combo: ThemeCombo): string {
   const tint = combo.tintWithAccent ? "/tint" : ""
   const chrome = combo.frosted ? "frosted" : "plain"
-  return `${chrome}/${combo.mode}/${combo.contrast}/${combo.darkAccentChroma}/${combo.backgroundIntensity}/${combo.accentColor}/${combo.surfaceColor}${tint}`
+  const name = `${chrome}/${combo.mode}/${combo.contrast}/${combo.darkAccentChroma}/${combo.backgroundIntensity}/${combo.accentColor}/${combo.surfaceColor}${tint}`
+  // The token cache is keyed by this name, so it spells out every input the
+  // reachable matrix holds still.
+  const beyond = [
+    combo.backgroundStyle === "gradient" ? "gradient" : "",
+    combo.hairlines === "alpha" ? "alpha hairlines" : "",
+    (combo.signalColor ?? "none") === "none"
+      ? ""
+      : `signal ${combo.signalColor}`,
+    (combo.railTone ?? "page") === "page" ? "" : `rail ${combo.railTone}`,
+    (combo.barTone ?? "page") === "page" ? "" : `bar ${combo.barTone}`,
+  ]
+    .filter(Boolean)
+    .map((part) => `/${part}`)
+    .join("")
+  return `${combo.preset ? `${combo.preset}: ` : ""}${name}${beyond}`
 }
