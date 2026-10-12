@@ -42,6 +42,15 @@
     background: var(--nav-selection-fill, var(--selected-nav-bg));
   }
 
+  /* Neither fill is solved for a toned bar: a style sets the first for the
+     rail, and the second is the rail's active tier, so either can be a
+     light fill under the bar's light ink. The bar's own tint replaces both. */
+  :root:is([data-bar-tone="inverse"], [data-bar-tone="accent"])
+    .dr-top-nav-layout-nav[data-sidebar-selection="rule"]
+    .dr-top-nav-layout-nav-item:is(.active, [data-active="true"]) {
+    background: var(--sidebar-tint);
+  }
+
   .dr-top-nav-layout-nav-chevron {
     @apply size-[var(--icon-size-sm)] opacity-60;
   }
