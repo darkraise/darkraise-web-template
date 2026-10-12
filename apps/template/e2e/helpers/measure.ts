@@ -248,11 +248,18 @@ export function alphaOf(value: string): number {
  * and the lowest contrast over it is returned. Colours are read back through
  * a canvas, so every computed syntax (`rgb()`, `color(srgb …)` from
  * `color-mix()`, `oklab()`) resolves to sRGB.
+ *
+ * The walk cannot see a fill a pseudo-element paints, which is how the layout
+ * header paints its bar. `ground: "painted"` skips the walk and always reads
+ * the ground from the screenshot.
  */
 let hiddenTextCalls = 0
 
-export async function textContrast(locator: Locator): Promise<number> {
-  const result = await locator.evaluate((el) => {
+export async function textContrast(
+  locator: Locator,
+  options: { ground?: "painted" } = {},
+): Promise<number> {
+  const result = await locator.evaluate((el, painted) => {
     const canvas = document.createElement("canvas")
     canvas.width = 1
     canvas.height = 1
@@ -292,6 +299,7 @@ export async function textContrast(locator: Locator): Promise<number> {
       tb,
       ta * (opacity.get(el) ?? 1),
     ]
+    if (painted) return { kind: "pixels" as const, text }
     const layers: [number, number, number, number][] = []
     let ground: [number, number, number] = [255, 255, 255]
     for (const node of chain) {
@@ -324,7 +332,7 @@ export async function textContrast(locator: Locator): Promise<number> {
       color: over(text, ground) as Rgb,
       background: ground as Rgb,
     }
-  })
+  }, options.ground === "painted")
   if (result.kind === "computed") {
     return contrast(result.color, result.background)
   }
