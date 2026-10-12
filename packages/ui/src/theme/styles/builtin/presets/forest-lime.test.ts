@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
-import { SHADOW_TOKENS, blurs } from "@test/preset-tokens"
+import { SHADOW_TOKENS, blurs, resolvedTokens } from "@test/preset-tokens"
 import { resolveRegistry } from "../../../config/registry"
+import { flat } from "../flat"
 import { forestLime } from "./forest-lime"
 
 describe("Forest & Lime", () => {
@@ -53,8 +54,8 @@ describe("Forest & Lime", () => {
 
   it("draws no blurred shadow in either mode, under the frame included", () => {
     expect(forestLime.tokens?.shared?.shellShadow).toBe("0 0 transparent")
-    for (const mode of ["shared", "light", "dark"] as const) {
-      const tokens = forestLime.tokens?.[mode] ?? {}
+    for (const mode of ["light", "dark"] as const) {
+      const tokens = resolvedTokens(flat.tokens, forestLime.tokens, mode)
       for (const token of SHADOW_TOKENS) {
         const value = tokens[token]
         if (value === undefined || value === "none") continue

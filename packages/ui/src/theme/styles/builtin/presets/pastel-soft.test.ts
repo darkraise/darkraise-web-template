@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
-import { SHADOW_TOKENS, blurs } from "@test/preset-tokens"
+import { SHADOW_TOKENS, blurs, resolvedTokens } from "@test/preset-tokens"
 import { resolveRegistry } from "../../../config/registry"
+import { flat } from "../flat"
 import { pastelSoft } from "./pastel-soft"
 
 describe("Pastel Soft-Flat", () => {
@@ -46,8 +47,8 @@ describe("Pastel Soft-Flat", () => {
   })
 
   it("draws no blurred shadow in either mode", () => {
-    for (const mode of ["shared", "light", "dark"] as const) {
-      const tokens = pastelSoft.tokens?.[mode] ?? {}
+    for (const mode of ["light", "dark"] as const) {
+      const tokens = resolvedTokens(flat.tokens, pastelSoft.tokens, mode)
       for (const token of SHADOW_TOKENS) {
         const value = tokens[token]
         if (value === undefined || value === "none") continue
