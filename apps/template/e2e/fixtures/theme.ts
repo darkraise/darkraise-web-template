@@ -83,7 +83,7 @@ export const FONT_SIZES = ["small", "medium", "large", "extra-large"] as const
 export const CONTRASTS = ["low", "standard", "high"] as const
 export const DARK_ACCENT_CHROMAS = ["calm", "standard", "vivid"] as const
 export const TINT_WITH_ACCENT = ["off", "on"] as const
-export const FONTS = ["inter", "geist", "ibm-plex-sans"] as const
+export const FONTS = ["inter", "geist", "ibm-plex-sans", "newsreader"] as const
 export type Font = (typeof FONTS)[number]
 
 /** localStorage keys the ThemeProvider reads on boot. */

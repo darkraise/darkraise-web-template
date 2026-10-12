@@ -1273,6 +1273,13 @@
     sans-serif;
 }
 
+/* The one serif: --font-family-sans names the body face, whatever its class. */
+[data-font="newsreader"] {
+  --font-family-sans:
+    "Newsreader Variable", ui-serif, Georgia, Cambria, "Times New Roman", Times,
+    serif;
+}
+
 /* Heading-font axis. `body` declares no block: --font-family-heading keeps
    reading the sans face the font axis picked. */
 [data-heading-font="inter"] {
@@ -1289,6 +1296,12 @@
   --font-family-heading:
     "IBM Plex Sans Variable", ui-sans-serif, system-ui, -apple-system,
     sans-serif;
+}
+
+[data-heading-font="newsreader"] {
+  --font-family-heading:
+    "Newsreader Variable", ui-serif, Georgia, Cambria, "Times New Roman", Times,
+    serif;
 }
 
 /* Font-size axis. `medium` is Tailwind's default scale and deliberately

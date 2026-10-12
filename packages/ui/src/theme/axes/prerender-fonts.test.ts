@@ -10,9 +10,9 @@ const config: ThemeConfig = {
   defaults: {},
   switcher: { enabled: true },
   fonts: {
-    newsreader: {
-      label: "Newsreader",
-      family: "'Newsreader', serif",
+    fraunces: {
+      label: "Fraunces",
+      family: "'Fraunces', serif",
       role: "serif",
     },
   },
@@ -36,21 +36,29 @@ describe("pre-render script fonts", () => {
   })
 
   it("restores a stored config font for the body and the headings", () => {
-    localStorage.setItem("theme-font", "newsreader")
-    localStorage.setItem("theme-heading-font", "newsreader")
+    localStorage.setItem("theme-font", "fraunces")
+    localStorage.setItem("theme-heading-font", "fraunces")
     run()
-    expect(root.getAttribute("data-font")).toBe("newsreader")
-    expect(root.getAttribute("data-heading-font")).toBe("newsreader")
+    expect(root.getAttribute("data-font")).toBe("fraunces")
+    expect(root.getAttribute("data-heading-font")).toBe("fraunces")
   })
 
   it("drops a stored font the config does not register", () => {
-    localStorage.setItem("theme-heading-font", "newsreader")
+    localStorage.setItem("theme-heading-font", "fraunces")
     run({ ...config, fonts: {} })
     expect(root.getAttribute("data-heading-font")).toBe("body")
   })
 
-  it("takes a config font as the default heading font", () => {
-    run({ ...config, defaults: { headingFont: "newsreader" } })
+  it("restores the kit's serif face with no config font", () => {
+    localStorage.setItem("theme-font", "newsreader")
+    localStorage.setItem("theme-heading-font", "newsreader")
+    run({ ...config, fonts: {} })
+    expect(root.getAttribute("data-font")).toBe("newsreader")
     expect(root.getAttribute("data-heading-font")).toBe("newsreader")
+  })
+
+  it("takes a config font as the default heading font", () => {
+    run({ ...config, defaults: { headingFont: "fraunces" } })
+    expect(root.getAttribute("data-heading-font")).toBe("fraunces")
   })
 })

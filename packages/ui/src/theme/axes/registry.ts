@@ -144,7 +144,7 @@ export const AXES = {
     control: "ordinal",
     visibleWhen: (_settings, styleLineage) => styleLineage.includes("glass"),
   }),
-  /** Sans and heading typeface; monospace text stays JetBrains Mono. */
+  /** Body and heading typeface; monospace text stays JetBrains Mono. */
   font: axis({
     // Typed as plain strings: a theme config can register its own fonts.
     values: FONTS as readonly string[],
@@ -154,7 +154,7 @@ export const AXES = {
     layer: "brand",
     control: "choice",
   }),
-  /** Typeface of headings and titles; `body` keeps the sans face. */
+  /** Typeface of headings and titles; `body` keeps the body face. */
   headingFont: axis({
     // Typed as plain strings: a theme config can register its own fonts.
     values: ["body", ...FONTS] as readonly string[],

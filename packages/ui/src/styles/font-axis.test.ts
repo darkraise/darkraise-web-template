@@ -7,11 +7,13 @@ import { stripCssComments } from "../test/strip-css-comments"
 
 const css = stripCssComments(readFileSync("src/styles/theme.css", "utf8"))
 
-const FALLBACKS = "ui-sans-serif, system-ui, -apple-system, sans-serif"
-const FAMILIES: Record<Font, string> = {
-  inter: "Inter Variable",
-  geist: "Geist Variable",
-  "ibm-plex-sans": "IBM Plex Sans Variable",
+const SANS = "ui-sans-serif, system-ui, -apple-system, sans-serif"
+const SERIF = 'ui-serif, Georgia, Cambria, "Times New Roman", Times, serif'
+const STACKS: Record<Font, string> = {
+  inter: `"Inter Variable", ${SANS}`,
+  geist: `"Geist Variable", ${SANS}`,
+  "ibm-plex-sans": `"IBM Plex Sans Variable", ${SANS}`,
+  newsreader: `"Newsreader Variable", ${SERIF}`,
 }
 
 /** Body of the first `<selector> {` block at or after `from`, braces balanced. */
@@ -38,7 +40,7 @@ describe("font axis tokens", () => {
   it("paints Inter on :root before any font is chosen", () => {
     const root = body(":root", css.indexOf("@layer base {"))
     expect(declaration(root, "--font-family-sans")).toBe(
-      `"${FAMILIES[AXES.font.default as Font]}", ${FALLBACKS}`,
+      STACKS[AXES.font.default as Font],
     )
   })
 
@@ -54,7 +56,7 @@ describe("font axis tokens", () => {
     (font) => {
       expect(
         declaration(body(`[data-font="${font}"]`), "--font-family-sans"),
-      ).toBe(`"${FAMILIES[font as Font]}", ${FALLBACKS}`)
+      ).toBe(STACKS[font as Font])
     },
   )
 
@@ -66,7 +68,7 @@ describe("font axis tokens", () => {
           body(`[data-heading-font="${font}"]`),
           "--font-family-heading",
         ),
-      ).toBe(`"${FAMILIES[font]}", ${FALLBACKS}`)
+      ).toBe(STACKS[font])
     },
   )
 
@@ -76,9 +78,7 @@ describe("font axis tokens", () => {
 
   it("names each face as the font registry does", () => {
     for (const font of FONTS) {
-      expect(BUILTIN_FONTS[font].family).toBe(
-        `"${FAMILIES[font]}", ${FALLBACKS}`,
-      )
+      expect(BUILTIN_FONTS[font].family).toBe(STACKS[font])
     }
   })
 

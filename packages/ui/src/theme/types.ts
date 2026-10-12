@@ -96,7 +96,7 @@ export type TintWithAccent = (typeof TINT_WITH_ACCENT)[number]
 export const FONT_SIZES = ["small", "medium", "large", "extra-large"] as const
 export type FontSize = (typeof FONT_SIZES)[number]
 
-export const FONTS = ["inter", "geist", "ibm-plex-sans"] as const
+export const FONTS = ["inter", "geist", "ibm-plex-sans", "newsreader"] as const
 export type Font = (typeof FONTS)[number]
 
 /**

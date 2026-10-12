@@ -262,7 +262,7 @@ describe("axis registry", () => {
 
   it("registers the font axis", () => {
     expect(AXES.font).toMatchObject({
-      values: ["inter", "geist", "ibm-plex-sans"],
+      values: ["inter", "geist", "ibm-plex-sans", "newsreader"],
       default: "inter",
       storageKey: "theme-font",
       attribute: "data-font",

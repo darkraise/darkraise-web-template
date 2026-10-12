@@ -475,8 +475,13 @@ paint:
 - Body text paints in Inter Variable by default. Choosing Geist in the theme
   switcher repaints it in Geist Variable, `document.fonts` reports the face
   loaded, and its woff2 file comes from the app's own origin with a 200.
-- A stored Geist or IBM Plex Sans font renders at boot, its woff2 file served
-  from the app's own origin with a 200.
+- A stored Geist, IBM Plex Sans or Newsreader font renders at boot, its woff2
+  file served from the app's own origin with a 200.
+- A stored Geist or Newsreader heading font sets the headings in that face,
+  loaded, and leaves the body in Inter.
+- The switcher offers Inter, Geist, IBM Plex Sans and Newsreader for the body,
+  and `body` plus the four for the headings; choosing Newsreader for the
+  headings repaints them without a reload.
 - No request during the session leaves the app's origin.
 
 ### 21 · Mobile layout (`21-mobile-layout.spec.ts`)

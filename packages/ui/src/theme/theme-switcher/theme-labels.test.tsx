@@ -109,6 +109,7 @@ describe("ThemeSwitcher labels", () => {
       ["inter", "Inter"],
       ["geist", "Geist"],
       ["ibm-plex-sans", "IBM Plex Sans"],
+      ["newsreader", "Newsreader"],
     ] as const) {
       expect(themeMessages[value]).toBe(label)
       expect(viTheme[value]).toBe(label)

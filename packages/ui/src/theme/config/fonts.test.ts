@@ -2,27 +2,28 @@ import { describe, expect, it } from "vitest"
 import { FONTS } from "../types"
 import { compileThemeCss, LAYER_STATEMENT } from "./compile"
 import { defineFont } from "./define"
+import { BUILTIN_FONTS } from "./fonts"
 import { canonicalJson, definitionsHash, fnv1a36 } from "./hash"
 import { resolveRegistry } from "./registry"
 import type { FontDefinition, ThemeDefinitions } from "./schema"
 
-const newsreader = defineFont({
-  label: "Newsreader",
-  family: "'Newsreader', serif",
+const fraunces = defineFont({
+  label: "Fraunces",
+  family: "'Fraunces', serif",
   role: "serif",
 })
 
 const DEFINITIONS: ThemeDefinitions = {
-  fonts: { newsreader },
+  fonts: { fraunces },
   styles: {
     paper: {
       label: "Paper",
       extends: "quiet",
-      defaults: { headingFont: "newsreader" },
+      defaults: { headingFont: "fraunces" },
     },
   },
   presets: {
-    ink: { label: "Ink", style: "paper", axes: { font: "newsreader" } },
+    ink: { label: "Ink", style: "paper", axes: { font: "fraunces" } },
   },
 }
 
@@ -34,15 +35,60 @@ function messages(definitions: ThemeDefinitions) {
   ])
 }
 
+describe("built-in fonts", () => {
+  it("ships three sans faces and one serif, in FONTS order", () => {
+    expect(Object.keys(BUILTIN_FONTS)).toEqual([...FONTS])
+    expect(
+      Object.entries(BUILTIN_FONTS).map(([name, font]) => [name, font.role]),
+    ).toEqual([
+      ["inter", "sans"],
+      ["geist", "sans"],
+      ["ibm-plex-sans", "sans"],
+      ["newsreader", "serif"],
+    ])
+  })
+
+  it("names Newsreader with a serif fallback", () => {
+    expect(BUILTIN_FONTS.newsreader).toEqual({
+      label: "Newsreader",
+      family:
+        '"Newsreader Variable", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
+      role: "serif",
+    })
+  })
+
+  it("lets a style and a preset set Newsreader with no config font", () => {
+    const registry = resolveRegistry({
+      styles: {
+        paper: {
+          label: "Paper",
+          extends: "quiet",
+          defaults: { headingFont: "newsreader" },
+        },
+      },
+      presets: {
+        ink: { label: "Ink", style: "paper", axes: { font: "newsreader" } },
+      },
+    })
+    expect(registry.issues).toEqual([])
+    expect(registry.fonts.newsreader).toMatchObject({
+      builtIn: true,
+      role: "serif",
+    })
+    expect(registry.isValue("font", "newsreader")).toBe(true)
+    expect(registry.isValue("headingFont", "newsreader")).toBe(true)
+  })
+})
+
 describe("font registry", () => {
   it("lists the built-in fonts first, then the config's", () => {
     const registry = resolveRegistry(DEFINITIONS)
-    expect(Object.keys(registry.fonts)).toEqual([...FONTS, "newsreader"])
-    expect(registry.fonts.newsreader).toEqual({
-      name: "newsreader",
-      label: "Newsreader",
+    expect(Object.keys(registry.fonts)).toEqual([...FONTS, "fraunces"])
+    expect(registry.fonts.fraunces).toEqual({
+      name: "fraunces",
+      label: "Fraunces",
       builtIn: false,
-      family: "'Newsreader', serif",
+      family: "'Fraunces', serif",
       role: "serif",
     })
     expect(registry.fonts.inter?.builtIn).toBe(true)
@@ -50,11 +96,11 @@ describe("font registry", () => {
 
   it("serves the font names as font values and body plus them as heading values", () => {
     const registry = resolveRegistry(DEFINITIONS)
-    expect(registry.values("font")).toEqual([...FONTS, "newsreader"])
+    expect(registry.values("font")).toEqual([...FONTS, "fraunces"])
     expect(registry.values("headingFont")).toEqual([
       "body",
       ...FONTS,
-      "newsreader",
+      "fraunces",
     ])
     expect(resolveRegistry().values("headingFont")).toEqual(["body", ...FONTS])
     expect(registry.isValue("headingFont", "body")).toBe(true)
@@ -65,58 +111,64 @@ describe("font registry", () => {
     const registry = resolveRegistry(DEFINITIONS)
     expect(registry.issues).toEqual([])
     expect(registry.styles.paper?.defaults).toEqual({
-      headingFont: "newsreader",
+      headingFont: "fraunces",
     })
-    expect(registry.presets.ink?.axes).toEqual({ font: "newsreader" })
+    expect(registry.presets.ink?.axes).toEqual({ font: "fraunces" })
   })
 
   it("rejects a font the registry does not know", () => {
     expect(
       messages({
         presets: {
-          ink: { label: "Ink", style: "quiet", axes: { font: "newsreader" } },
+          ink: { label: "Ink", style: "quiet", axes: { font: "fraunces" } },
         },
       }),
     ).toContainEqual([
       "error",
       "presets.ink.axes.font",
-      '"newsreader" is not a valid font',
+      '"fraunces" is not a valid font',
     ])
   })
 
   it.each<[string, ThemeDefinitions, string, string]>([
     [
       "a font named after a built-in font",
-      { fonts: { inter: newsreader } },
+      { fonts: { inter: fraunces } },
       "fonts.inter",
       '"inter" is a built-in font name',
     ],
     [
+      "a font named after the built-in serif",
+      { fonts: { newsreader: fraunces } },
+      "fonts.newsreader",
+      '"newsreader" is a built-in font name',
+    ],
+    [
       "a reserved font name",
-      { fonts: { body: newsreader } },
+      { fonts: { body: fraunces } },
       "fonts.body",
       '"body" is a reserved name',
     ],
     [
       "a font name that is not kebab-case",
-      { fonts: { Newsreader: newsreader } },
-      "fonts.Newsreader",
-      '"Newsreader" is not a kebab-case name',
+      { fonts: { Fraunces: fraunces } },
+      "fonts.Fraunces",
+      '"Fraunces" is not a kebab-case name',
     ],
     [
       "an unknown font role",
       {
         fonts: {
-          newsreader: { ...newsreader, role: "mono" as FontDefinition["role"] },
+          fraunces: { ...fraunces, role: "mono" as FontDefinition["role"] },
         },
       },
-      "fonts.newsreader.role",
+      "fonts.fraunces.role",
       '"mono" is not a font role (expected sans, serif or display)',
     ],
     [
       "a family that would leave its rule",
-      { fonts: { newsreader: { ...newsreader, family: "serif; color: red" } } },
-      "fonts.newsreader.family",
+      { fonts: { fraunces: { ...fraunces, family: "serif; color: red" } } },
+      "fonts.fraunces.family",
       'a value cannot contain ";" outside brackets or quotes',
     ],
   ])("reports %s", (_, definitions, path, message) => {
@@ -128,7 +180,7 @@ describe("font registry", () => {
 describe("font hash", () => {
   it("covers fonts and keeps the hash of a config without them", () => {
     const styles = DEFINITIONS.styles
-    expect(definitionsHash({ fonts: { newsreader } })).not.toBe("")
+    expect(definitionsHash({ fonts: { fraunces } })).not.toBe("")
     expect(definitionsHash(DEFINITIONS)).not.toBe(
       definitionsHash({ ...DEFINITIONS, fonts: {} }),
     )
@@ -140,22 +192,30 @@ describe("font hash", () => {
 
 describe("font stylesheet", () => {
   it("emits the config's fonts in the consumer sheet only", () => {
-    const registry = resolveRegistry({ fonts: { newsreader } })
+    const registry = resolveRegistry({ fonts: { fraunces } })
     expect(compileThemeCss(registry, { include: "consumer" })).toBe(
       `${LAYER_STATEMENT}
 
 @layer style.base {
-  [data-font="newsreader"] {
-    --font-family-sans: 'Newsreader', serif;
+  [data-font="fraunces"] {
+    --font-family-sans: 'Fraunces', serif;
   }
-  [data-heading-font="newsreader"] {
-    --font-family-heading: 'Newsreader', serif;
+  [data-heading-font="fraunces"] {
+    --font-family-heading: 'Fraunces', serif;
   }
 }
 `,
     )
     expect(compileThemeCss(registry, { include: "builtin" })).not.toContain(
-      "newsreader",
+      "fraunces",
     )
+  })
+
+  // theme.css declares the built-in faces' rules; a compiled sheet repeats none.
+  it("emits no rule for a built-in face", () => {
+    const registry = resolveRegistry({ fonts: { fraunces } })
+    for (const include of ["consumer", "builtin"] as const) {
+      expect(compileThemeCss(registry, { include })).not.toContain("newsreader")
+    }
   })
 })
