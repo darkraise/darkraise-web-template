@@ -28,7 +28,7 @@
   }
 
   .dr-carousel-previous {
-    @apply absolute aspect-square w-[var(--control-height)] rounded-full;
+    @apply absolute aspect-square w-[var(--control-height)] rounded-[var(--radius-pill)];
   }
 
   .dr-carousel-previous[data-orientation="horizontal"] {
@@ -40,7 +40,7 @@
   }
 
   .dr-carousel-next {
-    @apply absolute aspect-square w-[var(--control-height)] rounded-full;
+    @apply absolute aspect-square w-[var(--control-height)] rounded-[var(--radius-pill)];
   }
 
   .dr-carousel-next[data-orientation="horizontal"] {
@@ -64,7 +64,7 @@
   }
 
   .dr-carousel-indicator {
-    @apply focus-ring bg-muted hit-area-24 inline-block h-2 w-2 cursor-pointer rounded-full border-0 p-0 transition-[background-color,width,height];
+    @apply focus-ring bg-muted hit-area-24 inline-block h-2 w-2 cursor-pointer rounded-[var(--radius-pill)] border-0 p-0 transition-[background-color,width,height];
     transition-duration: var(--duration-normal);
   }
   @media (hover: hover) {

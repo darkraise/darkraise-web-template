@@ -87,7 +87,7 @@
   }
 
   .dr-sidebar-nav-badge {
-    @apply bg-primary/20 text-primary-text ms-auto rounded-full px-2 py-0.5 text-xs;
+    @apply bg-primary/20 text-primary-text ms-auto rounded-[var(--radius-pill)] px-2 py-0.5 text-xs;
   }
 
   .dr-sidebar-nav-popover-trigger {

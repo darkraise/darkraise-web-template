@@ -24,7 +24,7 @@
 
   /* Neutral, like the global scrollbar in theme.css. */
   .dr-scroll-thumb {
-    @apply relative flex-1 rounded-full;
+    @apply relative flex-1 rounded-[var(--radius-pill)];
     background-color: hsl(var(--foreground) / 0.25);
   }
 

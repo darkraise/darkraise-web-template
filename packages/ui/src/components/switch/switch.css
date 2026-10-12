@@ -1,8 +1,9 @@
 /* Kit defaults of the switch paint tokens a style or preset may set. */
 @layer base {
   :root {
-    /* A pill under every radius step, as Tailwind's rounded-full. */
-    --switch-radius: calc(infinity * 1px);
+    /* A pill under every radius step but sharp, where it squares with the
+       controls around it. */
+    --switch-radius: var(--radius-pill);
     /* Unset: a thumb falls back to its own fill (the page tone on a switch,
        --field-edge on an unchecked one, the accent's foreground on a slider),
        which no single root value can reproduce. */

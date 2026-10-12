@@ -59,7 +59,7 @@
   }
 
   .dr-drawer-handle {
-    @apply bg-muted relative mx-auto mt-4 h-2 w-[100px] cursor-grab touch-none rounded-full active:cursor-grabbing;
+    @apply bg-muted relative mx-auto mt-4 h-2 w-[100px] cursor-grab touch-none rounded-[var(--radius-pill)] active:cursor-grabbing;
   }
 
   /* Expand the touch/click target around the thin visual stripe so fingers

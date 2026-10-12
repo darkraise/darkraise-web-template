@@ -28,26 +28,33 @@ const FULL_ROUND = new Map<string, string>([
   ["dr-badge-anchor-dot", "status dot"],
   ["dr-banner", "the lamp mark is a dot"],
   ["dr-box", 'the consumer asked for rounded="full"'],
-  ["dr-carousel-previous", "round arrow floating over the slide"],
-  ["dr-carousel-next", "round arrow floating over the slide"],
-  ["dr-carousel-indicator", "carousel dot"],
-  ["dr-drawer-handle", "the grab handle is a capsule"],
-  ["dr-empty-state-icon", "circular icon medallion"],
   ["dr-image-cropper-selection", "the circle crop shape"],
   ["dr-image-cropper-handle", "resize handles are dots"],
-  ["dr-notification-bell-badge", "count badge"],
-  ["dr-progress", "the track is a capsule"],
   ["dr-radio-group-item", "radios are circles"],
-  ["dr-scroll-thumb", "the scrollbar thumb is a capsule"],
-  ["dr-sidebar-nav-badge", "count badge"],
-  ["dr-slider-track", "the track is a capsule"],
-  ["dr-slider-thumb", "slider thumb"],
   ["dr-slider-step", "step dots"],
   ["dr-spinner-circle", "spinner ring"],
   ["dr-steps-indicator", "circular step number"],
   ["dr-timeline-indicator", "timeline dot"],
   ["dr-user-menu-trigger", "avatar trigger"],
 ])
+
+/**
+ * Capsules drawn so for looks, not meaning: they round with --radius-pill,
+ * which squares them under sharp alongside the controls around them.
+ */
+const PILL_UNLESS_SHARP: Array<[string, string]> = [
+  ["slider/slider.css", ".dr-slider-track"],
+  ["slider/slider.css", ".dr-slider-thumb"],
+  ["progress/progress.css", ".dr-progress"],
+  ["scroll-area/scroll-area.css", ".dr-scroll-thumb"],
+  ["sidebar/sidebar-nav.css", ".dr-sidebar-nav-badge"],
+  ["notification-bell/notification-bell.css", ".dr-notification-bell-badge"],
+  ["carousel/carousel.css", ".dr-carousel-previous"],
+  ["carousel/carousel.css", ".dr-carousel-next"],
+  ["carousel/carousel.css", ".dr-carousel-indicator"],
+  ["empty-state/empty-state.css", ".dr-empty-state-icon"],
+  ["drawer/drawer.css", ".dr-drawer-handle"],
+]
 
 /** Modals round with --dialog-radius, which defaults to --overlay-radius. */
 const MODALS: Array<[string, string]> = [
@@ -230,6 +237,29 @@ describe("radius steps", () => {
   it("rounds a pill from the control radius, square under sharp", () => {
     expect(THEME).toMatch(
       /:root \{[^}]*--radius-control: 0\.5rem;[^}]*--radius-pill: calc\(var\(--radius-control\) \* 9999\);/,
+    )
+  })
+})
+
+describe("pill unless sharp", () => {
+  it.each(PILL_UNLESS_SHARP)(
+    "%s rounds %s with --radius-pill",
+    (file, selector) => {
+      expect(readsRadius(bodyOf(file, selector), "--radius-pill")).toBe(true)
+    },
+  )
+
+  it("defaults the switch to --radius-pill", () => {
+    expect(
+      stripCssComments(
+        readFileSync("src/components/switch/switch.css", "utf8"),
+      ),
+    ).toContain("--switch-radius: var(--radius-pill);")
+  })
+
+  it("rounds the scrollbar thumb with --radius-pill", () => {
+    expect(THEME).toMatch(
+      /\*::-webkit-scrollbar-thumb \{[^}]*border-radius: var\(--radius-pill\);/,
     )
   })
 })
