@@ -2,6 +2,7 @@ import Ajv from "ajv"
 import { describe, expect, it } from "vitest"
 import { AXES, AXIS_KEYS } from "../axes/registry"
 import { BUILTIN_STYLES } from "../styles/builtin"
+import { BUILTIN_PRESETS } from "../styles/builtin/presets"
 import { buildThemeJsonSchema } from "./jsonSchema"
 import { PAINT_TOKENS } from "./tokens"
 
@@ -99,6 +100,19 @@ describe("theme config JSON Schema", () => {
     )
     expect(
       validate({ defaults: {}, switcher: { enabled: true }, styles }),
+      JSON.stringify(validate.errors),
+    ).toBe(true)
+  })
+
+  it("accepts each built-in preset as a config preset", () => {
+    const presets = Object.fromEntries(
+      Object.entries(BUILTIN_PRESETS).map(([name, definition]) => [
+        `my-${name}`,
+        definition,
+      ]),
+    )
+    expect(
+      validate({ defaults: {}, switcher: { enabled: true }, presets }),
       JSON.stringify(validate.errors),
     ).toBe(true)
   })

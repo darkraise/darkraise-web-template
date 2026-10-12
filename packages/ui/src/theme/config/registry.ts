@@ -1,6 +1,7 @@
 import { AXES, isAxisValue, type AxisKey } from "../axes/registry"
 import { generateTokens } from "../engine/generateTokens"
 import { BUILTIN_STYLES } from "../styles/builtin"
+import { BUILTIN_PRESETS } from "../styles/builtin/presets"
 import { SHELL_STYLES, type ShellStyle } from "../types"
 import { BUILTIN_FONTS } from "./fonts"
 import { definitionsHash } from "./hash"
@@ -69,6 +70,7 @@ export interface DefinitionIssue {
 export interface ThemeRegistry {
   /** Built-ins in the order given, then consumer styles in config order. */
   styles: Readonly<Record<string, ResolvedStyle>>
+  /** Built-in presets in the order given, then the config's. */
   presets: Readonly<Record<string, ResolvedPreset>>
   /** Built-in faces in `FONTS` order, then the config's. */
   fonts: Readonly<Record<string, ResolvedFont>>
@@ -424,10 +426,12 @@ function checkSignatures(c: Checker, path: string, signatures: unknown): void {
 function nameError(
   name: string,
   builtins: Readonly<Record<string, unknown>>,
+  builtinPresets: Readonly<Record<string, unknown>>,
 ): string | null {
   if (!KEBAB.test(name)) return `"${name}" is not a kebab-case name`
   if (RESERVED_NAMES.has(name)) return `"${name}" is a reserved name`
   if (has(builtins, name)) return `"${name}" is a built-in style name`
+  if (has(builtinPresets, name)) return `"${name}" is a built-in preset name`
   return null
 }
 
@@ -460,18 +464,27 @@ const EMPTY_MODES = { shared: {}, light: {}, dark: {} } as const
 const FONT_ROLES: readonly string[] = ["sans", "serif", "display"]
 
 /** `body` is the heading font value for "the sans face". */
-function fontNameError(name: string): string | null {
+function fontNameError(
+  name: string,
+  builtinPresets: Readonly<Record<string, unknown>>,
+): string | null {
   if (!KEBAB.test(name)) return `"${name}" is not a kebab-case name`
   if (RESERVED_NAMES.has(name) || name === "body") {
     return `"${name}" is a reserved name`
   }
   if (has(BUILTIN_FONTS, name)) return `"${name}" is a built-in font name`
+  if (has(builtinPresets, name)) return `"${name}" is a built-in preset name`
   return null
 }
 
+/**
+ * `builtinPresets` resolve like the config's presets, ahead of them, and
+ * their names are closed to the config's styles, presets and fonts.
+ */
 export function buildRegistry(
   builtins: Readonly<Record<string, StyleDefinition>>,
   definitions?: ThemeDefinitions,
+  builtinPresets: Readonly<Record<string, PresetDefinition>> = {},
 ): ThemeRegistry {
   const issues = new Issues()
   const consumerStyles = definitions?.styles ?? {}
@@ -483,7 +496,7 @@ export function buildRegistry(
   }
   for (const [name, font] of Object.entries(definitions?.fonts ?? {})) {
     const owner = `fonts.${name}`
-    const problem = fontNameError(name)
+    const problem = fontNameError(name, builtinPresets)
     if (problem) {
       issues.error(owner, owner, problem)
       continue
@@ -528,7 +541,7 @@ export function buildRegistry(
   const order = [...raw.keys()]
   for (const [name, definition] of Object.entries(consumerStyles)) {
     const owner = `styles.${name}`
-    const problem = nameError(name, builtins)
+    const problem = nameError(name, builtins, builtinPresets)
     if (problem) {
       issues.error(owner, owner, problem)
       continue
@@ -665,10 +678,14 @@ export function buildRegistry(
   }
 
   const presets: Record<string, ResolvedPreset> = {}
-  for (const [name, definition] of Object.entries(consumerPresets)) {
+  const addPreset = (
+    name: string,
+    definition: PresetDefinition,
+    builtIn: boolean,
+  ): void => {
     const owner = `presets.${name}`
     const c: Checker = { issues, owner, accepts }
-    const problem = nameError(name, builtins)
+    const problem = nameError(name, builtins, builtIn ? {} : builtinPresets)
     if (problem) issues.error(owner, owner, problem)
     const style = has(orderedStyles, definition.style)
       ? orderedStyles[definition.style]
@@ -680,6 +697,12 @@ export function buildRegistry(
         raw.has(definition.style)
           ? `"${definition.style}" has errors`
           : `"${definition.style}" is not a style`,
+      )
+    } else if (builtIn && !style.builtIn) {
+      issues.error(
+        owner,
+        `${owner}.style`,
+        `a built-in preset cannot belong to the consumer style "${style.name}"`,
       )
     }
     checkAxes(c, `${owner}.axes`, definition.axes)
@@ -709,8 +732,14 @@ export function buildRegistry(
         }
       }
     })
-    if (issues.has(owner) || !style) continue
-    presets[name] = resolvePreset(name, definition)
+    if (issues.has(owner) || !style) return
+    presets[name] = resolvePreset(name, definition, builtIn)
+  }
+  for (const [name, definition] of Object.entries(builtinPresets)) {
+    addPreset(name, definition, true)
+  }
+  for (const [name, definition] of Object.entries(consumerPresets)) {
+    addPreset(name, definition, false)
   }
 
   const styleNames = Object.keys(orderedStyles)
@@ -758,11 +787,12 @@ export function buildRegistry(
 function resolvePreset(
   name: string,
   definition: PresetDefinition,
+  builtIn: boolean,
 ): ResolvedPreset {
   const resolved: ResolvedPreset = {
     name,
     label: definition.label,
-    builtIn: false,
+    builtIn,
     style: definition.style,
     axes: { ...definition.axes },
     tokens: {
@@ -777,7 +807,7 @@ function resolvePreset(
   return resolved
 }
 
-/** The registry of the built-in styles plus `definitions`. */
+/** The registry of the built-in styles and presets plus `definitions`. */
 export function resolveRegistry(definitions?: ThemeDefinitions): ThemeRegistry {
-  return buildRegistry(BUILTIN_STYLES, definitions)
+  return buildRegistry(BUILTIN_STYLES, definitions, BUILTIN_PRESETS)
 }

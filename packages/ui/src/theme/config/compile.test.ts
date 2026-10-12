@@ -202,6 +202,58 @@ describe("compileThemeCss", () => {
     ).toBe(compileThemeCss(registry, { include: "consumer" }))
   })
 
+  it("emits a built-in preset in its own style's built-in sheet only", () => {
+    const registry = buildRegistry(BUILTINS, CONSUMER, {
+      dusk: {
+        label: "Dusk",
+        style: "frost",
+        tokens: {
+          shared: { buttonEdge: "1px" },
+          light: { buttonSheen: "white" },
+          dark: { buttonShadow: "none" },
+        },
+      },
+      dawn: {
+        label: "Dawn",
+        style: "plain",
+        tokens: { shared: { cardSheen: "none" } },
+      },
+    })
+    const dusk = `@layer style.preset {
+  [data-preset="dusk"] {
+    --btn-edge: 1px;
+  }
+  [data-preset="dusk"]:not([data-mode="dark"]) {
+    --btn-sheen: white;
+  }
+  [data-mode="dark"][data-preset="dusk"] {
+    --btn-shadow: none;
+  }
+}`
+    const dawn = `@layer style.preset {
+  [data-preset="dawn"] {
+    --card-sheen: none;
+  }
+}`
+    expect(
+      compileThemeCss(registry, { include: "builtin", styles: ["frost"] }),
+    ).toBe(`${LAYER_STATEMENT}\n\n${FROST_CSS}\n\n${dusk}\n`)
+    expect(
+      compileThemeCss(registry, { include: "builtin", styles: ["plain"] }),
+    ).toBe(`${LAYER_STATEMENT}\n\n${dawn}\n`)
+    expect(compileThemeCss(registry, { include: "builtin" })).toBe(
+      `${LAYER_STATEMENT}\n\n${FROST_CSS}\n\n${dusk}\n\n${dawn}\n`,
+    )
+    const consumer = compileThemeCss(registry, { include: "consumer" })
+    expect(consumer).toBe(
+      compileThemeCss(buildRegistry(BUILTINS, CONSUMER), {
+        include: "consumer",
+      }),
+    )
+    expect(consumer).not.toContain('[data-preset="dusk"]')
+    expect(consumer).not.toContain('[data-preset="dawn"]')
+  })
+
   it("prints only the layer statement when nothing is included", () => {
     expect(
       compileThemeCss(buildRegistry(BUILTINS), { include: "consumer" }),

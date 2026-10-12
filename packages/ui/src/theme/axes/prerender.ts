@@ -58,13 +58,13 @@ function configDefaults(
  * default; the preset, stored or else the config default, either only when it
  * belongs to that style, else `base`; every other axis from the stored value,
  * else the preset's value, else the style's default, else the config default;
- * then every signature, from the preset, else the style. The config's styles
- * and presets travel as a table of each style's defaults and signatures and
- * each preset's style, axis values and signatures. It applies the cached
- * token set when its id matches. ES5 and self-contained, because it runs
- * before any bundle loads. Storage can throw (sandboxed iframes, blocked site
- * data), so the mode is resolved and set before anything else touches it, and
- * blocked storage reads as empty.
+ * then every signature, from the preset, else the style. The built-in and
+ * the config's styles and presets travel as a table of each style's defaults
+ * and signatures and each preset's style, axis values and signatures. It
+ * applies the cached token set when its id matches. ES5 and self-contained,
+ * because it runs before any bundle loads. Storage can throw (sandboxed
+ * iframes, blocked site data), so the mode is resolved and set before
+ * anything else touches it, and blocked storage reads as empty.
  *
  * `config` must hold the `defaults`, `styles` and `presets` the app passes
  * ThemeProvider. A value the registry does not accept is ignored, as the
@@ -168,7 +168,7 @@ export function buildPrerenderScript(
     "for(i=0;i<A.length;i++){v=g(A[i][0]);if(A[i][3].indexOf(v)===-1)v=h(Q,A[i][2])?Q[A[i][2]]:h(Y,A[i][2])?Y[A[i][2]]:A[i][4];d.setAttribute(A[i][1],v)}",
     "for(i=0;i<G.length;i++)d.setAttribute(G[i][1],h(Z,G[i][0])?Z[G[i][0]]:S[p][1][G[i][0]]);",
     // tokenCacheId's form: kit version, schema, resolved mode, the built-in
-    // styles hash, raw values, the defaults hash, the definitions hash.
+    // definitions hash, raw values, the defaults hash, the definitions hash.
     `if(s){var K=${json(cacheInputKeys())},id=[${json(KIT_VERSION)},${json(String(TOKEN_CACHE_SCHEMA))},r,${json(BUILTIN_STYLES_HASH)}],c;`,
     `for(i=0;i<K.length;i++)id.push(g(K[i])||"");id.push(${json(defaultsHash(defaults))},${json(registry.hash)});id=id.join("|");`,
     `c=JSON.parse(s.getItem(${json(TOKEN_CACHE_STORAGE_KEY)})||"null");`,

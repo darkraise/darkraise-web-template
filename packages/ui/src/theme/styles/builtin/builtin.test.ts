@@ -4,8 +4,10 @@ import { join } from "node:path"
 import { compileThemeCss } from "@theme/config/compile"
 import { resolveRegistry } from "@theme/config/registry"
 import { BUILTIN_STYLES, STYLE_NAMES } from "@theme/styles"
+import { BUILTIN_PRESETS } from "./presets"
 
 const BUILTIN_DIR = join("src", "theme", "styles", "builtin")
+const PRESETS_DIR = join(BUILTIN_DIR, "presets")
 const GENERATED_DIR = join("src", "theme", "styles", "generated")
 
 describe("built-in style definitions", () => {
@@ -18,7 +20,8 @@ describe("built-in style definitions", () => {
     expect(registry.issues).toEqual([])
     expect(Object.keys(registry.styles)).toEqual([...STYLE_NAMES])
     expect(Object.values(registry.styles).every((s) => s.builtIn)).toBe(true)
-    expect(registry.presets).toEqual({})
+    expect(Object.keys(registry.presets)).toEqual(Object.keys(BUILTIN_PRESETS))
+    expect(Object.values(registry.presets).every((p) => p.builtIn)).toBe(true)
     expect(registry.hash).toBe("")
   })
 
@@ -70,6 +73,53 @@ describe("built-in style definitions", () => {
             /from "\.\/[a-z]+"$/.test(statement),
           `${file}: ${statement}`,
         ).toBe(true)
+      }
+    }
+  })
+
+  it("lets a preset file import nothing but types and sibling presets", () => {
+    const files = readdirSync(PRESETS_DIR).filter(
+      (name) => name.endsWith(".ts") && !name.endsWith(".test.ts"),
+    )
+    expect(files).toContain("index.ts")
+    for (const file of files) {
+      const source = readFileSync(join(PRESETS_DIR, file), "utf8")
+      const imports = source.match(/^import\b[^;]*?from\s+"[^"]+"/gms) ?? []
+      for (const statement of imports) {
+        expect(
+          /^import type\b/.test(statement) ||
+            /from "\.\/[a-z]+(-[a-z]+)*"$/.test(statement),
+          `${file}: ${statement}`,
+        ).toBe(true)
+      }
+    }
+  })
+
+  // The overlay shadow composes the elevation lift and the glow axes around
+  // the dropdown shadow, and the outline edge is the kit's 3:1 boundary.
+  it("leaves the overlay shadow and the outline edge to the kit in every style and preset", () => {
+    const { styles, presets } = resolveRegistry()
+    const written = [
+      ...Object.values(styles).map((style) => ({
+        name: `styles.${style.name}`,
+        maps: [
+          ...Object.values(style.tokens),
+          ...style.when.map((entry) => entry.tokens ?? {}),
+          style.forcedFallback,
+        ],
+      })),
+      ...Object.values(presets).map((preset) => ({
+        name: `presets.${preset.name}`,
+        maps: Object.values(preset.tokens),
+      })),
+    ]
+    expect(written).toHaveLength(
+      STYLE_NAMES.length + Object.keys(BUILTIN_PRESETS).length,
+    )
+    for (const { name, maps } of written) {
+      for (const tokens of maps) {
+        expect(tokens, name).not.toHaveProperty("overlayShadow")
+        expect(tokens, name).not.toHaveProperty("buttonNeutralBorder")
       }
     }
   })
