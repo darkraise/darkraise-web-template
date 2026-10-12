@@ -719,6 +719,41 @@ run them against a production build.
 - Under reduced transparency and under more contrast, the fallbacks of Glass
   and of the example style apply.
 
+### 57 · Built-in presets (`57-builtin-presets.spec.ts`)
+
+Every built-in preset the kit's registry resolves, in light and dark, on
+`/components/cards`. The tests are generated from `resolveRegistry()`, so a
+preset that gains paint tokens, signatures or axes is covered without an edit
+here. Each preset test is titled `<preset name> <mode>: …`, so
+`-g "paper-ink"` runs one preset's four tests.
+
+- On a first visit with the preset stored and the app's entry module blocked,
+  the pre-render script stamps `data-style`, `data-preset`, the attribute of
+  each axis the preset sets and every signature attribute; nothing is cached
+  yet, so no token is inline.
+- With the app, the provider stamps the same attributes, the shell takes the
+  preset's shell style, the nav takes its selection look, the inline tokens
+  equal what `generateTokens` gives the stamped axes, and each paint token the
+  preset declares for the mode computes on `<html>` to its declared value.
+- On the return visit, again without the app, the script stamps the same
+  attributes and restores the same inline tokens from its cache. The dev
+  server delivers the kit stylesheet with the app's modules, so paint tokens
+  are only read once the app has loaded.
+- The page description, a card's body text, an idle rail item, the bar's
+  select label and the bar's ink hold 4.5:1 against the pixels painted behind
+  them (`textContrast` with `ground: "painted"`), as painted and again under
+  more contrast and under reduced transparency, where no blur token, no
+  translucent card fill and no element or pseudo-element with a backdrop
+  filter may remain.
+- With the user's shell style stored as `classic`, where the preset's shell
+  ground sits directly behind the page, the page title and the page
+  description hold 4.5:1 against the painted pixels.
+- Picking the first two presets of the style with the most presets, then
+  Base, through the Preset control restamps and repaints each time without a
+  reload.
+- A backdrop written into `@layer style.preset` for a preset outside Glass
+  blurs the cards, and both fallback media drop it.
+
 ## Regression tests for fixed defects
 
 `11-review-regressions.spec.ts` holds tests for defects fixed in review (see
