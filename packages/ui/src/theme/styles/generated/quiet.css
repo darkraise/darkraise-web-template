@@ -109,3 +109,28 @@
     --figure-weight: 360;
   }
 }
+
+@layer style.preset {
+  [data-preset="red-graphite"] {
+    --thumb-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
+    --selected-view-shadow: 0 1px 2px rgb(0 0 0 / 0.1);
+    --card-radius: calc(var(--radius) + 2px);
+    --badge-radius: calc(var(--radius-control) * 2);
+    --banner-radius: calc(var(--radius) - 2px);
+    --banner-fill: hsl(var(--muted));
+    --type-page-title-weight: 700;
+    --type-page-title-tracking: -0.01em;
+    --type-section-title-weight: 700;
+    --type-dialog-title-weight: 700;
+    --figure-weight: 700;
+  }
+  [data-preset="red-graphite"]:not([data-mode="dark"]) {
+    --btn-neutral-fill: transparent;
+    --shadow-dropdown: 0 8px 24px rgb(0 0 0 / 0.12);
+    --modal-shadow: 0 0 0 1px var(--quiet-ring), 0 13px 34px rgb(0 0 0 / 0.18);
+  }
+  [data-mode="dark"][data-preset="red-graphite"] {
+    --shadow-dropdown: 0 8px 24px rgb(0 0 0 / 0.45);
+    --modal-shadow: 0 0 0 1px var(--quiet-ring), 0 13px 34px rgb(0 0 0 / 0.55);
+  }
+}
