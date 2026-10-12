@@ -18,7 +18,12 @@ const VALID = {
     radius: "subtle",
     headingFont: "fraunces",
   },
-  switcher: { enabled: true, axes: { glassBlur: false }, advanced: false },
+  switcher: {
+    enabled: true,
+    axes: { glassBlur: false },
+    advanced: false,
+    presets: ["ink-night", "paper-ink"],
+  },
   styles: {
     "glass-ink": {
       label: "Glass ink",
@@ -282,6 +287,26 @@ describe("theme config JSON Schema", () => {
         keyword: "required",
         dataPath: ".styles['glass-ink']",
         params: { missingProperty: "label" },
+      },
+    ],
+    [
+      "a switcher preset list that is not a list",
+      ["switcher", "presets"],
+      "ink-night",
+      {
+        keyword: "type",
+        dataPath: ".switcher.presets",
+        params: { type: "array" },
+      },
+    ],
+    [
+      "a switcher preset that is not a name",
+      ["switcher", "presets"],
+      ["ink-night", 3],
+      {
+        keyword: "type",
+        dataPath: ".switcher.presets[1]",
+        params: { type: "string" },
       },
     ],
   ])("rejects %s", (_, path, value, error) => {

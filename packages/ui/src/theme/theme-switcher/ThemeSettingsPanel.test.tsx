@@ -1,5 +1,5 @@
 import type * as React from "react"
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen, within } from "@testing-library/react"
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
 import { ThemeProvider } from "@theme/theme-provider"
 import { themeConfig, type ThemeConfig } from "@theme/themeConfig"
@@ -45,6 +45,7 @@ const BRAND = [
   "Surface Color",
   "Tint With Accent",
   "Style",
+  "Preset",
   "Font",
   "Heading Font",
   "Radius",
@@ -232,24 +233,81 @@ describe("ThemeSettingsPanel", () => {
     expect(localStorage.getItem("theme-signal-color")).toBe("none")
   })
 
-  it("shows no preset control", () => {
-    for (const style of ["quiet", "glass"]) {
-      localStorage.setItem("theme-style", style)
-      const { container, unmount } = renderPanel(
-        <ThemeSettingsPanel layout="page" />,
-      )
-      expect(sectionLabels(container), style).not.toContain("Preset")
-      unmount()
+  it.each<[string, Partial<ThemeConfig>, Record<string, string>, boolean]>([
+    ["a style that has presets", {}, {}, true],
+    [
+      "a style that has none",
+      { styles: { ink: { label: "Ink" } } },
+      { "theme-style": "ink" },
+      false,
+    ],
+    [
+      "a style whose presets are all filtered out",
+      { switcher: { enabled: true, presets: [] } },
+      {},
+      false,
+    ],
+    [
+      "a filtered-out preset that is active",
+      { switcher: { enabled: true, presets: [] } },
+      { "theme-preset": "paper-ink" },
+      true,
+    ],
+    [
+      "switcher.axes.preset set to false",
+      { switcher: { enabled: true, axes: { preset: false } } },
+      {},
+      false,
+    ],
+  ])("decides the preset control for %s", (_title, config, stored, shown) => {
+    for (const [key, value] of Object.entries(stored)) {
+      localStorage.setItem(key, value)
     }
+    const { container } = renderPanel(<ThemeSettingsPanel layout="page" />, {
+      ...themeConfig,
+      ...config,
+    })
+    expect(sectionLabels(container).includes("Preset")).toBe(shown)
   })
 
-  it("renders the glass axes right after the style control under glass", () => {
+  it("resets the preset to base when another style is picked", () => {
+    renderPanel(<ThemeSettingsPanel layout="page" />)
+    const html = document.documentElement
+    fireEvent.click(screen.getByRole("radio", { name: "Linen & Teal" }))
+    expect(html.getAttribute("data-preset")).toBe("linen-teal")
+
+    fireEvent.click(screen.getByRole("radio", { name: "Flat" }))
+    expect(html.getAttribute("data-style")).toBe("flat")
+    expect(html.getAttribute("data-preset")).toBe("base")
+    expect(localStorage.getItem("theme-preset")).toBe("base")
+    const group = screen.getByRole("radiogroup", { name: "Preset" })
+    expect(
+      within(group)
+        .getAllByRole("radio")
+        .map((radio) => radio.textContent),
+    ).toEqual(["Base", "Pastel Soft-Flat", "Forest & Lime"])
+    expect(within(group).getByRole("radio", { name: "Base" })).toBeChecked()
+  })
+
+  it("shows Signal Color once a preset sets a signal colour", () => {
+    localStorage.setItem("theme-style", "tactile")
+    const { container } = renderPanel(<ThemeSettingsPanel layout="page" />)
+    expect(sectionLabels(container)).not.toContain("Signal Color")
+    fireEvent.click(screen.getByRole("radio", { name: "Braun Panel" }))
+    expect(sectionLabels(container)).toContain("Signal Color")
+    expect(document.documentElement.getAttribute("data-signal-color")).toBe(
+      "yellow",
+    )
+  })
+
+  it("renders the preset, then the glass axes, right after the style control under glass", () => {
     localStorage.setItem("theme-style", "glass")
     const { container } = renderPanel(<ThemeSettingsPanel layout="page" />)
     const labels = sectionLabels(container)
     const at = labels.indexOf("Style")
-    expect(labels.slice(at, at + 4)).toEqual([
+    expect(labels.slice(at, at + 5)).toEqual([
       "Style",
+      "Preset",
       "Opacity",
       "Backdrop Blur",
       "Font",

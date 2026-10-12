@@ -228,6 +228,83 @@ describe("ChoiceControl", () => {
       screen.getByRole("radio", { name: "Vạch chỉ báo" }),
     ).toBeInTheDocument()
   })
+
+  function presetGroup() {
+    const group = screen.getByRole("radiogroup", { name: "Preset" })
+    const radios = within(group).getAllByRole("radio")
+    return { group, radios, labels: radios.map((radio) => radio.textContent) }
+  }
+
+  it("offers base and the active style's presets in two columns", () => {
+    renderControl(<ChoiceControl axis="preset" />)
+    const { group, labels } = presetGroup()
+    expect(labels).toEqual([
+      "Base",
+      "Paper & Ink",
+      "Linen & Teal",
+      "Red Graphite",
+      "Studio Green",
+    ])
+    expect(group).toHaveAttribute("data-cols", "2")
+    expect(within(group).getByRole("radio", { name: "Base" })).toBeChecked()
+
+    fireEvent.click(within(group).getByRole("radio", { name: "Linen & Teal" }))
+    expect(html.getAttribute("data-preset")).toBe("linen-teal")
+    expect(html.getAttribute("data-style")).toBe("quiet")
+    expect(
+      within(group).getByRole("radio", { name: "Linen & Teal" }),
+    ).toBeChecked()
+  })
+
+  it("labels built-in presets from the labels and config presets from their definition", () => {
+    render(
+      <UiLabelsProvider
+        value={{
+          theme: { presets: { base: "kiểu gốc", "paper-ink": "Giấy & mực" } },
+        }}
+      >
+        <ThemeProvider
+          config={{
+            defaults: {},
+            switcher: { enabled: true },
+            presets: { "quiet-dawn": { label: "Quiet dawn", style: "quiet" } },
+          }}
+        >
+          <ChoiceControl axis="preset" />
+        </ThemeProvider>
+      </UiLabelsProvider>,
+    )
+    const { radios, labels } = presetGroup()
+    expect(labels).toEqual([
+      "kiểu gốc",
+      "Giấy & mực",
+      "Linen & Teal",
+      "Red Graphite",
+      "Studio Green",
+      "Quiet dawn",
+    ])
+    // A preset's label is a name: it is shown as written, never title-cased.
+    for (const radio of radios) expect(radio).not.toHaveClass("capitalize")
+  })
+
+  it("offers the presets switcher.presets allows, and the active one", () => {
+    localStorage.setItem("theme-preset", "studio-green")
+    render(
+      <ThemeProvider
+        config={{
+          defaults: {},
+          switcher: { enabled: true, presets: ["paper-ink", "mica-desk"] },
+        }}
+      >
+        <ChoiceControl axis="preset" />
+      </ThemeProvider>,
+    )
+    const { group, labels } = presetGroup()
+    expect(labels).toEqual(["Base", "Paper & Ink", "Studio Green"])
+    expect(
+      within(group).getByRole("radio", { name: "Studio Green" }),
+    ).toBeChecked()
+  })
 })
 
 describe("OrdinalControl", () => {

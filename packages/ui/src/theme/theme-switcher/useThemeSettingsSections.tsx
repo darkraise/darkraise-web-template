@@ -12,6 +12,7 @@ import { ChoiceControl } from "./controls/ChoiceControl"
 import { OrdinalControl } from "./controls/OrdinalControl"
 import { SwatchControl } from "./controls/SwatchControl"
 import { SwitchControl } from "./controls/SwitchControl"
+import { presetOptions } from "./presetOptions"
 
 export type ThemeSettingsGroup = "brand" | "advanced"
 
@@ -59,6 +60,18 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     if (group === "advanced" && !showAdvanced) continue
     if (config.switcher.axes?.[key] === false) continue
     if (spec.visibleWhen && !spec.visibleWhen(settings, styleLineage)) continue
+    // `base` alone is no choice.
+    if (
+      key === "preset" &&
+      presetOptions(
+        theme.registry,
+        theme.style,
+        theme.preset,
+        config.switcher.presets,
+      ).length < 2
+    ) {
+      continue
+    }
 
     const Control = CONTROLS[spec.control]
     sections.push({

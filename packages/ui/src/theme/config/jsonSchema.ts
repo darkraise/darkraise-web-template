@@ -63,6 +63,8 @@ export function buildThemeJsonSchema(): Record<string, unknown> {
             enabled: { type: "boolean" },
             axes: closed(each(AXIS_KEYS, () => ({ type: "boolean" }))),
             advanced: { type: "boolean" },
+            // Built-in names or the config's own; the provider checks them.
+            presets: { type: "array", items: { type: "string" } },
           },
           ["enabled"],
         ),

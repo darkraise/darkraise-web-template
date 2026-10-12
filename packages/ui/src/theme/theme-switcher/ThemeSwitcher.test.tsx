@@ -128,13 +128,17 @@ describe("ThemeSwitcher style section", () => {
     expect(screen.queryByText("Backdrop Blur")).not.toBeInTheDocument()
   })
 
-  it("renders the glass axes right after the style control", () => {
+  it("renders the preset, then the glass axes, right after the style control", () => {
     renderSwitcher()
     openSwitcher()
     fireEvent.click(screen.getByRole("radio", { name: "Glass" }))
     const labels = sectionLabels()
     const at = labels.indexOf("Style")
-    expect(labels.slice(at + 1, at + 3)).toEqual(["Opacity", "Backdrop Blur"])
+    expect(labels.slice(at + 1, at + 4)).toEqual([
+      "Preset",
+      "Opacity",
+      "Backdrop Blur",
+    ])
   })
 
   it("toggling glass-opacity updates the data attribute", () => {
