@@ -406,6 +406,32 @@ describe("built-in presets", () => {
     }
   })
 
+  // A pane the look draws without a border has no edge to hold it apart in
+  // dark mode, so it shows the backdrop rather than a fill of its own.
+  it("lets a borderless content pane show the backdrop in dark mode", () => {
+    const registry = resolveRegistry()
+    const looks = [
+      ...Object.entries(registry.styles).map(([name, style]) => ({
+        name,
+        style: style.tokens,
+        preset: undefined,
+      })),
+      ...Object.values(registry.presets).map((preset) => ({
+        name: preset.name,
+        style: registry.styles[preset.style]?.tokens,
+        preset: preset.tokens,
+      })),
+    ]
+    const borderless: string[] = []
+    for (const look of looks) {
+      const dark = resolvedTokens(look.style, look.preset, "dark")
+      if (dark.shellContentEdge !== "transparent") continue
+      borderless.push(look.name)
+      expect(dark.shellContentFill, look.name).toBe("transparent")
+    }
+    expect(borderless).toContain("card-stock")
+  })
+
   it("sizes every radius token from the radius axis", () => {
     for (const [where, token, value] of tokenValues()) {
       if (!token.endsWith("Radius")) continue

@@ -58,7 +58,8 @@ describe("Card Stock", () => {
 
   // In a shell whose content is not detached the page stands on the shell
   // ground, so the light desk stops at the muted step, where status text
-  // still holds its floor. Dark keeps the kit's ground.
+  // still holds its floor. Dark keeps the kit's ground, and the borderless
+  // sheet shows it: a dark pane without an edge takes the backdrop colour.
   it("lays one sheet on the desk, edged like a card and nothing more", () => {
     expect(cardStock.tokens?.shared?.shellContentEdge).toBe("transparent")
     expect(cardStock.tokens?.shared?.shellContentShadow).toBe("0 0 transparent")
@@ -67,9 +68,7 @@ describe("Card Stock", () => {
       shellContentFill: "hsl(var(--card))",
     })
     expect(cardStock.tokens?.dark?.shellGroundFill).toBeUndefined()
-    expect(cardStock.tokens?.dark?.shellContentFill).toBe(
-      "hsl(var(--card) / 0.5)",
-    )
+    expect(cardStock.tokens?.dark?.shellContentFill).toBe("transparent")
     for (const mode of ["light", "dark"] as const) {
       expect(cardStock.tokens?.[mode]?.shellContentShadow, mode).toBeUndefined()
     }

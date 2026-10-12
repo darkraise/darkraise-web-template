@@ -127,7 +127,7 @@ export const cardStock: PresetDefinition = {
       modalShadow:
         "inset 0 1px 0 rgb(255 255 255 / 0.05), 0 0 0 1px rgb(0 0 0 / 0.4), 0 24px 48px -16px rgb(0 0 0 / 0.7)",
       scrim: "rgb(0 0 0 / 0.5)",
-      shellContentFill: "hsl(var(--card) / 0.5)",
+      shellContentFill: "transparent",
       navSelectionFill: "hsl(var(--muted))",
       navSelectionShadow:
         "inset 0 1px 0 rgb(255 255 255 / 0.05), 0 0 0 1px rgb(0 0 0 / 0.35), 0 4px 8px -4px rgb(0 0 0 / 0.6)",
