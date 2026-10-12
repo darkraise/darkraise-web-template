@@ -31,3 +31,28 @@
     --scrim: color-mix(in oklab, #000 55%, transparent);
   }
 }
+
+@layer style.preset {
+  [data-preset="pastel-soft"] {
+    --shell-ground-fill: radial-gradient(hsl(var(--foreground) / 0.07) 1px, transparent 1px) 0 0 / 12px 12px, hsl(var(--background));
+    --chrome-flat-fill: transparent;
+    --nav-selection-shadow: 0 0 transparent;
+    --nav-item-radius: var(--radius-control);
+    --card-border: transparent;
+    --card-radius: calc(var(--radius) * 1.5);
+    --overlay-radius: var(--radius);
+    --dialog-radius: calc(var(--radius) * 1.75);
+    --menu-item-radius: calc(var(--radius) * 0.625);
+    --banner-radius: var(--radius);
+    --banner-border: transparent;
+    --check-radius: calc(var(--radius) * 0.375);
+    --segment-radius: var(--radius-control);
+    --btn-neutral-fill: hsl(var(--primary-3));
+    --field-focus-ring: 0 0 0 2px hsl(var(--card)), 0 0 0 4px hsl(var(--primary));
+    --type-section-title-tracking: -0.02em;
+    --type-dialog-title-tracking: -0.02em;
+  }
+  [data-mode="dark"][data-preset="pastel-soft"] {
+    --shell-ground-fill: radial-gradient(hsl(var(--foreground) / 0.05) 1px, transparent 1px) 0 0 / 12px 12px, hsl(var(--background));
+  }
+}
