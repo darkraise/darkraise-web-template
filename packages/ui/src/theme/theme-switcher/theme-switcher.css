@@ -158,6 +158,14 @@
     grid-template-columns: repeat(3, minmax(max-content, 1fr));
   }
 
+  /* Five faces in rows of three seat "Hanken Grotesk" under "Inter", and
+     three max-content tracks then overflow the column at every page width;
+     a three-column group that wraps lays out in two columns here. */
+  .dr-theme-settings-page
+    .dr-theme-switcher-toggle-group[data-cols="3"]:has(> :nth-child(4)) {
+    grid-template-columns: repeat(2, minmax(max-content, 1fr));
+  }
+
   /* Four cells in one row overflow the column with the longer Vietnamese
      labels at 1024 and 1280px, and five in rows of three do at spacious
      density, so both lay out in two columns here. The popover keeps its
