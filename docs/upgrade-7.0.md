@@ -143,7 +143,7 @@ The theme switcher gains a Preset control under the Style control, listing `base
 
 Three things can need a change in your code:
 
-- A style, preset or font in your theme config may not take the name of a built-in preset, and a font may not be named `newsreader`. The registry reports `"<name>" is a built-in preset name` or `"newsreader" is a built-in font name`, and the Vite plugin fails the build. Rename the definition.
+- A style, preset or font in your theme config may not take the name of a built-in preset, and a font may not be named `newsreader` or `hanken-grotesk`. The registry reports `"<name>" is a built-in preset name` or `"<name>" is a built-in font name`, and the Vite plugin fails the build. Rename the definition.
 - `labels.theme` gains `presets` (`base` and the sixteen preset names) and `resetToPreset`, and `labels.themeOptions` gains `newsreader` and `hanken-grotesk`. Partial labels need no change: a missing key falls back to the kit's own string. An object typed as the whole of `UiLabels` or `UiMessages` must add them.
 - `ThemeContextValue` gains `canResetToPreset` and `resetToPreset`, and the `useLayoutStore` state gains `clearShellStyle`. A test that mocks `useTheme` with a whole context value, or replaces the layout store's whole state, must add them.
 

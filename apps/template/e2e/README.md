@@ -477,8 +477,8 @@ paint:
 - Body text paints in Hanken Grotesk Variable by default. Choosing Geist in the theme
   switcher repaints it in Geist Variable, `document.fonts` reports the face
   loaded, and its woff2 file comes from the app's own origin with a 200.
-- A stored Geist, IBM Plex Sans or Newsreader font renders at boot, its woff2
-  file served from the app's own origin with a 200.
+- A stored Inter, Geist, IBM Plex Sans, Hanken Grotesk or Newsreader font
+  renders at boot, its woff2 file served from the app's own origin with a 200.
 - A stored Geist or Newsreader heading font sets the headings in that face,
   loaded, and leaves the body in Hanken Grotesk.
 - The switcher offers Inter, Geist, IBM Plex Sans, Hanken Grotesk and
