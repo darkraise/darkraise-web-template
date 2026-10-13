@@ -264,10 +264,10 @@ describe("glass chrome", () => {
   })
 })
 
-describe("reduced transparency and more contrast", () => {
+describe("more contrast", () => {
   it("outranks every glass rule from inside @layer style.fallback", () => {
     expect(normalise(GLASS)).toContain(
-      `@layer style.fallback { @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { ${GLASS_ROOT} {`,
+      `@layer style.fallback { @media (prefers-contrast: more) { ${GLASS_ROOT} {`,
     )
   })
 

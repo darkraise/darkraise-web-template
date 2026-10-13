@@ -93,7 +93,7 @@ const FROST_CSS = `@layer style.base {
 }
 
 @layer style.fallback {
-  @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  @media (prefers-contrast: more) {
     [data-style="frost"] {
       --chrome-backdrop: none;
       --surface-overlay-layers: ;
@@ -159,7 +159,7 @@ describe("compileThemeCss", () => {
 }
 
 @layer style.fallback {
-  @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  @media (prefers-contrast: more) {
     [data-style="frost-ink"] {
       --chrome-backdrop: none;
       --surface-overlay-layers: ;

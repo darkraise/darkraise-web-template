@@ -68,7 +68,7 @@
 }
 
 @layer style.fallback {
-  @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  @media (prefers-contrast: more) {
     [data-style="glass"] {
       --chrome-bar-bg: hsl(var(--surface-header));
       --chrome-edge: hsl(var(--sidebar-border));

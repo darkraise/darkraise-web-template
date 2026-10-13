@@ -19,12 +19,16 @@ import {
   type ThemeSeed,
 } from "./helpers/app"
 import { alphaOf, computed, settle } from "./helpers/measure"
-import { filtering, underFallbackMedia } from "./helpers/media"
+import {
+  emulateReducedTransparency,
+  filtering,
+  underFallbackMedia,
+} from "./helpers/media"
 
 /**
  * Every glass look's cards and popovers let the page through by the share
- * its Medium alpha declares, scaled by the Transparency step; reduced
- * transparency and more contrast make cards, popovers and dialogs opaque;
+ * its Medium alpha declares, scaled by the Transparency step; more contrast
+ * makes cards, popovers and dialogs opaque and reduced transparency does not;
  * Blur None leaves no glass backdrop filter. Light mode only: the kit's
  * contrast suite covers both modes, and the declared alphas come from the
  * registry, so a look whose values change is checked as it is.
@@ -146,7 +150,7 @@ for (const name of ["glass", "soft-glass"]) {
   const look = LOOKS.find((candidate) => candidate.name === name)
   if (!look) throw new Error(`no glass look ${name}`)
 
-  test(`${name}: cards, popovers and dialogs turn opaque and unblurred under the fallback media`, async ({
+  test(`${name}: cards, popovers and dialogs turn opaque and unblurred under more contrast`, async ({
     page,
   }) => {
     await seedLook(page, look, { glassTransparency: "high" })
@@ -178,6 +182,34 @@ for (const name of ["glass", "soft-glass"]) {
         `dialog backdrop under ${media}`,
       ).toBe("none")
     })
+  })
+
+  test(`${name}: cards, popovers and dialogs stay translucent and blurred under reduced transparency`, async ({
+    page,
+  }) => {
+    await seedLook(page, look)
+    await gotoApp(page, PAGE)
+    const { surface, overlay } = declared(look)
+    await emulateReducedTransparency(page, true)
+    expect(
+      await page.evaluate(
+        () => matchMedia("(prefers-reduced-transparency: reduce)").matches,
+      ),
+    ).toBe(true)
+    await settle(page)
+    expect(await cardAlpha(page)).toBeCloseTo(surface, 2)
+    expect(await computed(card(page), "backdrop-filter")).not.toBe("none")
+    expect(await popoverAlpha(page)).toBeCloseTo(overlay, 2)
+
+    await page.goto(`${OVERLAYS}?show=dialog`)
+    const dialog = page.getByRole("dialog")
+    await expect(dialog).toBeVisible()
+    await settle(page)
+    expect(alphaOf(await computed(dialog, "background-color"))).toBeCloseTo(
+      overlay,
+      2,
+    )
+    expect(await computed(dialog, "backdrop-filter")).not.toBe("none")
   })
 }
 

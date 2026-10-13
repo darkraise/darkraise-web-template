@@ -89,10 +89,10 @@ export const PAINT_TOKENS = {
 export type PaintToken = keyof typeof PAINT_TOKENS
 
 /**
- * Opaque, unblurred values the kit restores under reduced transparency or
- * more contrast, whatever the style or preset set: every backdrop and the
- * canvas `none`, the card plane and the overlays at full alpha, and the
- * overlay fill at its light `@layer base` value in theme.css.
+ * Opaque, unblurred values the kit restores under more contrast, whatever
+ * the style or preset set: every backdrop and the canvas `none`, the card
+ * plane and the overlays at full alpha, and the overlay fill at its light
+ * `@layer base` value in theme.css.
  */
 export const KIT_FALLBACK: Readonly<Partial<Record<PaintToken, string>>> = {
   chromeBackdrop: "none",

@@ -12,8 +12,7 @@ import { PAINT_TOKENS, type PaintToken } from "./tokens"
 export const LAYER_STATEMENT =
   "@layer properties, theme, base, style.base, style.mode, style.when, style.preset, style.fallback, components, utilities, overrides;"
 
-const FORCED_MEDIA =
-  "@media (prefers-reduced-transparency: reduce), (prefers-contrast: more)"
+const FORCED_MEDIA = "@media (prefers-contrast: more)"
 const DARK = '[data-mode="dark"]'
 const NOT_DARK = ':not([data-mode="dark"])'
 

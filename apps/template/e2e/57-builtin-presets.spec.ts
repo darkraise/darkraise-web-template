@@ -410,7 +410,7 @@ test.describe("built-in presets", () => {
     consoleWatch.assertClean()
   })
 
-  test("a backdrop a preset outside Glass sets is dropped under either fallback media", async ({
+  test("a backdrop a preset outside Glass sets is dropped under more contrast", async ({
     page,
   }) => {
     const preset = PRESETS.find(

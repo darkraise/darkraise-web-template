@@ -165,7 +165,7 @@ const LIGHT_BASE = ["@layer base", ":root"]
 const DARK_BASE = ["@layer base", ':root[data-mode="dark"]']
 const KIT_FALLBACK_RULE = [
   "@layer style.fallback",
-  "@media (prefers-reduced-transparency: reduce), (prefers-contrast: more)",
+  "@media (prefers-contrast: more)",
   ":where(:root)",
 ]
 
@@ -220,6 +220,19 @@ describe("contract base values", () => {
       ).toBe(true)
     },
   )
+})
+
+// Windows reports reduced transparency whenever its "Transparency effects"
+// setting is off, which made every glass surface solid for a user who had
+// chosen Glass. Choosing another style is the way to ask for solid surfaces;
+// more contrast and forced colours still turn glass opaque.
+describe("reduced transparency", () => {
+  it("keeps glass when the system asks for reduced transparency", () => {
+    for (const path of SHEETS) {
+      const css = stripCssComments(readFileSync(path, "utf8"))
+      expect(css, path).not.toContain("prefers-reduced-transparency")
+    }
+  })
 })
 
 describe("paint token schema", () => {

@@ -17,7 +17,7 @@ export function glassBackdrop(
 /**
  * Glass over accent-tinted blobs: cards, menus, popovers and dialogs let a
  * blurred view of what lies behind them through, as far as the Transparency
- * and Blur settings say, and turn opaque under reduced transparency. The rail is
+ * and Blur settings say, and turn opaque under more contrast. The rail is
  * docked and solid, the top bar dissolves what scrolls beneath it, and the
  * scrim frosts the app behind a dialog.
  */

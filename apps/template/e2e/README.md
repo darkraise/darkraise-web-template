@@ -729,8 +729,7 @@ run them against a production build.
   pre-render script alone paint the style, what it inherits from Glass, and a
   stored preset under a value the user set themselves.
 - The Style control switches to the example style and back.
-- Under reduced transparency and under more contrast, the fallbacks of Glass
-  and of the example style apply.
+- Under more contrast, the fallbacks of Glass and of the example style apply.
 
 ### 57 · Built-in presets (`57-builtin-presets.spec.ts`)
 
@@ -755,9 +754,8 @@ here. Each preset test is titled `<preset name> <mode>: …`, so
 - The page description, a card's body text, an idle rail item, the bar's
   select label and the bar's ink hold 4.5:1 against the pixels painted behind
   them (`textContrast` with `ground: "painted"`), as painted and again under
-  more contrast and under reduced transparency, where no blur token, no
-  translucent card fill and no element or pseudo-element with a backdrop
-  filter may remain.
+  more contrast, where no blur token, no translucent card fill and no
+  element or pseudo-element with a backdrop filter may remain.
 - With the user's shell style stored as `classic`, where the preset's shell
   ground sits directly behind the page, the page title and the page
   description hold 4.5:1 against the painted pixels.
@@ -769,7 +767,7 @@ here. Each preset test is titled `<preset name> <mode>: …`, so
 
 ### 59 · Glass transparency (`59-glass-transparency.spec.ts`)
 
-- Every glass look's card and settings popover take the alpha the look declares, seen through Low, Medium and High, and turn opaque under reduced transparency or more contrast.
+- Every glass look's card and settings popover take the alpha the look declares, seen through Low, Medium and High, and turn opaque under more contrast but stay translucent under reduced transparency.
 - Under Blur None no glass surface keeps a backdrop filter.
 
 ### 60 · Background and Soft Glass (`60-background-soft-glass.spec.ts`)

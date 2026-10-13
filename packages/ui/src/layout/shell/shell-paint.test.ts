@@ -68,8 +68,7 @@ function bodyOf(
 }
 
 const MD = "@media (width >= 48rem)"
-const FORCED =
-  "@media (prefers-reduced-transparency: reduce), (prefers-contrast: more)"
+const FORCED = "@media (prefers-contrast: more)"
 const RAIL_TONED =
   ':root:not([data-rail-tone="inverse"], [data-rail-tone="accent"])'
 const BAR_TONED =

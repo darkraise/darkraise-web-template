@@ -271,7 +271,7 @@
     --sidebar-active-backdrop: none;
   }
 
-  @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  @media (prefers-contrast: more) {
     [data-sidebar-selection="frosted"] {
       --sidebar-active-surface: var(--sidebar-chip-opaque);
       --sidebar-active-edge: var(--sidebar-chip-edge);

@@ -79,9 +79,7 @@ describe("sidebar selection looks", () => {
     const blurless = rule(
       '[data-glass-blur="none"] [data-sidebar-selection="frosted"]',
     )
-    const preference = media(
-      "(prefers-reduced-transparency: reduce), (prefers-contrast: more)",
-    )
+    const preference = media("(prefers-contrast: more)")
     for (const declaration of OPAQUE_CHIP) {
       expect(blurless, declaration).toContain(declaration)
       expect(preference, declaration).toContain(declaration)
@@ -95,7 +93,7 @@ describe("sidebar selection looks", () => {
     expect(body).toContain("--sidebar-active-shadow: 0 0 transparent;")
     expect(body).toContain("--sidebar-active-glow: 0 0 transparent;")
     expect(CSS.indexOf(`${flat} {`)).toBeGreaterThan(
-      CSS.indexOf("@media (prefers-reduced-transparency"),
+      CSS.indexOf("@media (prefers-contrast: more)"),
     )
   })
 

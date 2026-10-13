@@ -279,9 +279,9 @@
     mask-image: linear-gradient(#000 0 30%, transparent 62%);
   }
 
-  /* Without transparency the veil is an opaque bar with its rule back; the
+  /* Under more contrast the veil is an opaque bar with its rule back; the
      content still runs beneath it, out of sight. */
-  @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  @media (prefers-contrast: more) {
     [data-bar-edge="veil"]
       .dr-shell:where(
         :not([data-shell-style="island"], [data-shell-style="inset"])

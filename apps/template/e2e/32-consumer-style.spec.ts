@@ -36,9 +36,8 @@ async function computedAs(page: Page, value: string) {
   }, value)
 }
 
-// The kit's fallback rules match either media feature. Playwright's
-// emulateMedia has no reduced-transparency option, so that one goes through
-// the DevTools protocol, which Chromium supports.
+// The kit's fallback rules match more contrast only; reduced transparency
+// keeps glass.
 const FALLBACK_MEDIA: ReadonlyArray<{
   name: string
   emulate: (page: Page, on: boolean) => Promise<void>
@@ -47,20 +46,6 @@ const FALLBACK_MEDIA: ReadonlyArray<{
     name: "more contrast",
     emulate: (page, on) =>
       page.emulateMedia({ contrast: on ? "more" : "no-preference" }),
-  },
-  {
-    name: "reduced transparency",
-    emulate: async (page, on) => {
-      const cdp = await page.context().newCDPSession(page)
-      await cdp.send("Emulation.setEmulatedMedia", {
-        features: [
-          {
-            name: "prefers-reduced-transparency",
-            value: on ? "reduce" : "no-preference",
-          },
-        ],
-      })
-    },
   },
 ]
 

@@ -56,7 +56,7 @@ export interface StyleDefinition {
   tokens?: ModeTokens
   /** Applied in array order; a longer selector still wins over a shorter one. */
   when?: readonly WhenEntry[]
-  /** Applied under `prefers-reduced-transparency: reduce` or `prefers-contrast: more`. */
+  /** Applied under `prefers-contrast: more`. */
   forcedFallback?: { tokens: TokenMap }
   /** Structural choices; a preset's own beat these, these beat the kit's. */
   signatures?: SignatureMap

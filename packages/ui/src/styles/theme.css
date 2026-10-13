@@ -143,11 +143,11 @@
 @import "../theme/styles/generated/tactile.css";
 @import "../theme/styles/generated/glass.css";
 
-/* Opaque, unblurred backdrop and translucency tokens under reduced
-   transparency or more contrast, whatever a style or preset sets; a style's
-   own forcedFallback outranks this zero-specificity rule. */
+/* Opaque, unblurred backdrop and translucency tokens under more contrast,
+   whatever a style or preset sets; a style's own forcedFallback outranks
+   this zero-specificity rule. */
 @layer style.fallback {
-  @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  @media (prefers-contrast: more) {
     :where(:root) {
       --chrome-backdrop: none;
       --chrome-canvas: none;

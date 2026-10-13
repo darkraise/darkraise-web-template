@@ -1,9 +1,9 @@
 import { expect, type Page } from "@playwright/test"
 
-// The kit's fallback rules match either media feature. Playwright's
-// emulateMedia has no reduced-transparency option, so that one goes through
-// the DevTools protocol, which Chromium supports. A protocol call replaces
-// the features Playwright set, so each is switched off before the next.
+// The kit's fallback rules match more contrast only: reduced transparency
+// keeps glass (theme.css, style.fallback). Playwright's emulateMedia has no
+// reduced-transparency option, so that one goes through the DevTools
+// protocol, which Chromium supports.
 export const FALLBACK_MEDIA: ReadonlyArray<{
   name: string
   query: string
@@ -15,22 +15,20 @@ export const FALLBACK_MEDIA: ReadonlyArray<{
     emulate: (page, on) =>
       page.emulateMedia({ contrast: on ? "more" : "no-preference" }),
   },
-  {
-    name: "reduced transparency",
-    query: "(prefers-reduced-transparency: reduce)",
-    emulate: async (page, on) => {
-      const cdp = await page.context().newCDPSession(page)
-      await cdp.send("Emulation.setEmulatedMedia", {
-        features: [
-          {
-            name: "prefers-reduced-transparency",
-            value: on ? "reduce" : "no-preference",
-          },
-        ],
-      })
-    },
-  },
 ]
+
+/** Switches `prefers-reduced-transparency: reduce` on or off for `page`. */
+export async function emulateReducedTransparency(page: Page, on: boolean) {
+  const cdp = await page.context().newCDPSession(page)
+  await cdp.send("Emulation.setEmulatedMedia", {
+    features: [
+      {
+        name: "prefers-reduced-transparency",
+        value: on ? "reduce" : "no-preference",
+      },
+    ],
+  })
+}
 
 /** Runs `check` under each fallback media feature, having confirmed the page matches it. */
 export async function underFallbackMedia(
