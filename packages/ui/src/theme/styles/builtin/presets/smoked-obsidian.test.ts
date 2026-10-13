@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest"
 import { written } from "@test/preset-tokens"
 import { resolveRegistry } from "../../../config/registry"
 import { KIT_FALLBACK } from "../../../config/tokens"
-import { glass } from "../glass"
 import { smokedObsidian } from "./smoked-obsidian"
 
 describe("Smoked Obsidian", () => {
@@ -75,9 +74,11 @@ describe("Smoked Obsidian", () => {
 
   it("makes cards dimming glass through tokens the kit's fallback resets", () => {
     expect(shared.surfaceFillAlpha).toBe("0.7")
-    expect(light.surfaceBackdrop).toBe("blur(20px) saturate(90%)")
+    expect(light.surfaceBackdrop).toBe(
+      "var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(90%))",
+    )
     expect(dark.surfaceBackdrop).toBe(
-      "blur(20px) saturate(110%) brightness(0.7)",
+      "var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(110%) brightness(0.7))",
     )
     const translucency = written(smokedObsidian.tokens).filter((token) =>
       /Backdrop$|Alpha$/.test(token),
@@ -95,22 +96,5 @@ describe("Smoked Obsidian", () => {
     for (const tokens of [light, dark]) {
       expect(tokens.fieldShadow).toMatch(/^inset 0 1px 2px /)
     }
-  })
-
-  // Glass keys these on the glassTransparency and glassBlur axes; a preset that
-  // set one would take the axis away from the user.
-  it("leaves the overlay fill and every overlay blur to the glass axes", () => {
-    const owned = [
-      ...new Set(
-        glass.when?.flatMap((entry) => Object.keys(entry.tokens ?? {})),
-      ),
-    ]
-    expect(owned).toEqual([
-      "overlayFillBase",
-      "overlayBackdrop",
-      "scrimBackdrop",
-    ])
-    const tokens = written(smokedObsidian.tokens)
-    expect(tokens.filter((token) => owned.includes(token))).toEqual([])
   })
 })

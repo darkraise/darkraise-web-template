@@ -162,23 +162,58 @@ describe("glass transparency", () => {
 })
 
 describe("glass blur", () => {
-  const BLUR = {
-    none: ["none", "none"],
-    low: ["blur(10px) saturate(160%)", "blur(2px)"],
-    medium: ["blur(20px) saturate(180%)", "blur(4px)"],
-    high: ["blur(32px) saturate(180%)", "blur(8px)"],
+  /** `--glass-blur`, then `--glass-scrim-blur`, at each step that blurs. */
+  const SIZES = {
+    low: ["10px", "2px"],
+    medium: ["20px", "4px"],
+    high: ["32px", "8px"],
   } as const
 
   it("covers every blur step", () => {
-    expect(Object.keys(BLUR)).toEqual([...GLASS_BLURS])
+    expect(["none", ...Object.keys(SIZES)]).toEqual([...GLASS_BLURS])
   })
 
-  it.each(GLASS_BLURS)("blurs overlays and the scrim at %s", (blur) => {
-    const selector = `${GLASS_ROOT}[data-glass-blur="${blur}"]`
-    const [overlay, scrim] = BLUR[blur]
-    expect(valueOf("style.when", selector, "--overlay-backdrop")).toBe(overlay)
-    expect(valueOf("style.when", selector, "--scrim-backdrop")).toBe(scrim)
-    expect(declares("style.when", selector, "--chrome-backdrop")).toBe(false)
+  it("switches every glass backdrop off at none", () => {
+    const selector = `${GLASS_ROOT}[data-glass-blur="none"]`
+    expect(valueOf("style.when", selector, "--glass-backdrop-off")).toBe("none")
+    expect(declares("style.when", selector, "--glass-blur")).toBe(false)
+  })
+
+  it.each(Object.entries(SIZES))(
+    "sizes the blur and the scrim at %s",
+    (blur, [size, scrim]) => {
+      const selector = `${GLASS_ROOT}[data-glass-blur="${blur}"]`
+      expect(valueOf("style.when", selector, "--glass-blur")).toBe(size)
+      expect(valueOf("style.when", selector, "--glass-scrim-blur")).toBe(scrim)
+      expect(declares("style.when", selector, "--glass-backdrop-off")).toBe(
+        false,
+      )
+    },
+  )
+
+  it.each([
+    [
+      "--surface-backdrop",
+      "var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(180%))",
+    ],
+    [
+      "--overlay-backdrop",
+      "var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(180%))",
+    ],
+    [
+      "--scrim-backdrop",
+      "var(--glass-backdrop-off, blur(var(--glass-scrim-blur)))",
+    ],
+  ])("reads the step's size in %s", (name, value) => {
+    expect(valueOf("style.base", GLASS_ROOT, name)).toBe(value)
+  })
+
+  it("writes no backdrop in a step rule", () => {
+    for (const rule of RULES.filter((r) => r.layer === "@layer style.when")) {
+      expect(rule.body, rule.selector).not.toMatch(
+        /--(?:surface|overlay|scrim|chrome)-backdrop:/,
+      )
+    }
   })
 })
 

@@ -93,7 +93,7 @@ describe("built-in style definitions", () => {
     }
   })
 
-  it("lets a preset file import nothing but types and sibling presets", () => {
+  it("lets a preset file import nothing but types, sibling presets and glassBackdrop", () => {
     const files = readdirSync(PRESETS_DIR).filter(
       (name) => name.endsWith(".ts") && !name.endsWith(".test.ts"),
     )
@@ -104,7 +104,8 @@ describe("built-in style definitions", () => {
       for (const statement of imports) {
         expect(
           /^(?:import|export) type\b/.test(statement) ||
-            /from "\.\/[a-z]+(-[a-z]+)*"$/.test(statement),
+            /from "\.\/[a-z]+(-[a-z]+)*"$/.test(statement) ||
+            /^import \{ glassBackdrop \} from "\.\.\/glass"$/.test(statement),
           `${file}: ${statement}`,
         ).toBe(true)
       }

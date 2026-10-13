@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest"
 import { written } from "@test/preset-tokens"
 import { resolveRegistry } from "../../../config/registry"
 import { KIT_FALLBACK } from "../../../config/tokens"
-import { glass } from "../glass"
 import { micaDesk } from "./mica-desk"
 
 describe("Mica Desk", () => {
@@ -101,21 +100,11 @@ describe("Mica Desk", () => {
     }
   })
 
-  // Glass keys these on the glassTransparency and glassBlur axes; a preset that
-  // set one would take the axis away from the user.
-  it("leaves the overlay fill and every blur to the glass axes", () => {
-    const owned = [
-      ...new Set(
-        glass.when?.flatMap((entry) => Object.keys(entry.tokens ?? {})),
-      ),
-    ]
-    expect(owned).toEqual([
-      "overlayFillBase",
-      "overlayBackdrop",
-      "scrimBackdrop",
-    ])
-    const tokens = written(micaDesk.tokens)
-    expect(tokens.filter((token) => owned.includes(token))).toEqual([])
-    expect(tokens.filter((token) => token.endsWith("Backdrop"))).toEqual([])
+  // Glass's own backdrop frosts the cards and menus, sized by the Blur
+  // setting; the preset writes none of its own.
+  it("frosts with Glass's backdrops", () => {
+    expect(
+      written(micaDesk.tokens).filter((token) => token.endsWith("Backdrop")),
+    ).toEqual([])
   })
 })

@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest"
 import { written } from "@test/preset-tokens"
 import { resolveRegistry } from "../../../config/registry"
 import { KIT_FALLBACK } from "../../../config/tokens"
-import { glass } from "../glass"
 import { milkGlass } from "./milk-glass"
 
 describe("Milk Glass", () => {
@@ -62,7 +61,9 @@ describe("Milk Glass", () => {
   it("makes cards blurring milk through tokens the kit's fallback resets", () => {
     expect(light.surfaceFillAlpha).toBe("0.78")
     expect(dark.surfaceFillAlpha).toBe("0.8")
-    expect(shared.surfaceBackdrop).toBe("blur(32px) saturate(180%)")
+    expect(shared.surfaceBackdrop).toBe(
+      "var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(180%))",
+    )
     const translucency = written(milkGlass.tokens).filter((token) =>
       /Backdrop$|Alpha$/.test(token),
     )
@@ -109,22 +110,5 @@ describe("Milk Glass", () => {
     }
     expect(written(milkGlass.tokens)).not.toContain("dialogBorder")
     expect(written(milkGlass.tokens)).not.toContain("dialogFill")
-  })
-
-  // Glass keys these on the glassTransparency and glassBlur axes; a preset that
-  // set one would take the axis away from the user.
-  it("leaves the overlay fill and every overlay blur to the glass axes", () => {
-    const owned = [
-      ...new Set(
-        glass.when?.flatMap((entry) => Object.keys(entry.tokens ?? {})),
-      ),
-    ]
-    expect(owned).toEqual([
-      "overlayFillBase",
-      "overlayBackdrop",
-      "scrimBackdrop",
-    ])
-    const tokens = written(milkGlass.tokens)
-    expect(tokens.filter((token) => owned.includes(token))).toEqual([])
   })
 })

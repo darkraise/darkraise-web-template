@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { layers, written } from "@test/preset-tokens"
 import { resolveRegistry } from "../../../config/registry"
-import { glass } from "../glass"
 import { coralSpace } from "./coral-space"
 
 describe("Coral Space", () => {
@@ -104,22 +103,5 @@ describe("Coral Space", () => {
       "inset 0 1px 0 rgb(255 255 255 / 0.08)",
     )
     expect(shared.navItemRadius).toBe("calc(var(--radius) * 1.25)")
-  })
-
-  // Glass keys these on the glassTransparency and glassBlur axes; a preset that
-  // set one would take the axis away from the user.
-  it("leaves the overlay fill and every overlay blur to the glass axes", () => {
-    const owned = [
-      ...new Set(
-        glass.when?.flatMap((entry) => Object.keys(entry.tokens ?? {})),
-      ),
-    ]
-    expect(owned).toEqual([
-      "overlayFillBase",
-      "overlayBackdrop",
-      "scrimBackdrop",
-    ])
-    const tokens = written(coralSpace.tokens)
-    expect(tokens.filter((token) => owned.includes(token))).toEqual([])
   })
 })

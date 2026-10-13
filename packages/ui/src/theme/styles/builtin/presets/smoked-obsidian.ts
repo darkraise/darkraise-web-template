@@ -1,4 +1,5 @@
 import type { PresetDefinition } from "../../../config/schema"
+import { glassBackdrop } from "../glass"
 
 /**
  * Smoked Obsidian: a warm amber on pure greys, in the classic shell the
@@ -57,7 +58,7 @@ export const smokedObsidian: PresetDefinition = {
       // page canvas and its grain show through.
       shellGroundFill:
         "radial-gradient(70% 55% at 80% -10%, hsl(var(--primary) / 0.14), transparent 60%)",
-      surfaceBackdrop: "blur(20px) saturate(90%)",
+      surfaceBackdrop: glassBackdrop("saturate(90%)"),
       cardBorder: "hsl(var(--foreground) / 0.1)",
       cardEdge:
         "inset 0 1px 0 rgb(255 255 255 / 0.7), 0 12px 32px -8px hsl(var(--foreground) / 0.18)",
@@ -73,7 +74,7 @@ export const smokedObsidian: PresetDefinition = {
     dark: {
       shellGroundFill:
         "radial-gradient(70% 55% at 80% -10%, hsl(var(--primary) / 0.2), transparent 60%)",
-      surfaceBackdrop: "blur(20px) saturate(110%) brightness(0.7)",
+      surfaceBackdrop: glassBackdrop("saturate(110%) brightness(0.7)"),
       cardBorder: "rgb(255 255 255 / 0.07)",
       cardEdge:
         "inset 0 1px 0 rgb(255 255 255 / 0.05), 0 20px 50px -12px rgb(0 0 0 / 0.6)",

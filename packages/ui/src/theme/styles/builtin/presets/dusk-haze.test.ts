@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest"
 import { written } from "@test/preset-tokens"
 import { resolveRegistry } from "../../../config/registry"
 import { KIT_FALLBACK } from "../../../config/tokens"
-import { glass } from "../glass"
 import { duskHaze } from "./dusk-haze"
 
 /** The engine tokens a value names, sorted. */
@@ -86,8 +85,12 @@ describe("Dusk Haze", () => {
   it("makes cards thin glass through tokens the kit's fallback resets", () => {
     expect(light.surfaceFillAlpha).toBe("0.72")
     expect(dark.surfaceFillAlpha).toBe("0.7")
-    expect(light.surfaceBackdrop).toBe("blur(20px) saturate(140%)")
-    expect(dark.surfaceBackdrop).toBe("blur(20px)")
+    expect(light.surfaceBackdrop).toBe(
+      "var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(140%))",
+    )
+    expect(dark.surfaceBackdrop).toBe(
+      "var(--glass-backdrop-off, blur(var(--glass-blur)))",
+    )
     const translucency = written(duskHaze.tokens).filter((token) =>
       /Backdrop$|Alpha$/.test(token),
     )
@@ -151,22 +154,5 @@ describe("Dusk Haze", () => {
       checkRadius: "calc(var(--radius) * 0.25)",
       navItemRadius: "calc(var(--radius) * 0.5)",
     })
-  })
-
-  // Glass keys these on the glassTransparency and glassBlur axes; a preset that
-  // set one would take the axis away from the user.
-  it("leaves the overlay fill and every overlay blur to the glass axes", () => {
-    const owned = [
-      ...new Set(
-        glass.when?.flatMap((entry) => Object.keys(entry.tokens ?? {})),
-      ),
-    ]
-    expect(owned).toEqual([
-      "overlayFillBase",
-      "overlayBackdrop",
-      "scrimBackdrop",
-    ])
-    const tokens = written(duskHaze.tokens)
-    expect(tokens.filter((token) => owned.includes(token))).toEqual([])
   })
 })

@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest"
 import { written } from "@test/preset-tokens"
 import { resolveRegistry } from "../../../config/registry"
 import { KIT_FALLBACK } from "../../../config/tokens"
-import { glass } from "../glass"
 import { auroraNight } from "./aurora-night"
 
 describe("Aurora Night", () => {
@@ -84,7 +83,9 @@ describe("Aurora Night", () => {
   it("makes cards thin glass through tokens the kit's fallback resets", () => {
     expect(light.surfaceFillAlpha).toBe("0.62")
     expect(dark.surfaceFillAlpha).toBe("0.55")
-    expect(shared.surfaceBackdrop).toBe("blur(20px) saturate(160%)")
+    expect(shared.surfaceBackdrop).toBe(
+      "var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(160%))",
+    )
     const translucency = written(auroraNight.tokens).filter((token) =>
       /Backdrop$|Alpha$/.test(token),
     )
@@ -113,22 +114,5 @@ describe("Aurora Night", () => {
       expect(rail).toBeLessThan(cards)
       expect(tokens.chromeFlatFill).toBeUndefined()
     }
-  })
-
-  // Glass keys these on the glassTransparency and glassBlur axes; a preset that
-  // set one would take the axis away from the user.
-  it("leaves the overlay fill and every overlay blur to the glass axes", () => {
-    const owned = [
-      ...new Set(
-        glass.when?.flatMap((entry) => Object.keys(entry.tokens ?? {})),
-      ),
-    ]
-    expect(owned).toEqual([
-      "overlayFillBase",
-      "overlayBackdrop",
-      "scrimBackdrop",
-    ])
-    const tokens = written(auroraNight.tokens)
-    expect(tokens.filter((token) => owned.includes(token))).toEqual([])
   })
 })

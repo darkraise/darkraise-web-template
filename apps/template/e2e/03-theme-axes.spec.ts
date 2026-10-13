@@ -241,11 +241,11 @@ test.describe("glass axes", () => {
     consoleWatch.assertClean()
   })
 
-  // The scrim blurs the app a fifth as hard as an overlay blurs what it
-  // covers (theme/styles/builtin/glass.ts); the chrome takes no blur.
+  // Every step saturates overlays alike and blurs the scrim a fifth as
+  // hard or less (theme/styles/builtin/glass.ts); the chrome takes no blur.
   const blurs: Record<(typeof GLASS_BLURS)[number], [string, string]> = {
     none: ["none", "none"],
-    low: ["blur(10px) saturate(1.6)", "blur(2px)"],
+    low: ["blur(10px) saturate(1.8)", "blur(2px)"],
     medium: ["blur(20px) saturate(1.8)", "blur(4px)"],
     high: ["blur(32px) saturate(1.8)", "blur(8px)"],
   }

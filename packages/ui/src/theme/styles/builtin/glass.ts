@@ -3,6 +3,18 @@ import { TRANSPARENCY_SCALE } from "../../config/transparency"
 import { GLASS_TRANSPARENCIES } from "../../types"
 
 /**
+ * A backdrop the Blur setting sizes: `blur` defaults to the step's
+ * `--glass-blur`, `filters` follow it, and the `none` step's
+ * `--glass-backdrop-off` replaces the whole value with `none`.
+ */
+export function glassBackdrop(
+  filters = "",
+  blur = "var(--glass-blur)",
+): string {
+  return `var(--glass-backdrop-off, blur(${blur})${filters ? ` ${filters}` : ""})`
+}
+
+/**
  * Glass only where content passes under chrome: opaque, calm content on a
  * dot canvas, a docked solid rail, a top bar that dissolves what scrolls
  * beneath it, and menus as the one floating glass. The scrim frosts the app
@@ -38,6 +50,9 @@ export const glass: StyleDefinition = {
       buttonNeutralFill: "hsl(var(--card))",
       fieldFocusRing: "0 0 0 3px hsl(var(--primary) / 0.15)",
       scrim: "hsl(var(--foreground) / 0.3)",
+      surfaceBackdrop: glassBackdrop("saturate(180%)"),
+      overlayBackdrop: glassBackdrop("saturate(180%)"),
+      scrimBackdrop: glassBackdrop("", "var(--glass-scrim-blur)"),
     },
     // The docked rail is solid on the grounds every selection look clears at
     // 1.2:1: the page in light, the card tone in dark.
@@ -79,33 +94,23 @@ export const glass: StyleDefinition = {
         "--glass-transparency-scale": String(TRANSPARENCY_SCALE[step]),
       },
     })),
-    // `none` rather than blur(0): any filter value creates a containing
-    // block for fixed descendants. The scrim blurs the app a fifth as hard
-    // as an overlay blurs what it covers.
-    {
-      axes: { glassBlur: "none" },
-      tokens: { overlayBackdrop: "none", scrimBackdrop: "none" },
-    },
+    // The blur steps write sizes, not backdrops, so a preset keeps its own
+    // filters. `none` switches every glass backdrop to the keyword `none`
+    // rather than blur(0): any filter value creates a containing block for
+    // fixed descendants. The scrim blurs the app a fifth as hard as an
+    // overlay blurs what it covers, or a quarter at the highest step.
+    { axes: { glassBlur: "none" }, vars: { "--glass-backdrop-off": "none" } },
     {
       axes: { glassBlur: "low" },
-      tokens: {
-        overlayBackdrop: "blur(10px) saturate(160%)",
-        scrimBackdrop: "blur(2px)",
-      },
+      vars: { "--glass-blur": "10px", "--glass-scrim-blur": "2px" },
     },
     {
       axes: { glassBlur: "medium" },
-      tokens: {
-        overlayBackdrop: "blur(20px) saturate(180%)",
-        scrimBackdrop: "blur(4px)",
-      },
+      vars: { "--glass-blur": "20px", "--glass-scrim-blur": "4px" },
     },
     {
       axes: { glassBlur: "high" },
-      tokens: {
-        overlayBackdrop: "blur(32px) saturate(180%)",
-        scrimBackdrop: "blur(8px)",
-      },
+      vars: { "--glass-blur": "32px", "--glass-scrim-blur": "8px" },
     },
   ],
   forcedFallback: {

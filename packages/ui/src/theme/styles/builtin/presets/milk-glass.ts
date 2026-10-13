@@ -1,4 +1,5 @@
 import type { PresetDefinition } from "../../../config/schema"
+import { glassBackdrop } from "../glass"
 
 /**
  * Milk Glass: a deep orange on cool neutrals in a flat shell. Coral is the
@@ -32,7 +33,7 @@ export const milkGlass: PresetDefinition = {
   },
   tokens: {
     shared: {
-      surfaceBackdrop: "blur(32px) saturate(180%)",
+      surfaceBackdrop: glassBackdrop("saturate(180%)"),
       cardRadius: "calc(var(--radius) * 2.75)",
       overlayRadius: "calc(var(--radius) * 2)",
       dialogRadius: "calc(var(--radius) * 3.5)",
