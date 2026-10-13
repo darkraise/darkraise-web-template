@@ -252,6 +252,22 @@ const LEGACY_USERS: {
     removed: ["theme-preset"],
     kept: { "theme-style": "glass" },
   },
+  {
+    // A 7.0 development build stored Glass's opacity under its old names.
+    name: "a browser at revision 4 with a strong glass opacity",
+    stored: {
+      "theme-settings-version": "4",
+      "theme-style": "glass",
+      "theme-glass-opacity": "strong",
+    },
+    painted: {
+      "data-style": "glass",
+      "data-glass-transparency": "high",
+    },
+    absent: [],
+    removed: [],
+    kept: { "theme-style": "glass", "theme-glass-opacity": "high" },
+  },
 ]
 
 for (const user of LEGACY_USERS) {

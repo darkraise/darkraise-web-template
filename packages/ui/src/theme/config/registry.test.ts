@@ -27,7 +27,7 @@ const BUILTINS: Record<string, StyleDefinition> = {
     },
     when: [
       {
-        axes: { glassTransparency: "subtle" },
+        axes: { glassTransparency: "low" },
         tokens: { overlayFillBase: "a" },
       },
     ],

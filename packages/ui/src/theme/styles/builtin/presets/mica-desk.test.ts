@@ -48,7 +48,6 @@ describe("Mica Desk", () => {
       radius: "subtle",
       gradientPattern: "blobs",
       backgroundIntensity: "balanced",
-      glassTransparency: "subtle",
     })
   })
 

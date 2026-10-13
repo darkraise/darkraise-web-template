@@ -34,13 +34,13 @@
 }
 
 @layer style.when {
-  [data-style="glass"][data-glass-transparency="subtle"] {
+  [data-style="glass"][data-glass-transparency="low"] {
     --surface-overlay-base: hsl(var(--popover) / 0.88);
   }
   [data-style="glass"][data-glass-transparency="medium"] {
     --surface-overlay-base: hsl(var(--popover) / 0.8);
   }
-  [data-style="glass"][data-glass-transparency="strong"] {
+  [data-style="glass"][data-glass-transparency="high"] {
     --surface-overlay-base: hsl(var(--popover) / 0.62);
   }
   [data-style="glass"][data-glass-blur="none"] {

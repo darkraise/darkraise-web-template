@@ -65,9 +65,9 @@ function declares(layer: string, selector: string, name: string): boolean {
 
 describe("glass overlays", () => {
   it.each([
-    ["subtle", "0.88"],
+    ["low", "0.88"],
     ["medium", "0.8"],
-    ["strong", "0.62"],
+    ["high", "0.62"],
   ] as const)("bases a %s overlay on the popover at %s", (opacity, alpha) => {
     expect(
       valueOf(

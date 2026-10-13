@@ -58,7 +58,7 @@ export const glass: StyleDefinition = {
     // The overlay is the popover colour itself, let through by the opacity
     // step, so it stays readable where the blur is unavailable.
     {
-      axes: { glassTransparency: "subtle" },
+      axes: { glassTransparency: "low" },
       tokens: { overlayFillBase: "hsl(var(--popover) / 0.88)" },
     },
     {
@@ -66,7 +66,7 @@ export const glass: StyleDefinition = {
       tokens: { overlayFillBase: "hsl(var(--popover) / 0.8)" },
     },
     {
-      axes: { glassTransparency: "strong" },
+      axes: { glassTransparency: "high" },
       tokens: { overlayFillBase: "hsl(var(--popover) / 0.62)" },
     },
     // `none` rather than blur(0): any filter value creates a containing

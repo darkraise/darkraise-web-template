@@ -147,8 +147,8 @@ export type SidebarSelection = Exclude<SidebarSelectionSetting, "auto">
 export const GLOW_LEVELS = ["none", "subtle", "balanced", "vivid"] as const
 export type GlowLevel = (typeof GLOW_LEVELS)[number]
 
-/** How much of the canvas Glass's frosted chrome lets through. */
-export const GLASS_TRANSPARENCIES = ["subtle", "medium", "strong"] as const
+/** How much of what lies behind Glass's cards and overlays shows through; `high` lets the most through. */
+export const GLASS_TRANSPARENCIES = ["low", "medium", "high"] as const
 export type GlassTransparency = (typeof GLASS_TRANSPARENCIES)[number]
 
 /** Backdrop blur behind Glass's frosted chrome. */

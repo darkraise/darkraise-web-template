@@ -141,14 +141,18 @@ describe("ThemeSwitcher style section", () => {
     ])
   })
 
-  it("toggling glass-opacity updates the data attribute", () => {
+  it("toggling glass transparency updates the data attribute", () => {
     renderSwitcher()
     openSwitcher()
     fireEvent.click(screen.getByRole("radio", { name: "Glass" }))
-    fireEvent.click(screen.getByRole("radio", { name: /^strong$/i }))
+    fireEvent.click(
+      within(
+        screen.getByRole("radiogroup", { name: "Transparency" }),
+      ).getByRole("radio", { name: /^high$/i }),
+    )
     expect(
       document.documentElement.getAttribute("data-glass-transparency"),
-    ).toBe("strong")
+    ).toBe("high")
   })
 })
 

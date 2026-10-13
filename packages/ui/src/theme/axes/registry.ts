@@ -126,7 +126,7 @@ export const AXES = {
     layer: "style",
     control: "choice",
   }),
-  /** How much of the canvas Glass's frosted chrome lets through. */
+  /** How much of what lies behind Glass's cards and overlays shows through; `high` lets the most through. */
   glassTransparency: axis({
     values: GLASS_TRANSPARENCIES,
     default: "medium",

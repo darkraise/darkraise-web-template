@@ -46,7 +46,6 @@ describe("Milk Glass", () => {
       headingFont: "body",
       gradientPattern: "blobs",
       backgroundIntensity: "subtle",
-      glassTransparency: "subtle",
       glassBlur: "high",
     })
   })

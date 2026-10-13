@@ -211,7 +211,7 @@ test.describe("glass axes", () => {
     )
   }
 
-  test("glass opacity thins the overlay from subtle to strong", async ({
+  test("glass transparency thins the overlay from low to high", async ({
     page,
   }) => {
     const consoleWatch = watchConsole(page)
@@ -833,7 +833,7 @@ test.describe("axis combinations", () => {
         accent: "violet",
         surface: "sand",
         tintWithAccent: "off",
-        glassTransparency: "strong",
+        glassTransparency: "high",
         glassBlur: "high",
       },
       expect: {
@@ -848,7 +848,7 @@ test.describe("axis combinations", () => {
         "data-accent": "violet",
         "data-surface": "sand",
         "data-tint-with-accent": "off",
-        "data-glass-transparency": "strong",
+        "data-glass-transparency": "high",
         "data-glass-blur": "high",
       },
     },
@@ -876,7 +876,7 @@ test.describe("theme persistence", () => {
   test("all axes round-trip through localStorage", async ({ page }) => {
     const seed = {
       style: "glass",
-      glassTransparency: "subtle",
+      glassTransparency: "low",
       glassBlur: "low",
       mode: "dark",
       accent: "teal",

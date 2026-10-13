@@ -2,7 +2,7 @@ import { STYLE_NAMES } from "@theme/styles"
 import { AXES, AXIS_KEYS, isAxisValue } from "./registry"
 
 /** The table's revision; a browser stores the one it last ran. */
-export const LEGACY_REVISION = 4
+export const LEGACY_REVISION = 5
 
 export const LEGACY_MARKER_KEY = "theme-settings-version"
 
@@ -62,6 +62,18 @@ const V6_ACCENT_SURFACES = [
 ]
 
 export const LEGACY_RULES: readonly LegacyRule[] = [
+  // 7.0 renamed Glass's opacity steps to transparency steps and kept the
+  // key. First in the table, so the revision 1 rules below see a renamed
+  // value as one the user already holds. Payloads carry no such field: a
+  // 6.x payload nests the value, and liftPresetAxisValues renames it.
+  {
+    since: 5,
+    when: [{ key: "theme-glass-opacity", values: ["subtle", "strong"] }],
+    map: {
+      subtle: { "theme-glass-opacity": "low" },
+      strong: { "theme-glass-opacity": "high" },
+    },
+  },
   {
     since: 1,
     when: [{ key: "theme-preset", field: "preset", values: ["glassmorphism"] }],
@@ -71,9 +83,9 @@ export const LEGACY_RULES: readonly LegacyRule[] = [
     since: 1,
     when: [{ key: "theme-glassmorphism-opacity" }],
     map: {
-      subtle: { "theme-glass-opacity": "subtle" },
+      subtle: { "theme-glass-opacity": "low" },
       medium: { "theme-glass-opacity": "medium" },
-      strong: { "theme-glass-opacity": "strong" },
+      strong: { "theme-glass-opacity": "high" },
     },
     remove: ["theme-glassmorphism-opacity"],
   },
@@ -431,11 +443,18 @@ const LIFTED_GLASS_AXES = [
   ["blur", "glassBlur"],
 ] as const
 
+// 6.x's opacity steps under their 7.0 transparency names.
+const LIFTED_VALUES: Readonly<Record<string, string>> = {
+  subtle: "low",
+  strong: "high",
+}
+
 /**
  * 6.x payloads nest glass's axes in `presetAxisValues.glass`, which the table
- * cannot read. Lifts each valid value to its registry field and drops
- * `presetAxisValues`. `medium` is skipped: the 6.x provider filled it in as a
- * default, so it was never the user's choice.
+ * cannot read. Lifts each valid value to its registry field, opacity under
+ * its 7.0 transparency name, and drops `presetAxisValues`. `medium` is
+ * skipped: the 6.x provider filled it in as a default, so it was never the
+ * user's choice.
  */
 export function liftPresetAxisValues(
   input: Record<string, unknown>,
@@ -444,7 +463,11 @@ export function liftPresetAxisValues(
   const glass = isRecord(presetAxisValues) ? presetAxisValues.glass : undefined
   if (isRecord(glass)) {
     for (const [axis, key] of LIFTED_GLASS_AXES) {
-      const value = glass[axis]
+      const raw = glass[axis]
+      const value =
+        axis === "opacity" && typeof raw === "string"
+          ? (LIFTED_VALUES[raw] ?? raw)
+          : raw
       if (value !== "medium" && isAxisValue(key, value)) out[key] = value
     }
   }

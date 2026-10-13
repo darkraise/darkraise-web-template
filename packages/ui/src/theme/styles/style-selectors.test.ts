@@ -376,12 +376,12 @@ describe("style files", () => {
     ':root[data-style="glass"]',
     'html[data-style="glass"]',
     '[data-mode="dark"][data-style="glass"]',
-    '[data-style="glass"][data-glass-transparency="subtle"]',
+    '[data-style="glass"][data-glass-transparency="low"]',
     '[data-background-style="gradient"][data-style="glass"][data-glass-blur="none"]',
     // Presence-only context attributes raise specificity without naming a value.
     '[data-style="glass"][data-mode][data-glass-transparency][data-glass-blur][data-background-style]',
     '[data-style="glass"]:not([data-mode="dark"])',
-    '[data-style="glass"]:not([data-mode="dark"])[data-glass-transparency="subtle"]',
+    '[data-style="glass"]:not([data-mode="dark"])[data-glass-transparency="low"]',
   ])("accepts %s for glass", (selector) => {
     expect(selectorProblem(selector, "glass")).toBeNull()
   })

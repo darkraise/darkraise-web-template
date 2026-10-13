@@ -132,9 +132,9 @@
   },
   "glassTransparency": {
     "values": [
-      "subtle",
+      "low",
       "medium",
-      "strong"
+      "high"
     ],
     "default": "medium",
     "storageKey": "theme-glass-opacity",

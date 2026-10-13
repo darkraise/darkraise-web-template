@@ -582,14 +582,14 @@ test.describe("glass axis controls", () => {
     await gotoApp(page, PROBE)
     await openThemeSwitcher(page)
 
-    await glassTransparencyOption(page, "strong").click()
+    await glassTransparencyOption(page, "high").click()
     await setAxisSlider(page, GLASS_BLUR_LABEL, GLASS_BLURS.indexOf("low"))
     await expect
       .poll(async () => {
         const attrs = await readThemeAttrs(page)
         return [attrs["data-glass-transparency"], attrs["data-glass-blur"]]
       })
-      .toEqual(["strong", "low"])
+      .toEqual(["high", "low"])
 
     await selectStyle(page, "quiet")
     await expect
@@ -597,18 +597,18 @@ test.describe("glass axis controls", () => {
       .not.toContain(GLASS_TRANSPARENCY_LABEL)
     // Hidden, not cleared: the attributes stay stamped under every style.
     const underQuiet = await readThemeAttrs(page)
-    expect(underQuiet["data-glass-transparency"]).toBe("strong")
+    expect(underQuiet["data-glass-transparency"]).toBe("high")
     expect(underQuiet["data-glass-blur"]).toBe("low")
 
     await selectStyle(page, "glass")
-    await expect(glassTransparencyOption(page, "strong")).toBeChecked()
+    await expect(glassTransparencyOption(page, "high")).toBeChecked()
     await expect(
       themeSwitcher(page).getByRole("slider", { name: GLASS_BLUR_LABEL }),
     ).toHaveAttribute("aria-valuenow", String(GLASS_BLURS.indexOf("low")))
 
     await reloadApp(page)
     const reloaded = await readThemeAttrs(page)
-    expect(reloaded["data-glass-transparency"]).toBe("strong")
+    expect(reloaded["data-glass-transparency"]).toBe("high")
     expect(reloaded["data-glass-blur"]).toBe("low")
   })
 })

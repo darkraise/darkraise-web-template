@@ -244,15 +244,15 @@ const EDGE_THEMES = [
       backgroundIntensity: "intense",
     },
   },
-  // Opacity changes how much of the page a frosted face lets through, so
+  // Transparency changes how much of the page a frosted face lets through, so
   // the lifted faces differ at each end of the range.
   {
-    name: "glass subtle opacity",
-    seed: { style: "glass", glassTransparency: "subtle" },
+    name: "glass low transparency",
+    seed: { style: "glass", glassTransparency: "low" },
   },
   {
-    name: "glass strong opacity",
-    seed: { style: "glass", glassTransparency: "strong" },
+    name: "glass high transparency",
+    seed: { style: "glass", glassTransparency: "high" },
   },
 ]
 

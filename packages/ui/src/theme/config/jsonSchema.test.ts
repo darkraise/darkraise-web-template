@@ -29,7 +29,7 @@ const VALID = {
       label: "Glass ink",
       extends: "glass",
       frosted: true,
-      defaults: { glassTransparency: "subtle" },
+      defaults: { glassTransparency: "low" },
       vars: {
         shared: { "--glass-ink-edge": "hsl(var(--primary-8) / 0.4)" },
         dark: { "--glass-ink-edge": "hsl(var(--primary-4) / 0.4)" },
@@ -41,7 +41,7 @@ const VALID = {
       },
       when: [
         {
-          axes: { glassTransparency: "strong", glassBlur: "none" },
+          axes: { glassTransparency: "high", glassBlur: "none" },
           mode: "dark",
           tokens: { overlayFillBase: "black" },
           vars: { "--glass-ink-edge": "white" },

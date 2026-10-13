@@ -47,7 +47,6 @@ describe("Smoked Obsidian", () => {
       headingFont: "body",
       darkAccentChroma: "calm",
       gradientPattern: "grain",
-      glassTransparency: "subtle",
     })
   })
 

@@ -56,6 +56,13 @@ function migrated(seed: Record<string, string>): Record<string, string> {
 
 const MARKER = String(LEGACY_REVISION)
 
+/** 6.x's opacity steps under their 7.0 transparency names. */
+const OPACITY_7: Readonly<Record<string, string>> = {
+  subtle: "low",
+  medium: "medium",
+  strong: "high",
+}
+
 // The layout store reads these; no rule touches them.
 const OUTSIDE_THEME = new Set(["theme-shell-style", "layout-variant"])
 
@@ -107,11 +114,14 @@ describe("LEGACY_RULES", () => {
     }
   })
 
-  it("run revision 1, then three revision 2 rules, then one rule each for revisions 3 and 4", () => {
-    expect(LEGACY_REVISION).toBe(4)
+  // Revision 5 runs first, so a value it renames counts as already stored
+  // when the revision 1 rules decide whether to write over it.
+  it("run the revision 5 rule, then revision 1, then three revision 2 rules, then one rule each for revisions 3 and 4", () => {
+    expect(LEGACY_REVISION).toBe(5)
     const revisions = LEGACY_RULES.map((rule) => rule.since)
+    expect(revisions[0]).toBe(5)
     const first = revisions.indexOf(2)
-    expect(revisions.slice(0, first).every((since) => since === 1)).toBe(true)
+    expect(revisions.slice(1, first).every((since) => since === 1)).toBe(true)
     expect(revisions.slice(first)).toEqual([2, 2, 2, 3, 4])
   })
 
@@ -167,7 +177,7 @@ describe("migrateStorage", () => {
         "theme-glassmorphism-opacity": "strong",
         "theme-glassmorphism-blur": "high",
       },
-      { "theme-glass-opacity": "strong", "theme-glass-blur": "high" },
+      { "theme-glass-opacity": "high", "theme-glass-blur": "high" },
     ],
     [
       "keeps a glass axis already stored",
@@ -175,7 +185,7 @@ describe("migrateStorage", () => {
         "theme-glassmorphism-opacity": "strong",
         "theme-glass-opacity": "subtle",
       },
-      { "theme-glass-opacity": "subtle" },
+      { "theme-glass-opacity": "low" },
     ],
     [
       "seeds background intensity from the canvas tint",
@@ -515,7 +525,7 @@ describe("revision 2 in storage", () => {
     [
       "keeps a non-medium glass opacity and blur",
       { "theme-glass-opacity": "strong", "theme-glass-blur": "low" },
-      { "theme-glass-opacity": "strong", "theme-glass-blur": "low" },
+      { "theme-glass-opacity": "high", "theme-glass-blur": "low" },
     ],
     [
       "renames a medium glassmorphism opacity, then removes it",
@@ -533,7 +543,7 @@ describe("revision 2 in storage", () => {
         "theme-glassmorphism-opacity": "medium",
         "theme-glass-opacity": "subtle",
       },
-      { "theme-glass-opacity": "subtle" },
+      { "theme-glass-opacity": "low" },
     ],
   ])("%s", (_, seed, expected) => {
     expect(migrated(seed)).toEqual(expected)
@@ -547,8 +557,10 @@ describe("revision 2 in storage", () => {
       },
     ]),
   )("keeps %s=%s only when it is not medium", (key, value) => {
+    const kept =
+      key === "theme-glass-opacity" ? (OPACITY_7[value] ?? value) : value
     expect(migrated({ [key]: value })).toEqual(
-      value === "medium" ? {} : { [key]: value },
+      value === "medium" ? {} : { [key]: kept },
     )
   })
 
@@ -568,6 +580,41 @@ describe("revision 2 in storage", () => {
       "theme-glass-blur": "high",
       "theme-elevation": "low",
       "theme-canvas-tint": "vivid",
+    })
+  })
+})
+
+describe("revision 5 in storage", () => {
+  it.each([
+    ["subtle", "low"],
+    ["strong", "high"],
+  ])("renames a stored %s opacity to %s", (stored, renamed) => {
+    const storage = memoryStorage({
+      [LEGACY_MARKER_KEY]: "4",
+      "theme-glass-opacity": stored,
+    })
+    migrateStorage(storage)
+    expect(storage.contents()).toEqual({
+      [LEGACY_MARKER_KEY]: MARKER,
+      "theme-glass-opacity": renamed,
+    })
+  })
+
+  it.each(["low", "medium", "high"])("keeps a stored %s", (value) => {
+    const storage = memoryStorage({
+      [LEGACY_MARKER_KEY]: "4",
+      "theme-glass-opacity": value,
+    })
+    migrateStorage(storage)
+    expect(storage.contents()).toEqual({
+      [LEGACY_MARKER_KEY]: MARKER,
+      "theme-glass-opacity": value,
+    })
+  })
+
+  it("leaves a payload's transparency to the 6.x lift", () => {
+    expect(migratePayload({ glassTransparency: "strong" })).toEqual({
+      glassTransparency: "strong",
     })
   })
 })
@@ -608,8 +655,19 @@ describe("revision 4 in storage", () => {
     })
   })
 
-  it("leaves a browser already at revision 4 alone", () => {
+  it("runs no older rule on a browser already at revision 4", () => {
     const seed = { [LEGACY_MARKER_KEY]: "4", "theme-preset": "glass" }
+    const storage = memoryStorage(seed)
+    migrateStorage(storage)
+    expect(storage.contents()).toEqual({ ...seed, [LEGACY_MARKER_KEY]: MARKER })
+  })
+
+  it("leaves a browser already at revision 5 alone", () => {
+    const seed = {
+      [LEGACY_MARKER_KEY]: "5",
+      "theme-preset": "glass",
+      "theme-glass-opacity": "strong",
+    }
     const storage = memoryStorage(seed)
     migrateStorage(storage)
     expect(storage.contents()).toEqual(seed)
@@ -758,7 +816,7 @@ describe("migratePayload", () => {
       {
         style: "glass",
         backgroundStyle: "gradient",
-        glassTransparency: "strong",
+        glassTransparency: "high",
       },
     ],
     [
@@ -820,10 +878,12 @@ describe("liftPresetAxisValues", () => {
         accentColor: "rose",
         presetAxisValues: { glass: { [axis]: value } },
       })
+      const field = LIFTED_FIELDS[axis] as string
+      const kept = axis === "opacity" ? (OPACITY_7[value] ?? value) : value
       expect(lifted).toEqual(
         value === "medium"
           ? { accentColor: "rose" }
-          : { accentColor: "rose", [LIFTED_FIELDS[axis] as string]: value },
+          : { accentColor: "rose", [field]: kept },
       )
     },
   )
@@ -859,7 +919,7 @@ describe("liftPresetAxisValues", () => {
         glass: Object.freeze({ opacity: "strong" }),
       }),
     })
-    expect(liftPresetAxisValues(input)).toEqual({ glassTransparency: "strong" })
+    expect(liftPresetAxisValues(input)).toEqual({ glassTransparency: "high" })
     expect(input).toEqual({
       presetAxisValues: { glass: { opacity: "strong" } },
     })

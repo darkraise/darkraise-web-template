@@ -36,7 +36,7 @@ export const themeConfig = defineThemeConfig({
       style: "glass-ink",
       axes: {
         accentColor: "indigo",
-        glassTransparency: "strong",
+        glassTransparency: "high",
         radius: "sharp",
       },
       tokens: { dark: { cardEdge: "0 0 0 1px var(--glass-ink-line)" } },

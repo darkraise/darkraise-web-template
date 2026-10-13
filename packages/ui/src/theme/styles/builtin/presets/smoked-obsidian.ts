@@ -19,7 +19,6 @@ export const smokedObsidian: PresetDefinition = {
     headingFont: "body",
     darkAccentChroma: "calm",
     gradientPattern: "grain",
-    glassTransparency: "subtle",
   },
   signatures: {
     navSelection: "accent",

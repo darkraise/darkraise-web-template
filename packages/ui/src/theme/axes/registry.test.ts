@@ -157,7 +157,7 @@ describe("axis registry", () => {
       attribute: "data-style",
     })
     expect(AXES.glassTransparency).toMatchObject({
-      values: ["subtle", "medium", "strong"],
+      values: ["low", "medium", "high"],
       default: "medium",
       storageKey: "theme-glass-opacity",
       attribute: "data-glass-transparency",

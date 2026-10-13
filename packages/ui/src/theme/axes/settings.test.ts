@@ -80,11 +80,11 @@ describe("sanitizeSettings", () => {
   it("keeps the glass axes and drops the removed preset axis values", () => {
     expect(
       sanitizeSettings({
-        glassTransparency: "strong",
+        glassTransparency: "high",
         glassBlur: "cloudy",
         presetAxisValues: { glass: { blur: "high" } },
       }),
-    ).toEqual({ glassTransparency: "strong" })
+    ).toEqual({ glassTransparency: "high" })
   })
 
   it("treats a non-object payload as empty", () => {

@@ -17,7 +17,7 @@ export const BASELINE_STYLES = [
   "glass",
 ] as const satisfies readonly Style[]
 
-export const GLASS_TRANSPARENCIES = ["subtle", "medium", "strong"] as const
+export const GLASS_TRANSPARENCIES = ["low", "medium", "high"] as const
 export const GLASS_BLURS = ["none", "low", "medium", "high"] as const
 
 export const ACCENT_COLORS = [

@@ -50,7 +50,7 @@ function cases(style: StyleName): Case[] {
         "theme-style": style,
         "theme-elevation": "high",
         "theme-bg-style": "solid",
-        "theme-glass-opacity": "strong",
+        "theme-glass-opacity": "high",
       }),
       { elevation: "standard", backgroundStyle: "gradient" },
     ],

@@ -85,12 +85,12 @@ describe("ThemeProvider style orchestration", () => {
   it("keeps a glass opacity across a round trip through another style", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
     act(() => result.current.setStyle("glass"))
-    act(() => result.current.setGlassTransparency("strong"))
-    expect(root.getAttribute("data-glass-transparency")).toBe("strong")
+    act(() => result.current.setGlassTransparency("high"))
+    expect(root.getAttribute("data-glass-transparency")).toBe("high")
     act(() => result.current.setStyle("quiet"))
     act(() => result.current.setStyle("glass"))
-    expect(result.current.glassTransparency).toBe("strong")
-    expect(root.getAttribute("data-glass-transparency")).toBe("strong")
+    expect(result.current.glassTransparency).toBe("high")
+    expect(root.getAttribute("data-glass-transparency")).toBe("high")
   })
 
   it("restores the glass axes from storage on remount", () => {
