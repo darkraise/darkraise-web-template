@@ -243,6 +243,26 @@ describe("glass translucency contrast", () => {
     }
   })
 
+  // Transparency reaches popups and dialogs only through --overlay-alpha, so
+  // a fill with an alpha of its own would ignore the setting.
+  it("paints popups and dialogs at the overlay alpha in every look", () => {
+    const looks = [...LOOKS, { name: "soft-glass", preset: "soft-glass" }]
+    for (const look of looks) {
+      for (const mode of ["light", "dark"] as const) {
+        const paint = resolvedTokens(
+          registry.styles.glass?.tokens,
+          registry.presets[look.preset]?.tokens,
+          mode,
+        )
+        for (const token of ["dialogFill", "overlayFillBase"]) {
+          expect(paint[token], `${look.name} ${mode} ${token}`).toMatch(
+            /^hsl\(var\(--[\w-]+\) \/ var\(--overlay-alpha\)\)$/,
+          )
+        }
+      }
+    }
+  })
+
   it.each(
     LOOKS.flatMap((look) =>
       (["light", "dark"] as const).map(
