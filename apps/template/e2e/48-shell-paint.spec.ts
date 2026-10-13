@@ -340,7 +340,7 @@ test("a floating glass plane stays clear", async ({ page }) => {
   )
 })
 
-// Aurora Night declares translucent cards (0.62 light, 0.55 dark), and the
+// Aurora Night declares translucent cards (0.62 light, 0.57 dark), and the
 // pane reads the effective --surface-alpha, so it lets the canvas in.
 for (const mode of ["light", "dark"]) {
   test(`a glass pane is translucent page colour · ${mode}`, async ({

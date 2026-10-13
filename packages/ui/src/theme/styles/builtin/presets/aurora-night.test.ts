@@ -82,7 +82,7 @@ describe("Aurora Night", () => {
 
   it("makes cards thin glass through tokens the kit's fallback resets", () => {
     expect(light.surfaceFillAlpha).toBe("0.62")
-    expect(dark.surfaceFillAlpha).toBe("0.55")
+    expect(dark.surfaceFillAlpha).toBe("0.57")
     expect(shared.surfaceBackdrop).toBe(
       "var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(160%))",
     )
