@@ -61,10 +61,9 @@ function whenValue(selector: string, name: string): string | undefined {
 }
 
 const GLASS_ROOT = '[data-style="glass"]'
-const MODES = ["light", "dark"] as const
 
 /** Glass's selector in one mode, with `rest` appended. */
-function inMode(mode: (typeof MODES)[number], rest = ""): string {
+function inMode(mode: "light" | "dark", rest = ""): string {
   return mode === "light"
     ? `${GLASS_ROOT}:not([data-mode="dark"])${rest}`
     : `[data-mode="dark"]${GLASS_ROOT}${rest}`
