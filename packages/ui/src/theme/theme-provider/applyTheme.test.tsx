@@ -82,7 +82,7 @@ describe("ThemeProvider style orchestration", () => {
     expect(localStorage.getItem("theme-style")).toBe("tactile")
   })
 
-  it("keeps a glass opacity across a round trip through another style", () => {
+  it("keeps a glass transparency across a round trip through another style", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
     act(() => result.current.setStyle("glass"))
     act(() => result.current.setGlassTransparency("high"))
@@ -121,7 +121,7 @@ describe("ThemeProvider style orchestration", () => {
     expect(style.getPropertyValue("--glass-noise")).toBe("")
   })
 
-  it("ignores an invalid glass opacity with a dev warning", () => {
+  it("ignores an invalid glass transparency with a dev warning", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
     act(() => result.current.setStyle("glass"))
