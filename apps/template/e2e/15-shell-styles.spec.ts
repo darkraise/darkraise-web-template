@@ -418,6 +418,12 @@ test.describe("shell style axis", () => {
       backgroundIntensity: "intense",
     })
     await gotoApp(page, "/")
+    // Under Gradient the shell paints no ground of its own; give it back the
+    // island ground so the strip and the clipped corner read against a plain one.
+    await page.addStyleTag({
+      content:
+        ".dr-shell { --shell-ground-gradient: color-mix(in oklab, hsl(var(--shell-ground)) 95%, hsl(var(--foreground))); }",
+    })
 
     const content = page.locator('[data-region="content"]')
     await expect(content).toHaveCSS("border-radius", "8px")
@@ -478,12 +484,18 @@ test.describe("shell style axis", () => {
 // Flat separates its chrome by tone alone. The tone must read (1.2:1 against
 // the content) without becoming an edge: it stays below what the theme's own
 // Classic nav border reaches against the same content.
+// Solid, because under Gradient the content shows the canvas art, not a ground.
 test.describe("flat light chrome tone", () => {
   for (const style of STYLES) {
     test(`flat nav reads as a tone, not an edge · ${style}`, async ({
       page,
     }) => {
-      await seedApp(page, { shellStyle: "classic", style, mode: "light" })
+      await seedApp(page, {
+        shellStyle: "classic",
+        style,
+        mode: "light",
+        backgroundStyle: "solid",
+      })
       await gotoApp(page, "/")
       const measure = async (shellStyle: ShellStyle) => {
         await expect(shell(page)).toHaveAttribute(
