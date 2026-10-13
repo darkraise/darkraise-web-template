@@ -254,7 +254,7 @@ describe("glass translucency contrast", () => {
           registry.presets[look.preset]?.tokens,
           mode,
         )
-        for (const token of ["dialogFill", "overlayFillBase"]) {
+        for (const token of ["dialogFill", "overlayFillBase"] as const) {
           expect(paint[token], `${look.name} ${mode} ${token}`).toMatch(
             /^hsl\(var\(--[\w-]+\) \/ var\(--overlay-alpha\)\)$/,
           )
