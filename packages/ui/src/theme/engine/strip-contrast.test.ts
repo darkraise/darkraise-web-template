@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest"
 import { composite, contrastRatio } from "@theme/engine/oklch"
 import {
+  canvasHueScale,
   contentStripGround,
   generateTokens,
   gradientCanvasPeak,
 } from "@theme/engine/generateTokens"
 import { comboName, reachableCombos } from "../../test/contrast-matrix"
-import { surfaceColors } from "@theme/palettes/surfaceColors"
 
 const STRIP_FLOORS = [
   ["--field-edge-color", 3],
@@ -167,7 +167,7 @@ describe("the content strip", () => {
       expect(tokens["--content-gradient-overlay"]).toBe("none")
       const peak = gradientCanvasPeak(
         tokens["--background"] as string,
-        surfaceColors[combo.surfaceColor][500],
+        canvasHueScale(combo.accentColor, combo.surfaceColor, true)[500],
         combo.mode,
         combo.backgroundIntensity,
       )

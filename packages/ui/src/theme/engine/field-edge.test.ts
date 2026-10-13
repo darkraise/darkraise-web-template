@@ -8,11 +8,10 @@ import {
   CANVAS_PEAK_SHARE,
   FROSTED_LIFTED_FACE_TINT,
   LIFTED_FACE_TINT,
+  canvasHueScale,
   generateTokens,
   gradientCanvasPeak,
 } from "@theme/engine/generateTokens"
-import { surfaceColors } from "@theme/palettes/surfaceColors"
-import type { SurfaceColor } from "@theme/types"
 import {
   comboName,
   finalTokens,
@@ -141,8 +140,12 @@ function renderedContrast(a: string, b: string): number {
 }
 
 // `--sf-hue`: the colour the gradient canvas paints over the page.
-function surfaceHue(surfaceColor: SurfaceColor): string {
-  return surfaceColors[surfaceColor][500]
+function surfaceHue(combo: ThemeCombo): string {
+  return canvasHueScale(
+    combo.accentColor,
+    combo.surfaceColor,
+    combo.frosted,
+  )[500]
 }
 
 function gradientTokens(combo: ThemeCombo): Record<string, string> {
@@ -172,7 +175,7 @@ describe("--field-edge-color under a gradient canvas", () => {
       }
       const peak = gradientCanvasPeak(
         page,
-        surfaceHue(combo.surfaceColor),
+        surfaceHue(combo),
         combo.mode,
         combo.backgroundIntensity,
       )

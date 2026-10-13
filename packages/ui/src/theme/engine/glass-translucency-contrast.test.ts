@@ -9,9 +9,11 @@ import {
   TRANSPARENCY_SCALE,
   effectiveAlpha,
 } from "@theme/config/transparency"
-import { gradientCanvasPeak } from "@theme/engine/generateTokens"
+import {
+  canvasHueScale,
+  gradientCanvasPeak,
+} from "@theme/engine/generateTokens"
 import { composite, contrastRatio } from "@theme/engine/oklch"
-import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { finalTokens } from "@test/contrast-matrix"
 import { resolvedTokens } from "@test/preset-tokens"
 
@@ -95,7 +97,7 @@ function failures(look: Look, mode: "light" | "dark"): string[] {
       "the canvas peak",
       gradientCanvasPeak(
         at("--background"),
-        surfaceColors[combo.surfaceColor][500],
+        canvasHueScale(combo.accentColor, combo.surfaceColor, true)[500],
         mode,
         combo.backgroundIntensity,
       ),

@@ -47,7 +47,7 @@ describe("built-in style records", () => {
     expect(styles.tactile?.defaults).toEqual({})
     expect(styles.glass?.defaults).toEqual({
       backgroundStyle: "gradient",
-      gradientPattern: "dots",
+      gradientPattern: "blobs",
     })
   })
 })

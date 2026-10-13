@@ -19,7 +19,6 @@ export const micaDesk: PresetDefinition = {
     font: "inter",
     headingFont: "body",
     radius: "subtle",
-    gradientPattern: "blobs",
     backgroundIntensity: "balanced",
   },
   signatures: {

@@ -15,9 +15,9 @@ export function glassBackdrop(
 }
 
 /**
- * Glass over a dot canvas: cards, menus, popovers and dialogs let a blurred
- * view of what lies behind them through, as far as the Transparency and Blur
- * settings say, and turn opaque under reduced transparency. The rail is
+ * Glass over accent-tinted blobs: cards, menus, popovers and dialogs let a
+ * blurred view of what lies behind them through, as far as the Transparency
+ * and Blur settings say, and turn opaque under reduced transparency. The rail is
  * docked and solid, the top bar dissolves what scrolls beneath it, and the
  * scrim frosts the app behind a dialog.
  */
@@ -33,7 +33,7 @@ export const glass: StyleDefinition = {
     tableHead: "plain",
   },
   frosted: true,
-  defaults: { backgroundStyle: "gradient", gradientPattern: "dots" },
+  defaults: { backgroundStyle: "gradient", gradientPattern: "blobs" },
   vars: {
     shared: {
       "--glass-noise": `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.08 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")`,

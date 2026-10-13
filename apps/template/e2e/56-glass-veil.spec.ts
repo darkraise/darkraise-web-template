@@ -31,14 +31,14 @@ function probe(page: Page, css: string, properties: string[]) {
 }
 
 for (const mode of MODES) {
-  test(`glass ${mode} stamps the veil, the dot canvas and its looks`, async ({
+  test(`glass ${mode} stamps the veil, the blob canvas and its looks`, async ({
     page,
   }) => {
     await seedApp(page, { style: "glass", mode })
     await gotoApp(page, "/")
     const attrs = await readThemeAttrs(page)
     expect(attrs["data-bar-edge"]).toBe("veil")
-    expect(attrs["data-gradient-pattern"]).toBe("dots")
+    expect(attrs["data-gradient-pattern"]).toBe("blobs")
     expect(attrs["data-menu-highlight"]).toBe("tint")
     expect(attrs["data-tooltip-tone"]).toBe("inverse")
     expect(attrs["data-banner-mark"]).toBe("icon")

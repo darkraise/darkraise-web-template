@@ -87,7 +87,7 @@ const STYLE_SIGNATURES: Record<
     attrs: {
       "data-elevation": "standard",
       "data-background-style": "gradient",
-      "data-gradient-pattern": "dots",
+      "data-gradient-pattern": "blobs",
       "data-bar-edge": "veil",
     },
   },

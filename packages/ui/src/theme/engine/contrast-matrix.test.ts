@@ -2,9 +2,11 @@ import { describe, it, expect } from "vitest"
 import { AXES } from "@theme/axes/registry"
 import { resolveRegistry } from "@theme/config/registry"
 import type { DefinableAxes } from "@theme/config/schema"
-import { gradientCanvasPeak } from "@theme/engine/generateTokens"
+import {
+  canvasHueScale,
+  gradientCanvasPeak,
+} from "@theme/engine/generateTokens"
 import { composite, contrastRatio } from "@theme/engine/oklch"
-import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { BUILTIN_PRESETS } from "@theme/styles/builtin/presets"
 import {
   comboName,
@@ -78,7 +80,7 @@ function floorFailures(combo: ThemeCombo): string[] {
   if (combo.backgroundStyle === "gradient") {
     const peak = gradientCanvasPeak(
       at("--background"),
-      surfaceColors[combo.surfaceColor][500],
+      canvasHueScale(combo.accentColor, combo.surfaceColor, combo.frosted)[500],
       combo.mode,
       combo.backgroundIntensity,
     )

@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs"
 import { generateTokens, capCanvasSaturation } from "./generateTokens"
 import { parseRules } from "../../styles/interactive-classes"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
+import { accentColors } from "@theme/palettes/accentColors"
 import { contrastRatio } from "@theme/engine/oklch"
 import { STATUS_NAMES, type StatusName } from "./steps"
 import { ACCENT_COLORS, BACKGROUND_INTENSITIES } from "@theme/types"
@@ -624,6 +625,22 @@ describe("generateTokens", () => {
       expect(tokens["--sf-hue"]).toBe(`hsl(${surfaceColors.stone[500]})`)
       expect(tokens["--sf-hue-2"]).toBe(`hsl(${surfaceColors.stone[400]})`)
       expect(tokens["--sf-hue-3"]).toBe(`hsl(${surfaceColors.stone[300]})`)
+    })
+    it("takes the hues from the accent under frosted chrome", () => {
+      const blue = accentColors.blue as ColorScale
+      const tokens = generateTokens({ ...baseInput, frosted: true })
+      expect(tokens["--sf-hue"]).toBe(`hsl(${blue[500]})`)
+      expect(tokens["--sf-hue-2"]).toBe(`hsl(${blue[400]})`)
+      expect(tokens["--sf-hue-3"]).toBe(`hsl(${blue[300]})`)
+    })
+
+    it("keeps the neutral accent's frosted hues on the surface ramp", () => {
+      const tokens = generateTokens({
+        ...baseInput,
+        frosted: true,
+        accentColor: "neutral",
+      })
+      expect(tokens["--sf-hue"]).toBe(`hsl(${surfaceColors.stone[500]})`)
     })
   })
 

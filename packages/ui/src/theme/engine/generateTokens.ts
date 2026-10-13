@@ -60,8 +60,23 @@ export function resolveAccentScale(
     : accentColors[accentColor]
 }
 
+/**
+ * The ramp the gradient canvas paints its hues from. Frosted surfaces let the
+ * canvas through, so it paints in the accent there and in the neutral
+ * elsewhere; the neutral accent reads the neutral either way.
+ */
+export function canvasHueScale(
+  accentColor: AccentColor,
+  surfaceColor: SurfaceColor,
+  frosted: boolean,
+): ColorScale {
+  return frosted
+    ? resolveAccentScale(accentColor, surfaceColor)
+    : resolveNeutralScale(surfaceColor)
+}
+
 function resolveSfHueTokens(
-  neutral: ColorScale,
+  scale: ColorScale,
   backgroundStyle: BackgroundStyle,
 ): { "--sf-hue": string; "--sf-hue-2": string; "--sf-hue-3": string } {
   if (backgroundStyle !== "gradient") {
@@ -72,9 +87,9 @@ function resolveSfHueTokens(
     }
   }
   return {
-    "--sf-hue": `hsl(${neutral[500]})`,
-    "--sf-hue-2": `hsl(${neutral[400]})`,
-    "--sf-hue-3": `hsl(${neutral[300]})`,
+    "--sf-hue": `hsl(${scale[500]})`,
+    "--sf-hue-2": `hsl(${scale[400]})`,
+    "--sf-hue-3": `hsl(${scale[300]})`,
   }
 }
 
@@ -361,8 +376,8 @@ export function generateTokens(
   const accent = resolveAccentScale(accentColor, surfaceColor)
   const neutral = resolveNeutralScale(surfaceColor)
   const dark = mode === "dark"
-  // The neutral's own mid-tone: the hue the gradient canvas paints.
   const surfaceTint = neutral[500]
+  const canvasScale = canvasHueScale(accentColor, surfaceColor, frosted)
   const gradient = backgroundStyle === "gradient"
   // Unfrosted chrome repaints the canvas over the top of the content area;
   // frosted chrome shows the canvas through itself, so no strip is painted.
@@ -379,7 +394,7 @@ export function generateTokens(
     tintWithAccent,
     gradient: gradient
       ? {
-          surfaceHue: surfaceTint,
+          surfaceHue: canvasScale[500],
           intensity: backgroundIntensity,
           strip: paintsStrip,
         }
@@ -507,7 +522,7 @@ export function generateTokens(
       ? `var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c), var(--canvas-blob-d), var(--canvas-ink)`
       : "none",
 
-    ...resolveSfHueTokens(neutral, backgroundStyle),
+    ...resolveSfHueTokens(canvasScale, backgroundStyle),
   })
 
   if (railTone === "raised") tokens["--surface-sidebar"] = card

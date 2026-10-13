@@ -43,7 +43,6 @@ describe("Milk Glass", () => {
       signalColor: "none",
       font: "geist",
       headingFont: "body",
-      gradientPattern: "blobs",
       backgroundIntensity: "subtle",
       glassBlur: "high",
     })

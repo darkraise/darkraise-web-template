@@ -45,7 +45,6 @@ describe("Mica Desk", () => {
       font: "inter",
       headingFont: "body",
       radius: "subtle",
-      gradientPattern: "blobs",
       backgroundIntensity: "balanced",
     })
   })
