@@ -493,7 +493,7 @@ function ImageEditorPreset({
       variant="outline"
       size="sm"
       className={cn("dr-image-editor-preset", className)}
-      data-preset={resolved?.id}
+      data-filter-preset={resolved?.id}
       onClick={(event) => {
         onClick?.(event)
         if (event.defaultPrevented) return
