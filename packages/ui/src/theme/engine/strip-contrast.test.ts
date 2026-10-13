@@ -79,7 +79,7 @@ const UNCHANGED = [
 ] as const
 
 describe("the content strip", () => {
-  it("is the canvas peak in light mode and 4% more surface hue in dark", () => {
+  it("is the canvas peak in light mode and 10% more surface hue in dark", () => {
     const background = "210 40% 98%"
     const hue = "215 16% 47%"
     expect(contentStripGround(background, hue, "light", "intense")).toBe(
@@ -89,7 +89,7 @@ describe("the content strip", () => {
       composite(
         gradientCanvasPeak("222 47% 5%", hue, "dark", "intense"),
         hue,
-        0.04,
+        0.1,
       ),
     )
   })

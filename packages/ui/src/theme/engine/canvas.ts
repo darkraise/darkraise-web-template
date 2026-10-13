@@ -62,9 +62,14 @@ export function gradientCanvasPeak(
  * canvas model predicts. Measured 2026-10-02 at 1440px, blue on slate at
  * balanced: the model gave 0.0189 luminance where Chromium painted 0.021, so a
  * field edge solved to 3:1 rendered 2.92:1. Another 4% of the hue over the
- * modelled peak covered slate and violet at balanced and intense.
+ * modelled peak covered slate and violet at balanced and intense. Raised to 10%
+ * on 2026-10-13: under Gradient the shell paints nothing (shell-styles.css), so
+ * the strip fades onto the body canvas, which is not cropped to 1440px and
+ * whose fixed-pixel blobs stack louder at narrow widths; slate, dark, intense,
+ * mesh at 390px rendered the field edge at 2.97:1 with 4% and muted text at
+ * 4.47:1 with 8%.
  */
-const STRIP_DARK_EXTRA = 0.04
+const STRIP_DARK_EXTRA = 0.1
 
 /**
  * The loudest point of the content strip: the canvas layers unfrosted chrome
