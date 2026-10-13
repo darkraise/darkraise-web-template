@@ -67,7 +67,10 @@ export function ThemeSwitcher({
            adjust. 34rem clears the widest measured content (spacious +
            extra-large, ~510px) with headroom; the viewport cap keeps it on
            screen on narrow displays. */
-        className={cn("w-[34rem] max-w-[calc(100vw-2rem)]", className)}
+        className={cn(
+          "dr-theme-switcher-content w-[34rem] max-w-[calc(100vw-2rem)]",
+          className,
+        )}
         side={side}
         align={align}
         role={role}

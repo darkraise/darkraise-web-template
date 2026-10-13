@@ -79,6 +79,17 @@ beforeEach(() => {
   document.documentElement.style.cssText = ""
 })
 
+describe("ThemeSwitcher popover", () => {
+  it("marks its content as the scrolling switcher popover", () => {
+    renderSwitcher()
+    openSwitcher()
+    expect(screen.getByRole("dialog")).toHaveClass(
+      "dr-theme-switcher-content",
+      "dr-popover-content",
+    )
+  })
+})
+
 describe("ThemeSwitcher style section", () => {
   it("renders one toggle per style", () => {
     renderSwitcher()

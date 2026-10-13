@@ -1,11 +1,13 @@
 import { test, expect, type Page } from "@playwright/test"
 import {
+  boxOf,
   gotoApp,
   openAdvanced,
   openThemeSwitcher,
   seedApp,
   themeSwitcher,
 } from "./helpers/app"
+import { settle } from "./helpers/measure"
 
 /**
  * The theme panel's axis controls must fit the width they are given. The page
@@ -184,4 +186,34 @@ test("theme switcher popover controls fit", async ({ page }) => {
 
   const found = await overflowingControls(page, '[aria-label="Theme settings"]')
   expect(found, describeOverflow(found)).toEqual([])
+})
+
+test("with Advanced open the switcher popover fits the viewport and scrolls to its last row", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 800 })
+  await seedApp(page, { style: "glass", mode: "light" })
+  await gotoApp(page, "/")
+  const panel = await openThemeSwitcher(page)
+  await openAdvanced(page)
+  await settle(page)
+
+  const box = await boxOf(panel)
+  expect(box.y).toBeGreaterThanOrEqual(0)
+  expect(box.y + box.height).toBeLessThanOrEqual(800)
+  expect(await panel.evaluate((el) => getComputedStyle(el).overflowY)).toBe(
+    "auto",
+  )
+  expect(await panel.evaluate((el) => el.scrollHeight > el.clientHeight)).toBe(
+    true,
+  )
+
+  await panel.evaluate((el) => {
+    el.scrollTop = el.scrollHeight
+  })
+  await expect(
+    panel.locator(".dr-theme-switcher-section-label", {
+      hasText: "Sidebar Selection",
+    }),
+  ).toBeInViewport()
 })

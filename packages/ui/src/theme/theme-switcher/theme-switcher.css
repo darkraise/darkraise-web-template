@@ -63,6 +63,16 @@
     }
   }
 
+  /* The popover holds every row once Advanced is open, which is taller than
+     a laptop viewport: it caps itself to the room the floating code reports
+     on its side and scrolls its rows. Scoped to this popover, because
+     overflow on a popover with an arrow would clip the arrow. */
+  .dr-theme-switcher-content {
+    max-height: var(--popup-available-height, 100dvh);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
   /* Nine swatches per row wherever nine fit, wrapping to fewer instead of
      clipping the trailing columns when the control area is narrower. The
      max-width caps the track count at 9 so wide containers keep the
