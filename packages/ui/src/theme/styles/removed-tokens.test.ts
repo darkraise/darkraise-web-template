@@ -25,6 +25,14 @@ const REMOVED = [
   "--fog-20",
   "--fog-30",
   "--fog-50",
+  "--glass-fog-1",
+  "--glass-fog-2",
+  "--glass-fog-3",
+  "--glass-fog-4",
+  "--glass-fog-5",
+  "--glass-fog-6",
+  "--glass-inset",
+  "--glass-inset-strong",
 ]
 
 const SELF = join("src", "theme", "styles", "removed-tokens.test.ts")

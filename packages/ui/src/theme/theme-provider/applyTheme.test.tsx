@@ -118,14 +118,7 @@ describe("ThemeProvider style orchestration", () => {
     act(() => result.current.setStyle("glass"))
 
     expect(shared.map((key) => style.getPropertyValue(key))).toEqual(quiet)
-    for (const key of [
-      "--glass-fog-1",
-      "--glass-inset",
-      "--glass-inset-strong",
-      "--glass-noise",
-    ]) {
-      expect(style.getPropertyValue(key), key).toBe("")
-    }
+    expect(style.getPropertyValue("--glass-noise")).toBe("")
   })
 
   it("ignores an invalid glass opacity with a dev warning", () => {

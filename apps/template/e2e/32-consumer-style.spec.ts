@@ -96,12 +96,6 @@ test.describe("example consumer style and preset", () => {
     const line = await readToken(page, "--glass-ink-line")
     expect(line).toContain("color-mix")
     expect(await readToken(page, "--chrome-edge")).toBe(line)
-    expect(await readToken(page, "--glass-fog-1")).toBe(
-      await computedAs(
-        page,
-        "color-mix(in oklab, color-mix(in oklab, hsl(var(--primary-8)) 24%, white) 30%, transparent)",
-      ),
-    )
     expect(await readToken(page, "--surface-overlay-base")).toBe(
       await computedAs(page, "hsl(var(--popover) / 0.62)"),
     )

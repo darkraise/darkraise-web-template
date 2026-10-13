@@ -1,12 +1,11 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
-import { GLASS_BLURS, GLASS_OPACITIES } from "@theme/types"
+import { GLASS_BLURS } from "@theme/types"
 import { cssRules } from "../../../test/css-rules"
 import { stripCssComments } from "../../../test/strip-css-comments"
 
 // jsdom never parses CSS, so the compiled stylesheet text is what this
-// asserts. The fog alphas and edge speculars are pinned value by value:
-// nothing else checks the opacity tables.
+// asserts.
 const GLASS = readFileSync("src/theme/styles/generated/glass.css", "utf8")
 const THEME = readFileSync("src/styles/theme.css", "utf8")
 
@@ -53,70 +52,6 @@ function inMode(mode: (typeof MODES)[number], rest = ""): string {
     ? `${GLASS_ROOT}:not([data-mode="dark"])${rest}`
     : `[data-mode="dark"]${GLASS_ROOT}${rest}`
 }
-
-const TINT = {
-  light: "color-mix(in oklab, hsl(var(--primary-8)) 24%, white)",
-  dark: "color-mix(in oklab, hsl(var(--primary-8)) 40%, hsl(var(--neutral-1)))",
-} as const
-
-const FOG_ALPHA = {
-  light: {
-    subtle: [70, 80, 85, 90, 94, 98],
-    medium: [55, 65, 72, 82, 90, 96],
-    strong: [30, 40, 48, 58, 70, 82],
-  },
-  dark: {
-    subtle: [7, 12, 17, 24, 32, 50],
-    medium: [4, 7, 10, 14, 20, 38],
-    strong: [2, 4, 6, 9, 13, 24],
-  },
-} as const
-
-/** Top and side alphas of --glass-inset, then of --glass-inset-strong. */
-const INSET = {
-  light: {
-    subtle: ["0.75", "0.45", "0.94", "0.56"],
-    medium: ["0.6", "0.36", "0.75", "0.45"],
-    strong: ["0.4", "0.24", "0.5", "0.3"],
-  },
-  dark: {
-    subtle: ["0.18", "0.11", "0.22", "0.13"],
-    medium: ["0.14", "0.08", "0.18", "0.11"],
-    strong: ["0.08", "0.05", "0.1", "0.06"],
-  },
-} as const
-
-const specular = (top: string, side: string) =>
-  `inset 0 1px 0 rgba(255, 255, 255, ${top}), inset 1px 0 0 rgba(255, 255, 255, ${side})`
-
-const MODE_OPACITY = MODES.flatMap((mode) =>
-  GLASS_OPACITIES.map((opacity) => [mode, opacity] as const),
-)
-
-describe("glass fog and specular", () => {
-  it.each(MODE_OPACITY)(
-    "tints the %s fog at %s opacity from the mark step",
-    (mode, opacity) => {
-      const selector = inMode(mode, `[data-glass-opacity="${opacity}"]`)
-      FOG_ALPHA[mode][opacity].forEach((alpha, i) => {
-        expect(valueOf("style.when", selector, `--glass-fog-${i + 1}`)).toBe(
-          `color-mix(in oklab, ${TINT[mode]} ${alpha}%, transparent)`,
-        )
-      })
-    },
-  )
-
-  it.each(MODE_OPACITY)("lights the %s edge at %s opacity", (mode, opacity) => {
-    const selector = inMode(mode, `[data-glass-opacity="${opacity}"]`)
-    const [top, side, strongTop, strongSide] = INSET[mode][opacity]
-    expect(valueOf("style.when", selector, "--glass-inset")).toBe(
-      specular(top, side),
-    )
-    expect(valueOf("style.when", selector, "--glass-inset-strong")).toBe(
-      specular(strongTop, strongSide),
-    )
-  })
-})
 
 /** Whether Glass's rule `selector` in `layer` declares `name` at all. */
 function declares(layer: string, selector: string, name: string): boolean {

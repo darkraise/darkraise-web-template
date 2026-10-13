@@ -62,7 +62,7 @@ afterEach(() => {
 })
 
 describe("Storybook theme decorator", () => {
-  it("paints Glass through its attributes, with no inline fog", () => {
+  it("paints Glass through its attributes, with no inline glass vars", () => {
     applyStoryTheme({ accentColor: "blue", style: "glass", mode: "dark" })
     expect(root.getAttribute("data-mode")).toBe("dark")
     expect(root.getAttribute("data-style")).toBe("glass")
@@ -70,7 +70,7 @@ describe("Storybook theme decorator", () => {
     expect(root.getAttribute("data-glass-blur")).toBe("medium")
     expect(root.getAttribute("data-background-style")).toBe("gradient")
     expect(root.getAttribute("data-preset")).toBe("base")
-    expect(root.style.getPropertyValue("--glass-fog-1")).toBe("")
+    expect(root.style.getPropertyValue("--glass-noise")).toBe("")
     expect(root.style.getPropertyValue("--primary")).not.toBe("")
   })
 
