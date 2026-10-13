@@ -168,6 +168,37 @@ function failures(look: Look, mode: "light" | "dark"): string[] {
       }
     }
   }
+  // An inset shell's content pane derives its glass from the card alpha
+  // (Mica Desk, Coral Space), and page text that sits outside a card stands
+  // on it.
+  const paneFill = paint.shellContentFill ?? ""
+  if (paneFill.includes("--surface-alpha")) {
+    const pane =
+      /^hsl\(var\((--[\w-]+)\) \/ calc\(var\(--surface-alpha\) \* ([\d.]+) - ([\d.]+)\)\)$/.exec(
+        paneFill,
+      )
+    if (!pane) {
+      out.push(`an unmodelled content pane fill: ${paneFill}`)
+    } else {
+      const [, fill, k, c] = pane
+      const declared = Number(paint.surfaceFillAlpha ?? "1")
+      for (const [step, scale] of Object.entries(TRANSPARENCY_SCALE)) {
+        const card = effectiveAlpha(declared, scale, SURFACE_ALPHA_FLOOR)
+        const alpha = Math.min(1, Math.max(0, card * Number(k) - Number(c)))
+        for (const [ground, colour] of page) {
+          const face = composite(colour, at(fill as string), alpha)
+          for (const text of ["--foreground", "--muted-foreground"]) {
+            const ratio = contrastRatio(at(text), face)
+            if (ratio < TEXT) {
+              out.push(
+                `${text} on the content pane at ${alpha.toFixed(2)} (${step}) over ${ground}: ${ratio.toFixed(2)}`,
+              )
+            }
+          }
+        }
+      }
+    }
+  }
   hold(
     "popover or dialog",
     "--popover",
