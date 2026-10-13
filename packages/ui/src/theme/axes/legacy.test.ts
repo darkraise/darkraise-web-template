@@ -755,7 +755,11 @@ describe("migratePayload", () => {
         backgroundStyle: "gradient",
         presetAxisValues: { glass: { opacity: "strong", blur: "medium" } },
       },
-      { style: "glass", backgroundStyle: "gradient", glassOpacity: "strong" },
+      {
+        style: "glass",
+        backgroundStyle: "gradient",
+        glassTransparency: "strong",
+      },
     ],
     [
       "keeps a preset field that names no style",
@@ -804,7 +808,7 @@ describe("migratePayload", () => {
 })
 
 const LIFTED_FIELDS: Readonly<Record<string, string>> = {
-  opacity: "glassOpacity",
+  opacity: "glassTransparency",
   blur: "glassBlur",
 }
 
@@ -855,7 +859,7 @@ describe("liftPresetAxisValues", () => {
         glass: Object.freeze({ opacity: "strong" }),
       }),
     })
-    expect(liftPresetAxisValues(input)).toEqual({ glassOpacity: "strong" })
+    expect(liftPresetAxisValues(input)).toEqual({ glassTransparency: "strong" })
     expect(input).toEqual({
       presetAxisValues: { glass: { opacity: "strong" } },
     })

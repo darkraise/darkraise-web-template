@@ -84,13 +84,13 @@ test.describe("example consumer style and preset", () => {
     await seedApp(page, {
       style: "glass-ink",
       mode: "light",
-      glassOpacity: "strong",
+      glassTransparency: "strong",
     })
     await loadWithoutApp(page, "/")
     const attrs = await readThemeAttrs(page)
     expect(attrs["data-style"]).toBe("glass-ink")
     expect(attrs["data-preset"]).toBe("base")
-    expect(attrs["data-glass-opacity"]).toBe("strong")
+    expect(attrs["data-glass-transparency"]).toBe("strong")
     expect(attrs["data-background-style"]).toBe("gradient")
 
     const line = await readToken(page, "--glass-ink-line")
@@ -115,7 +115,7 @@ test.describe("example consumer style and preset", () => {
     expect(attrs["data-style"]).toBe("glass-ink")
     expect(attrs["data-preset"]).toBe("ink-night")
     expect(attrs["data-accent"]).toBe("indigo")
-    expect(attrs["data-glass-opacity"]).toBe("strong")
+    expect(attrs["data-glass-transparency"]).toBe("strong")
     expect(attrs["data-radius"]).toBe("sharp")
     expect(await readToken(page, "--glass-ink-line")).toBe(
       await computedAs(

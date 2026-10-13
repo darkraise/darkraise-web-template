@@ -49,7 +49,7 @@ describe("ThemeProvider style orchestration", () => {
     mockMatchMedia()
     root.removeAttribute("data-preset")
     root.removeAttribute("data-style")
-    root.removeAttribute("data-glass-opacity")
+    root.removeAttribute("data-glass-transparency")
     root.removeAttribute("data-glass-blur")
     root.style.cssText = ""
   })
@@ -59,7 +59,7 @@ describe("ThemeProvider style orchestration", () => {
     for (const style of ["quiet", "flat", "tactile", "glass"] as const) {
       act(() => result.current.setStyle(style))
       expect(root.getAttribute("data-style")).toBe(style)
-      expect(root.getAttribute("data-glass-opacity")).toBe("medium")
+      expect(root.getAttribute("data-glass-transparency")).toBe("medium")
       expect(root.getAttribute("data-glass-blur")).toBe("medium")
       expect(root.getAttribute("data-preset")).toBe("base")
     }
@@ -67,11 +67,11 @@ describe("ThemeProvider style orchestration", () => {
 
   it("stamps the glass axes under every style", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    expect(root.getAttribute("data-glass-opacity")).toBe("medium")
+    expect(root.getAttribute("data-glass-transparency")).toBe("medium")
     expect(root.getAttribute("data-glass-blur")).toBe("medium")
     act(() => result.current.setStyle("glass"))
     expect(root.getAttribute("data-style")).toBe("glass")
-    expect(root.getAttribute("data-glass-opacity")).toBe("medium")
+    expect(root.getAttribute("data-glass-transparency")).toBe("medium")
     expect(root.getAttribute("data-glass-blur")).toBe("medium")
   })
 
@@ -85,12 +85,12 @@ describe("ThemeProvider style orchestration", () => {
   it("keeps a glass opacity across a round trip through another style", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
     act(() => result.current.setStyle("glass"))
-    act(() => result.current.setGlassOpacity("strong"))
-    expect(root.getAttribute("data-glass-opacity")).toBe("strong")
+    act(() => result.current.setGlassTransparency("strong"))
+    expect(root.getAttribute("data-glass-transparency")).toBe("strong")
     act(() => result.current.setStyle("quiet"))
     act(() => result.current.setStyle("glass"))
-    expect(result.current.glassOpacity).toBe("strong")
-    expect(root.getAttribute("data-glass-opacity")).toBe("strong")
+    expect(result.current.glassTransparency).toBe("strong")
+    expect(root.getAttribute("data-glass-transparency")).toBe("strong")
   })
 
   it("restores the glass axes from storage on remount", () => {
@@ -125,9 +125,9 @@ describe("ThemeProvider style orchestration", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
     act(() => result.current.setStyle("glass"))
-    act(() => result.current.setAxis("glassOpacity", "extreme" as never))
+    act(() => result.current.setAxis("glassTransparency", "extreme" as never))
     expect(warn).toHaveBeenCalled()
-    expect(root.getAttribute("data-glass-opacity")).toBe("medium")
+    expect(root.getAttribute("data-glass-transparency")).toBe("medium")
     warn.mockRestore()
   })
 

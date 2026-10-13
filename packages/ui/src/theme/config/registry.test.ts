@@ -26,7 +26,10 @@ const BUILTINS: Record<string, StyleDefinition> = {
       dark: { chromeEdge: "green", overlayBorder: "navy" },
     },
     when: [
-      { axes: { glassOpacity: "subtle" }, tokens: { overlayFillBase: "a" } },
+      {
+        axes: { glassTransparency: "subtle" },
+        tokens: { overlayFillBase: "a" },
+      },
     ],
     forcedFallback: { tokens: { chromeEdge: "gray", chromeBackdrop: "none" } },
   },

@@ -437,18 +437,18 @@ describe("ThemeProvider synced payloads", () => {
     })
     await settle()
     expect(result.current.style).toBe("glass")
-    expect(result.current.glassOpacity).toBe("strong")
+    expect(result.current.glassTransparency).toBe("strong")
     expect(result.current.glassBlur).toBe("medium")
     expect(localStorage.getItem("theme-style")).toBe("glass")
     expect(localStorage.getItem("theme-glass-opacity")).toBe("strong")
     expect(localStorage.getItem("theme-glass-blur")).toBeNull()
     expect(root.getAttribute("data-style")).toBe("glass")
-    expect(root.getAttribute("data-glass-opacity")).toBe("strong")
+    expect(root.getAttribute("data-glass-transparency")).toBe("strong")
     const saved = adapter.save.mock.calls[0]?.[0]
     expect(saved).toEqual(
       expect.objectContaining({
         style: "glass",
-        glassOpacity: "strong",
+        glassTransparency: "strong",
         version: 7,
       }),
     )

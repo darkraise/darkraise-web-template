@@ -7,7 +7,7 @@ import {
   ELEVATIONS,
   FONT_SIZES,
   GLASS_BLURS,
-  GLASS_OPACITIES,
+  GLASS_TRANSPARENCIES,
   GRADIENT_PATTERNS,
   RADII,
   STYLES,
@@ -65,7 +65,7 @@ const STYLE_LABELS: Record<Style, string> = {
   glass: "Glass",
 }
 
-const GLASS_OPACITY_LABEL = "Opacity"
+const GLASS_TRANSPARENCY_LABEL = "Transparency"
 const GLASS_BLUR_LABEL = "Backdrop Blur"
 
 async function selectStyle(page: Page, style: Style) {
@@ -78,9 +78,9 @@ async function selectStyle(page: Page, style: Style) {
     .toBe(style)
 }
 
-function glassOpacityOption(page: Page, value: string) {
+function glassTransparencyOption(page: Page, value: string) {
   return themeSwitcher(page)
-    .locator(`[aria-label="${GLASS_OPACITY_LABEL}"]`)
+    .locator(`[aria-label="${GLASS_TRANSPARENCY_LABEL}"]`)
     .getByRole("radio", { name: value, exact: true })
 }
 
@@ -142,11 +142,11 @@ test.describe("style selection through the UI", () => {
       if (style === "glass") {
         expect(sections.slice(at + 1, at + 4)).toEqual([
           "Preset",
-          GLASS_OPACITY_LABEL,
+          GLASS_TRANSPARENCY_LABEL,
           GLASS_BLUR_LABEL,
         ])
       } else {
-        expect(sections).not.toContain(GLASS_OPACITY_LABEL)
+        expect(sections).not.toContain(GLASS_TRANSPARENCY_LABEL)
         expect(sections).not.toContain(GLASS_BLUR_LABEL)
       }
     })
@@ -547,16 +547,18 @@ test.describe("advanced toggle-group axes", () => {
 })
 
 test.describe("glass axis controls", () => {
-  test(`${GLASS_OPACITY_LABEL} toggle group sets every value`, async ({
+  test(`${GLASS_TRANSPARENCY_LABEL} toggle group sets every value`, async ({
     page,
   }) => {
     await seedApp(page, { style: "glass", mode: "dark" })
     await gotoApp(page, PROBE)
     await openThemeSwitcher(page)
-    for (const value of GLASS_OPACITIES) {
-      await glassOpacityOption(page, value).click()
+    for (const value of GLASS_TRANSPARENCIES) {
+      await glassTransparencyOption(page, value).click()
       await expect
-        .poll(async () => (await readThemeAttrs(page))["data-glass-opacity"])
+        .poll(
+          async () => (await readThemeAttrs(page))["data-glass-transparency"],
+        )
         .toBe(value)
     }
   })
@@ -580,33 +582,33 @@ test.describe("glass axis controls", () => {
     await gotoApp(page, PROBE)
     await openThemeSwitcher(page)
 
-    await glassOpacityOption(page, "strong").click()
+    await glassTransparencyOption(page, "strong").click()
     await setAxisSlider(page, GLASS_BLUR_LABEL, GLASS_BLURS.indexOf("low"))
     await expect
       .poll(async () => {
         const attrs = await readThemeAttrs(page)
-        return [attrs["data-glass-opacity"], attrs["data-glass-blur"]]
+        return [attrs["data-glass-transparency"], attrs["data-glass-blur"]]
       })
       .toEqual(["strong", "low"])
 
     await selectStyle(page, "quiet")
     await expect
       .poll(async () => await switcherSections(page))
-      .not.toContain(GLASS_OPACITY_LABEL)
+      .not.toContain(GLASS_TRANSPARENCY_LABEL)
     // Hidden, not cleared: the attributes stay stamped under every style.
     const underQuiet = await readThemeAttrs(page)
-    expect(underQuiet["data-glass-opacity"]).toBe("strong")
+    expect(underQuiet["data-glass-transparency"]).toBe("strong")
     expect(underQuiet["data-glass-blur"]).toBe("low")
 
     await selectStyle(page, "glass")
-    await expect(glassOpacityOption(page, "strong")).toBeChecked()
+    await expect(glassTransparencyOption(page, "strong")).toBeChecked()
     await expect(
       themeSwitcher(page).getByRole("slider", { name: GLASS_BLUR_LABEL }),
     ).toHaveAttribute("aria-valuenow", String(GLASS_BLURS.indexOf("low")))
 
     await reloadApp(page)
     const reloaded = await readThemeAttrs(page)
-    expect(reloaded["data-glass-opacity"]).toBe("strong")
+    expect(reloaded["data-glass-transparency"]).toBe("strong")
     expect(reloaded["data-glass-blur"]).toBe("low")
   })
 })

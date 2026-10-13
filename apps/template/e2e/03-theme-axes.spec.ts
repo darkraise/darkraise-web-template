@@ -8,7 +8,7 @@ import {
   ELEVATIONS,
   FONT_SIZES,
   GLASS_BLURS,
-  GLASS_OPACITIES,
+  GLASS_TRANSPARENCIES,
   GRADIENT_PATTERNS,
   LS_KEYS,
   RADII,
@@ -134,7 +134,7 @@ test.describe("style axis", () => {
       expect(attrs["data-style"]).toBe(style)
       expect(attrs["data-preset"]).toBe("base")
       // Ordinary axes: stamped under every style, read only by the glass style.
-      expect(attrs["data-glass-opacity"]).toBe("medium")
+      expect(attrs["data-glass-transparency"]).toBe("medium")
       expect(attrs["data-glass-blur"]).toBe("medium")
 
       const signature = STYLE_SIGNATURES[style]
@@ -218,11 +218,11 @@ test.describe("glass axes", () => {
     await seedApp(page, { style: "glass", mode: "light" })
     await gotoApp(page, PROBE)
     const alphas: number[] = []
-    for (const glassOpacity of GLASS_OPACITIES) {
-      await applyTheme(page, { glassOpacity })
+    for (const glassTransparency of GLASS_TRANSPARENCIES) {
+      await applyTheme(page, { glassTransparency })
       await reloadApp(page)
-      expect((await readThemeAttrs(page))["data-glass-opacity"]).toBe(
-        glassOpacity,
+      expect((await readThemeAttrs(page))["data-glass-transparency"]).toBe(
+        glassTransparency,
       )
       const colour = await resolved(
         page,
@@ -235,7 +235,7 @@ test.describe("glass axes", () => {
     for (let i = 1; i < alphas.length; i++) {
       expect(
         alphas[i],
-        `${GLASS_OPACITIES[i]} thinner than ${GLASS_OPACITIES[i - 1]}: ${readings}`,
+        `${GLASS_TRANSPARENCIES[i]} thinner than ${GLASS_TRANSPARENCIES[i - 1]}: ${readings}`,
       ).toBeLessThan(alphas[i - 1] ?? 0)
     }
     consoleWatch.assertClean()
@@ -833,7 +833,7 @@ test.describe("axis combinations", () => {
         accent: "violet",
         surface: "sand",
         tintWithAccent: "off",
-        glassOpacity: "strong",
+        glassTransparency: "strong",
         glassBlur: "high",
       },
       expect: {
@@ -848,7 +848,7 @@ test.describe("axis combinations", () => {
         "data-accent": "violet",
         "data-surface": "sand",
         "data-tint-with-accent": "off",
-        "data-glass-opacity": "strong",
+        "data-glass-transparency": "strong",
         "data-glass-blur": "high",
       },
     },
@@ -876,7 +876,7 @@ test.describe("theme persistence", () => {
   test("all axes round-trip through localStorage", async ({ page }) => {
     const seed = {
       style: "glass",
-      glassOpacity: "subtle",
+      glassTransparency: "subtle",
       glassBlur: "low",
       mode: "dark",
       accent: "teal",
@@ -894,7 +894,7 @@ test.describe("theme persistence", () => {
     } satisfies ThemeSeed
     const attributes: Record<keyof typeof seed, string> = {
       style: "data-style",
-      glassOpacity: "data-glass-opacity",
+      glassTransparency: "data-glass-transparency",
       glassBlur: "data-glass-blur",
       mode: "data-mode",
       accent: "data-accent",

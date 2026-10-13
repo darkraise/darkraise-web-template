@@ -107,7 +107,7 @@ Style:
 
 - **Style** (`style`) -- flat, quiet, tactile, or glass; quiet by default. Glass frosts the shell chrome and overlays.
 - **Preset** (`preset`) -- base (the style alone) or one of the active style's presets; the kit ships fifteen across the four styles, and a theme config can define more
-- **Glass opacity** (`glassOpacity`) and **glass blur** (`glassBlur`) -- shown under the Style control while Glass is chosen
+- **Glass transparency** (`glassTransparency`) and **glass blur** (`glassBlur`) -- shown under the Style control while Glass is chosen
 
 Advanced:
 

@@ -25,7 +25,7 @@ describe("axis registry", () => {
       "signalColor",
       "style",
       "preset",
-      "glassOpacity",
+      "glassTransparency",
       "glassBlur",
       "font",
       "headingFont",
@@ -69,7 +69,7 @@ describe("axis registry", () => {
       "sidebarSelection",
     ])
     expect(byKind("ordinal")).toEqual([
-      "glassOpacity",
+      "glassTransparency",
       "glassBlur",
       "radius",
       "density",
@@ -107,14 +107,14 @@ describe("axis registry", () => {
     expect(AXIS_KEYS.filter((key) => AXES[key].visibleWhen)).toEqual([
       "tintWithAccent",
       "signalColor",
-      "glassOpacity",
+      "glassTransparency",
       "glassBlur",
       "gradientPattern",
     ])
   })
 
   it("shows the glass axes under any style descended from glass", () => {
-    for (const key of ["glassOpacity", "glassBlur"] as const) {
+    for (const key of ["glassTransparency", "glassBlur"] as const) {
       const visible = AXES[key].visibleWhen
       expect(visible?.({ style: "glass" }, ["glass"]), key).toBe(true)
       expect(
@@ -145,7 +145,7 @@ describe("axis registry", () => {
 
   it("keeps the style axis and the glass axes in the style layer", () => {
     expect(AXES.style.layer).toBe("style")
-    expect(AXES.glassOpacity.layer).toBe("style")
+    expect(AXES.glassTransparency.layer).toBe("style")
     expect(AXES.glassBlur.layer).toBe("style")
     expect(AXES.font.layer).toBe("brand")
   })
@@ -156,11 +156,11 @@ describe("axis registry", () => {
       storageKey: "theme-style",
       attribute: "data-style",
     })
-    expect(AXES.glassOpacity).toMatchObject({
+    expect(AXES.glassTransparency).toMatchObject({
       values: ["subtle", "medium", "strong"],
       default: "medium",
       storageKey: "theme-glass-opacity",
-      attribute: "data-glass-opacity",
+      attribute: "data-glass-transparency",
     })
     expect(AXES.glassBlur).toMatchObject({
       values: ["none", "low", "medium", "high"],

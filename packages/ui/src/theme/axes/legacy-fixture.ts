@@ -69,7 +69,7 @@ const SHELL_STYLES = [
   "flat",
 ] as const
 const SIDEBAR_ACTIVE_BARS = ["default", "bar", "ring", "both"] as const
-const GLASS_OPACITIES = ["subtle", "medium", "strong"] as const
+const GLASS_TRANSPARENCIES = ["subtle", "medium", "strong"] as const
 const GLASS_BLURS = ["none", "low", "medium", "high"] as const
 
 /** Every storage key 6.9.6 could write, with every value it could hold. */
@@ -93,7 +93,7 @@ export const V696_KEYS: Readonly<Record<string, readonly string[]>> = {
   "theme-inner-glow": GLOW_LEVELS,
   "theme-shell-style": SHELL_STYLES,
   "theme-sidebar-active-bar": SIDEBAR_ACTIVE_BARS,
-  "theme-glass-opacity": GLASS_OPACITIES,
+  "theme-glass-opacity": GLASS_TRANSPARENCIES,
   "theme-glass-blur": GLASS_BLURS,
   "theme-scifi-frame": ["clean", "notched", "bracketed"],
   "layout-variant": ["sidebar", "top-nav", "stacked", "split-panel"],
@@ -137,7 +137,7 @@ export const V696_PAYLOAD_FIELDS: Readonly<Record<string, readonly string[]>> =
 export const V696_PRESET_AXIS_VALUES: Readonly<
   Record<string, Readonly<Record<string, readonly string[]>>>
 > = {
-  glass: { opacity: GLASS_OPACITIES, blur: GLASS_BLURS },
+  glass: { opacity: GLASS_TRANSPARENCIES, blur: GLASS_BLURS },
 }
 
 /**
@@ -146,7 +146,7 @@ export const V696_PRESET_AXIS_VALUES: Readonly<
  */
 export const PRE_V696_KEYS: Readonly<Record<string, readonly string[]>> = {
   "theme-preset": ["glassmorphism"],
-  "theme-glassmorphism-opacity": GLASS_OPACITIES,
+  "theme-glassmorphism-opacity": GLASS_TRANSPARENCIES,
   "theme-glassmorphism-blur": GLASS_BLURS,
   "theme-canvas-tint": ["neutral", "subtle", "balanced", "vivid"],
   "theme-glass-halo": ["none", "soft", "pronounced"],

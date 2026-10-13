@@ -46,7 +46,7 @@ describe("Milk Glass", () => {
       headingFont: "body",
       gradientPattern: "blobs",
       backgroundIntensity: "subtle",
-      glassOpacity: "subtle",
+      glassTransparency: "subtle",
       glassBlur: "high",
     })
   })
@@ -112,7 +112,7 @@ describe("Milk Glass", () => {
     expect(written(milkGlass.tokens)).not.toContain("dialogFill")
   })
 
-  // Glass keys these on the glassOpacity and glassBlur axes; a preset that
+  // Glass keys these on the glassTransparency and glassBlur axes; a preset that
   // set one would take the axis away from the user.
   it("leaves the overlay fill and every overlay blur to the glass axes", () => {
     const owned = [

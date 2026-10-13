@@ -17,7 +17,7 @@ export const BASELINE_STYLES = [
   "glass",
 ] as const satisfies readonly Style[]
 
-export const GLASS_OPACITIES = ["subtle", "medium", "strong"] as const
+export const GLASS_TRANSPARENCIES = ["subtle", "medium", "strong"] as const
 export const GLASS_BLURS = ["none", "low", "medium", "high"] as const
 
 export const ACCENT_COLORS = [
@@ -91,7 +91,7 @@ export const LS_KEYS = {
   accent: "theme-accent",
   surface: "theme-surface-color",
   style: "theme-style",
-  glassOpacity: "theme-glass-opacity",
+  glassTransparency: "theme-glass-opacity",
   glassBlur: "theme-glass-blur",
   backgroundStyle: "theme-bg-style",
   backgroundIntensity: "theme-bg-intensity",

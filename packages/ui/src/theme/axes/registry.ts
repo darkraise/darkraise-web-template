@@ -9,7 +9,7 @@ import {
   FONTS,
   FONT_SIZES,
   GLASS_BLURS,
-  GLASS_OPACITIES,
+  GLASS_TRANSPARENCIES,
   GLOW_LEVELS,
   GRADIENT_PATTERNS,
   MODES,
@@ -127,11 +127,11 @@ export const AXES = {
     control: "choice",
   }),
   /** How much of the canvas Glass's frosted chrome lets through. */
-  glassOpacity: axis({
-    values: GLASS_OPACITIES,
+  glassTransparency: axis({
+    values: GLASS_TRANSPARENCIES,
     default: "medium",
     storageKey: "theme-glass-opacity",
-    attribute: "data-glass-opacity",
+    attribute: "data-glass-transparency",
     layer: "style",
     control: "ordinal",
     visibleWhen: (_settings, styleLineage) => styleLineage.includes("glass"),

@@ -17,9 +17,12 @@ const BUILTINS: Record<string, StyleDefinition> = {
       dark: { chromeEdge: "gray" },
     },
     when: [
-      { axes: { glassOpacity: "subtle" }, tokens: { overlayFillBase: "a" } },
       {
-        axes: { glassOpacity: "subtle", glassBlur: "high" },
+        axes: { glassTransparency: "subtle" },
+        tokens: { overlayFillBase: "a" },
+      },
+      {
+        axes: { glassTransparency: "subtle", glassBlur: "high" },
         mode: "dark",
         tokens: { chromeBackdrop: "blur(9px)" },
         vars: { "--frost-fog": "navy" },
@@ -77,10 +80,10 @@ const FROST_CSS = `@layer style.base {
 }
 
 @layer style.when {
-  [data-style="frost"][data-glass-opacity="subtle"] {
+  [data-style="frost"][data-glass-transparency="subtle"] {
     --surface-overlay-base: a;
   }
-  [data-mode="dark"][data-style="frost"][data-glass-opacity="subtle"][data-glass-blur="high"] {
+  [data-mode="dark"][data-style="frost"][data-glass-transparency="subtle"][data-glass-blur="high"] {
     --frost-fog: navy;
     --chrome-backdrop: blur(9px);
   }
@@ -140,10 +143,10 @@ describe("compileThemeCss", () => {
 }
 
 @layer style.when {
-  [data-style="frost-ink"][data-glass-opacity="subtle"] {
+  [data-style="frost-ink"][data-glass-transparency="subtle"] {
     --surface-overlay-base: a;
   }
-  [data-mode="dark"][data-style="frost-ink"][data-glass-opacity="subtle"][data-glass-blur="high"] {
+  [data-mode="dark"][data-style="frost-ink"][data-glass-transparency="subtle"][data-glass-blur="high"] {
     --frost-fog: navy;
     --chrome-backdrop: blur(9px);
   }

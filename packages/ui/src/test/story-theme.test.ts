@@ -66,7 +66,7 @@ describe("Storybook theme decorator", () => {
     applyStoryTheme({ accentColor: "blue", style: "glass", mode: "dark" })
     expect(root.getAttribute("data-mode")).toBe("dark")
     expect(root.getAttribute("data-style")).toBe("glass")
-    expect(root.getAttribute("data-glass-opacity")).toBe("medium")
+    expect(root.getAttribute("data-glass-transparency")).toBe("medium")
     expect(root.getAttribute("data-glass-blur")).toBe("medium")
     expect(root.getAttribute("data-background-style")).toBe("gradient")
     expect(root.getAttribute("data-preset")).toBe("base")

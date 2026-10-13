@@ -148,8 +148,8 @@ export const GLOW_LEVELS = ["none", "subtle", "balanced", "vivid"] as const
 export type GlowLevel = (typeof GLOW_LEVELS)[number]
 
 /** How much of the canvas Glass's frosted chrome lets through. */
-export const GLASS_OPACITIES = ["subtle", "medium", "strong"] as const
-export type GlassOpacity = (typeof GLASS_OPACITIES)[number]
+export const GLASS_TRANSPARENCIES = ["subtle", "medium", "strong"] as const
+export type GlassTransparency = (typeof GLASS_TRANSPARENCIES)[number]
 
 /** Backdrop blur behind Glass's frosted chrome. */
 export const GLASS_BLURS = ["none", "low", "medium", "high"] as const

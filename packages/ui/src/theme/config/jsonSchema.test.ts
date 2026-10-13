@@ -29,7 +29,7 @@ const VALID = {
       label: "Glass ink",
       extends: "glass",
       frosted: true,
-      defaults: { glassOpacity: "subtle" },
+      defaults: { glassTransparency: "subtle" },
       vars: {
         shared: { "--glass-ink-edge": "hsl(var(--primary-8) / 0.4)" },
         dark: { "--glass-ink-edge": "hsl(var(--primary-4) / 0.4)" },
@@ -41,7 +41,7 @@ const VALID = {
       },
       when: [
         {
-          axes: { glassOpacity: "strong", glassBlur: "none" },
+          axes: { glassTransparency: "strong", glassBlur: "none" },
           mode: "dark",
           tokens: { overlayFillBase: "black" },
           vars: { "--glass-ink-edge": "white" },
@@ -172,11 +172,11 @@ describe("theme config JSON Schema", () => {
     [
       "an unknown style default value",
       ["styles", "glass-ink", "defaults"],
-      { glassOpacity: "murky" },
+      { glassTransparency: "murky" },
       {
         keyword: "enum",
-        dataPath: ".styles['glass-ink'].defaults.glassOpacity",
-        params: { allowedValues: [...AXES.glassOpacity.values] },
+        dataPath: ".styles['glass-ink'].defaults.glassTransparency",
+        params: { allowedValues: [...AXES.glassTransparency.values] },
       },
     ],
     [

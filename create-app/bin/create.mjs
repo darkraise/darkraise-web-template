@@ -64,7 +64,7 @@ const RETIRED_AXES = {
   shellStyle: "set the layout's defaultShellStyle prop instead",
   controlDepth: "it has no replacement",
   buttonElevation: "it has no replacement",
-  presetAxes: "use glassOpacity and glassBlur",
+  presetAxes: "use glassTransparency and glassBlur",
 }
 
 const argv = minimist(process.argv.slice(2), {

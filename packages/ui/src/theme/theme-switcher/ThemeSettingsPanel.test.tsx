@@ -365,7 +365,7 @@ describe("ThemeSettingsPanel", () => {
     expect(labels.slice(at, at + 5)).toEqual([
       "Style",
       "Preset",
-      "Opacity",
+      "Transparency",
       "Backdrop Blur",
       "Font",
     ])
@@ -378,7 +378,7 @@ describe("ThemeSettingsPanel", () => {
       styles: { ink: { label: "Ink", extends: "glass" } },
     })
     expect(sectionLabels(container)).toEqual(
-      expect.arrayContaining(["Opacity", "Backdrop Blur"]),
+      expect.arrayContaining(["Transparency", "Backdrop Blur"]),
     )
   })
 

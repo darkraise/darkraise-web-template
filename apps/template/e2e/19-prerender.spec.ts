@@ -120,7 +120,7 @@ const LEGACY_USERS: {
       "data-outer-glow": "vivid",
       "data-background-intensity": "neutral",
       "data-contrast": "standard",
-      "data-glass-opacity": "medium",
+      "data-glass-transparency": "medium",
       "data-glass-blur": "medium",
       "data-preset": "base",
     },
@@ -186,7 +186,7 @@ const LEGACY_USERS: {
     painted: {
       "data-mode": "dark",
       "data-style": "quiet",
-      "data-glass-opacity": "medium",
+      "data-glass-transparency": "medium",
       "data-glass-blur": "high",
       "data-preset": "base",
     },

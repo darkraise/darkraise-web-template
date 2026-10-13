@@ -34,7 +34,11 @@ export const themeConfig = defineThemeConfig({
     "ink-night": definePreset({
       label: "Ink night",
       style: "glass-ink",
-      axes: { accentColor: "indigo", glassOpacity: "strong", radius: "sharp" },
+      axes: {
+        accentColor: "indigo",
+        glassTransparency: "strong",
+        radius: "sharp",
+      },
       tokens: { dark: { cardEdge: "0 0 0 1px var(--glass-ink-line)" } },
     }),
   },

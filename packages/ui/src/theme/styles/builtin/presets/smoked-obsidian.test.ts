@@ -47,7 +47,7 @@ describe("Smoked Obsidian", () => {
       headingFont: "body",
       darkAccentChroma: "calm",
       gradientPattern: "grain",
-      glassOpacity: "subtle",
+      glassTransparency: "subtle",
     })
   })
 
@@ -98,7 +98,7 @@ describe("Smoked Obsidian", () => {
     }
   })
 
-  // Glass keys these on the glassOpacity and glassBlur axes; a preset that
+  // Glass keys these on the glassTransparency and glassBlur axes; a preset that
   // set one would take the axis away from the user.
   it("leaves the overlay fill and every overlay blur to the glass axes", () => {
     const owned = [

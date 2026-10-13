@@ -48,7 +48,7 @@ describe("Mica Desk", () => {
       radius: "subtle",
       gradientPattern: "blobs",
       backgroundIntensity: "balanced",
-      glassOpacity: "subtle",
+      glassTransparency: "subtle",
     })
   })
 
@@ -102,7 +102,7 @@ describe("Mica Desk", () => {
     }
   })
 
-  // Glass keys these on the glassOpacity and glassBlur axes; a preset that
+  // Glass keys these on the glassTransparency and glassBlur axes; a preset that
   // set one would take the axis away from the user.
   it("leaves the overlay fill and every blur to the glass axes", () => {
     const owned = [

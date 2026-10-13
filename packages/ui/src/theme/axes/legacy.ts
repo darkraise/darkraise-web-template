@@ -427,7 +427,7 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null
 
 const LIFTED_GLASS_AXES = [
-  ["opacity", "glassOpacity"],
+  ["opacity", "glassTransparency"],
   ["blur", "glassBlur"],
 ] as const
 

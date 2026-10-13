@@ -21,7 +21,7 @@ export const micaDesk: PresetDefinition = {
     radius: "subtle",
     gradientPattern: "blobs",
     backgroundIntensity: "balanced",
-    glassOpacity: "subtle",
+    glassTransparency: "subtle",
   },
   signatures: {
     navSelection: "pill",

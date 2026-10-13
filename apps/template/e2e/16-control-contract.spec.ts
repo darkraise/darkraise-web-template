@@ -248,11 +248,11 @@ const EDGE_THEMES = [
   // the lifted faces differ at each end of the range.
   {
     name: "glass subtle opacity",
-    seed: { style: "glass", glassOpacity: "subtle" },
+    seed: { style: "glass", glassTransparency: "subtle" },
   },
   {
     name: "glass strong opacity",
-    seed: { style: "glass", glassOpacity: "strong" },
+    seed: { style: "glass", glassTransparency: "strong" },
   },
 ]
 

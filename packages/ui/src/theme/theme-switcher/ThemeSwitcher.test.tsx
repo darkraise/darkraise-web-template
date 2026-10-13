@@ -74,7 +74,7 @@ beforeEach(() => {
   vi.stubGlobal("localStorage", storageMock)
   mockMatchMedia()
   document.documentElement.removeAttribute("data-style")
-  document.documentElement.removeAttribute("data-glass-opacity")
+  document.documentElement.removeAttribute("data-glass-transparency")
   document.documentElement.removeAttribute("data-glass-blur")
   document.documentElement.style.cssText = ""
 })
@@ -124,7 +124,7 @@ describe("ThemeSwitcher style section", () => {
   it("does NOT render glass axis toggles when quiet is active", () => {
     renderSwitcher()
     openSwitcher()
-    expect(screen.queryByText("Opacity")).not.toBeInTheDocument()
+    expect(screen.queryByText("Transparency")).not.toBeInTheDocument()
     expect(screen.queryByText("Backdrop Blur")).not.toBeInTheDocument()
   })
 
@@ -136,7 +136,7 @@ describe("ThemeSwitcher style section", () => {
     const at = labels.indexOf("Style")
     expect(labels.slice(at + 1, at + 4)).toEqual([
       "Preset",
-      "Opacity",
+      "Transparency",
       "Backdrop Blur",
     ])
   })
@@ -146,9 +146,9 @@ describe("ThemeSwitcher style section", () => {
     openSwitcher()
     fireEvent.click(screen.getByRole("radio", { name: "Glass" }))
     fireEvent.click(screen.getByRole("radio", { name: /^strong$/i }))
-    expect(document.documentElement.getAttribute("data-glass-opacity")).toBe(
-      "strong",
-    )
+    expect(
+      document.documentElement.getAttribute("data-glass-transparency"),
+    ).toBe("strong")
   })
 })
 

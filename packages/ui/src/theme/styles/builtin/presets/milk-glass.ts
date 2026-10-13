@@ -21,7 +21,7 @@ export const milkGlass: PresetDefinition = {
     headingFont: "body",
     gradientPattern: "blobs",
     backgroundIntensity: "subtle",
-    glassOpacity: "subtle",
+    glassTransparency: "subtle",
     glassBlur: "high",
   },
   signatures: {

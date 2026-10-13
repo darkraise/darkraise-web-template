@@ -72,7 +72,7 @@ describe("glass overlays", () => {
     expect(
       valueOf(
         "style.when",
-        `${GLASS_ROOT}[data-glass-opacity="${opacity}"]`,
+        `${GLASS_ROOT}[data-glass-transparency="${opacity}"]`,
         "--surface-overlay-base",
       ),
     ).toBe(`hsl(var(--popover) / ${alpha})`)

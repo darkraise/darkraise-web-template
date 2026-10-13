@@ -41,7 +41,7 @@ export interface ThemeSeed {
   accent?: string
   surface?: string
   style?: string
-  glassOpacity?: string
+  glassTransparency?: string
   glassBlur?: string
   backgroundStyle?: string
   backgroundIntensity?: string
@@ -84,7 +84,7 @@ function storageEntries(theme: ThemeSeed, authenticated: boolean) {
     ["accent", LS_KEYS.accent],
     ["surface", LS_KEYS.surface],
     ["style", LS_KEYS.style],
-    ["glassOpacity", LS_KEYS.glassOpacity],
+    ["glassTransparency", LS_KEYS.glassTransparency],
     ["glassBlur", LS_KEYS.glassBlur],
     ["backgroundStyle", LS_KEYS.backgroundStyle],
     ["backgroundIntensity", LS_KEYS.backgroundIntensity],

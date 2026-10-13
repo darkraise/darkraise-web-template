@@ -130,7 +130,7 @@
     "label": "Preset",
     "groupLabel": "Style"
   },
-  "glassOpacity": {
+  "glassTransparency": {
     "values": [
       "subtle",
       "medium",
@@ -138,9 +138,9 @@
     ],
     "default": "medium",
     "storageKey": "theme-glass-opacity",
-    "attribute": "data-glass-opacity",
+    "attribute": "data-glass-transparency",
     "layer": "style",
-    "label": "Opacity",
+    "label": "Transparency",
     "groupLabel": "Style"
   },
   "glassBlur": {

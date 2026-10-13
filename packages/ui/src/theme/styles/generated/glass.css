@@ -34,13 +34,13 @@
 }
 
 @layer style.when {
-  [data-style="glass"][data-glass-opacity="subtle"] {
+  [data-style="glass"][data-glass-transparency="subtle"] {
     --surface-overlay-base: hsl(var(--popover) / 0.88);
   }
-  [data-style="glass"][data-glass-opacity="medium"] {
+  [data-style="glass"][data-glass-transparency="medium"] {
     --surface-overlay-base: hsl(var(--popover) / 0.8);
   }
-  [data-style="glass"][data-glass-opacity="strong"] {
+  [data-style="glass"][data-glass-transparency="strong"] {
     --surface-overlay-base: hsl(var(--popover) / 0.62);
   }
   [data-style="glass"][data-glass-blur="none"] {
