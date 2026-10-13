@@ -1,0 +1,58 @@
+# Long-running dev instance: the template app against a live-rebuilt kit,
+# the container form of scripts/dev.sh. Both services run from the bind-mounted
+# checkout and its host-installed node_modules, so edits show up without a
+# rebuild; run `pnpm install` on the host after dependency changes.
+#
+#   docker compose -f deploy/compose.yaml up -d --build
+#   docker compose -f deploy/compose.yaml logs -f
+#   docker compose -f deploy/compose.yaml down
+#
+# Holds port 5176, which scripts/dev.sh and the e2e webServer also use; the
+# e2e run reuses this server when it is up.
+
+name: darkraise-dev
+
+x-node: &node
+  build:
+    dockerfile_inline: |
+      FROM node:25-bookworm-slim
+      # tsup's watch mode stops the previous --onSuccess run through `ps`;
+      # without it the watcher crashes on the first rebuild.
+      RUN apt-get update && apt-get install -y --no-install-recommends procps \
+        && rm -rf /var/lib/apt/lists/* \
+        && npm install -g pnpm@10.28.2
+  image: darkraise-dev:local
+  init: true
+  restart: unless-stopped
+  working_dir: /workspace
+  volumes:
+    - ..:/workspace
+
+services:
+  kit:
+    <<: *node
+    # The watch build skips types and cleans nothing, so the one full build
+    # runs first; the marker tells the app service the dist is complete.
+    command:
+      - sh
+      - -c
+      - rm -f /tmp/kit-built && pnpm --filter darkraise-ui build && touch /tmp/kit-built && exec pnpm --filter darkraise-ui dev
+    healthcheck:
+      test: ["CMD", "test", "-f", "/tmp/kit-built"]
+      interval: 30s
+      start_period: 300s
+      start_interval: 5s
+
+  app:
+    <<: *node
+    command: ["pnpm", "--filter", "darkraise-web-template", "dev"]
+    ports:
+      - "5176:5176"
+    depends_on:
+      kit:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:5176/').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+      interval: 30s
+      start_period: 60s
+      start_interval: 5s
