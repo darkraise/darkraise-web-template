@@ -1,13 +1,14 @@
 import { test, expect, type Page } from "@playwright/test"
 import { gotoApp, readThemeAttrs, seedApp } from "./helpers/app"
-import { computed, settle } from "./helpers/measure"
+import { alphaOf, computed, settle } from "./helpers/measure"
 
 /**
- * Glass paints glass only where content passes under chrome: opaque cards
- * and dialogs, a solid rail, a veiled bar, and translucent menus over a
- * frosting scrim. Each value is read through computed style in Chromium,
- * against a throwaway element styled with the value Glass should resolve
- * to, at the default radius (rounded) and glass axes (medium).
+ * Glass is glass where content passes under it: translucent, frosted cards,
+ * dialogs and menus over a frosting scrim, a solid rail and a veiled bar.
+ * Each value is read through computed style in Chromium, against a
+ * throwaway element styled with the value Glass should resolve to, at the
+ * default radius (rounded), Transparency and Blur (medium). The exact alphas
+ * of every glass look at every step are 59-glass-transparency's.
  */
 
 const MODES = ["light", "dark"] as const
@@ -49,7 +50,7 @@ for (const mode of MODES) {
     )
   })
 
-  test(`a glass ${mode} dialog is opaque over a frosting scrim`, async ({
+  test(`a glass ${mode} dialog is translucent and frosted over a frosting scrim`, async ({
     page,
   }) => {
     await seedApp(page, { style: "glass", mode })
@@ -59,12 +60,16 @@ for (const mode of MODES) {
     await settle(page)
     const [fill, radius] = await probe(
       page,
-      "background-color: hsl(var(--popover)); border-radius: 14px",
+      "background-color: hsl(var(--popover) / var(--overlay-alpha)); border-radius: 14px",
       ["background-color", "border-top-left-radius"],
     )
     expect(await computed(dialog, "background-color")).toBe(fill)
+    expect(alphaOf(fill ?? "")).toBeLessThan(1)
     expect(await computed(dialog, "background-image")).toBe("none")
     expect(await computed(dialog, "border-top-left-radius")).toBe(radius)
+    expect(await computed(dialog, "backdrop-filter")).toBe(
+      "blur(20px) saturate(1.8)",
+    )
 
     const backdrop = page.locator(".dr-overlay-backdrop")
     const [scrim] = await probe(
@@ -88,10 +93,11 @@ for (const mode of MODES) {
     await settle(page)
     const [face, radius] = await probe(
       page,
-      "background-color: hsl(var(--popover) / 0.8); border-radius: 10px",
+      "background-color: hsl(var(--popover) / var(--overlay-alpha)); border-radius: 10px",
       ["background-color", "border-top-left-radius"],
     )
     expect(await computed(menu, "background-color")).toBe(face)
+    expect(alphaOf(face ?? "")).toBeLessThan(1)
     expect(await computed(menu, "backdrop-filter")).toBe(
       "blur(20px) saturate(1.8)",
     )
@@ -109,7 +115,7 @@ for (const mode of MODES) {
     expect(await computed(item, "background-color")).toBe(tint)
   })
 
-  test(`a glass ${mode} card is opaque and rounder than its controls`, async ({
+  test(`a glass ${mode} card is translucent, frosted and rounder than its controls`, async ({
     page,
   }) => {
     await seedApp(page, { style: "glass", mode })
@@ -118,14 +124,17 @@ for (const mode of MODES) {
     const card = page.locator("main .dr-card").first()
     const [fill, edge, radius] = await probe(
       page,
-      `background-color: var(--surface-card-fill); border: 1px solid ${
+      `background-color: hsl(var(--card) / var(--surface-alpha)); border: 1px solid ${
         mode === "light" ? "hsl(var(--border))" : "hsl(var(--border-subtle))"
       }; border-radius: 12px`,
       ["background-color", "border-top-color", "border-top-left-radius"],
     )
     expect(await computed(card, "background-color")).toBe(fill)
+    expect(alphaOf(fill ?? "")).toBeLessThan(1)
     expect(await computed(card, "border-top-color")).toBe(edge)
     expect(await computed(card, "border-top-left-radius")).toBe(radius)
-    expect(await computed(card, "backdrop-filter")).toBe("none")
+    expect(await computed(card, "backdrop-filter")).toBe(
+      "blur(20px) saturate(1.8)",
+    )
   })
 }

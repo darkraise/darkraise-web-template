@@ -20,6 +20,7 @@ import {
   watchConsole,
 } from "./helpers/app"
 import { computed, settle, textContrast } from "./helpers/measure"
+import { filtering, underFallbackMedia } from "./helpers/media"
 
 /**
  * Every built-in preset, read from the kit's registry: what the pre-render
@@ -229,82 +230,22 @@ const BLUR_TOKENS = [
  */
 async function translucency(page: Page) {
   await settle(page)
-  return page.evaluate((names) => {
+  const tokens = await page.evaluate((names) => {
     const root = getComputedStyle(document.documentElement)
-    const filtering = new Set<string>()
-    for (const el of document.body.querySelectorAll("*")) {
-      for (const pseudo of ["", "::before", "::after"]) {
-        const style = getComputedStyle(el, pseudo || null)
-        if (pseudo && style.content === "none") continue
-        if (style.backdropFilter !== "" && style.backdropFilter !== "none") {
-          filtering.add(
-            `${el.tagName.toLowerCase()}.${el.classList[0] ?? ""}${pseudo}`,
-          )
-        }
-      }
-    }
     return {
       blurs: Object.fromEntries(
         names.map((name) => [name, root.getPropertyValue(name).trim()]),
       ),
       fillAlpha: root.getPropertyValue("--surface-fill-alpha").trim(),
-      filtering: [...filtering],
     }
   }, BLUR_TOKENS)
+  return { ...tokens, filtering: await filtering(page) }
 }
 
 const OPAQUE = {
   blurs: Object.fromEntries(BLUR_TOKENS.map((name) => [name, "none"])),
   fillAlpha: "1",
   filtering: [],
-}
-
-// The kit's fallback rules match either media feature. Playwright's
-// emulateMedia has no reduced-transparency option, so that one goes through
-// the DevTools protocol, which Chromium supports. A protocol call replaces
-// the features Playwright set, so each is switched off before the next.
-const FALLBACK_MEDIA: ReadonlyArray<{
-  name: string
-  query: string
-  emulate: (page: Page, on: boolean) => Promise<void>
-}> = [
-  {
-    name: "more contrast",
-    query: "(prefers-contrast: more)",
-    emulate: (page, on) =>
-      page.emulateMedia({ contrast: on ? "more" : "no-preference" }),
-  },
-  {
-    name: "reduced transparency",
-    query: "(prefers-reduced-transparency: reduce)",
-    emulate: async (page, on) => {
-      const cdp = await page.context().newCDPSession(page)
-      await cdp.send("Emulation.setEmulatedMedia", {
-        features: [
-          {
-            name: "prefers-reduced-transparency",
-            value: on ? "reduce" : "no-preference",
-          },
-        ],
-      })
-    },
-  },
-]
-
-/** Runs `check` under each fallback media feature, having confirmed the page matches it. */
-async function underFallbackMedia(
-  page: Page,
-  check: (media: string) => Promise<void>,
-) {
-  for (const media of FALLBACK_MEDIA) {
-    await media.emulate(page, true)
-    expect(
-      await page.evaluate((query) => matchMedia(query).matches, media.query),
-      `the page matches ${media.query}`,
-    ).toBe(true)
-    await check(media.name)
-    await media.emulate(page, false)
-  }
 }
 
 for (const preset of PRESETS) {
