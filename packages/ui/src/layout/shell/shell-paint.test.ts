@@ -315,10 +315,17 @@ describe("bar edge signature", () => {
     expect(layers).toContain(
       "background: linear-gradient(hsl(var(--surface-header) / 0.85), hsl(var(--surface-header) / 0.55) 55%, hsl(var(--surface-header) / 0));",
     )
-    expect(layers).toContain("backdrop-filter: blur(4px);")
-    expect(bodyOf("shell", `${VEIL_BAR}::after`)).toContain(
-      "backdrop-filter: blur(14px);",
+    // Glass's Blur None writes --glass-backdrop-off: none; unset, the veil
+    // keeps its own blur.
+    expect(layers).toContain(
+      "backdrop-filter: var(--glass-backdrop-off, blur(4px));",
     )
+    expect(layers).not.toMatch(/backdrop-filter: blur\(/)
+    const after = bodyOf("shell", `${VEIL_BAR}::after`)
+    expect(after).toContain(
+      "backdrop-filter: var(--glass-backdrop-off, blur(14px));",
+    )
+    expect(after).not.toMatch(/backdrop-filter: blur\(/)
   })
 
   it("falls back to an opaque ruled bar without transparency", () => {
