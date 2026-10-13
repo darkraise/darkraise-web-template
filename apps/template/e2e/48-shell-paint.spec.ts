@@ -109,6 +109,40 @@ test("the flat fill follows the style", async ({ page }) => {
   expect(await computed(region(page, "nav"), "background-image")).toBe("none")
 })
 
+test("the shell paints its gradient art only under the gradient background", async ({
+  page,
+}) => {
+  await openShell(page, "island")
+  await styleTokens(
+    page,
+    `--shell-ground-fill: rgb(1, 2, 3);
+     --shell-ground-gradient: linear-gradient(rgb(255, 0, 0), rgb(0, 0, 255));`,
+  )
+  await stamp(page, "data-background-style", "solid")
+  expect(await computed(shell(page), "background-color")).toBe("rgb(1, 2, 3)")
+  expect(await computed(shell(page), "background-image")).toBe("none")
+  await stamp(page, "data-background-style", "gradient")
+  expect(await computed(shell(page), "background-image")).toBe(
+    "linear-gradient(rgb(255, 0, 0), rgb(0, 0, 255))",
+  )
+  expect(await computed(shell(page), "background-color")).toBe(
+    "rgba(0, 0, 0, 0)",
+  )
+})
+
+for (const shellStyle of ["classic", "island"]) {
+  test(`a ${shellStyle} shell without gradient art shows the canvas under the gradient background`, async ({
+    page,
+  }) => {
+    await openShell(page, shellStyle)
+    await stamp(page, "data-background-style", "gradient")
+    expect(await computed(shell(page), "background-color")).toBe(
+      "rgba(0, 0, 0, 0)",
+    )
+    expect(await computed(shell(page), "background-image")).toBe("none")
+  })
+}
+
 for (const shellStyle of ["flat", "inset"]) {
   test(`a toned rail and bar keep their fill on a ${shellStyle} shell`, async ({
     page,

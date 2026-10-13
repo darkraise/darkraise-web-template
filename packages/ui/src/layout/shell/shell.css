@@ -14,6 +14,7 @@
     --shell-content-edge: initial;
     --shell-content-shadow: initial;
     --shell-ground-fill: initial;
+    --shell-ground-gradient: initial;
     --shell-frame-edge: hsl(var(--border));
   }
 }

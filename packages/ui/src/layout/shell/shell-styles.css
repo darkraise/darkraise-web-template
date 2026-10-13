@@ -54,6 +54,15 @@
     );
   }
 
+  /* Under the gradient background the shell paints the look's gradient art,
+     or nothing, so the body's canvas shows through; the ground fill above is
+     the Solid paint. Each selector outranks the ground rule it replaces. */
+  [data-background-style="gradient"] .dr-shell,
+  [data-background-style="gradient"]
+    .dr-shell:is([data-shell-style="island"], [data-shell-style="inset"]) {
+    background: var(--shell-ground-gradient, transparent);
+  }
+
   /* The rule above replaces the region rule's box-shadow, so detached
      chrome restates its own chrome shadow under the separation shadow. */
   .dr-shell:is([data-shell-style="island"], [data-shell-style="floating"])

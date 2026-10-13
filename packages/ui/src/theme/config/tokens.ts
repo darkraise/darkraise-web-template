@@ -59,6 +59,7 @@ export const PAINT_TOKENS = {
   shellContentEdge: "--shell-content-edge",
   shellContentShadow: "--shell-content-shadow",
   shellGroundFill: "--shell-ground-fill",
+  shellGroundGradient: "--shell-ground-gradient",
   shellFrameEdge: "--shell-frame-edge",
   chromeBarHeight: "--chrome-bar-height",
   navSelectionFill: "--nav-selection-fill",

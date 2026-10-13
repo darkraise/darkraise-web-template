@@ -90,6 +90,7 @@ describe("shell token defaults", () => {
     ["--shell-content-edge", "initial"],
     ["--shell-content-shadow", "initial"],
     ["--shell-ground-fill", "initial"],
+    ["--shell-ground-gradient", "initial"],
     ["--shell-frame-edge", "hsl(var(--border))"],
   ])("declares %s as %s on the layered :root", (token, value) => {
     expect(bodyOf("shell", ":root", ["@layer base"])).toContain(
@@ -103,6 +104,17 @@ describe("shell token readers", () => {
     expect(bodyOf("shell", ".dr-shell")).toContain(
       "background: var(--shell-ground-fill, hsl(var(--shell-ground)));",
     )
+  })
+
+  it("paints the gradient art, or nothing, under the gradient background", () => {
+    for (const selector of [
+      '[data-background-style="gradient"] .dr-shell',
+      '[data-background-style="gradient"] .dr-shell:is([data-shell-style="island"], [data-shell-style="inset"])',
+    ]) {
+      expect(bodyOf("styles", selector), selector).toBe(
+        "background: var(--shell-ground-gradient, transparent);",
+      )
+    }
   })
 
   it("paints a detached content pane from the content tokens", () => {
