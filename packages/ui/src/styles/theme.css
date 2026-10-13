@@ -1189,6 +1189,50 @@
       --shell-flat-chrome: hsl(from hsl(var(--background)) h s calc(l - 8.25));
     }
   }
+
+  /* Soft Glass's backdrop: four blobs and a ground tint turned from the
+     accent hue; theme/engine/groundBlobs.ts holds the numbers and the
+     contrast tests read them there. The chroma offset leaves the neutral
+     accent's blobs grey. A browser without relative colour syntax leaves
+     these undefined, so a reader's fallback paints a flat ground rather
+     than an invalid background. */
+  @supports (color: oklch(from red l c h)) {
+    :root {
+      --ground-blob-1: oklch(
+        from hsl(var(--primary)) 0.91 clamp(0, c - 0.04, 0.05) h
+      );
+      --ground-blob-2: oklch(
+        from hsl(var(--primary)) 0.91 clamp(0, c - 0.04, 0.05) calc(h + 60)
+      );
+      --ground-blob-3: oklch(
+        from hsl(var(--primary)) 0.91 clamp(0, c - 0.04, 0.05) calc(h - 120)
+      );
+      --ground-blob-4: oklch(
+        from hsl(var(--primary)) 0.91 clamp(0, c - 0.04, 0.05) calc(h + 30)
+      );
+      --ground-tint: oklch(
+        from hsl(var(--primary)) 0.95 clamp(0, c - 0.04, 0.02) calc(h + 60)
+      );
+    }
+
+    :root[data-mode="dark"] {
+      --ground-blob-1: oklch(
+        from hsl(var(--primary)) 0.3 clamp(0, c - 0.04, 0.06) h
+      );
+      --ground-blob-2: oklch(
+        from hsl(var(--primary)) 0.3 clamp(0, c - 0.04, 0.06) calc(h + 60)
+      );
+      --ground-blob-3: oklch(
+        from hsl(var(--primary)) 0.3 clamp(0, c - 0.04, 0.06) calc(h - 120)
+      );
+      --ground-blob-4: oklch(
+        from hsl(var(--primary)) 0.3 clamp(0, c - 0.04, 0.06) calc(h + 30)
+      );
+      --ground-tint: oklch(
+        from hsl(var(--primary)) 0.2 clamp(0, c - 0.04, 0.03) calc(h + 60)
+      );
+    }
+  }
 }
 
 /* Every raised surface a form can live in redeclares the control rung, so a
