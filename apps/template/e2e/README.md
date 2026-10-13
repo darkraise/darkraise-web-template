@@ -440,7 +440,7 @@ Runs against the standalone fixture `e2e/fixtures/selection-overlays.html`.
 ### 18 · Visual baseline (`18-baseline.spec.ts`)
 
 Runs only with `BASELINE=1` (`pnpm test:e2e:visual`). Linux Chromium
-screenshots at 1440×900 in UTC and `en-US`, taken once Inter and JetBrains Mono
+screenshots at 1440×900 in UTC and `en-US`, taken once Hanken Grotesk and JetBrains Mono
 have loaded and no skeleton remains.
 
 - Under quiet and glass × both modes: dashboard, orders, an order detail,

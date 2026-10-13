@@ -182,7 +182,7 @@ export const AXES = {
   font: axis({
     // Typed as plain strings: a theme config can register its own fonts.
     values: FONTS as readonly string[],
-    default: "inter",
+    default: "hanken-grotesk",
     storageKey: "theme-font",
     attribute: "data-font",
     layer: "brand",

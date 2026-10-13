@@ -286,7 +286,7 @@ describe("axis registry", () => {
         "hanken-grotesk",
         "newsreader",
       ],
-      default: "inter",
+      default: "hanken-grotesk",
       storageKey: "theme-font",
       attribute: "data-font",
       layer: "brand",

@@ -43,7 +43,7 @@ const defaultConfig = {
       preset: "base",
       glassTransparency: "medium",
       glassBlur: "medium",
-      font: "inter",
+      font: "hanken-grotesk",
       headingFont: "body",
       backgroundStyle: "solid",
       backgroundIntensity: "vivid",

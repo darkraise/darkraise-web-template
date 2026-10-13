@@ -39,6 +39,7 @@ const faceLoaded = (page: Page, family: string) =>
   )
 
 const SEEDED_FONTS: { font: Font; family: string; file: RegExp }[] = [
+  { font: "inter", family: "Inter Variable", file: /\/inter-[\w-]+\.woff2$/ },
   { font: "geist", family: "Geist Variable", file: /\/geist-[\w-]+\.woff2$/ },
   {
     font: "ibm-plex-sans",
@@ -70,7 +71,7 @@ test.describe("kit fonts", () => {
     await seedApp(page, { style: "quiet", mode: "light" })
     await gotoApp(page, PROBE)
 
-    expect(await bodyFont(page)).toMatch(/^"Inter Variable"/)
+    expect(await bodyFont(page)).toMatch(/^"Hanken Grotesk Variable"/)
 
     const geistFile = page.waitForResponse((response) => {
       const url = new URL(response.url())
@@ -120,7 +121,7 @@ test.describe("kit fonts", () => {
         .poll(() => heading.evaluate((el) => getComputedStyle(el).fontFamily))
         .toMatch(new RegExp(`^"${family}"`))
       await expect.poll(() => faceLoaded(page, family)).toBe(true)
-      expect(await bodyFont(page)).toMatch(/^"Inter Variable"/)
+      expect(await bodyFont(page)).toMatch(/^"Hanken Grotesk Variable"/)
     })
   }
 

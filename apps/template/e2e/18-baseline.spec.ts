@@ -85,10 +85,10 @@ test.describe.configure({ timeout: 90_000 })
 
 /** The faces the app text and code samples use, as `fonts.load` specs. */
 const FACES = [
-  '400 1em "Inter Variable"',
-  '500 1em "Inter Variable"',
-  '600 1em "Inter Variable"',
-  '700 1em "Inter Variable"',
+  '400 1em "Hanken Grotesk Variable"',
+  '500 1em "Hanken Grotesk Variable"',
+  '600 1em "Hanken Grotesk Variable"',
+  '700 1em "Hanken Grotesk Variable"',
   '400 1em "JetBrains Mono Variable"',
   '500 1em "JetBrains Mono Variable"',
 ]
@@ -115,7 +115,7 @@ async function fontsLoaded(page: Page): Promise<boolean> {
 async function waitForFonts(page: Page) {
   await expect
     .poll(() => fontsLoaded(page), {
-      message: "Inter and JetBrains Mono must load before recording",
+      message: "Hanken Grotesk and JetBrains Mono must load before recording",
       timeout: 30_000,
     })
     .toBe(true)

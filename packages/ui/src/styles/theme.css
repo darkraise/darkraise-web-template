@@ -518,7 +518,8 @@
 @layer base {
   :root {
     --font-family-sans:
-      "Inter Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
+      "Hanken Grotesk Variable", ui-sans-serif, system-ui, -apple-system,
+      sans-serif;
     /* The heading-font axis's `body` value: the face the font axis picked.
        The theme is inline, so --font-heading cannot be rebound at runtime. */
     --font-family-heading: var(--font-family-sans);
@@ -1288,7 +1289,12 @@
   --density-stack-gap: 1rem;
 }
 
-/* Font axis. `inter` is the :root value and declares no block. */
+/* Font axis. `hanken-grotesk` is the :root value and declares no block. */
+[data-font="inter"] {
+  --font-family-sans:
+    "Inter Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
 [data-font="geist"] {
   --font-family-sans:
     "Geist Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
@@ -1297,12 +1303,6 @@
 [data-font="ibm-plex-sans"] {
   --font-family-sans:
     "IBM Plex Sans Variable", ui-sans-serif, system-ui, -apple-system,
-    sans-serif;
-}
-
-[data-font="hanken-grotesk"] {
-  --font-family-sans:
-    "Hanken Grotesk Variable", ui-sans-serif, system-ui, -apple-system,
     sans-serif;
 }
 

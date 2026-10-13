@@ -222,7 +222,7 @@ test.describe("selection controls", () => {
         const label = page.locator(selector)
         const share = await textShare(page, label, highlight)
         expect(share, selector).toBeGreaterThan(0.2)
-        const ink = await textShare(page, label, glyphs)
+        const ink = await textShare(page, label, glyphs, 1)
         expect(ink, `${selector} glyphs`).toBeGreaterThan(0.02)
       }
       // Two narrow digits: every pixel, or their 1px stems fall between samples.

@@ -32,7 +32,7 @@ describe("pre-render script fonts", () => {
   it("paints the body heading font when none is stored", () => {
     run()
     expect(root.getAttribute("data-heading-font")).toBe("body")
-    expect(root.getAttribute("data-font")).toBe("inter")
+    expect(root.getAttribute("data-font")).toBe("hanken-grotesk")
   })
 
   it("restores a stored config font for the body and the headings", () => {
