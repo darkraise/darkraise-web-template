@@ -88,16 +88,16 @@ export const glass: StyleDefinition = {
     // The blur steps write sizes, not backdrops, so a preset keeps its own
     // filters. `none` switches every glass backdrop to the keyword `none`
     // rather than blur(0): any filter value creates a containing block for
-    // fixed descendants. The scrim blurs the app a fifth as hard as an
-    // overlay blurs what it covers, or a quarter at the highest step.
+    // fixed descendants. The scrim blurs the app a quarter as hard as an
+    // overlay blurs what it covers.
     { axes: { glassBlur: "none" }, vars: { "--glass-backdrop-off": "none" } },
     {
       axes: { glassBlur: "low" },
-      vars: { "--glass-blur": "10px", "--glass-scrim-blur": "2px" },
+      vars: { "--glass-blur": "4px", "--glass-scrim-blur": "1px" },
     },
     {
       axes: { glassBlur: "medium" },
-      vars: { "--glass-blur": "20px", "--glass-scrim-blur": "4px" },
+      vars: { "--glass-blur": "8px", "--glass-scrim-blur": "2px" },
     },
     {
       axes: { glassBlur: "high" },

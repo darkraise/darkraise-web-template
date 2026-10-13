@@ -81,8 +81,8 @@ const STYLE_SIGNATURES: Record<
     tokens: {
       "--btn-shadow": "0 1px 2px rgb(0 0 0 / 0.1)",
       "--field-shadow": "0 0 transparent",
-      "--overlay-backdrop": "blur(20px) saturate(180%)",
-      "--scrim-backdrop": "blur(4px)",
+      "--overlay-backdrop": "blur(8px) saturate(180%)",
+      "--scrim-backdrop": "blur(2px)",
     },
     attrs: {
       "data-elevation": "standard",
@@ -241,12 +241,12 @@ test.describe("glass axes", () => {
     consoleWatch.assertClean()
   })
 
-  // Every step saturates overlays alike and blurs the scrim a fifth as
-  // hard or less (theme/styles/builtin/glass.ts); the chrome takes no blur.
+  // Every step saturates overlays alike and blurs the scrim a quarter as
+  // hard (theme/styles/builtin/glass.ts); the chrome takes no blur.
   const blurs: Record<(typeof GLASS_BLURS)[number], [string, string]> = {
     none: ["none", "none"],
-    low: ["blur(10px) saturate(1.8)", "blur(2px)"],
-    medium: ["blur(20px) saturate(1.8)", "blur(4px)"],
+    low: ["blur(4px) saturate(1.8)", "blur(1px)"],
+    medium: ["blur(8px) saturate(1.8)", "blur(2px)"],
     high: ["blur(32px) saturate(1.8)", "blur(8px)"],
   }
   for (const glassBlur of GLASS_BLURS) {

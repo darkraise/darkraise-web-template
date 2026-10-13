@@ -54,12 +54,12 @@
     --glass-backdrop-off: none;
   }
   [data-style="glass"][data-glass-blur="low"] {
-    --glass-blur: 10px;
-    --glass-scrim-blur: 2px;
+    --glass-blur: 4px;
+    --glass-scrim-blur: 1px;
   }
   [data-style="glass"][data-glass-blur="medium"] {
-    --glass-blur: 20px;
-    --glass-scrim-blur: 4px;
+    --glass-blur: 8px;
+    --glass-scrim-blur: 2px;
   }
   [data-style="glass"][data-glass-blur="high"] {
     --glass-blur: 32px;

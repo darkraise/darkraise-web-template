@@ -68,7 +68,7 @@ for (const mode of MODES) {
     expect(await computed(dialog, "background-image")).toBe("none")
     expect(await computed(dialog, "border-top-left-radius")).toBe(radius)
     expect(await computed(dialog, "backdrop-filter")).toBe(
-      "blur(20px) saturate(1.8)",
+      "blur(8px) saturate(1.8)",
     )
 
     const backdrop = page.locator(".dr-overlay-backdrop")
@@ -80,7 +80,7 @@ for (const mode of MODES) {
       ["background-color"],
     )
     expect(await computed(backdrop, "background-color")).toBe(scrim)
-    expect(await computed(backdrop, "backdrop-filter")).toBe("blur(4px)")
+    expect(await computed(backdrop, "backdrop-filter")).toBe("blur(2px)")
   })
 
   test(`a glass ${mode} menu is translucent, frosted and tints its row`, async ({
@@ -99,7 +99,7 @@ for (const mode of MODES) {
     expect(await computed(menu, "background-color")).toBe(face)
     expect(alphaOf(face ?? "")).toBeLessThan(1)
     expect(await computed(menu, "backdrop-filter")).toBe(
-      "blur(20px) saturate(1.8)",
+      "blur(8px) saturate(1.8)",
     )
     expect(await computed(menu, "border-top-left-radius")).toBe(radius)
 
@@ -134,7 +134,7 @@ for (const mode of MODES) {
     expect(await computed(card, "border-top-color")).toBe(edge)
     expect(await computed(card, "border-top-left-radius")).toBe(radius)
     expect(await computed(card, "backdrop-filter")).toBe(
-      "blur(20px) saturate(1.8)",
+      "blur(8px) saturate(1.8)",
     )
   })
 }

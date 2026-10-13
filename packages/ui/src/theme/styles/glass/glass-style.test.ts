@@ -176,8 +176,8 @@ describe("glass cards", () => {
 describe("glass blur", () => {
   /** `--glass-blur`, then `--glass-scrim-blur`, at each step that blurs. */
   const SIZES = {
-    low: ["10px", "2px"],
-    medium: ["20px", "4px"],
+    low: ["4px", "1px"],
+    medium: ["8px", "2px"],
     high: ["32px", "8px"],
   } as const
 
