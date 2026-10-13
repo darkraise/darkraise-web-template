@@ -13,9 +13,10 @@ import { paperInk } from "./paper-ink"
 import { pastelSoft } from "./pastel-soft"
 import { redGraphite } from "./red-graphite"
 import { smokedObsidian } from "./smoked-obsidian"
+import { softGlass } from "./soft-glass"
 import { studioGreen } from "./studio-green"
 
-/** Grouped by style: Quiet's four, Flat's two, Tactile's three, Glass's six. */
+/** Grouped by style: Quiet's four, Flat's two, Tactile's three, Glass's seven. */
 export const PRESET_NAMES = [
   "paper-ink",
   "linen-teal",
@@ -32,6 +33,7 @@ export const PRESET_NAMES = [
   "aurora-night",
   "coral-space",
   "dusk-haze",
+  "soft-glass",
 ] as const
 
 export type PresetName = (typeof PRESET_NAMES)[number]
@@ -53,4 +55,5 @@ export const BUILTIN_PRESETS: Readonly<Record<PresetName, PresetDefinition>> = {
   "aurora-night": auroraNight,
   "coral-space": coralSpace,
   "dusk-haze": duskHaze,
+  "soft-glass": softGlass,
 }

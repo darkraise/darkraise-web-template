@@ -128,6 +128,13 @@ const CATALOGUE = [
     "flat",
     ["indigo", "sand", "on", "none", "geist", "body"],
   ],
+  [
+    "soft-glass",
+    "glass",
+    "Soft Glass",
+    "island",
+    ["indigo", "cool", "off", "none", "hanken-grotesk", "newsreader"],
+  ],
 ] as const
 
 /**
@@ -240,7 +247,7 @@ function knownVariables(): Set<string> {
 }
 
 describe("built-in presets", () => {
-  it("ships the fifteen presets, grouped by style, in catalogue order", () => {
+  it("ships the sixteen presets, grouped by style, in catalogue order", () => {
     const names = CATALOGUE.map(([name]) => name)
     expect(PRESET_NAMES).toEqual(names)
     expect(Object.keys(BUILTIN_PRESETS)).toEqual(names)

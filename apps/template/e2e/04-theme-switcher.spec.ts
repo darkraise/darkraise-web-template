@@ -175,6 +175,7 @@ const PRESET_LABELS: Record<Style, string[]> = {
     "Aurora Night",
     "Coral Space",
     "Dusk Haze",
+    "Soft Glass",
   ],
 }
 

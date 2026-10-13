@@ -246,7 +246,7 @@ describe("glass chrome", () => {
     )
   })
 
-  it("paints no canvas, fog or specular behind the chrome", () => {
+  it("paints no canvas, fog or specular behind Glass's own chrome", () => {
     for (const name of [
       "--chrome-canvas",
       "--chrome-shadow",
@@ -255,7 +255,9 @@ describe("glass chrome", () => {
       expect(
         RULES.filter(
           (r) =>
-            r.layer !== "@layer style.fallback" && r.body.includes(`${name}:`),
+            r.layer !== "@layer style.fallback" &&
+            r.layer !== "@layer style.preset" &&
+            r.body.includes(`${name}:`),
         ).map((r) => r.selector),
         name,
       ).toEqual([])

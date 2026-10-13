@@ -134,6 +134,7 @@ const messages: UiMessages = {
       "aurora-night": "Aurora Night",
       "coral-space": "Coral Space",
       "dusk-haze": "Dusk Haze",
+      "soft-glass": "Soft Glass",
     },
     resetToPreset: "Đặt lại về cài đặt sẵn",
     sidebarSelections: {

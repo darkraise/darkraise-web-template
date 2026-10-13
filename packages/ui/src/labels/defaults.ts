@@ -116,6 +116,7 @@ export const defaultLabels: UiLabels = {
       "aurora-night": "Aurora Night",
       "coral-space": "Coral Space",
       "dusk-haze": "Dusk Haze",
+      "soft-glass": "Soft Glass",
     },
     resetToPreset: "Reset to preset",
     sidebarSelections: {

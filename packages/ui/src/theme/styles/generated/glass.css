@@ -402,3 +402,30 @@
     --scrim: rgb(0 0 0 / 0.42);
   }
 }
+
+@layer style.preset {
+  [data-preset="soft-glass"] {
+    --card-radius: var(--radius);
+    --surface-backdrop: var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(110%));
+    --chrome-backdrop: var(--glass-backdrop-off, blur(calc(var(--glass-blur) * 0.75)) saturate(115%));
+    --overlay-fill-alpha: 0.46;
+    --shell-content-fill: hsl(var(--card) / var(--surface-alpha));
+    --shell-ground-gradient: radial-gradient(47vw 62vh at 6% 4%, var(--ground-blob-1, transparent), transparent 66%), radial-gradient(43vw 60vh at 96% 0%, var(--ground-blob-2, transparent), transparent 64%), radial-gradient(58vw 70vh at 70% 108%, var(--ground-blob-3, transparent), transparent 64%), radial-gradient(43vw 57vh at 22% 96%, var(--ground-blob-4, transparent), transparent 62%), linear-gradient(135deg, hsl(var(--background)), var(--ground-tint, hsl(var(--shell-ground))));
+  }
+  [data-preset="soft-glass"]:not([data-mode="dark"]) {
+    --surface-fill-alpha: 0.64;
+    --chrome-rail-bg: hsl(var(--card) / max(0.12, calc(var(--surface-alpha) * 2.06 - 1.06)));
+    --chrome-bar-bg: hsl(var(--card) / max(0.12, calc(var(--surface-alpha) * 2.06 - 1.06)));
+    --card-border: rgb(255 255 255 / 0.5);
+    --card-edge: 0 10px 26px -18px rgb(0 0 0 / 0.35);
+    --scrim: hsl(var(--foreground) / 0.16);
+  }
+  [data-mode="dark"][data-preset="soft-glass"] {
+    --surface-fill-alpha: 0.62;
+    --chrome-rail-bg: hsl(var(--card) / max(0.12, calc(var(--surface-alpha) * 1.74 - 0.74)));
+    --chrome-bar-bg: hsl(var(--card) / max(0.12, calc(var(--surface-alpha) * 1.74 - 0.74)));
+    --card-border: rgb(255 255 255 / 0.07);
+    --card-edge: 0 10px 26px -18px rgb(0 0 0 / 0.6);
+    --scrim: rgb(0 0 0 / 0.65);
+  }
+}
