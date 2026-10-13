@@ -45,6 +45,7 @@ describe("PAINT_TOKENS", () => {
       "cardBorder",
       "surfaceFillAlpha",
       "surfaceBackdrop",
+      "overlayFillAlpha",
       "cardRim",
       "seam",
       "seamHighlight",
@@ -106,6 +107,7 @@ describe("PAINT_TOKENS", () => {
       "--card-border",
       "--surface-fill-alpha",
       "--surface-backdrop",
+      "--overlay-fill-alpha",
       "--card-rim",
       "--seam",
       "--seam-highlight",
@@ -167,6 +169,7 @@ describe("KIT_FALLBACK", () => {
       overlayFillBase: "hsl(var(--popover))",
       overlayFillBlend: "normal",
       surfaceFillAlpha: "1",
+      overlayFillAlpha: "1",
       surfaceBackdrop: "none",
       scrimBackdrop: "none",
     })

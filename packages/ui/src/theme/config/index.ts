@@ -19,6 +19,12 @@ export type {
 } from "./schema"
 export { KIT_FALLBACK, PAINT_TOKENS, type PaintToken } from "./tokens"
 export {
+  OVERLAY_ALPHA_FLOOR,
+  SURFACE_ALPHA_FLOOR,
+  TRANSPARENCY_SCALE,
+  effectiveAlpha,
+} from "./transparency"
+export {
   SIGNATURES,
   signatureAttribute,
   type SignatureKey,

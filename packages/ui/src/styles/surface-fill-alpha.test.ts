@@ -3,6 +3,14 @@ import { readFileSync } from "node:fs"
 import { join } from "node:path"
 import { cssRules } from "../test/css-rules"
 import { stripCssComments } from "../test/strip-css-comments"
+import {
+  OVERLAY_ALPHA_FLOOR,
+  SURFACE_ALPHA_FLOOR,
+} from "../theme/config/transparency"
+
+/** Prettier pads long values inside ( … ); undo that. */
+const tight = (values: string[]) =>
+  values.map((value) => value.replace(/\(\s+/g, "(").replace(/\s+\)/g, ")"))
 
 // A style makes the card plane translucent through one alpha. It has to sit
 // inside the composed fill itself: the `surface` prop recomposes the fill on
@@ -64,4 +72,22 @@ describe("surface fill alpha", () => {
       declaration(":root", ["@layer base"], "--surface-card-fill-opaque"),
     ).toEqual(["hsl(var(--card))"])
   })
+
+  it("declares the overlay alpha opaque on the layered :root", () => {
+    expect(
+      declaration(":root", ["@layer base"], "--overlay-fill-alpha"),
+    ).toEqual(["1"])
+  })
+
+  it.each([
+    ["--surface-alpha", "--surface-fill-alpha", SURFACE_ALPHA_FLOOR],
+    ["--overlay-alpha", "--overlay-fill-alpha", OVERLAY_ALPHA_FLOOR],
+  ] as const)(
+    "derives %s from %s, the Transparency scale and its floor",
+    (name, declared, floor) => {
+      expect(tight(declaration(":root", ["@layer base"], name))).toEqual([
+        `max(${floor}, 1 - (1 - var(${declared})) * var(--glass-transparency-scale, 1))`,
+      ])
+    },
+  )
 })

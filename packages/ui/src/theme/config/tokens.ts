@@ -41,6 +41,7 @@ export const PAINT_TOKENS = {
   cardBorder: "--card-border",
   surfaceFillAlpha: "--surface-fill-alpha",
   surfaceBackdrop: "--surface-backdrop",
+  overlayFillAlpha: "--overlay-fill-alpha",
   cardRim: "--card-rim",
   seam: "--seam",
   seamHighlight: "--seam-highlight",
@@ -89,8 +90,8 @@ export type PaintToken = keyof typeof PAINT_TOKENS
 /**
  * Opaque, unblurred values the kit restores under reduced transparency or
  * more contrast, whatever the style or preset set: every backdrop and the
- * canvas `none`, the card plane at full alpha, and the overlay fill at its
- * light `@layer base` value in theme.css.
+ * canvas `none`, the card plane and the overlays at full alpha, and the
+ * overlay fill at its light `@layer base` value in theme.css.
  */
 export const KIT_FALLBACK: Readonly<Partial<Record<PaintToken, string>>> = {
   chromeBackdrop: "none",
@@ -100,6 +101,7 @@ export const KIT_FALLBACK: Readonly<Partial<Record<PaintToken, string>>> = {
   overlayFillBase: "hsl(var(--popover))",
   overlayFillBlend: "normal",
   surfaceFillAlpha: "1",
+  overlayFillAlpha: "1",
   surfaceBackdrop: "none",
   scrimBackdrop: "none",
 }

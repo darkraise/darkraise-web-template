@@ -156,6 +156,7 @@
       --surface-overlay-base: hsl(var(--popover));
       --surface-overlay-blend-mode: normal;
       --surface-fill-alpha: 1;
+      --overlay-fill-alpha: 1;
       --surface-backdrop: none;
       --scrim-backdrop: none;
     }
@@ -1103,6 +1104,21 @@
        wherever the `surface` prop composes it. The opaque twin below ignores
        it. At 1 the fill computes to the same opaque rgb() as before. */
     --surface-fill-alpha: 1;
+    /* The overlay family's twin: popovers, menus, selects and dialogs. */
+    --overlay-fill-alpha: 1;
+    /* What the user's Transparency step makes of the two declared alphas:
+       the see-through share scales by --glass-transparency-scale, which only
+       Glass writes, down to a floor (config/transparency.ts holds the same
+       numbers). Both resolve here on :root, so a subtree that sets a
+       declared alpha gets no scaling. */
+    --surface-alpha: max(
+      0.2,
+      1 - (1 - var(--surface-fill-alpha)) * var(--glass-transparency-scale, 1)
+    );
+    --overlay-alpha: max(
+      0.4,
+      1 - (1 - var(--overlay-fill-alpha)) * var(--glass-transparency-scale, 1)
+    );
     --surface-card-fill: hsl(var(--card) / var(--surface-fill-alpha));
     --surface-popover-fill: hsl(var(--popover));
     --surface-raised-fill: hsl(var(--surface-raised));

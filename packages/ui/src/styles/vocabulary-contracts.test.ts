@@ -240,6 +240,7 @@ describe("the kit's forced fallback", () => {
       [
         "chromeCanvas",
         "surfaceFillAlpha",
+        "overlayFillAlpha",
         "overlayFillLayers",
         "overlayFillBase",
         "overlayFillBlend",
