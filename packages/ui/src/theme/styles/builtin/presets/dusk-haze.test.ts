@@ -61,25 +61,25 @@ describe("Dusk Haze", () => {
   })
 
   it("builds the haze from the neutral ramp under one light, clear at the top", () => {
-    expect(light.shellGroundFill).toMatch(
+    expect(light.shellGroundGradient).toMatch(
       /^radial-gradient\(42% 24% at 46% 12%, rgb\(255 255 255 \/ 0\.85\), transparent 70%\), /,
     )
-    expect(named(light.shellGroundFill)).toEqual(["neutral-6", "neutral-7"])
-    expect(light.shellGroundFill).toMatch(
+    expect(named(light.shellGroundGradient)).toEqual(["neutral-6", "neutral-7"])
+    expect(light.shellGroundGradient).toMatch(
       /, linear-gradient\(180deg, hsl\(var\(--neutral-6\) \/ 0\.35\), hsl\(var\(--neutral-6\)\) 46%\)$/,
     )
-    expect(dark.shellGroundFill).toMatch(
+    expect(dark.shellGroundGradient).toMatch(
       /^radial-gradient\(38% 20% at 45% 22%, hsl\(var\(--primary-text\) \/ 0\.14\), transparent 70%\), /,
     )
-    expect(named(dark.shellGroundFill)).toEqual([
+    expect(named(dark.shellGroundGradient)).toEqual([
       "neutral-3",
       "neutral-7",
       "primary-text",
     ])
-    expect(dark.shellGroundFill).toMatch(
+    expect(dark.shellGroundGradient).toMatch(
       /, linear-gradient\(180deg, hsl\(var\(--neutral-3\) \/ 0\.7\), transparent 70%\)$/,
     )
-    expect(shared.shellGroundFill).toBeUndefined()
+    expect(shared.shellGroundGradient).toBeUndefined()
   })
 
   it("makes cards thin glass through tokens the kit's fallback resets", () => {

@@ -51,11 +51,11 @@ describe("Milk Glass", () => {
 
   it("shows the canvas through the shell ground between three accent halos", () => {
     for (const tokens of [light, dark]) {
-      expect(tokens.shellGroundFill).toMatch(
+      expect(tokens.shellGroundGradient).toMatch(
         /^(?:radial-gradient\(\d+% \d+% at \d+% \d+%, hsl\(var\(--primary\) \/ 0\.\d+\), transparent 70%\)(?:, )?){3}$/,
       )
     }
-    expect(shared.shellGroundFill).toBeUndefined()
+    expect(shared.shellGroundGradient).toBeUndefined()
   })
 
   it("makes cards blurring milk through tokens the kit's fallback resets", () => {

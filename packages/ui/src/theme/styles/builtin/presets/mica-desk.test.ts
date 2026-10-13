@@ -52,11 +52,11 @@ describe("Mica Desk", () => {
 
   it("shows the canvas through the shell ground under an accent bloom", () => {
     for (const tokens of [light, dark]) {
-      expect(tokens.shellGroundFill).toMatch(
+      expect(tokens.shellGroundGradient).toMatch(
         /^radial-gradient\(80% 70% at 10% 0%, hsl\(var\(--primary\) \/ 0\.1\d\), transparent 60%\)$/,
       )
     }
-    expect(shared.shellGroundFill).toBeUndefined()
+    expect(shared.shellGroundGradient).toBeUndefined()
   })
 
   it("lays content on a slab fainter than its cards, opaque when they are", () => {

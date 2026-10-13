@@ -62,11 +62,11 @@ describe("Smoked Obsidian", () => {
 
   it("lights the page and the card rims from the top right", () => {
     for (const tokens of [light, dark]) {
-      expect(tokens.shellGroundFill).toMatch(
+      expect(tokens.shellGroundGradient).toMatch(
         /^radial-gradient\(70% 55% at 80% -10%, hsl\(var\(--primary\) \/ 0\.\d+\), transparent 60%\)$/,
       )
     }
-    expect(shared.shellGroundFill).toBeUndefined()
+    expect(shared.shellGroundGradient).toBeUndefined()
     expect(shared.cardRim).toMatch(
       /^linear-gradient\(200deg, hsl\(var\(--primary\) \/ 0\.4\), /,
     )

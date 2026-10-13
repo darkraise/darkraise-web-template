@@ -53,13 +53,13 @@ describe("Aurora Night", () => {
       new RegExp(
         `(?:radial-gradient\\(\\d+% \\d+% at (?:[5-9]\\d)% (?:1?\\d)%, hsl\\(var\\(--${token}\\) / 0\\.\\d+\\), transparent 70%\\)(?:, )?){3}$`,
       )
-    expect(light.shellGroundFill).toMatch(
+    expect(light.shellGroundGradient).toMatch(
       new RegExp(`^${pool("primary").source}`),
     )
-    expect(dark.shellGroundFill).toMatch(
+    expect(dark.shellGroundGradient).toMatch(
       new RegExp(`^${pool("primary-text").source}`),
     )
-    expect(shared.shellGroundFill).toBeUndefined()
+    expect(shared.shellGroundGradient).toBeUndefined()
   })
 
   it("glows the primary action, the focused field and the current nav row", () => {

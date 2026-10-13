@@ -58,7 +58,7 @@ export const micaDesk: PresetDefinition = {
     light: {
       // No base layer under the bloom: the shell ground stays clear, so the
       // page canvas shows through the chrome.
-      shellGroundFill:
+      shellGroundGradient:
         "radial-gradient(80% 70% at 10% 0%, hsl(var(--primary) / 0.12), transparent 60%)",
       shellContentEdge: "rgb(0 0 0 / 0.06)",
       cardBorder: "rgb(0 0 0 / 0.06)",
@@ -75,7 +75,7 @@ export const micaDesk: PresetDefinition = {
       modalShadow: "0 0 8px rgb(0 0 0 / 0.12), 0 32px 64px rgb(0 0 0 / 0.14)",
     },
     dark: {
-      shellGroundFill:
+      shellGroundGradient:
         "radial-gradient(80% 70% at 10% 0%, hsl(var(--primary) / 0.16), transparent 60%)",
       shellContentEdge: "rgb(0 0 0 / 0.1)",
       buttonNeutralFill: "rgb(255 255 255 / 0.06)",

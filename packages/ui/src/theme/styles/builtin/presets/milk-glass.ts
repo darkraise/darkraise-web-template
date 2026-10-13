@@ -61,7 +61,7 @@ export const milkGlass: PresetDefinition = {
     light: {
       // No base layer under the halos: the shell ground stays clear, so the
       // page canvas shows between them.
-      shellGroundFill:
+      shellGroundGradient:
         "radial-gradient(45% 40% at 12% 18%, hsl(var(--primary) / 0.26), transparent 70%), radial-gradient(40% 40% at 88% 12%, hsl(var(--primary) / 0.14), transparent 70%), radial-gradient(50% 45% at 70% 92%, hsl(var(--primary) / 0.18), transparent 70%)",
       surfaceFillAlpha: "0.78",
       // The rail's milk is thinner than a card's and follows the card alpha,
@@ -88,7 +88,7 @@ export const milkGlass: PresetDefinition = {
       scrim: "hsl(var(--background) / 0.45)",
     },
     dark: {
-      shellGroundFill:
+      shellGroundGradient:
         "radial-gradient(45% 40% at 12% 18%, hsl(var(--primary) / 0.2), transparent 70%), radial-gradient(40% 40% at 88% 12%, hsl(var(--primary) / 0.1), transparent 70%), radial-gradient(50% 45% at 70% 92%, hsl(var(--primary) / 0.12), transparent 70%)",
       surfaceFillAlpha: "0.8",
       chromeFlatFill:

@@ -55,7 +55,7 @@ export const auroraNight: PresetDefinition = {
     light: {
       // No base layer under the light: the shell ground stays clear, so the
       // page canvas shows around it.
-      shellGroundFill:
+      shellGroundGradient:
         "radial-gradient(38% 30% at 72% 4%, hsl(var(--primary) / 0.3), transparent 70%), radial-gradient(32% 28% at 92% 18%, hsl(var(--primary) / 0.18), transparent 70%), radial-gradient(30% 24% at 52% 12%, hsl(var(--primary) / 0.14), transparent 70%)",
       surfaceFillAlpha: "0.62",
       cardBorder: "rgb(255 255 255 / 0.8)",
@@ -74,7 +74,7 @@ export const auroraNight: PresetDefinition = {
       scrim: "hsl(var(--foreground) / 0.16)",
     },
     dark: {
-      shellGroundFill:
+      shellGroundGradient:
         "radial-gradient(38% 30% at 72% 4%, hsl(var(--primary-text) / 0.3), transparent 70%), radial-gradient(32% 28% at 92% 18%, hsl(var(--primary-text) / 0.18), transparent 70%), radial-gradient(30% 24% at 52% 12%, hsl(var(--primary-text) / 0.14), transparent 70%)",
       surfaceFillAlpha: "0.57",
       cardBorder: "rgb(255 255 255 / 0.08)",

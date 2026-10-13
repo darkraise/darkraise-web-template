@@ -49,15 +49,15 @@ describe("Coral Space", () => {
   })
 
   it("paints the shell ground opaque from the accent ramp", () => {
-    expect(layers(light.shellGroundFill).slice(-2)).toEqual([
+    expect(layers(light.shellGroundGradient).slice(-2)).toEqual([
       "linear-gradient(155deg, transparent 30%, hsl(var(--primary-6) / 0.18))",
       "hsl(var(--primary-5))",
     ])
-    expect(layers(dark.shellGroundFill).slice(-2)).toEqual([
+    expect(layers(dark.shellGroundGradient).slice(-2)).toEqual([
       "linear-gradient(155deg, hsl(var(--primary-6) / 0.22), transparent 55%)",
       "linear-gradient(155deg, hsl(var(--primary-2)), hsl(var(--primary-1)))",
     ])
-    expect(shared.shellGroundFill).toBeUndefined()
+    expect(shared.shellGroundGradient).toBeUndefined()
   })
 
   // The rail's ink is solved on the page colour, not on this ground: the
@@ -67,8 +67,8 @@ describe("Coral Space", () => {
       new RegExp(
         `^radial-gradient\\(circle at \\d+px \\d+px, ${colour} / 0\\.\\d+\\) 0\\.\\dpx, transparent 1\\.\\dpx\\) 0 0 / (\\d+)px \\1px$`,
       )
-    const lightGrain = layers(light.shellGroundFill).slice(0, -2)
-    const darkGrain = layers(dark.shellGroundFill).slice(0, -2)
+    const lightGrain = layers(light.shellGroundGradient).slice(0, -2)
+    const darkGrain = layers(dark.shellGroundGradient).slice(0, -2)
     expect(lightGrain).toHaveLength(4)
     expect(darkGrain).toHaveLength(4)
     for (const layer of lightGrain) {

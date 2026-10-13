@@ -63,7 +63,7 @@ export const duskHaze: PresetDefinition = {
       // No base layer: the haze thins towards the top, where the page
       // canvas shows. Text stands on this ground, so the ridges stay above
       // the tone the muted ink clears 4.5:1 on.
-      shellGroundFill:
+      shellGroundGradient:
         "radial-gradient(42% 24% at 46% 12%, rgb(255 255 255 / 0.85), transparent 70%), radial-gradient(90% 34% at 16% 104%, hsl(var(--neutral-7) / 0.14), transparent 70%), radial-gradient(80% 30% at 90% 106%, hsl(var(--neutral-7) / 0.16), transparent 70%), linear-gradient(180deg, hsl(var(--neutral-6) / 0.35), hsl(var(--neutral-6)) 46%)",
       surfaceFillAlpha: "0.72",
       surfaceBackdrop: glassBackdrop("saturate(140%)"),
@@ -87,7 +87,7 @@ export const duskHaze: PresetDefinition = {
       scrim: "hsl(var(--foreground) / 0.24)",
     },
     dark: {
-      shellGroundFill:
+      shellGroundGradient:
         "radial-gradient(38% 20% at 45% 22%, hsl(var(--primary-text) / 0.14), transparent 70%), radial-gradient(60% 30% at 82% 8%, hsl(var(--neutral-7) / 0.1), transparent 70%), linear-gradient(180deg, hsl(var(--neutral-3) / 0.7), transparent 70%)",
       surfaceFillAlpha: "0.7",
       surfaceBackdrop: glassBackdrop(),

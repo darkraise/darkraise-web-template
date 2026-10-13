@@ -432,6 +432,32 @@ describe("built-in presets", () => {
     expect(borderless).toContain("card-stock")
   })
 
+  // Solid paints the shell ground and Gradient paints the art, so a glass
+  // preset's art lives in the gradient token alone.
+  it("keeps every glass preset's ground art out of the Solid ground", () => {
+    const registry = resolveRegistry()
+    const glass = Object.values(registry.presets).filter(
+      (preset) => preset.style === "glass",
+    )
+    expect(glass.length).toBeGreaterThan(0)
+    for (const preset of glass) {
+      for (const mode of ["shared", "light", "dark"] as const) {
+        expect(
+          preset.tokens[mode]?.shellGroundFill,
+          `${preset.name}.${mode}`,
+        ).toBeUndefined()
+      }
+      expect(
+        ["light", "dark"].some(
+          (mode) =>
+            resolvedTokens(undefined, preset.tokens, mode as "light" | "dark")
+              .shellGroundGradient !== undefined,
+        ),
+        preset.name,
+      ).toBe(true)
+    }
+  })
+
   it("sizes every radius token from the radius axis", () => {
     for (const [where, token, value] of tokenValues()) {
       if (!token.endsWith("Radius")) continue

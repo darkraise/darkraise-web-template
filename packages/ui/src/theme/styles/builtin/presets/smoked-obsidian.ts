@@ -59,7 +59,7 @@ export const smokedObsidian: PresetDefinition = {
       overlayFillAlpha: "0.85",
       // No base layer under the light: the shell ground stays clear, so the
       // page canvas and its grain show through.
-      shellGroundFill:
+      shellGroundGradient:
         "radial-gradient(70% 55% at 80% -10%, hsl(var(--primary) / 0.14), transparent 60%)",
       surfaceBackdrop: glassBackdrop("saturate(90%)"),
       cardBorder: "hsl(var(--foreground) / 0.1)",
@@ -75,7 +75,7 @@ export const smokedObsidian: PresetDefinition = {
       scrim: "hsl(var(--foreground) / 0.35)",
     },
     dark: {
-      shellGroundFill:
+      shellGroundGradient:
         "radial-gradient(70% 55% at 80% -10%, hsl(var(--primary) / 0.2), transparent 60%)",
       surfaceBackdrop: glassBackdrop("saturate(110%) brightness(0.7)"),
       cardBorder: "rgb(255 255 255 / 0.07)",
