@@ -43,6 +43,15 @@
   [data-style="glass"][data-glass-transparency="high"] {
     --surface-overlay-base: hsl(var(--popover) / 0.62);
   }
+  [data-style="glass"][data-glass-transparency="low"] {
+    --glass-transparency-scale: 0.6;
+  }
+  [data-style="glass"][data-glass-transparency="medium"] {
+    --glass-transparency-scale: 1;
+  }
+  [data-style="glass"][data-glass-transparency="high"] {
+    --glass-transparency-scale: 1.5;
+  }
   [data-style="glass"][data-glass-blur="none"] {
     --overlay-backdrop: none;
     --scrim-backdrop: none;
@@ -79,7 +88,7 @@
 
 @layer style.preset {
   [data-preset="mica-desk"] {
-    --shell-content-fill: hsl(var(--card) / calc(var(--surface-fill-alpha) * 2 - 1));
+    --shell-content-fill: hsl(var(--card) / calc(var(--surface-alpha) * 2 - 1));
     --surface-fill-alpha: 0.75;
     --card-radius: calc(var(--radius) * 2);
     --overlay-radius: calc(var(--radius) * 2);
@@ -201,7 +210,7 @@
   [data-preset="milk-glass"]:not([data-mode="dark"]) {
     --shell-ground-fill: radial-gradient(45% 40% at 12% 18%, hsl(var(--primary) / 0.26), transparent 70%), radial-gradient(40% 40% at 88% 12%, hsl(var(--primary) / 0.14), transparent 70%), radial-gradient(50% 45% at 70% 92%, hsl(var(--primary) / 0.18), transparent 70%);
     --surface-fill-alpha: 0.78;
-    --chrome-flat-fill: hsl(var(--card) / calc(var(--surface-fill-alpha) * 1.75 - 0.75));
+    --chrome-flat-fill: hsl(var(--card) / calc(var(--surface-alpha) * 1.75 - 0.75));
     --card-border: rgb(255 255 255 / 0.9);
     --card-edge: 0 0 0 1px hsl(var(--foreground) / 0.04), 0 1px 1px hsl(var(--foreground) / 0.03), 0 8px 24px -6px hsl(var(--foreground) / 0.08), 0 24px 48px -12px hsl(var(--foreground) / 0.08);
     --nav-selection-fill: hsl(var(--card) / 0.92);
@@ -220,7 +229,7 @@
   [data-mode="dark"][data-preset="milk-glass"] {
     --shell-ground-fill: radial-gradient(45% 40% at 12% 18%, hsl(var(--primary) / 0.2), transparent 70%), radial-gradient(40% 40% at 88% 12%, hsl(var(--primary) / 0.1), transparent 70%), radial-gradient(50% 45% at 70% 92%, hsl(var(--primary) / 0.12), transparent 70%);
     --surface-fill-alpha: 0.8;
-    --chrome-flat-fill: hsl(var(--card) / calc(var(--surface-fill-alpha) * 1.5 - 0.5));
+    --chrome-flat-fill: hsl(var(--card) / calc(var(--surface-alpha) * 1.5 - 0.5));
     --card-border: rgb(255 255 255 / 0.1);
     --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 24px 48px -12px rgb(0 0 0 / 0.55);
     --nav-selection-fill: rgb(255 255 255 / 0.14);
@@ -239,7 +248,7 @@
 
 @layer style.preset {
   [data-preset="aurora-night"] {
-    --chrome-flat-fill: hsl(var(--card) / calc(var(--surface-fill-alpha) * 1.2 - 0.2));
+    --chrome-flat-fill: hsl(var(--card) / calc(var(--surface-alpha) * 1.2 - 0.2));
     --surface-backdrop: blur(20px) saturate(160%);
     --card-radius: calc(var(--radius) * 2.25);
     --overlay-radius: calc(var(--radius) * 1.75);
@@ -360,7 +369,7 @@
     --shell-ground-fill: radial-gradient(42% 24% at 46% 12%, rgb(255 255 255 / 0.85), transparent 70%), radial-gradient(90% 34% at 16% 104%, hsl(var(--neutral-7) / 0.14), transparent 70%), radial-gradient(80% 30% at 90% 106%, hsl(var(--neutral-7) / 0.16), transparent 70%), linear-gradient(180deg, hsl(var(--neutral-6) / 0.35), hsl(var(--neutral-6)) 46%);
     --surface-fill-alpha: 0.72;
     --surface-backdrop: blur(20px) saturate(140%);
-    --chrome-flat-fill: hsl(var(--card) / calc(var(--surface-fill-alpha) * 1.6 - 0.6));
+    --chrome-flat-fill: hsl(var(--card) / calc(var(--surface-alpha) * 1.6 - 0.6));
     --card-border: rgb(255 255 255 / 0.75);
     --card-edge: 0 0 0 1px hsl(var(--foreground) / 0.06), 0 10px 28px -14px hsl(var(--foreground) / 0.22);
     --btn-neutral-fill: hsl(var(--foreground) / 0.06);
@@ -376,7 +385,7 @@
     --shell-ground-fill: radial-gradient(38% 20% at 45% 22%, hsl(var(--primary-text) / 0.14), transparent 70%), radial-gradient(60% 30% at 82% 8%, hsl(var(--neutral-7) / 0.1), transparent 70%), linear-gradient(180deg, hsl(var(--neutral-3) / 0.7), transparent 70%);
     --surface-fill-alpha: 0.7;
     --surface-backdrop: blur(20px);
-    --chrome-flat-fill: hsl(var(--card) / calc(var(--surface-fill-alpha) * 1.25 - 0.25));
+    --chrome-flat-fill: hsl(var(--card) / calc(var(--surface-alpha) * 1.25 - 0.25));
     --card-border: hsl(var(--foreground) / 0.14);
     --card-edge: 0 0 3px rgb(0 0 0 / 0.05), 0 8px 12px rgb(0 0 0 / 0.05), 0 12px 20px rgb(0 0 0 / 0.05);
     --btn-neutral-fill: hsl(var(--foreground) / 0.14);

@@ -1,4 +1,6 @@
 import type { StyleDefinition } from "../../config/schema"
+import { TRANSPARENCY_SCALE } from "../../config/transparency"
+import { GLASS_TRANSPARENCIES } from "../../types"
 
 /**
  * Glass only where content passes under chrome: opaque, calm content on a
@@ -69,6 +71,14 @@ export const glass: StyleDefinition = {
       axes: { glassTransparency: "high" },
       tokens: { overlayFillBase: "hsl(var(--popover) / 0.62)" },
     },
+    // The Transparency step scales the see-through share of every declared
+    // alpha; the kit reads it in --surface-alpha and --overlay-alpha.
+    ...GLASS_TRANSPARENCIES.map((step) => ({
+      axes: { glassTransparency: step },
+      vars: {
+        "--glass-transparency-scale": String(TRANSPARENCY_SCALE[step]),
+      },
+    })),
     // `none` rather than blur(0): any filter value creates a containing
     // block for fixed descendants. The scrim blurs the app a fifth as hard
     // as an overlay blurs what it covers.

@@ -1,10 +1,7 @@
 @layer components {
   .dr-alert {
     @apply text-foreground [&>svg]:text-foreground relative w-full rounded-[var(--banner-radius)] border p-4 [&>svg]:absolute [&>svg]:start-4 [&>svg]:top-4 [&>svg]:size-[var(--icon-size)] [&>svg+div]:translate-y-[-3px] [&>svg~*]:ps-7;
-    background: var(
-      --banner-fill,
-      hsl(var(--muted) / var(--surface-fill-alpha))
-    );
+    background: var(--banner-fill, hsl(var(--muted) / var(--surface-alpha)));
     border-color: var(--banner-border);
     box-shadow: var(--banner-shadow, none);
     -webkit-backdrop-filter: var(--surface-backdrop);
@@ -37,7 +34,7 @@
     --alert-text: var(--info-text);
   }
 
-  /* The status fill follows --surface-fill-alpha: opaque at its default of 1,
+  /* The status fill follows --surface-alpha: opaque at its default of 1,
      translucent only where a style lowers it. The text is solved on the
      fill. */
   .dr-alert[data-variant="destructive"],
@@ -47,7 +44,7 @@
     @apply border-s-4;
     background: var(
       --banner-fill,
-      hsl(var(--alert-subtle) / var(--surface-fill-alpha))
+      hsl(var(--alert-subtle) / var(--surface-alpha))
     );
     border-inline-start-color: hsl(var(--alert-edge));
     --alert-lamp: hsl(var(--alert-edge));

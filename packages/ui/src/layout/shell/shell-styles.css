@@ -37,7 +37,7 @@
     > [data-region="content"] {
     background: var(
       --shell-content-fill,
-      hsl(var(--background) / var(--surface-fill-alpha))
+      hsl(var(--background) / var(--surface-alpha))
     );
     border-color: var(--shell-content-edge, var(--chrome-edge));
     box-shadow:

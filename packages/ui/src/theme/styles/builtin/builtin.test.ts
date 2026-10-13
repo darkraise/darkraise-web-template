@@ -83,7 +83,10 @@ describe("built-in style definitions", () => {
       for (const statement of imports) {
         expect(
           /^(?:import|export) type\b/.test(statement) ||
-            /from "\.\/[a-z]+"$/.test(statement),
+            /from "\.\/[a-z]+"$/.test(statement) ||
+            /^import \{[^}]*\} from "\.\.\/\.\.\/(?:config\/transparency|types)"$/.test(
+              statement,
+            ),
           `${file}: ${statement}`,
         ).toBe(true)
       }

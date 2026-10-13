@@ -67,7 +67,7 @@ describe("severity pairs", () => {
     // The status fill is the fallback of the --banner-fill style token, and
     // follows the surface alpha.
     expect(body).toContain(
-      "background: var(--banner-fill, hsl(var(--alert-subtle) / var(--surface-fill-alpha)));",
+      "background: var(--banner-fill, hsl(var(--alert-subtle) / var(--surface-alpha)));",
     )
     expect(body).toContain("border-inline-start-color: hsl(var(--alert-edge));")
     expect(body).not.toContain("background-image")
@@ -86,7 +86,7 @@ describe("severity pairs", () => {
     expect(body).toContain(`--banner-edge: var(--${status}-edge);`)
     expect(body).not.toContain("--banner-text")
     expect(body).toContain(
-      "background: var(--banner-fill, hsl(var(--banner-subtle) / var(--surface-fill-alpha)));",
+      "background: var(--banner-fill, hsl(var(--banner-subtle) / var(--surface-alpha)));",
     )
     expect(body).toContain(
       "border-inline-start-color: hsl(var(--banner-edge));",

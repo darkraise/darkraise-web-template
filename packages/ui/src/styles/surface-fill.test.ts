@@ -90,13 +90,13 @@ describe("surface fill rules", () => {
     for (const fill of FILLS) {
       expect(decl(body, fill)).toBe(
         fill === "--surface-card-fill"
-          ? `hsl(var(${token}) / var(--surface-fill-alpha))`
+          ? `hsl(var(${token}) / var(--surface-alpha))`
           : `hsl(var(${token}))`,
       )
     }
     expect(decl(body, "--surface-card-fill-opaque")).toBe(`hsl(var(${token}))`)
     expect(decl(body, "--surface-overlay-bg")).toBe(
-      `var(--surface-overlay-layers) hsl(var(${token}))`,
+      `var(--surface-overlay-layers) hsl(var(${token}) / var(--overlay-alpha))`,
     )
   })
 
@@ -110,7 +110,7 @@ describe("surface fill rules", () => {
   // --surface-card-fill-opaque exists so the enclosed-tab indicator
   // (tabs.css) can follow the surface without going translucent: a
   // translucent fill cannot erase the baseline under it and the seam ghosts
-  // through. The card plane's only alpha is the style's --surface-fill-alpha,
+  // through. The card plane's only alpha is the effective --surface-alpha,
   // which is 1 unless a style makes the plane translucent.
   it.each([":root", ...VALUES.map((v) => `[data-surface-fill="${v}"]`)])(
     "keeps every fill opaque in %s",
@@ -119,7 +119,7 @@ describe("surface fill rules", () => {
         const value = decl(bodyOf(selector), name)
         const rest =
           name === "--surface-card-fill"
-            ? value.replace(" / var(--surface-fill-alpha)", "")
+            ? value.replace(" / var(--surface-alpha)", "")
             : value
         expect(rest).not.toContain(" / ")
       }

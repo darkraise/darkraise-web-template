@@ -1100,9 +1100,10 @@
        custom property computes with its var()s already substituted, so a
        token that composed a prop variable would bake in the root value and
        ignore any subtree override. */
-    /* A style's translucency for the card plane: an alpha over the card fill
-       wherever the `surface` prop composes it. The opaque twin below ignores
-       it. At 1 the fill computes to the same opaque rgb() as before. */
+    /* A style's translucency for the card plane at the Medium Transparency
+       step. Fills read the effective --surface-alpha below wherever the
+       `surface` prop composes them; the opaque twin ignores both. At 1 the
+       fill computes to the same opaque rgb() as before. */
     --surface-fill-alpha: 1;
     /* The overlay family's twin: popovers, menus, selects and dialogs. */
     --overlay-fill-alpha: 1;
@@ -1119,7 +1120,7 @@
       0.4,
       1 - (1 - var(--overlay-fill-alpha)) * var(--glass-transparency-scale, 1)
     );
-    --surface-card-fill: hsl(var(--card) / var(--surface-fill-alpha));
+    --surface-card-fill: hsl(var(--card) / var(--surface-alpha));
     --surface-popover-fill: hsl(var(--popover));
     --surface-raised-fill: hsl(var(--surface-raised));
     --surface-overlay-fill: hsl(var(--surface-overlay));
@@ -1427,7 +1428,7 @@
    is declared, so each value redeclares the whole fill family on the element
    that carries it; `card` restores the plane under an ancestor's value. */
 [data-surface-fill="card"] {
-  --surface-card-fill: hsl(var(--card) / var(--surface-fill-alpha));
+  --surface-card-fill: hsl(var(--card) / var(--surface-alpha));
   --surface-popover-fill: hsl(var(--popover));
   --surface-raised-fill: hsl(var(--surface-raised));
   --surface-overlay-fill: hsl(var(--surface-overlay));
@@ -1438,22 +1439,24 @@
 }
 
 [data-surface-fill="page"] {
-  --surface-card-fill: hsl(var(--background) / var(--surface-fill-alpha));
+  --surface-card-fill: hsl(var(--background) / var(--surface-alpha));
   --surface-popover-fill: hsl(var(--background));
   --surface-raised-fill: hsl(var(--background));
   --surface-overlay-fill: hsl(var(--background));
   --surface-card-fill-opaque: hsl(var(--background));
-  --surface-overlay-bg: var(--surface-overlay-layers) hsl(var(--background));
+  --surface-overlay-bg: var(--surface-overlay-layers)
+    hsl(var(--background) / var(--overlay-alpha));
   --overlay-bg: var(--surface-overlay-bg);
 }
 
 [data-surface-fill="muted"] {
-  --surface-card-fill: hsl(var(--muted) / var(--surface-fill-alpha));
+  --surface-card-fill: hsl(var(--muted) / var(--surface-alpha));
   --surface-popover-fill: hsl(var(--muted));
   --surface-raised-fill: hsl(var(--muted));
   --surface-overlay-fill: hsl(var(--muted));
   --surface-card-fill-opaque: hsl(var(--muted));
-  --surface-overlay-bg: var(--surface-overlay-layers) hsl(var(--muted));
+  --surface-overlay-bg: var(--surface-overlay-layers)
+    hsl(var(--muted) / var(--overlay-alpha));
   --overlay-bg: var(--surface-overlay-bg);
 }
 

@@ -195,7 +195,7 @@ describe("shell style rules", () => {
       expect(
         (value ?? "").replace(/\(\s+/g, "(").replace(/\s+\)/g, ")"),
       ).toMatch(
-        /^(?:none|transparent|var\(--chrome-flat-fill\)|var\(--shell-content-fill, (?:hsl\(var\(--background\) \/ var\(--surface-fill-alpha\)\)|transparent)\)|var\(--shell-ground-fill, color-mix\(in oklab, hsl\(var\(--shell-ground\)\) 95%, hsl\(var\(--foreground\)\)\)\))$/,
+        /^(?:none|transparent|var\(--chrome-flat-fill\)|var\(--shell-content-fill, (?:hsl\(var\(--background\) \/ var\(--surface-alpha\)\)|transparent)\)|var\(--shell-ground-fill, color-mix\(in oklab, hsl\(var\(--shell-ground\)\) 95%, hsl\(var\(--foreground\)\)\)\))$/,
       )
     }
   })

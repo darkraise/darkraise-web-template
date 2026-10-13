@@ -102,7 +102,7 @@ describe("Aurora Night", () => {
   it("thins the rail's glass from the card alpha, opaque when the cards are", () => {
     expect(KIT_FALLBACK.surfaceFillAlpha).toBe("1")
     const [, factor, offset] =
-      /^hsl\(var\(--card\) \/ calc\(var\(--surface-fill-alpha\) \* ([\d.]+) - ([\d.]+)\)\)$/.exec(
+      /^hsl\(var\(--card\) \/ calc\(var\(--surface-alpha\) \* ([\d.]+) - ([\d.]+)\)\)$/.exec(
         shared.chromeFlatFill ?? "",
       ) ?? []
     expect(Number(factor) - Number(offset)).toBeCloseTo(1)

@@ -109,7 +109,7 @@ describe("shell token readers", () => {
     expect(
       bodyOf("styles", `.dr-shell${DETACHED} > [data-region="content"]`),
     ).toBe(
-      "background: var(--shell-content-fill, hsl(var(--background) / var(--surface-fill-alpha))); border-color: var(--shell-content-edge, var(--chrome-edge)); box-shadow: var(--card-edge), var(--shell-content-shadow, var(--shell-region-shadow));",
+      "background: var(--shell-content-fill, hsl(var(--background) / var(--surface-alpha))); border-color: var(--shell-content-edge, var(--chrome-edge)); box-shadow: var(--card-edge), var(--shell-content-shadow, var(--shell-region-shadow));",
     )
   })
 

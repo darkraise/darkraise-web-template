@@ -25,10 +25,7 @@
   }
   .dr-banner[data-variant="default"] {
     @apply text-foreground;
-    background: var(
-      --banner-fill,
-      hsl(var(--muted) / var(--surface-fill-alpha))
-    );
+    background: var(--banner-fill, hsl(var(--muted) / var(--surface-alpha)));
   }
 
   /* Status variants follow Alert's pattern: per-variant vars drive the
@@ -56,7 +53,7 @@
   /* All four severity variants share the same shape: a 4px left rail at
    * full accent saturation (Alert's convention), the neutral 1px frame on
    * the remaining sides, and the status fill, which follows
-   * --surface-fill-alpha and is opaque at its default. The thick
+   * --surface-alpha and is opaque at its default. The thick
    * saturated left bar is what gives destructive its red — and warning its
    * amber, success its green, info its blue — without flooding the banner
    * with the variant colour. */
@@ -67,7 +64,7 @@
     @apply text-foreground border-s-4;
     background: var(
       --banner-fill,
-      hsl(var(--banner-subtle) / var(--surface-fill-alpha))
+      hsl(var(--banner-subtle) / var(--surface-alpha))
     );
     border-inline-start-color: hsl(var(--banner-edge));
     --banner-lamp: hsl(var(--banner-edge));

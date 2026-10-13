@@ -124,7 +124,7 @@ describe("banner and alert readers", () => {
     "%s %s fills from the banner fill over its own alpha-aware fill",
     (file, selector, fill) => {
       expect(bodyOf(file, selector)).toContain(
-        `background: var(--banner-fill, hsl(var(${fill}) / var(--surface-fill-alpha)));`,
+        `background: var(--banner-fill, hsl(var(${fill}) / var(--surface-alpha)));`,
       )
     },
   )

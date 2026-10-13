@@ -340,8 +340,8 @@ test("a floating glass plane stays clear", async ({ page }) => {
   )
 })
 
-// Base Glass keeps --surface-fill-alpha at 1, so its pane is opaque; Aurora
-// Night lowers it (0.62 light, 0.55 dark) and its pane lets the canvas in.
+// Aurora Night declares translucent cards (0.62 light, 0.55 dark), and the
+// pane reads the effective --surface-alpha, so it lets the canvas in.
 for (const mode of ["light", "dark"]) {
   test(`a glass pane is translucent page colour · ${mode}`, async ({
     page,
@@ -349,10 +349,7 @@ for (const mode of ["light", "dark"]) {
     await openPreset(page, "aurora-night", "glass", "island", mode)
     const fill = await computed(region(page, "content"), "background-color")
     expect(fill).toBe(
-      await resolved(
-        page,
-        "hsl(var(--background) / var(--surface-fill-alpha))",
-      ),
+      await resolved(page, "hsl(var(--background) / var(--surface-alpha))"),
     )
     expect(alphaOf(fill)).toBeLessThan(1)
   })

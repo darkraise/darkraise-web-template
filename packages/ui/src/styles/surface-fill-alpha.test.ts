@@ -42,24 +42,24 @@ describe("surface fill alpha", () => {
   })
 
   it.each([
-    [":root", ["@layer base"], "hsl(var(--card) / var(--surface-fill-alpha))"],
+    [":root", ["@layer base"], "hsl(var(--card) / var(--surface-alpha))"],
     [
       '[data-surface-fill="card"]',
       [],
-      "hsl(var(--card) / var(--surface-fill-alpha))",
+      "hsl(var(--card) / var(--surface-alpha))",
     ],
     [
       '[data-surface-fill="page"]',
       [],
-      "hsl(var(--background) / var(--surface-fill-alpha))",
+      "hsl(var(--background) / var(--surface-alpha))",
     ],
     [
       '[data-surface-fill="muted"]',
       [],
-      "hsl(var(--muted) / var(--surface-fill-alpha))",
+      "hsl(var(--muted) / var(--surface-alpha))",
     ],
   ])(
-    "%s composes the card fill with the alpha",
+    "%s composes the card fill with the effective alpha",
     (selector, wrappers, value) => {
       expect(declaration(selector, wrappers, "--surface-card-fill")).toEqual([
         value,

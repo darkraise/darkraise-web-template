@@ -66,7 +66,7 @@ export const milkGlass: PresetDefinition = {
       // so it turns opaque with the cards when the kit's fallback sets the
       // alpha to 1.
       chromeFlatFill:
-        "hsl(var(--card) / calc(var(--surface-fill-alpha) * 1.75 - 0.75))",
+        "hsl(var(--card) / calc(var(--surface-alpha) * 1.75 - 0.75))",
       cardBorder: "rgb(255 255 255 / 0.9)",
       cardEdge:
         "0 0 0 1px hsl(var(--foreground) / 0.04), 0 1px 1px hsl(var(--foreground) / 0.03), 0 8px 24px -6px hsl(var(--foreground) / 0.08), 0 24px 48px -12px hsl(var(--foreground) / 0.08)",
@@ -90,7 +90,7 @@ export const milkGlass: PresetDefinition = {
         "radial-gradient(45% 40% at 12% 18%, hsl(var(--primary) / 0.2), transparent 70%), radial-gradient(40% 40% at 88% 12%, hsl(var(--primary) / 0.1), transparent 70%), radial-gradient(50% 45% at 70% 92%, hsl(var(--primary) / 0.12), transparent 70%)",
       surfaceFillAlpha: "0.8",
       chromeFlatFill:
-        "hsl(var(--card) / calc(var(--surface-fill-alpha) * 1.5 - 0.5))",
+        "hsl(var(--card) / calc(var(--surface-alpha) * 1.5 - 0.5))",
       cardBorder: "rgb(255 255 255 / 0.1)",
       cardEdge:
         "inset 0 1px 0 rgb(255 255 255 / 0.08), 0 24px 48px -12px rgb(0 0 0 / 0.55)",

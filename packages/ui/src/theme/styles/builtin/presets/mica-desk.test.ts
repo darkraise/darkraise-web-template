@@ -63,7 +63,7 @@ describe("Mica Desk", () => {
   it("lays content on a slab fainter than its cards, opaque when they are", () => {
     expect(shared.surfaceFillAlpha).toBe("0.75")
     expect(shared.shellContentFill).toBe(
-      "hsl(var(--card) / calc(var(--surface-fill-alpha) * 2 - 1))",
+      "hsl(var(--card) / calc(var(--surface-alpha) * 2 - 1))",
     )
     expect(KIT_FALLBACK.surfaceFillAlpha).toBe("1")
   })

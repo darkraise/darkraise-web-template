@@ -70,7 +70,7 @@ export const duskHaze: PresetDefinition = {
       // alpha, so it turns opaque with the cards when the kit's fallback
       // sets the alpha to 1.
       chromeFlatFill:
-        "hsl(var(--card) / calc(var(--surface-fill-alpha) * 1.6 - 0.6))",
+        "hsl(var(--card) / calc(var(--surface-alpha) * 1.6 - 0.6))",
       cardBorder: "rgb(255 255 255 / 0.75)",
       cardEdge:
         "0 0 0 1px hsl(var(--foreground) / 0.06), 0 10px 28px -14px hsl(var(--foreground) / 0.22)",
@@ -91,7 +91,7 @@ export const duskHaze: PresetDefinition = {
       surfaceFillAlpha: "0.7",
       surfaceBackdrop: "blur(20px)",
       chromeFlatFill:
-        "hsl(var(--card) / calc(var(--surface-fill-alpha) * 1.25 - 0.25))",
+        "hsl(var(--card) / calc(var(--surface-alpha) * 1.25 - 0.25))",
       cardBorder: "hsl(var(--foreground) / 0.14)",
       cardEdge:
         "0 0 3px rgb(0 0 0 / 0.05), 0 8px 12px rgb(0 0 0 / 0.05), 0 12px 20px rgb(0 0 0 / 0.05)",

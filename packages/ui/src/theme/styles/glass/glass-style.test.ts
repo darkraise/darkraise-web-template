@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
-import { GLASS_BLURS } from "@theme/types"
+import { GLASS_BLURS, GLASS_TRANSPARENCIES } from "@theme/types"
+import { TRANSPARENCY_SCALE } from "@theme/config/transparency"
 import { cssRules } from "../../../test/css-rules"
 import { stripCssComments } from "../../../test/strip-css-comments"
 
@@ -41,6 +42,22 @@ function valueOf(layer: string, selector: string, name: string): string {
   const after = rule.body.split(`${name}:`)[1]
   if (after === undefined) throw new Error(`${selector} sets no ${name}`)
   return (after.split(";")[0] as string).trim()
+}
+
+/**
+ * The value `name` takes in Glass's `when` rules whose selector is exactly
+ * `selector`: each `when` entry compiles to a rule of its own, so one
+ * selector can head several rules.
+ */
+function whenValue(selector: string, name: string): string | undefined {
+  for (const rule of RULES) {
+    if (rule.layer !== "@layer style.when" || rule.selector !== selector) {
+      continue
+    }
+    const after = rule.body.split(`${name}:`)[1]
+    if (after !== undefined) return (after.split(";")[0] as string).trim()
+  }
+  return undefined
 }
 
 const GLASS_ROOT = '[data-style="glass"]'
@@ -117,6 +134,29 @@ describe("glass overlays", () => {
     )
     expect(valueOf("style.base", GLASS_ROOT, "--dialog-radius")).toBe(
       "calc(var(--radius) * 1.75)",
+    )
+  })
+})
+
+describe("glass transparency", () => {
+  it.each(GLASS_TRANSPARENCIES)("scales the declared alphas at %s", (step) => {
+    expect(
+      whenValue(
+        `${GLASS_ROOT}[data-glass-transparency="${step}"]`,
+        "--glass-transparency-scale",
+      ),
+    ).toBe(String(TRANSPARENCY_SCALE[step]))
+  })
+
+  it("writes the scale from the transparency steps alone", () => {
+    expect(
+      RULES.filter((r) => r.body.includes("--glass-transparency-scale:")).map(
+        (r) => r.selector,
+      ),
+    ).toEqual(
+      GLASS_TRANSPARENCIES.map(
+        (step) => `${GLASS_ROOT}[data-glass-transparency="${step}"]`,
+      ),
     )
   })
 })

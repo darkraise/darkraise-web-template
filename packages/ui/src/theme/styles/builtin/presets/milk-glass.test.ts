@@ -81,7 +81,7 @@ describe("Milk Glass", () => {
     expect(KIT_FALLBACK.surfaceFillAlpha).toBe("1")
     for (const tokens of [light, dark]) {
       const [, factor, offset] =
-        /^hsl\(var\(--card\) \/ calc\(var\(--surface-fill-alpha\) \* ([\d.]+) - ([\d.]+)\)\)$/.exec(
+        /^hsl\(var\(--card\) \/ calc\(var\(--surface-alpha\) \* ([\d.]+) - ([\d.]+)\)\)$/.exec(
           tokens.chromeFlatFill ?? "",
         ) ?? []
       expect(Number(factor) - Number(offset)).toBeCloseTo(1)

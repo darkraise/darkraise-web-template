@@ -34,7 +34,7 @@ export const auroraNight: PresetDefinition = {
       // alpha, so it turns opaque with the cards when the kit's fallback
       // sets the alpha to 1.
       chromeFlatFill:
-        "hsl(var(--card) / calc(var(--surface-fill-alpha) * 1.2 - 0.2))",
+        "hsl(var(--card) / calc(var(--surface-alpha) * 1.2 - 0.2))",
       surfaceBackdrop: "blur(20px) saturate(160%)",
       cardRadius: "calc(var(--radius) * 2.25)",
       overlayRadius: "calc(var(--radius) * 1.75)",

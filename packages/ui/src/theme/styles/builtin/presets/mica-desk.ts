@@ -36,8 +36,7 @@ export const micaDesk: PresetDefinition = {
       // Twice the card alpha's distance from opaque, so the slab is the
       // fainter layer and turns opaque with the cards when the kit's
       // fallback sets the alpha to 1.
-      shellContentFill:
-        "hsl(var(--card) / calc(var(--surface-fill-alpha) * 2 - 1))",
+      shellContentFill: "hsl(var(--card) / calc(var(--surface-alpha) * 2 - 1))",
       surfaceFillAlpha: "0.75",
       cardRadius: "calc(var(--radius) * 2)",
       overlayRadius: "calc(var(--radius) * 2)",
