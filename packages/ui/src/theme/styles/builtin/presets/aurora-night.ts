@@ -31,6 +31,7 @@ export const auroraNight: PresetDefinition = {
   },
   tokens: {
     shared: {
+      overlayFillAlpha: "0.55",
       // The rail's glass is thinner than a card's and follows the card
       // alpha, so it turns opaque with the cards when the kit's fallback
       // sets the alpha to 1.

@@ -4,8 +4,8 @@ import type { PresetDefinition } from "../../../config/schema"
  * Mica Desk: a system blue on cool greys in an inset shell, with 4px
  * controls. Inter stands in for the system UI face. The window base is a
  * blob canvas under a faint accent bloom, showing through the rail and the
- * bar; content sits on a low-opacity slab of flat, shadowless cards, and
- * only menus frost.
+ * bar; content sits on a low-opacity slab of flat, shadowless cards that
+ * frost, as menus do.
  */
 export const micaDesk: PresetDefinition = {
   label: "Mica Desk",

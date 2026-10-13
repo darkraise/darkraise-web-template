@@ -49,13 +49,11 @@ describe("glass backdrops", () => {
     expect(backdrops).toContain("glass.shared.surfaceBackdrop")
   })
 
-  // Glass's blur steps write sizes, not backdrops, so a preset may set any
-  // backdrop under Glass.
-  it("keys no Glass backdrop to an axis step", () => {
+  // Glass's steps write sizes and scales, not tokens, so no token is out of a
+  // preset's reach under Glass.
+  it("keys no Glass token to an axis step", () => {
     expect(
-      glass.when
-        ?.flatMap((entry) => Object.keys(entry.tokens ?? {}))
-        .filter((token) => token.endsWith("Backdrop")),
+      glass.when?.flatMap((entry) => Object.keys(entry.tokens ?? {})),
     ).toEqual([])
     expect(
       resolveRegistry({
@@ -67,6 +65,7 @@ describe("glass backdrops", () => {
               shared: {
                 overlayBackdrop: "none",
                 scrimBackdrop: "none",
+                overlayFillBase: "hsl(var(--popover))",
               },
             },
           },

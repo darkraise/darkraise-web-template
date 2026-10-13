@@ -84,6 +84,7 @@ describe("Smoked Obsidian", () => {
       /Backdrop$|Alpha$/.test(token),
     )
     expect([...new Set(translucency)].sort()).toEqual([
+      "overlayFillAlpha",
       "surfaceBackdrop",
       "surfaceFillAlpha",
     ])

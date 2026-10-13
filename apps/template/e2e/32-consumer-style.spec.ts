@@ -96,8 +96,10 @@ test.describe("example consumer style and preset", () => {
     const line = await readToken(page, "--glass-ink-line")
     expect(line).toContain("color-mix")
     expect(await readToken(page, "--chrome-edge")).toBe(line)
+    // An unregistered custom property computes to its substituted text, so
+    // the alpha stays the unevaluated max() Glass derives it with.
     expect(await readToken(page, "--surface-overlay-base")).toBe(
-      await computedAs(page, "hsl(var(--popover) / 0.62)"),
+      await computedAs(page, "hsl(var(--popover) / var(--overlay-alpha))"),
     )
   })
 

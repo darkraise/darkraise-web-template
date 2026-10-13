@@ -378,10 +378,12 @@ for (const style of MATRIX_STYLES) {
       await seedApp(page, { style, mode })
       await openControlFixture(page)
       const probe = page.locator('[data-probe="surface-fill"]')
+      // Glass lets the card plane through at its Medium alpha.
+      const alpha = style === "glass" ? (mode === "light" ? 0.72 : 0.66) : 1
       const plane = async (token: string) =>
         (
           await resolvedIn(probe, {
-            "background-color": `hsl(var(${token}))`,
+            "background-color": `hsl(var(${token}) / ${alpha})`,
           })
         )["background-color"]
       const expected: [string, string | undefined][] = [

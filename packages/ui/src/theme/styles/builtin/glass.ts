@@ -15,10 +15,11 @@ export function glassBackdrop(
 }
 
 /**
- * Glass only where content passes under chrome: opaque, calm content on a
- * dot canvas, a docked solid rail, a top bar that dissolves what scrolls
- * beneath it, and menus as the one floating glass. The scrim frosts the app
- * rather than the dialog.
+ * Glass over a dot canvas: cards, menus, popovers and dialogs let a blurred
+ * view of what lies behind them through, as far as the Transparency and Blur
+ * settings say, and turn opaque under reduced transparency. The rail is
+ * docked and solid, the top bar dissolves what scrolls beneath it, and the
+ * scrim frosts the app behind a dialog.
  */
 export const glass: StyleDefinition = {
   label: "Glass",
@@ -46,7 +47,9 @@ export const glass: StyleDefinition = {
       overlayRadius: "calc(var(--radius) * 1.25)",
       dialogRadius: "calc(var(--radius) * 1.75)",
       overlayBorder: "hsl(var(--foreground) / 0.08)",
-      dialogFill: "hsl(var(--popover))",
+      dialogFill: "hsl(var(--popover) / var(--overlay-alpha))",
+      overlayFillBase: "hsl(var(--popover) / var(--overlay-alpha))",
+      overlayFillAlpha: "0.6",
       buttonNeutralFill: "hsl(var(--card))",
       fieldFocusRing: "0 0 0 3px hsl(var(--primary) / 0.15)",
       scrim: "hsl(var(--foreground) / 0.3)",
@@ -58,6 +61,7 @@ export const glass: StyleDefinition = {
     // 1.2:1: the page in light, the card tone in dark.
     light: {
       chromeRailFill: "hsl(var(--background))",
+      surfaceFillAlpha: "0.72",
       cardBorder: "hsl(var(--border))",
       cardEdge: "0 1px 2px rgb(0 0 0 / 0.04)",
       dialogBorder: "hsl(var(--border))",
@@ -65,6 +69,7 @@ export const glass: StyleDefinition = {
     },
     dark: {
       chromeRailFill: "hsl(var(--card))",
+      surfaceFillAlpha: "0.66",
       dialogBorder: "hsl(var(--foreground) / 0.1)",
       dropdownShadow: "0 10px 30px -10px rgb(0 0 0 / 0.6)",
       fieldFocusRing: "0 0 0 3px hsl(var(--primary) / 0.2)",
@@ -72,20 +77,6 @@ export const glass: StyleDefinition = {
     },
   },
   when: [
-    // The overlay is the popover colour itself, let through by the opacity
-    // step, so it stays readable where the blur is unavailable.
-    {
-      axes: { glassTransparency: "low" },
-      tokens: { overlayFillBase: "hsl(var(--popover) / 0.88)" },
-    },
-    {
-      axes: { glassTransparency: "medium" },
-      tokens: { overlayFillBase: "hsl(var(--popover) / 0.8)" },
-    },
-    {
-      axes: { glassTransparency: "high" },
-      tokens: { overlayFillBase: "hsl(var(--popover) / 0.62)" },
-    },
     // The Transparency step scales the see-through share of every declared
     // alpha; the kit reads it in --surface-alpha and --overlay-alpha.
     ...GLASS_TRANSPARENCIES.map((step) => ({

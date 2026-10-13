@@ -90,6 +90,7 @@ describe("Aurora Night", () => {
       /Backdrop$|Alpha$/.test(token),
     )
     expect([...new Set(translucency)].sort()).toEqual([
+      "overlayFillAlpha",
       "surfaceBackdrop",
       "surfaceFillAlpha",
     ])

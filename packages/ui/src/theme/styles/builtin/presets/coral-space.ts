@@ -5,8 +5,9 @@ import type { PresetDefinition } from "../../../config/schema"
  * shell. The dark accent is calmed towards the direction's dusty rose.
  * Inter stands in for the system UI face. The window frame is the colour:
  * the shell ground is painted from the accent ramp under a fine grain, the
- * rail and the bar sit directly on it, and the work sits on an opaque pane
- * of white cards. The current nav row is a white pill.
+ * rail and the bar sit directly on it, and the work sits on a pane of the
+ * page colour, fainter than its frosted white cards. The current nav row is
+ * a white pill.
  */
 export const coralSpace: PresetDefinition = {
   label: "Coral Space",
@@ -30,8 +31,11 @@ export const coralSpace: PresetDefinition = {
   },
   tokens: {
     shared: {
-      // The pane is opaque in the page colour, so it needs no fallback.
-      shellContentFill: "hsl(var(--background))",
+      // Twice the card alpha's distance from opaque, as Mica Desk's slab, so
+      // the pane turns opaque with the cards under the kit's fallback.
+      shellContentFill:
+        "hsl(var(--background) / calc(var(--surface-alpha) * 2 - 1))",
+      overlayFillAlpha: "0.65",
       cardRadius: "calc(var(--radius) * 1.25)",
       bannerRadius: "calc(var(--radius) * 1.25)",
       badgeRadius: "calc(var(--radius) * 1.5)",
@@ -43,6 +47,7 @@ export const coralSpace: PresetDefinition = {
       dialogTitleTracking: "-0.011em",
     },
     light: {
+      surfaceFillAlpha: "0.82",
       // Opaque paint from the accent ramp's tint steps, no lower than the
       // step the rail's muted ink still clears 4.5:1 on, under grain drawn
       // as dot tiles.
@@ -63,6 +68,7 @@ export const coralSpace: PresetDefinition = {
       modalShadow: "0 28px 64px -14px hsl(var(--foreground) / 0.45)",
     },
     dark: {
+      surfaceFillAlpha: "0.8",
       shellGroundFill:
         "radial-gradient(circle at 1px 1px, rgb(0 0 0 / 0.1) 0.7px, transparent 1.1px) 0 0 / 3px 3px, radial-gradient(circle at 3px 2px, rgb(0 0 0 / 0.14) 0.7px, transparent 1.1px) 0 0 / 5px 5px, radial-gradient(circle at 2px 5px, rgb(0 0 0 / 0.1) 0.8px, transparent 1.2px) 0 0 / 7px 7px, radial-gradient(circle at 8px 4px, rgb(0 0 0 / 0.14) 0.8px, transparent 1.2px) 0 0 / 11px 11px, linear-gradient(155deg, hsl(var(--primary-6) / 0.22), transparent 55%), linear-gradient(155deg, hsl(var(--primary-2)), hsl(var(--primary-1)))",
       shellContentEdge: "rgb(0 0 0 / 0.6)",

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { layers, written } from "@test/preset-tokens"
 import { resolveRegistry } from "../../../config/registry"
+import { KIT_FALLBACK } from "../../../config/tokens"
 import { coralSpace } from "./coral-space"
 
 describe("Coral Space", () => {
@@ -78,18 +79,28 @@ describe("Coral Space", () => {
     }
   })
 
-  it("sets the work on an opaque pane with a shadow, and writes no translucency", () => {
-    expect(shared.shellContentFill).toBe("hsl(var(--background))")
+  it("sets the work on a pane fainter than its cards, with a shadow, opaque when they are", () => {
+    expect(shared.shellContentFill).toBe(
+      "hsl(var(--background) / calc(var(--surface-alpha) * 2 - 1))",
+    )
+    expect(light.surfaceFillAlpha).toBe("0.82")
+    expect(dark.surfaceFillAlpha).toBe("0.8")
+    expect(shared.overlayFillAlpha).toBe("0.65")
     for (const tokens of [light, dark]) {
       expect(tokens.shellContentFill).toBeUndefined()
       expect(tokens.shellContentEdge).toBeDefined()
       expect(tokens.shellContentShadow).toMatch(/^0 \d+px \d+px -\d+px /)
     }
-    expect(
-      written(coralSpace.tokens).filter((token) =>
-        /Backdrop$|Alpha$/.test(token),
-      ),
-    ).toEqual([])
+    const translucency = written(coralSpace.tokens).filter((token) =>
+      /Backdrop$|Alpha$/.test(token),
+    )
+    expect([...new Set(translucency)].sort()).toEqual([
+      "overlayFillAlpha",
+      "surfaceFillAlpha",
+    ])
+    for (const token of translucency) {
+      expect(KIT_FALLBACK[token], token).toBeDefined()
+    }
   })
 
   it("marks the current nav row with a white pill that has no edge", () => {

@@ -33,6 +33,7 @@ export const milkGlass: PresetDefinition = {
   },
   tokens: {
     shared: {
+      overlayFillAlpha: "0.7",
       surfaceBackdrop: glassBackdrop("saturate(180%)"),
       cardRadius: "calc(var(--radius) * 2.75)",
       overlayRadius: "calc(var(--radius) * 2)",

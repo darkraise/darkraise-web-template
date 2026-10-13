@@ -54,6 +54,9 @@ export const smokedObsidian: PresetDefinition = {
       dialogTitleTracking: "-0.015em",
     },
     light: {
+      // Menus open over the smoked rail and bar, which are dark in light
+      // mode too; at High a lighter overlay drops its text under 4.5:1.
+      overlayFillAlpha: "0.85",
       // No base layer under the light: the shell ground stays clear, so the
       // page canvas and its grain show through.
       shellGroundFill:

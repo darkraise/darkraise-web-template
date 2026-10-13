@@ -81,18 +81,20 @@ function declares(layer: string, selector: string, name: string): boolean {
 }
 
 describe("glass overlays", () => {
-  it.each([
-    ["low", "0.88"],
-    ["medium", "0.8"],
-    ["high", "0.62"],
-  ] as const)("bases a %s overlay on the popover at %s", (opacity, alpha) => {
+  it("bases overlays on the popover at the effective overlay alpha", () => {
+    expect(valueOf("style.base", GLASS_ROOT, "--surface-overlay-base")).toBe(
+      "hsl(var(--popover) / var(--overlay-alpha))",
+    )
+    expect(valueOf("style.base", GLASS_ROOT, "--overlay-fill-alpha")).toBe(
+      "0.6",
+    )
     expect(
-      valueOf(
-        "style.when",
-        `${GLASS_ROOT}[data-glass-transparency="${opacity}"]`,
-        "--surface-overlay-base",
-      ),
-    ).toBe(`hsl(var(--popover) / ${alpha})`)
+      RULES.filter(
+        (r) =>
+          r.layer === "@layer style.when" &&
+          r.body.includes("--surface-overlay-base:"),
+      ).map((r) => r.selector),
+    ).toEqual([])
   })
 
   it("paints no fog or noise layers over the overlay colour", () => {
@@ -122,9 +124,9 @@ describe("glass overlays", () => {
     )
   })
 
-  it("keeps dialogs opaque and rounds them past popovers and cards", () => {
+  it("lets dialogs through as popovers are, and rounds them past popovers and cards", () => {
     expect(valueOf("style.base", GLASS_ROOT, "--dialog-fill")).toBe(
-      "hsl(var(--popover))",
+      "hsl(var(--popover) / var(--overlay-alpha))",
     )
     expect(valueOf("style.base", GLASS_ROOT, "--overlay-radius")).toBe(
       "calc(var(--radius) * 1.25)",
@@ -157,6 +159,17 @@ describe("glass transparency", () => {
       GLASS_TRANSPARENCIES.map(
         (step) => `${GLASS_ROOT}[data-glass-transparency="${step}"]`,
       ),
+    )
+  })
+})
+
+describe("glass cards", () => {
+  it("lets the card plane through at its Medium alpha in each mode", () => {
+    expect(valueOf("style.base", inMode("light"), "--surface-fill-alpha")).toBe(
+      "0.72",
+    )
+    expect(valueOf("style.mode", inMode("dark"), "--surface-fill-alpha")).toBe(
+      "0.66",
     )
   })
 })
