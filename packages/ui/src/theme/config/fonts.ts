@@ -22,6 +22,11 @@ export const BUILTIN_FONTS: Readonly<Record<Font, FontDefinition>> = {
     family: `"IBM Plex Sans Variable", ${SANS_FALLBACK}`,
     role: "sans",
   },
+  "hanken-grotesk": {
+    label: "Hanken Grotesk",
+    family: `"Hanken Grotesk Variable", ${SANS_FALLBACK}`,
+    role: "sans",
+  },
   newsreader: {
     label: "Newsreader",
     family: `"Newsreader Variable", ${SERIF_FALLBACK}`,

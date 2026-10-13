@@ -13,6 +13,7 @@ const STACKS: Record<Font, string> = {
   inter: `"Inter Variable", ${SANS}`,
   geist: `"Geist Variable", ${SANS}`,
   "ibm-plex-sans": `"IBM Plex Sans Variable", ${SANS}`,
+  "hanken-grotesk": `"Hanken Grotesk Variable", ${SANS}`,
   newsreader: `"Newsreader Variable", ${SERIF}`,
 }
 
@@ -37,7 +38,7 @@ function declaration(block: string, name: string): string | undefined {
 }
 
 describe("font axis tokens", () => {
-  it("paints Inter on :root before any font is chosen", () => {
+  it("paints the default face on :root before any font is chosen", () => {
     const root = body(":root", css.indexOf("@layer base {"))
     expect(declaration(root, "--font-family-sans")).toBe(
       STACKS[AXES.font.default as Font],

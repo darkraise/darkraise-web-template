@@ -41,7 +41,7 @@ describe("kit font packages", () => {
     }
   })
 
-  it("appends the five families after everything else", () => {
+  it("appends the six families after everything else", () => {
     const css = buildStylesheet()
     const tail = css.slice(css.indexOf("@font-face"))
     expect(tail.replace(/@font-face\s*\{[^}]*\}/g, "").trim()).toBe("")
@@ -53,6 +53,7 @@ describe("kit font packages", () => {
       "Inter Variable",
       "Geist Variable",
       "IBM Plex Sans Variable",
+      "Hanken Grotesk Variable",
       "JetBrains Mono Variable",
       "Newsreader Variable",
     ])

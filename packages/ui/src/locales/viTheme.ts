@@ -78,5 +78,6 @@ export const viTheme: Record<keyof typeof themeMessages, string> = {
   inter: "Inter",
   geist: "Geist",
   "ibm-plex-sans": "IBM Plex Sans",
+  "hanken-grotesk": "Hanken Grotesk",
   newsreader: "Newsreader",
 }

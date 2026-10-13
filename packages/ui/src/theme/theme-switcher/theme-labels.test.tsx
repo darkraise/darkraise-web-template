@@ -113,6 +113,7 @@ describe("ThemeSwitcher labels", () => {
       ["inter", "Inter"],
       ["geist", "Geist"],
       ["ibm-plex-sans", "IBM Plex Sans"],
+      ["hanken-grotesk", "Hanken Grotesk"],
       ["newsreader", "Newsreader"],
     ] as const) {
       expect(themeMessages[value]).toBe(label)

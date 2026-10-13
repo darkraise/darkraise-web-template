@@ -224,6 +224,7 @@ describe("ThemeSwitcher brand part", () => {
       "Inter",
       "Geist",
       "IBM Plex Sans",
+      "Hanken Grotesk",
       "Newsreader",
       "Fraunces",
     ])

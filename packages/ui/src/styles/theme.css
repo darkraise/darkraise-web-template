@@ -1300,6 +1300,12 @@
     sans-serif;
 }
 
+[data-font="hanken-grotesk"] {
+  --font-family-sans:
+    "Hanken Grotesk Variable", ui-sans-serif, system-ui, -apple-system,
+    sans-serif;
+}
+
 /* The one serif: --font-family-sans names the body face, whatever its class. */
 [data-font="newsreader"] {
   --font-family-sans:
@@ -1322,6 +1328,12 @@
 [data-heading-font="ibm-plex-sans"] {
   --font-family-heading:
     "IBM Plex Sans Variable", ui-sans-serif, system-ui, -apple-system,
+    sans-serif;
+}
+
+[data-heading-font="hanken-grotesk"] {
+  --font-family-heading:
+    "Hanken Grotesk Variable", ui-sans-serif, system-ui, -apple-system,
     sans-serif;
 }
 

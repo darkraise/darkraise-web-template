@@ -20,7 +20,7 @@ describe("published stylesheet", () => {
     expect(css).not.toMatch(/url\(\s*["']?(?:https?:)?\/\//i)
   })
 
-  it("ends with the kit's five font families", () => {
+  it("ends with the kit's six font families", () => {
     const css = builtStylesheet()
     const tail = css.slice(css.indexOf("@font-face"))
     expect(tail.replace(/@font-face\s*\{[^}]*\}/g, "").trim()).toBe("")
@@ -32,6 +32,7 @@ describe("published stylesheet", () => {
       "Inter Variable",
       "Geist Variable",
       "IBM Plex Sans Variable",
+      "Hanken Grotesk Variable",
       "JetBrains Mono Variable",
       "Newsreader Variable",
     ])
@@ -54,6 +55,7 @@ describe("published stylesheet", () => {
       "inter",
       "geist",
       "ibm-plex-sans",
+      "hanken-grotesk",
       "jetbrains-mono",
       "newsreader",
     ]) {

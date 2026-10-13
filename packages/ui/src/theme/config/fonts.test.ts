@@ -36,7 +36,7 @@ function messages(definitions: ThemeDefinitions) {
 }
 
 describe("built-in fonts", () => {
-  it("ships three sans faces and one serif, in FONTS order", () => {
+  it("ships four sans faces and one serif, in FONTS order", () => {
     expect(Object.keys(BUILTIN_FONTS)).toEqual([...FONTS])
     expect(
       Object.entries(BUILTIN_FONTS).map(([name, font]) => [name, font.role]),
@@ -44,6 +44,7 @@ describe("built-in fonts", () => {
       ["inter", "sans"],
       ["geist", "sans"],
       ["ibm-plex-sans", "sans"],
+      ["hanken-grotesk", "sans"],
       ["newsreader", "serif"],
     ])
   })

@@ -21,6 +21,7 @@ export const FONT_PACKAGES = [
   "inter",
   "geist",
   "ibm-plex-sans",
+  "hanken-grotesk",
   "jetbrains-mono",
   "newsreader",
 ] as const

@@ -46,6 +46,11 @@ const SEEDED_FONTS: { font: Font; family: string; file: RegExp }[] = [
     file: /\/ibm-plex-sans-[\w-]+\.woff2$/,
   },
   {
+    font: "hanken-grotesk",
+    family: "Hanken Grotesk Variable",
+    file: /\/hanken-grotesk-[\w-]+\.woff2$/,
+  },
+  {
     font: "newsreader",
     family: "Newsreader Variable",
     file: /\/newsreader-[\w-]+\.woff2$/,
@@ -126,7 +131,13 @@ test.describe("kit fonts", () => {
     await gotoApp(page, PROBE)
     await openThemeSwitcher(page)
 
-    const faces = ["Inter", "Geist", "IBM Plex Sans", "Newsreader"]
+    const faces = [
+      "Inter",
+      "Geist",
+      "IBM Plex Sans",
+      "Hanken Grotesk",
+      "Newsreader",
+    ]
     await expect(
       themeSwitcher(page)
         .getByRole("radiogroup", { name: "Font", exact: true })
