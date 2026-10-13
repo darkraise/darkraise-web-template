@@ -1,4 +1,5 @@
 import { test, expect, type Locator, type Page } from "@playwright/test"
+import { resolveRegistry } from "darkraise-ui/theme-config"
 import { DENSITIES, LS_KEYS, MATRIX_STYLES, STYLES } from "./fixtures/theme"
 import { boxOf, gotoApp, seedApp, watchConsole } from "./helpers/app"
 import { openControlFixture } from "./helpers/controls"
@@ -24,6 +25,7 @@ import {
  */
 
 const MODES = ["light", "dark"] as const
+const registry = resolveRegistry()
 const FONT_SIZES = ["medium", "extra-large"] as const
 
 const SIZED = [
@@ -378,8 +380,13 @@ for (const style of MATRIX_STYLES) {
       await seedApp(page, { style, mode })
       await openControlFixture(page)
       const probe = page.locator('[data-probe="surface-fill"]')
-      // Glass lets the card plane through at its Medium alpha.
-      const alpha = style === "glass" ? (mode === "light" ? 0.72 : 0.66) : 1
+      // A style lets the card plane through at its declared Medium alpha.
+      const tokens = registry.styles[style]?.tokens
+      const alpha = Number.parseFloat(
+        tokens?.[mode]?.surfaceFillAlpha ??
+          tokens?.shared?.surfaceFillAlpha ??
+          "1",
+      )
       const plane = async (token: string) =>
         (
           await resolvedIn(probe, {
