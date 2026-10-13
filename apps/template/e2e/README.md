@@ -82,7 +82,7 @@ E2E_TRACE=1 TMPDIR=/root/.cache/pw-tmp pnpm test:e2e
   `helpers/app.ts::seedApp`, which registers an init script so state exists
   before the first paint. `01-auth.spec.ts` covers the real login form.
 - **Theme** is seeded the same way, using the exact keys `ThemeProvider` reads
-  (`theme-style` for the style, `mode`, `theme-accent`, `theme-glass-opacity`,
+  (`theme-style` for the style, `mode`, `theme-accent`, `theme-glass-opacity` for Transparency,
   …). This covers the boot-time read path, which UI-driven switching never
   touches.
   `seedApp` seeds **once per tab**: its init script writes only keys that are
@@ -172,19 +172,18 @@ Everything above again, this time through the popover a user actually operates:
   Brand sections in order, then the eight Advanced sections once the Advanced
   disclosure is opened (`openAdvanced` in `helpers/app.ts`).
 - Each of the 4 styles is selectable and persists across reload.
-- The glass Opacity and Backdrop Blur controls render right after the Style
-  control under glass, and under no other style.
+- The glass Transparency and Backdrop Blur controls render after the Background controls under glass, and under no other style.
 - Mode radios, including System against an emulated dark scheme.
 - All 19 accent and all 12 surface swatches: clicked, `data-active` confirmed,
   and each one produces a distinct token. Choosing the neutral accent hides Tint
   With Accent.
-- Background toggle reveals and hides the intensity and pattern controls; all
+- The Background control sits in the main section after Preset and reveals and hides the intensity and pattern controls; all
   four gradient patterns are selectable.
 - The three 4-value Brand axes (density, font size, radius) render as stepped
   sliders and are walked value by value **with the keyboard**, since a
   slider has no clickable cell. Elevation, contrast and dark accent chroma
   render as three-cell toggle groups under Advanced and are clicked in turn.
-- The glass axis controls: Opacity as a toggle group and Backdrop Blur as a
+- The glass axis controls: Transparency as a toggle group and Backdrop Blur as a
   stepped slider, plus a check that both values survive switching to another
   style and back and stay stamped on `<html>` meanwhile.
 - Two end-to-end proofs that switcher changes restyle real components: radius
@@ -343,6 +342,7 @@ horizontal overflow and a clean console.
   its cell.
 - The theme switcher popover, with Advanced open, has no overflowing control
   either.
+- With Advanced open, the popover stays inside an 800px-tall viewport and scrolls to its last row.
 
 ### 15 · Shell styles (`15-shell-styles.spec.ts`)
 
@@ -473,7 +473,7 @@ paint:
 
 ### 20 · Fonts (`20-fonts.spec.ts`)
 
-- Body text paints in Inter Variable by default. Choosing Geist in the theme
+- Body text paints in Hanken Grotesk Variable by default. Choosing Geist in the theme
   switcher repaints it in Geist Variable, `document.fonts` reports the face
   loaded, and its woff2 file comes from the app's own origin with a 200.
 - A stored Geist, IBM Plex Sans or Newsreader font renders at boot, its woff2
@@ -765,6 +765,17 @@ here. Each preset test is titled `<preset name> <mode>: …`, so
   reload.
 - A backdrop written into `@layer style.preset` for a preset outside Glass
   blurs the cards, and both fallback media drop it.
+
+### 59 · Glass transparency (`59-glass-transparency.spec.ts`)
+
+- Every glass look's card and settings popover take the alpha the look declares, seen through Low, Medium and High, and turn opaque under reduced transparency or more contrast.
+- Under Blur None no glass surface keeps a backdrop filter.
+
+### 60 · Background and Soft Glass (`60-background-soft-glass.spec.ts`)
+
+- Solid and Gradient paint the shell differently under Quiet, Glass and a glass preset; Card Stock keeps its own ground under Solid.
+- Soft Glass stamps the island shell, Newsreader headings and a Hanken Grotesk body, paints its accent ground, and rounds its cards from the radius step.
+- A global floating panel opened under Glass stays anchored to the viewport.
 
 ## Regression tests for fixed defects
 

@@ -97,7 +97,7 @@ Brand:
 - **Surface color** (`surfaceColor`) -- one of 12 neutral palettes; zinc by default
 - **Tint with accent** (`tintWithAccent`) -- off or on (tints the neutral surfaces toward the accent; hidden under the neutral accent)
 - **Signal color** (`signalColor`) -- none or any accent color (a second accent for marks; its control shows once a preset, a style or the user sets one)
-- **Font** (`font`) -- Inter, Geist, IBM Plex Sans, or the serif Newsreader (body and heading text)
+- **Font** (`font`) -- Hanken Grotesk (the default), Inter, Geist, IBM Plex Sans, or the serif Newsreader (body and heading text)
 - **Heading font** (`headingFont`) -- body or any font (a separate face for headings; body keeps the body face)
 - **Radius** (`radius`) -- sharp, subtle, rounded, or pill
 - **Density** (`density`) -- compact, cozy, comfortable, or spacious
@@ -106,8 +106,11 @@ Brand:
 Style:
 
 - **Style** (`style`) -- flat, quiet, tactile, or glass; quiet by default. Glass frosts the shell chrome and overlays.
-- **Preset** (`preset`) -- base (the style alone) or one of the active style's presets; the kit ships fifteen across the four styles, and a theme config can define more
-- **Glass transparency** (`glassTransparency`) and **glass blur** (`glassBlur`) -- shown under the Style control while Glass is chosen
+- **Preset** (`preset`) -- base (the style alone) or one of the active style's presets; the kit ships sixteen across the four styles, and a theme config can define more
+- **Background** (`backgroundStyle`) -- solid or gradient
+- **Gradient pattern** (`gradientPattern`) -- blobs, aurora, spotlight, mesh, dots, or grain; shown while Gradient is chosen
+- **Background intensity** (`backgroundIntensity`) -- neutral, subtle, balanced, vivid, or intense; shown while Gradient is chosen (it also caps the page colour's saturation under Solid)
+- **Glass transparency** (`glassTransparency`) -- low, medium, or high, and **glass blur** (`glassBlur`) -- none, low, medium, or high; shown while Glass is chosen
 
 Advanced:
 
@@ -115,9 +118,6 @@ Advanced:
 - **Dark accent chroma** (`darkAccentChroma`) -- calm, standard, or vivid (dark mode only; how saturated the accent fills and marks render)
 - **Elevation** (`elevation`) -- flat, standard, or high (surface shadows)
 - **Outer glow** and **inner glow** (`outerGlow`, `innerGlow`) -- none, subtle, balanced, or vivid
-- **Background style** (`backgroundStyle`) -- solid or gradient
-- **Background intensity** (`backgroundIntensity`) -- neutral, subtle, balanced, vivid, or intense
-- **Gradient pattern** (`gradientPattern`) -- blobs, aurora, spotlight, mesh, dots, or grain
 - **Sidebar selection** (`sidebarSelection`) -- auto, chip, pill, tile, frosted, tint, accent, rule, key, or tab
 
 An axis left out of `theme.config.ts` keeps the kit's default, and a style's own defaults (Glass's gradient background, for example) and the active preset's values win over the config's for users with nothing stored. An axis left out of `switcher.axes` is shown, and `switcher.advanced: false` removes the Advanced part of the panel.

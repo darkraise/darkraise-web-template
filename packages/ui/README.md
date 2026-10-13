@@ -265,12 +265,11 @@ key (`surfaceIntensity`, `borderIntensity`, `accentIntensity`, `controlDepth`,
 `switcher.axes.presetAxes`), naming its replacement, and ignores the key.
 
 `defaults.style` picks one of the four styles and `defaults.preset` one of that
-style's presets; `base`, the default, is the style alone. The kit ships fifteen
-presets: four for Quiet, two for Flat, three for Tactile and six for Glass. The
+style's presets; `base`, the default, is the style alone. The kit ships sixteen presets: four for Quiet, two for Flat, three for Tactile and seven for Glass. The
 theme switcher lists the active style's presets in a Preset control directly
 under the Style control, and shows a Reset to preset action there while the
 user has a value of their own on an axis the preset or style sets. The glass
-opacity and blur controls follow while the style is Glass. A `defaults.preset`
+transparency and blur controls follow the Background controls while the style is Glass. A `defaults.preset`
 that belongs to another style than `defaults.style` is ignored with a warning.
 
 An app defines its own styles, presets and fonts in the same config. The

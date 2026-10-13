@@ -15,7 +15,7 @@ A removed key in `defaults` or `switcher.axes` is ignored. It also warns once pe
 | `buttonElevation`          | removed, no replacement                                                                         |
 | `shellStyle`               | the layout's `defaultShellStyle` prop                                                           |
 | `preset` naming a style    | `style`; `preset` now selects a preset of the style, so a style name there warns and is ignored |
-| `switcher.axes.presetAxes` | removed; glass opacity and blur are the `glassOpacity` and `glassBlur` axes                     |
+| `switcher.axes.presetAxes` | removed; glass transparency and blur are the `glassTransparency` and `glassBlur` axes           |
 
 `labels.theme.axisLabels.presetAxes` is removed from the labels type as well. `ThemeConfig.defaults` is now a partial map: a key left out falls back to the registry default.
 
@@ -33,6 +33,7 @@ The kit rewrites these browser storage keys once per browser, in the pre-render 
 - `theme-surface-color`: a stored accent name (the 6.x accent surfaces) becomes `zinc`, and `theme-tint-with-accent` is set to `on` unless a valid tint is already stored, which keeps the tint.
 - `theme-bg-style`: `solid` under the glass preset becomes `gradient`, because glass painted a gradient.
 - `theme-glassmorphism-opacity` and `theme-glassmorphism-blur` move to `theme-glass-opacity` and `theme-glass-blur`; a stored `medium` in either is removed, because 6.x wrote it as a default rather than a choice.
+- `theme-glass-opacity` keeps its key and stores the `glassTransparency` axis: `subtle` becomes `low` and `strong` becomes `high`, `medium` stays. The old names ran the other way: `strong` was the most see-through, as `high` is now.
 - `theme-canvas-tint` becomes `theme-bg-intensity`, `theme-accent-vibrancy` goes through the accent intensity mapping above, and `theme-glass-halo` becomes `theme-outer-glow` (`soft` to `balanced`, `pronounced` to `vivid`).
 - `theme-scifi-intensity` and `theme-scifi-frame` are removed.
 
@@ -62,6 +63,7 @@ Synced payloads migrate the same way. A payload without a version is treated as 
 | `--fog-05`, `--fog-10`, `--fog-15`, `--fog-20`, `--fog-30`, `--fog-50` and the `glass`, `glass-thin`, `glass-strong` and `card-surface` utilities                                                                                                  | nothing: they painted nothing outside `.dr-surface`; use `rounded-[var(--radius)]` (the changelog has the transition)                        |
 | `.dr-surface`, `.dr-surface--flat` and the `dr-surface-{brand,cyan,success,warning,danger,info}` classes                                                                                                                                           | nothing: no kit component applied them                                                                                                       |
 | `data-elevation` on `Card` and card-variant `AccordionItem`                                                                                                                                                                                        | `data-card-elevation`                                                                                                                        |
+| `--glass-fog-1` … `--glass-fog-6`, `--glass-inset`, `--glass-inset-strong`                                                                                                                                                                         | nothing: no built-in style painted them; derive translucency from `--surface-alpha` (see the custom styles guide)                            |
 
 ## Presets become styles
 
@@ -78,11 +80,11 @@ Style tokens sit in cascade layers. `darkraise-ui/styles.css` opens with `@layer
 
 ## Style storage key and the preset axis
 
-The style is stored under `theme-style`; `theme-preset`, its 6.x key, now stores a new `preset` axis. A preset is a named variant of a style; `base`, the default, is the style alone, and `<html>` carries the active preset's name in `data-preset` (`data-preset="base"` for the style alone). `useTheme()` returns `preset` and `setPreset` for it, `ThemeSettings` and synced payloads carry it, and `ThemeConfig` takes `defaults.preset` and `switcher.axes.preset`. The kit ships fifteen presets and the switcher offers them (see Built-in presets below). `create-darkraise-ui` has no flag for the axis: `--preset` exits with an error naming `--style`. Code that reads `localStorage` directly must read `theme-style` for the style.
+The style is stored under `theme-style`; `theme-preset`, its 6.x key, now stores a new `preset` axis. A preset is a named variant of a style; `base`, the default, is the style alone, and `<html>` carries the active preset's name in `data-preset` (`data-preset="base"` for the style alone). `useTheme()` returns `preset` and `setPreset` for it, `ThemeSettings` and synced payloads carry it, and `ThemeConfig` takes `defaults.preset` and `switcher.axes.preset`. The kit ships sixteen presets and the switcher offers them (see Built-in presets below). `create-darkraise-ui` has no flag for the axis: `--preset` exits with an error naming `--style`. Code that reads `localStorage` directly must read `theme-style` for the style.
 
 ## Rebuilt styles and the style vocabulary
 
-The four built-in styles keep their names and change their look. Quiet is a ledger: tint steps and 1px rules instead of shadows, chrome on the card tone, light page titles and figures. Flat is a set of tool panels with no shadow anywhere, a solid accent row in menus and dark tooltips. Tactile bevels every raised surface under a dark, full-width top bar. Glass keeps its translucency for menus, popovers, the scrim and the veiled top bar, over opaque cards on a dot canvas; `glassOpacity` and `glassBlur` no longer reach the sidebar. None of them sets an accent, surface, font, radius or density, so your `defaults` for those axes apply under every style; a built-in preset does set some of them (see Built-in presets below). Review each screen under the style you ship.
+The four built-in styles keep their names and change their look. Quiet is a ledger: tint steps and 1px rules instead of shadows, chrome on the card tone, light page titles and figures. Flat is a set of tool panels with no shadow anywhere, a solid accent row in menus and dark tooltips. Tactile bevels every raised surface under a dark, full-width top bar. Glass is glass where content passes under it: cards, menus, popovers and dialogs let a blurred view of the page through, the top bar veils what scrolls beneath it, and the rail stays solid, over a dot canvas; `glassTransparency` and `glassBlur` reach cards, popups, dialogs and the scrim, and no longer the sidebar. None of them sets an accent, surface, font, radius or density, so your `defaults` for those axes apply under every style; a built-in preset does set some of them (see Built-in presets below). Review each screen under the style you ship.
 
 A style or preset definition can now set 82 paint tokens and 24 signatures (the enumerated choices such as `navSelection`, `barTone` or `fieldBorder`); `darkraise-ui/theme-config` exports both lists as `PAINT_TOKENS` and `SIGNATURES`. To keep part of a 6.x look, define a style that extends the built-in one and sets the tokens or signatures back, for example `defineStyle({ label: "Quiet, raised", extends: "quiet", tokens: { shared: { buttonShadow: "0 1px 2px rgb(0 0 0 / 0.1)" } } })`.
 
@@ -90,9 +92,15 @@ Paints that a stylesheet used to set on an element are internal now. Replace `--
 
 New axes: `headingFont` (`body` or a font name, key `theme-heading-font`) and `signalColor` (`none` or an accent name, key `theme-signal-color`). `gradientPattern` gains `dots` and `grain`. An exhaustive `switch` over `SidebarSelection` or `GradientPattern` needs the new cases.
 
+## Glass transparency
+
+Glass's Opacity setting is Transparency. The axis `glassOpacity` is `glassTransparency`, with the values `low`, `medium` and `high`, where `high` is the most see-through (the old `strong`). `<html>` carries `data-glass-transparency` instead of `data-glass-opacity`, `useTheme()` returns `glassTransparency` and `setGlassTransparency`, `ThemeConfig` takes `defaults.glassTransparency` and `switcher.axes.glassTransparency`, synced payloads carry `glassTransparency`, and `GLASS_OPACITIES` and `GlassOpacity` are `GLASS_TRANSPARENCIES` and `GlassTransparency`. `labels.theme.axisLabels` is keyed by axis name, so a label override for `glassOpacity` must move to `glassTransparency`. Stored values migrate (see Stored settings); the key `theme-glass-opacity` is unchanged.
+
+Each glass look now declares how much of the page its cards and its popups and dialogs let through at Medium, with `surfaceFillAlpha` and the new `overlayFillAlpha`, and the setting scales that share. Base Glass's cards and dialogs are translucent and blurred. Blur reaches cards and chrome as well as popups. A style that extends Glass and set `overlayFillBase` per opacity step drops those entries and declares `overlayFillAlpha`; the custom styles guide's Transparency and blur section has the rules. Glass's gradient art now lives in `shellGroundGradient`, so a Glass look under Solid shows a plain ground.
+
 ## Built-in presets
 
-The kit ships fifteen presets. Each belongs to one built-in style and sets paint tokens, signatures and some axes over it; its colours come from the kit's existing accent and neutral ramps.
+The kit ships sixteen presets. Each belongs to one built-in style and sets paint tokens, signatures and some axes over it; its colours come from the kit's existing accent and neutral ramps.
 
 | Style     | Preset            | Label            | Shell style |
 | --------- | ----------------- | ---------------- | ----------- |
@@ -111,6 +119,7 @@ The kit ships fifteen presets. Each belongs to one built-in style and sets paint
 | `glass`   | `aurora-night`    | Aurora Night     | `flat`      |
 | `glass`   | `coral-space`     | Coral Space      | `inset`     |
 | `glass`   | `dusk-haze`       | Dusk Haze        | `flat`      |
+| `glass`   | `soft-glass`      | Soft Glass       | `island`    |
 
 Nothing changes until an app or a user picks one: the default preset is `base`. To start an app on a preset, name it together with its style in the theme config:
 
@@ -125,7 +134,7 @@ export const themeConfig: ThemeConfig = {
 
 `defaults.preset` applies only to a preset of the default style, so `style` is needed for every preset outside Quiet. With the Vite plugin a preset of another style fails the build; without it the provider warns and uses `base`.
 
-While a preset is active, an axis the user never set takes the preset's value before the style's default and your config default. Every built-in preset sets `accentColor`, `surfaceColor`, `tintWithAccent`, `signalColor`, `font` and `headingFont`, so your `defaults` for those six axes do not apply under one. Some presets also set `radius`, `density`, `darkAccentChroma`, `gradientPattern`, `backgroundIntensity`, `glassOpacity` or `glassBlur`. A preset's shell style applies to the four layouts unless the user picked one or the layout pins `shellStyle`, and it beats `defaultShellStyle`.
+While a preset is active, an axis the user never set takes the preset's value before the style's default and your config default. Every built-in preset sets `accentColor`, `surfaceColor`, `tintWithAccent`, `signalColor`, `font` and `headingFont`, so your `defaults` for those six axes do not apply under one. Some presets also set `radius`, `density`, `darkAccentChroma`, `gradientPattern`, `backgroundIntensity`, `glassTransparency` or `glassBlur`. A preset's shell style applies to the four layouts unless the user picked one or the layout pins `shellStyle`, and it beats `defaultShellStyle`.
 
 A value the user stored still wins over the preset's, so a user who chose an accent in 6.x keeps it under every preset. While such a value exists the switcher shows a Reset to preset button under the Preset control; `useTheme().resetToPreset()` does the same from code, and `useTheme().canResetToPreset` says whether there is anything to clear.
 
@@ -134,7 +143,7 @@ The theme switcher gains a Preset control under the Style control, listing `base
 Three things can need a change in your code:
 
 - A style, preset or font in your theme config may not take the name of a built-in preset, and a font may not be named `newsreader`. The registry reports `"<name>" is a built-in preset name` or `"newsreader" is a built-in font name`, and the Vite plugin fails the build. Rename the definition.
-- `labels.theme` gains `presets` (`base` and the fifteen preset names) and `resetToPreset`, and `labels.themeOptions` gains `newsreader`. Partial labels need no change: a missing key falls back to the kit's own string. An object typed as the whole of `UiLabels` or `UiMessages` must add them.
+- `labels.theme` gains `presets` (`base` and the sixteen preset names) and `resetToPreset`, and `labels.themeOptions` gains `newsreader`. Partial labels need no change: a missing key falls back to the kit's own string. An object typed as the whole of `UiLabels` or `UiMessages` must add them.
 - `ThemeContextValue` gains `canResetToPreset` and `resetToPreset`, and the `useLayoutStore` state gains `clearShellStyle`. A test that mocks `useTheme` with a whole context value, or replaces the layout store's whole state, must add them.
 
 The [custom styles and presets guide](custom-styles.md) describes how to define your own styles, presets and fonts.
@@ -225,7 +234,7 @@ In forced-colours mode chosen items are painted `Highlight`. A stylesheet that s
 
 ## Fonts
 
-The `font` axis takes `inter`, `geist`, `ibm-plex-sans` or `newsreader`, with `inter` the default, plus any font a theme config registers under `fonts`; the `headingFont` axis sets a separate family for headings and takes `body` or any of the same fonts. Newsreader is the kit's serif and ships upright with its weight axis only. The five faces the kit uses (Inter, Geist, IBM Plex Sans, Newsreader and JetBrains Mono) ship as woff2 files declared in `darkraise-ui/styles.css`, and no font request leaves the app's origin. Delete any Google Fonts link for these families from `index.html`. A font registered in a theme config may not be named `newsreader`. `FONTS` and the `Font` type gain `"newsreader"`, so a `Record<Font, …>` or an exhaustive `switch` over `Font` needs the new member.
+The `font` axis takes `inter`, `geist`, `ibm-plex-sans`, `hanken-grotesk` or `newsreader`, with `hanken-grotesk` the default, plus any font a theme config registers under `fonts`; the `headingFont` axis sets a separate family for headings and takes `body` or any of the same fonts. An app or user that never chose a font now sees Hanken Grotesk; set `defaults.font: "inter"` to keep Inter. Newsreader is the kit's serif and ships upright with its weight axis only. The six faces the kit uses (Inter, Geist, IBM Plex Sans, Hanken Grotesk, Newsreader and JetBrains Mono) ship as woff2 files declared in `darkraise-ui/styles.css`, and no font request leaves the app's origin. Delete any Google Fonts link for these families from `index.html`. A font registered in a theme config may not be named `newsreader` or `hanken-grotesk`. `FONTS` and the `Font` type gain `"hanken-grotesk"` and `"newsreader"`, so a `Record<Font, …>` or an exhaustive `switch` over `Font` needs the new members.
 
 ## Pre-render script
 

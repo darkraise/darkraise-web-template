@@ -12,7 +12,7 @@ This guide shows how to define your own styles, presets and fonts for darkraise-
 - A **signature** is a structural choice from a fixed list that the kit implements, such as `tableHead: "ruled"`.
 - **Colour** comes from the kit's colour engine, which solves every colour token from the accent, the neutral ramp, the mode and the contrast axes. A definition refers to those tokens and never sets them.
 
-The kit's four styles and fifteen presets are written with exactly what this page describes, so anything they do, your definitions can do.
+The kit's four styles and sixteen presets are written with exactly what this page describes, so anything they do, your definitions can do.
 
 ## Quick start
 
@@ -220,7 +220,7 @@ The name the Style control shows, as written. It is not passed through the label
 
 The name of a built-in style or of another style in the config. The style starts from the whole parent: its `frosted` flag, `defaults`, `signatures`, `hairlines`, `vars`, `tokens`, `when` entries and `forcedFallback`. It then overrides per key: per axis in `defaults`, per signature, per variable and per token within each mode key. Its `when` entries are added after the parent's, and its `forcedFallback` tokens replace the parent's per token.
 
-A style that extends Glass shows the Glass opacity and blur controls in the switcher and inherits the rules that answer them.
+A style that extends Glass shows the Glass transparency and blur controls in the switcher and inherits the rules that answer them.
 
 A style without `extends` starts from the kit's defaults, which is the look every component has before any style applies. That is not Quiet: Quiet is a definition of its own that sets tokens and signatures. Extend `quiet` if you want to start from it.
 
@@ -248,13 +248,13 @@ Token and variable values that apply only while certain axes hold certain values
 
 A `when` value replaces the style's `shared`, `light` and `dark` values of the same token. Between two entries that both match, the one that tests more (more axes, or a mode as well) wins, and array order decides between entries that test the same amount.
 
-Glass uses `when` for its opacity and blur steps. In the example, Panes turns its cards opaque when the user picks a solid canvas, and strengthens the card border in dark mode under high contrast.
+Glass uses `when` for its Transparency and Blur steps and writes only variables there (`--glass-transparency-scale`, `--glass-blur`, `--glass-scrim-blur` and `--glass-backdrop-off`), so its presets may set any token. In the example, Panes turns its cards opaque when the user picks a solid canvas, and strengthens the card border in dark mode under high contrast.
 
 ### `forcedFallback`
 
 Token values that apply when the user asks for reduced transparency (`prefers-reduced-transparency: reduce`) or more contrast (`prefers-contrast: more`). They replace everything else the style or a preset sets for those tokens.
 
-The kit resets these tokens itself under the same two conditions, for every style and preset: `chromeBackdrop`, `chromeCanvas`, `overlayBackdrop`, `overlayFillLayers`, `overlayFillBase`, `overlayFillBlend`, `surfaceFillAlpha`, `surfaceBackdrop` and `scrimBackdrop`. Each returns to its opaque, unblurred value, so Panes needs no entry for its card alpha or backdrop.
+The kit resets these tokens itself under the same two conditions, for every style and preset: `chromeBackdrop`, `chromeCanvas`, `overlayBackdrop`, `overlayFillLayers`, `overlayFillBase`, `overlayFillBlend`, `surfaceFillAlpha`, `overlayFillAlpha`, `surfaceBackdrop` and `scrimBackdrop`. Each returns to its opaque, unblurred value, so Panes needs no entry for its card alpha or backdrop.
 
 Where your own `forcedFallback` sets one of these tokens, your value wins over the kit's reset.
 
@@ -316,7 +316,7 @@ Two rules follow from where a preset sits in the cascade, above everything its s
 
 **Write per mode what the style writes per mode.** A preset's `shared` value replaces its style's value in both modes, including a `dark` value of the style. If the style sets a token differently in dark mode, a preset that sets the same token under `shared` alone removes that difference. Give the preset a `dark` entry too (or `light` and `dark` entries) whenever the value contains a colour that should not be the same in both modes, such as a black or white shadow.
 
-**A preset cannot set a token its style sets in a `when` entry.** The preset's value would replace every step of the axis the `when` entries answer, and the user's control would stop working. Such a preset is rejected with `style "panes" sets "surfaceFillAlpha" in a when entry, which a preset may not override`. Under Glass and every style that extends it, the reserved tokens are `overlayFillBase`, `overlayBackdrop` and `scrimBackdrop`. Steer them through the axes instead: `axes: { glassOpacity: "subtle", glassBlur: "high" }`.
+**A preset cannot set a token its style sets in a `when` entry.** The preset's value would replace every step of the axis the `when` entries answer, and the user's control would stop working. Such a preset is rejected with `style "panes" sets "surfaceFillAlpha" in a when entry, which a preset may not override`. Glass sets no token in a `when` entry: its steps write variables, so a preset of Glass may set any token, `overlayFillBase`, `overlayBackdrop` and `scrimBackdrop` included. A preset that wants a heavier blur sets the axis, `axes: { glassBlur: "high" }`, rather than a blur length.
 
 ## Defining a font
 
@@ -346,7 +346,7 @@ export const instrumentSans = defineFont({
 
 A registered font is a value of both font axes. `font` sets the body face, and `headingFont` sets the face of `h1` to `h3` and of the `font-heading` utility; its value `body` keeps the body face. Use the name in `defaults`, in a style's `defaults` or in a preset's `axes`.
 
-The kit ships four faces as files of its own: `inter`, `geist`, `ibm-plex-sans` and `newsreader` (a serif, upright only, with a weight axis). Monospace text is always JetBrains Mono.
+The kit ships five faces as files of its own: `inter`, `geist`, `ibm-plex-sans`, `hanken-grotesk` (the default) and `newsreader` (a serif, upright only, with a weight axis). Monospace text is always JetBrains Mono.
 
 ### Giving a built-in preset another face
 
@@ -391,28 +391,28 @@ export const themeConfig = defineThemeConfig({
 
 A style's `defaults` and a preset's `axes` take any of these. `mode`, `style` and `preset` are not in the list: no definition sets them.
 
-| Axis                  | Values                                                                                                                                                                             | Registry default | Sets                                                                                    |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | --------------------------------------------------------------------------------------- |
-| `accentColor`         | `red`, `coral`, `orange`, `amber`, `yellow`, `lime`, `green`, `emerald`, `teal`, `cyan`, `sky`, `blue`, `indigo`, `violet`, `purple`, `fuchsia`, `pink`, `rose`, `neutral`         | `blue`           | Accent hue of the primary fill, marks, focus ring and links.                            |
-| `surfaceColor`        | `slate`, `gray`, `cool`, `zinc`, `neutral`, `iron`, `mauve`, `graphite`, `stone`, `sand`, `olive`, `sepia`                                                                         | `zinc`           | Neutral ramp the page, cards and borders are drawn from.                                |
-| `tintWithAccent`      | `off`, `on`                                                                                                                                                                        | `off`            | Mixes the accent hue into the neutral ramp.                                             |
-| `signalColor`         | `none`, `red`, `coral`, `orange`, `amber`, `yellow`, `lime`, `green`, `emerald`, `teal`, `cyan`, `sky`, `blue`, `indigo`, `violet`, `purple`, `fuchsia`, `pink`, `rose`, `neutral` | `none`           | A second accent for marks that must not read as the primary. `none` repeats the accent. |
-| `glassOpacity`        | `subtle`, `medium`, `strong`                                                                                                                                                       | `medium`         | Under Glass and the styles that extend it: how much a popup lets through.               |
-| `glassBlur`           | `none`, `low`, `medium`, `high`                                                                                                                                                    | `medium`         | Under Glass and the styles that extend it: the backdrop blur of popups and the scrim.   |
-| `font`                | a font name                                                                                                                                                                        | `inter`          | Body typeface.                                                                          |
-| `headingFont`         | `body` or a font name                                                                                                                                                              | `body`           | Typeface of `h1` to `h3` and the `font-heading` utility. `body` keeps the body face.    |
-| `radius`              | `sharp`, `subtle`, `rounded`, `pill`                                                                                                                                               | `rounded`        | Corner radius scale.                                                                    |
-| `density`             | `compact`, `cozy`, `comfortable`, `spacious`                                                                                                                                       | `cozy`           | Control height and spacing scale.                                                       |
-| `fontSize`            | `small`, `medium`, `large`, `extra-large`                                                                                                                                          | `medium`         | Root font size scale.                                                                   |
-| `contrast`            | `low`, `standard`, `high`                                                                                                                                                          | `standard`       | Page-to-card separation and the strength of decorative edges.                           |
-| `darkAccentChroma`    | `calm`, `standard`, `vivid`                                                                                                                                                        | `standard`       | How saturated the accent reads in dark mode.                                            |
-| `elevation`           | `flat`, `standard`, `high`                                                                                                                                                         | `standard`       | Shadow depth of raised surfaces.                                                        |
-| `outerGlow`           | `none`, `subtle`, `balanced`, `vivid`                                                                                                                                              | `none`           | Halo cast outward from raised surfaces.                                                 |
-| `innerGlow`           | `none`, `subtle`, `balanced`, `vivid`                                                                                                                                              | `none`           | Rim light bled inward on raised surfaces.                                               |
-| `backgroundStyle`     | `solid`, `gradient`                                                                                                                                                                | `solid`          | Page canvas: a solid fill or a gradient.                                                |
-| `backgroundIntensity` | `neutral`, `subtle`, `balanced`, `vivid`, `intense`                                                                                                                                | `vivid`          | How loud the gradient canvas is.                                                        |
-| `gradientPattern`     | `blobs`, `aurora`, `spotlight`, `mesh`, `dots`, `grain`                                                                                                                            | `blobs`          | Shape the gradient canvas paints.                                                       |
-| `sidebarSelection`    | `auto`, `chip`, `pill`, `tile`, `frosted`, `tint`, `accent`, `rule`, `key`, `tab`                                                                                                  | `auto`           | Look of the current nav row. `auto` follows the `navSelection` signature.               |
+| Axis                  | Values                                                                                                                                                                             | Registry default | Sets                                                                                                                                                           |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `accentColor`         | `red`, `coral`, `orange`, `amber`, `yellow`, `lime`, `green`, `emerald`, `teal`, `cyan`, `sky`, `blue`, `indigo`, `violet`, `purple`, `fuchsia`, `pink`, `rose`, `neutral`         | `blue`           | Accent hue of the primary fill, marks, focus ring and links.                                                                                                   |
+| `surfaceColor`        | `slate`, `gray`, `cool`, `zinc`, `neutral`, `iron`, `mauve`, `graphite`, `stone`, `sand`, `olive`, `sepia`                                                                         | `zinc`           | Neutral ramp the page, cards and borders are drawn from.                                                                                                       |
+| `tintWithAccent`      | `off`, `on`                                                                                                                                                                        | `off`            | Mixes the accent hue into the neutral ramp.                                                                                                                    |
+| `signalColor`         | `none`, `red`, `coral`, `orange`, `amber`, `yellow`, `lime`, `green`, `emerald`, `teal`, `cyan`, `sky`, `blue`, `indigo`, `violet`, `purple`, `fuchsia`, `pink`, `rose`, `neutral` | `none`           | A second accent for marks that must not read as the primary. `none` repeats the accent.                                                                        |
+| `glassTransparency`   | `low`, `medium`, `high`                                                                                                                                                            | `medium`         | Under Glass and the styles that extend it: how much of the page cards, popups and dialogs let through; `high` is the most. Stored under `theme-glass-opacity`. |
+| `glassBlur`           | `none`, `low`, `medium`, `high`                                                                                                                                                    | `medium`         | Under Glass and the styles that extend it: the backdrop blur of cards, chrome, popups, dialogs and the scrim; `none` turns every glass backdrop off.           |
+| `font`                | a font name                                                                                                                                                                        | `hanken-grotesk` | Body typeface.                                                                                                                                                 |
+| `headingFont`         | `body` or a font name                                                                                                                                                              | `body`           | Typeface of `h1` to `h3` and the `font-heading` utility. `body` keeps the body face.                                                                           |
+| `radius`              | `sharp`, `subtle`, `rounded`, `pill`                                                                                                                                               | `rounded`        | Corner radius scale.                                                                                                                                           |
+| `density`             | `compact`, `cozy`, `comfortable`, `spacious`                                                                                                                                       | `cozy`           | Control height and spacing scale.                                                                                                                              |
+| `fontSize`            | `small`, `medium`, `large`, `extra-large`                                                                                                                                          | `medium`         | Root font size scale.                                                                                                                                          |
+| `contrast`            | `low`, `standard`, `high`                                                                                                                                                          | `standard`       | Page-to-card separation and the strength of decorative edges.                                                                                                  |
+| `darkAccentChroma`    | `calm`, `standard`, `vivid`                                                                                                                                                        | `standard`       | How saturated the accent reads in dark mode.                                                                                                                   |
+| `elevation`           | `flat`, `standard`, `high`                                                                                                                                                         | `standard`       | Shadow depth of raised surfaces.                                                                                                                               |
+| `outerGlow`           | `none`, `subtle`, `balanced`, `vivid`                                                                                                                                              | `none`           | Halo cast outward from raised surfaces.                                                                                                                        |
+| `innerGlow`           | `none`, `subtle`, `balanced`, `vivid`                                                                                                                                              | `none`           | Rim light bled inward on raised surfaces.                                                                                                                      |
+| `backgroundStyle`     | `solid`, `gradient`                                                                                                                                                                | `solid`          | Page canvas: a solid fill or a gradient.                                                                                                                       |
+| `backgroundIntensity` | `neutral`, `subtle`, `balanced`, `vivid`, `intense`                                                                                                                                | `vivid`          | How loud the gradient canvas is. It also caps the page colour's saturation, under Solid too, where the switcher hides it.                                      |
+| `gradientPattern`     | `blobs`, `aurora`, `spotlight`, `mesh`, `dots`, `grain`                                                                                                                            | `blobs`          | Shape the gradient canvas paints.                                                                                                                              |
+| `sidebarSelection`    | `auto`, `chip`, `pill`, `tile`, `frosted`, `tint`, `accent`, `rule`, `key`, `tab`                                                                                                  | `auto`           | Look of the current nav row. `auto` follows the `navSelection` signature.                                                                                      |
 
 ## Colour
 
@@ -492,55 +492,68 @@ The Value column uses these kinds:
 
 ### Cards and surfaces
 
-| Schema name        | CSS property           | Value              | Paints                                                                                            |
-| ------------------ | ---------------------- | ------------------ | ------------------------------------------------------------------------------------------------- |
-| `cardEdge`         | `--card-edge`          | shadow list        | Edge shadow of every card, of detached shell regions, and of banners on the card surface.         |
-| `cardSheen`        | `--card-sheen`         | background image   | Gradient laid over the card fill.                                                                 |
-| `cardBorder`       | `--card-border`        | colour             | Border of a card, of the inset card footer, and of banners on the card surface.                   |
-| `cardRim`          | `--card-rim`           | background         | A 1px ring painted over the card's border, for example a gradient rim. The kit default is `none`. |
-| `cardRadius`       | `--card-radius`        | length             | Corner radius of a card. Detached shell regions move with it.                                     |
-| `surfaceFillAlpha` | `--surface-fill-alpha` | number from 0 to 1 | Opacity of the card colour wherever it is painted, and of banner fills. The kit default is `1`.   |
-| `surfaceBackdrop`  | `--surface-backdrop`   | backdrop filter    | Backdrop filter of cards and banners.                                                             |
-| `seam`             | `--seam`               | colour             | The 1px line of a `seam` card divider and a `seam` table head.                                    |
-| `seamHighlight`    | `--seam-highlight`     | colour             | The 1px line under the seam. The kit default is `transparent`.                                    |
+| Schema name        | CSS property           | Value              | Paints                                                                                                                                                                                                                          |
+| ------------------ | ---------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cardEdge`         | `--card-edge`          | shadow list        | Edge shadow of every card, of detached shell regions, and of banners on the card surface.                                                                                                                                       |
+| `cardSheen`        | `--card-sheen`         | background image   | Gradient laid over the card fill.                                                                                                                                                                                               |
+| `cardBorder`       | `--card-border`        | colour             | Border of a card, of the inset card footer, and of banners on the card surface.                                                                                                                                                 |
+| `cardRim`          | `--card-rim`           | background         | A 1px ring painted over the card's border, for example a gradient rim. The kit default is `none`.                                                                                                                               |
+| `cardRadius`       | `--card-radius`        | length             | Corner radius of a card. Detached shell regions move with it.                                                                                                                                                                   |
+| `surfaceFillAlpha` | `--surface-fill-alpha` | number from 0 to 1 | Opacity of the card colour at the Medium Transparency step, wherever it is painted, and of banner fills. Fills read the derived `--surface-alpha`; see [Transparency and blur](#transparency-and-blur). The kit default is `1`. |
+| `surfaceBackdrop`  | `--surface-backdrop`   | backdrop filter    | Backdrop filter of cards and banners.                                                                                                                                                                                           |
+| `seam`             | `--seam`               | colour             | The 1px line of a `seam` card divider and a `seam` table head.                                                                                                                                                                  |
+| `seamHighlight`    | `--seam-highlight`     | colour             | The 1px line under the seam. The kit default is `transparent`.                                                                                                                                                                  |
 
 ### Overlays and dialogs
 
-| Schema name         | CSS property                   | Value             | Paints                                                                                                                 |
-| ------------------- | ------------------------------ | ----------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `overlayFillBase`   | `--surface-overlay-base`       | colour            | Fill of popups: menus, popovers, selects, tooltips and toasts. Their arrows are filled with it.                        |
-| `overlayFillLayers` | `--surface-overlay-layers`     | background layers | Layers painted over `overlayFillBase`, each one followed by a comma. The kit default is empty.                         |
-| `overlayFillBlend`  | `--surface-overlay-blend-mode` | blend mode        | A `background-blend-mode` value for those layers.                                                                      |
-| `overlayBorder`     | `--overlay-border`             | colour            | Border of popups and their arrows. Dialogs follow it unless `dialogBorder` is set.                                     |
-| `overlayShadow`     | `--overlay-shadow`             | shadow list       | The whole shadow of popups. The kit default composes the elevation axis's lift, `dropdownShadow` and the glow axes.    |
-| `overlayBackdrop`   | `--overlay-backdrop`           | backdrop filter   | Backdrop filter of popups. The scrim follows it unless `scrimBackdrop` is set.                                         |
-| `overlayRadius`     | `--overlay-radius`             | length            | Corner radius of popups. Dialogs follow it unless `dialogRadius` is set.                                               |
-| `dropdownShadow`    | `--shadow-dropdown`            | shadow list       | The style's own part of the popup shadow, inside `overlayShadow`. Also the shadow of chart tooltips and status toasts. |
-| `dialogFill`        | `--dialog-fill`                | background        | Fill of dialogs, sheets and drawers. The kit default is the popup fill.                                                |
-| `dialogBorder`      | `--dialog-border`              | colour            | Border of dialogs, sheets and drawers.                                                                                 |
-| `modalShadow`       | `--modal-shadow`               | shadow list       | Shadow of dialogs, sheets and drawers. The kit default is the elevation axis's high shadow.                            |
-| `dialogRadius`      | `--dialog-radius`              | length            | Corner radius of dialogs, and of the free edge of sheets and drawers.                                                  |
-| `scrim`             | `--scrim`                      | colour only       | The layer behind a dialog, sheet, drawer or tour.                                                                      |
-| `scrimBackdrop`     | `--scrim-backdrop`             | backdrop filter   | Backdrop filter of the scrim.                                                                                          |
+| Schema name         | CSS property                   | Value              | Paints                                                                                                                                                                                          |
+| ------------------- | ------------------------------ | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `overlayFillBase`   | `--surface-overlay-base`       | colour             | Fill of popups: menus, popovers, selects, tooltips and toasts. Their arrows are filled with it.                                                                                                 |
+| `overlayFillLayers` | `--surface-overlay-layers`     | background layers  | Layers painted over `overlayFillBase`, each one followed by a comma. The kit default is empty.                                                                                                  |
+| `overlayFillBlend`  | `--surface-overlay-blend-mode` | blend mode         | A `background-blend-mode` value for those layers.                                                                                                                                               |
+| `overlayFillAlpha`  | `--overlay-fill-alpha`         | number from 0 to 1 | Opacity of popups and dialogs at the Medium Transparency step. A style uses it through the derived `--overlay-alpha`, as Glass's `overlayFillBase` and `dialogFill` do. The kit default is `1`. |
+| `overlayBorder`     | `--overlay-border`             | colour             | Border of popups and their arrows. Dialogs follow it unless `dialogBorder` is set.                                                                                                              |
+| `overlayShadow`     | `--overlay-shadow`             | shadow list        | The whole shadow of popups. The kit default composes the elevation axis's lift, `dropdownShadow` and the glow axes.                                                                             |
+| `overlayBackdrop`   | `--overlay-backdrop`           | backdrop filter    | Backdrop filter of popups. The scrim follows it unless `scrimBackdrop` is set.                                                                                                                  |
+| `overlayRadius`     | `--overlay-radius`             | length             | Corner radius of popups. Dialogs follow it unless `dialogRadius` is set.                                                                                                                        |
+| `dropdownShadow`    | `--shadow-dropdown`            | shadow list        | The style's own part of the popup shadow, inside `overlayShadow`. Also the shadow of chart tooltips and status toasts.                                                                          |
+| `dialogFill`        | `--dialog-fill`                | background         | Fill of dialogs, sheets and drawers. The kit default is the popup fill.                                                                                                                         |
+| `dialogBorder`      | `--dialog-border`              | colour             | Border of dialogs, sheets and drawers.                                                                                                                                                          |
+| `modalShadow`       | `--modal-shadow`               | shadow list        | Shadow of dialogs, sheets and drawers. The kit default is the elevation axis's high shadow.                                                                                                     |
+| `dialogRadius`      | `--dialog-radius`              | length             | Corner radius of dialogs, and of the free edge of sheets and drawers.                                                                                                                           |
+| `scrim`             | `--scrim`                      | colour only        | The layer behind a dialog, sheet, drawer or tour.                                                                                                                                               |
+| `scrimBackdrop`     | `--scrim-backdrop`             | backdrop filter    | Backdrop filter of the scrim.                                                                                                                                                                   |
+
+### Transparency and blur
+
+A translucent style declares two alphas for the Transparency setting's Medium step: `surfaceFillAlpha` for the card plane and `overlayFillAlpha` for popups and dialogs. The kit derives the values that are painted on `:root`:
+
+- `--surface-alpha` is `max(0.2, 1 − (1 − surfaceFillAlpha) × scale)`
+- `--overlay-alpha` is `max(0.4, 1 − (1 − overlayFillAlpha) × scale)`
+
+`scale` is `--glass-transparency-scale`: 0.6 at Low, 1 at Medium and 1.5 at High under Glass and the styles that extend it, and 1 everywhere else, so a declared `1` stays opaque at every step. Write every translucent fill of your own from `--surface-alpha` or `--overlay-alpha`, for example `hsl(var(--card) / calc(var(--surface-alpha) * 2 - 1))` for a fainter slab: under reduced transparency or more contrast the kit resets both declared alphas to `1`, and the derived values and everything built on them turn opaque with it. The two values are derived where `<html>` declares the alphas, so a `--surface-fill-alpha` you set on an element inside the page is not scaled.
+
+Glass's Blur steps size one variable, `--glass-blur` (10px, 20px and 32px; the scrim's `--glass-scrim-blur` is 2px, 4px and 8px), and its None step sets `--glass-backdrop-off` to `none`. Write a backdrop as `var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(140%))`: at None the whole value is the keyword `none`, and at the other steps your own filters follow the blur. Never write `blur(0)`: any filter value makes the element a containing block for its fixed-position descendants. While Blur is on, a `position: fixed` element rendered inside a glass card is positioned against the card; the kit's popups, dialogs, toasts and global floating panels render in a portal and are unaffected.
 
 ### Chrome and shell
 
-| Schema name          | CSS property             | Value           | Paints                                                                                                                                                                                                                                                                                  |
-| -------------------- | ------------------------ | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `chromeRailFill`     | `--chrome-rail-bg`       | background      | Fill of the sidebar and the other rails.                                                                                                                                                                                                                                                |
-| `chromeBarFill`      | `--chrome-bar-bg`        | background      | Fill of the top bar.                                                                                                                                                                                                                                                                    |
-| `chromeEdge`         | `--chrome-edge`          | colour          | The 1px rule between chrome regions and the border of detached regions.                                                                                                                                                                                                                 |
-| `chromeShadow`       | `--chrome-shadow`        | shadow list     | Shadow of chrome regions.                                                                                                                                                                                                                                                               |
-| `chromeBackdrop`     | `--chrome-backdrop`      | backdrop filter | Backdrop filter of chrome regions.                                                                                                                                                                                                                                                      |
-| `chromeCanvas`       | `--chrome-canvas`        | background      | Layer painted behind each chrome region's fill.                                                                                                                                                                                                                                         |
-| `chromeFlatFill`     | `--chrome-flat-fill`     | background      | Fill of the rails and the bar under the flat shell.                                                                                                                                                                                                                                     |
-| `chromeBarHeight`    | `--chrome-bar-height`    | length          | Height of the top bar. The kit default is `3.5rem`.                                                                                                                                                                                                                                     |
-| `shellGroundFill`    | `--shell-ground-fill`    | background      | The ground the whole shell stands on. It shows in the gutters of the inset, island, floating and framed shells, and behind the content wherever the content pane has no fill of its own. Left unset, the inset and island ground is the page colour recessed 5% toward the text colour. |
-| `shellShadow`        | `--shell-shadow`         | shadow list     | Separation shadow of detached regions (the inset content pane, island and floating regions) and of the framed shell's window. Left unset, each shell keeps its own.                                                                                                                     |
-| `shellContentFill`   | `--shell-content-fill`   | background      | Fill of the content pane under the inset, island and floating shells. Left unset, an inset or island pane takes the page colour at `--surface-fill-alpha` on a ground recessed 5% toward the text colour, and a floating pane stays `transparent`.                                      |
-| `shellContentEdge`   | `--shell-content-edge`   | colour          | Border of the content pane under the inset, island and floating shells. Left unset, it follows `chromeEdge`.                                                                                                                                                                            |
-| `shellContentShadow` | `--shell-content-shadow` | shadow list     | Shadow of the content pane under the inset, island and floating shells. Left unset, it follows `shellShadow`.                                                                                                                                                                           |
-| `shellFrameEdge`     | `--shell-frame-edge`     | colour          | The 1px ring around the framed shell's window.                                                                                                                                                                                                                                          |
+| Schema name           | CSS property              | Value           | Paints                                                                                                                                                                                                                                                                                                             |
+| --------------------- | ------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `chromeRailFill`      | `--chrome-rail-bg`        | background      | Fill of the sidebar and the other rails.                                                                                                                                                                                                                                                                           |
+| `chromeBarFill`       | `--chrome-bar-bg`         | background      | Fill of the top bar.                                                                                                                                                                                                                                                                                               |
+| `chromeEdge`          | `--chrome-edge`           | colour          | The 1px rule between chrome regions and the border of detached regions.                                                                                                                                                                                                                                            |
+| `chromeShadow`        | `--chrome-shadow`         | shadow list     | Shadow of chrome regions.                                                                                                                                                                                                                                                                                          |
+| `chromeBackdrop`      | `--chrome-backdrop`       | backdrop filter | Backdrop filter of chrome regions.                                                                                                                                                                                                                                                                                 |
+| `chromeCanvas`        | `--chrome-canvas`         | background      | Layer painted behind each chrome region's fill.                                                                                                                                                                                                                                                                    |
+| `chromeFlatFill`      | `--chrome-flat-fill`      | background      | Fill of the rails and the bar under the flat shell.                                                                                                                                                                                                                                                                |
+| `chromeBarHeight`     | `--chrome-bar-height`     | length          | Height of the top bar. The kit default is `3.5rem`.                                                                                                                                                                                                                                                                |
+| `shellGroundFill`     | `--shell-ground-fill`     | background      | The ground the whole shell stands on under the Solid background. It shows in the gutters of the inset, island, floating and framed shells, and behind the content wherever the content pane has no fill of its own. Left unset, the inset and island ground is the page colour recessed 5% toward the text colour. |
+| `shellGroundGradient` | `--shell-ground-gradient` | background      | The shell's ground under the Gradient background. Left unset, the shell is clear and the page canvas (the Gradient Pattern at the Background Intensity) shows through. A value with no opaque layer lets the canvas show through it.                                                                               |
+| `shellShadow`         | `--shell-shadow`          | shadow list     | Separation shadow of detached regions (the inset content pane, island and floating regions) and of the framed shell's window. Left unset, each shell keeps its own.                                                                                                                                                |
+| `shellContentFill`    | `--shell-content-fill`    | background      | Fill of the content pane under the inset, island and floating shells. Left unset, an inset or island pane takes the page colour at `--surface-alpha` on a ground recessed 5% toward the text colour, and a floating pane stays `transparent`.                                                                      |
+| `shellContentEdge`    | `--shell-content-edge`    | colour          | Border of the content pane under the inset, island and floating shells. Left unset, it follows `chromeEdge`.                                                                                                                                                                                                       |
+| `shellContentShadow`  | `--shell-content-shadow`  | shadow list     | Shadow of the content pane under the inset, island and floating shells. Left unset, it follows `shellShadow`.                                                                                                                                                                                                      |
+| `shellFrameEdge`      | `--shell-frame-edge`      | colour          | The 1px ring around the framed shell's window.                                                                                                                                                                                                                                                                     |
 
 ### Navigation selection
 
@@ -688,7 +701,7 @@ If `defaults.preset` names a preset of another style than `defaults.style`, the 
 
 The Style control lists the four built-in styles, then the config's styles in config order.
 
-Directly under it, the Preset control lists `base`, then the presets of the active style: built-in ones first, then the config's in config order. Built-in presets are labelled through the labels system (`labels.theme.presets`), so a language pack can translate them (the kit's own packs keep the fifteen names as written and translate `base`); a config preset shows its `label`. The control is hidden when it would offer `base` alone, and when `switcher.axes.preset` is `false`.
+Directly under it, the Preset control lists `base`, then the presets of the active style: built-in ones first, then the config's in config order. Built-in presets are labelled through the labels system (`labels.theme.presets`), so a language pack can translate them (the kit's own packs keep the sixteen names as written and translate `base`); a config preset shows its `label`. The control is hidden when it would offer `base` alone, and when `switcher.axes.preset` is `false`.
 
 `switcher.presets` limits what the control offers:
 
@@ -726,7 +739,7 @@ export function ResetThemeButton() {
 }
 ```
 
-Two more controls depend on the definitions. The Signal Color control is hidden while the signal colour is `none`, and appears when a preset, a style or the user sets one. The Glass opacity and blur controls appear under Glass and under any style that extends it.
+Two more controls depend on the definitions. The Signal Color control is hidden while the signal colour is `none`, and appears when a preset, a style or the user sets one. The Glass transparency and blur controls appear under Glass and under any style that extends it.
 
 ## Delivery
 
@@ -823,12 +836,13 @@ Each of these follows from how the kit reads a token or a signature. Knowing the
 - **The field edge is solved for a card sheen of a known shape.** In dark mode an elevated card lightens its face, and the edge of a field on it is solved to hold 3:1 against a face that carries at most 9.5% white: 8% from the highest elevation and the rest for a sheen. Keep the white a `cardSheen` adds in dark mode at or under 1.6%. The built-in definitions write a card sheen as `none` or as `linear-gradient(180deg, rgb(255 255 255 / a), ...)`, top down and starting with its white alpha, which is the shape the kit's own check reads.
 - **`overlayShadow` and `buttonNeutralBorder` are available, and no built-in definition sets them.** `overlayShadow` is the whole popup shadow, and its kit default joins the elevation axis's lift, `dropdownShadow` and the two glow axes. Setting it removes the user's elevation and glow from every popup, so set `dropdownShadow` and keep the composition. `buttonNeutralBorder` replaces the outline button's border, which by default is the field edge the engine solves at 3:1 against the button's ground. A fainter colour takes a control boundary under 3:1.
 - **`fieldBorder: "bottom"` and `"none"` keep the bottom edge.** No value removes the 3:1 bottom edge of a field.
-- **Only the tokens listed under [`forcedFallback`](#forcedfallback) are reset under reduced transparency or more contrast.** A preset has no `forcedFallback`, so a translucent value a preset writes into another token, such as `shellContentFill` or `dialogFill`, stays translucent. Derive its alpha from `--surface-fill-alpha`, which the kit resets to `1`, as Mica Desk does below, or put the reset in the style's `forcedFallback`.
+- **Only the tokens listed under [`forcedFallback`](#forcedfallback) are reset under reduced transparency or more contrast.** A preset has no `forcedFallback`, so a translucent value a preset writes into another token, such as `shellContentFill` or `dialogFill`, stays translucent. Derive its alpha from `--surface-alpha` or `--overlay-alpha`, which turn opaque when the kit resets the declared alphas to `1`, as Mica Desk does below, or put the reset in the style's `forcedFallback`.
+- **Background Intensity acts under Solid too.** It caps the saturation of the page colour under both backgrounds; the switcher shows it only under Gradient, where its other half, the canvas's strength, shows.
 - **A `role` on a font changes nothing by itself**, and a label on a config style, preset or font is shown as written in every language.
 
 ## Built-in presets
 
-The kit registers fifteen presets. Their names are taken: a config style, preset or font may not use one.
+The kit registers sixteen presets. Their names are taken: a config style, preset or font may not use one.
 
 | Name              | Label            | Style   | Shell style |
 | ----------------- | ---------------- | ------- | ----------- |
@@ -847,6 +861,7 @@ The kit registers fifteen presets. Their names are taken: a config style, preset
 | `aurora-night`    | Aurora Night     | Glass   | `flat`      |
 | `coral-space`     | Coral Space      | Glass   | `inset`     |
 | `dusk-haze`       | Dusk Haze        | Glass   | `flat`      |
+| `soft-glass`      | Soft Glass       | Glass   | `island`    |
 
 Each is an ordinary preset definition. `resolveRegistry().presets` holds all of them as data, and three are quoted here because they show different techniques.
 
@@ -951,7 +966,6 @@ export const micaDesk: PresetDefinition = {
     radius: "subtle",
     gradientPattern: "blobs",
     backgroundIntensity: "balanced",
-    glassOpacity: "subtle",
   },
   signatures: {
     navSelection: "pill",
@@ -965,20 +979,19 @@ export const micaDesk: PresetDefinition = {
   tokens: {
     // The other tokens are left out of this excerpt.
     shared: {
-      shellContentFill:
-        "hsl(var(--card) / calc(var(--surface-fill-alpha) * 2 - 1))",
+      shellContentFill: "hsl(var(--card) / calc(var(--surface-alpha) * 2 - 1))",
       surfaceFillAlpha: "0.75",
       cardEdge: "0 0 transparent",
     },
     light: {
-      shellGroundFill:
+      shellGroundGradient:
         "radial-gradient(80% 70% at 10% 0%, hsl(var(--primary) / 0.12), transparent 60%)",
       shellContentEdge: "rgb(0 0 0 / 0.06)",
       cardBorder: "rgb(0 0 0 / 0.06)",
       dropdownShadow: "0 0 2px rgb(0 0 0 / 0.12), 0 8px 16px rgb(0 0 0 / 0.14)",
     },
     dark: {
-      shellGroundFill:
+      shellGroundGradient:
         "radial-gradient(80% 70% at 10% 0%, hsl(var(--primary) / 0.16), transparent 60%)",
       shellContentEdge: "rgb(0 0 0 / 0.1)",
       dropdownShadow: "0 0 2px rgb(0 0 0 / 0.24), 0 8px 16px rgb(0 0 0 / 0.28)",
@@ -987,9 +1000,9 @@ export const micaDesk: PresetDefinition = {
 }
 ```
 
-- Glass reserves `overlayFillBase`, `overlayBackdrop` and `scrimBackdrop` in its `when` entries, so the preset changes how much popups let through with `glassOpacity: "subtle"`, and the canvas with `gradientPattern` and `backgroundIntensity`. The user can still move all three.
-- `shellGroundFill` replaces the shell's ground, which is opaque by default: the page colour, recessed 5% toward the text colour under the inset and island shells. A value with no opaque layer, here a single accent bloom, lets the page canvas show through the shell.
-- The content pane is a translucent slab: `shellContentFill` is the card colour at an alpha computed from `--surface-fill-alpha`. With the preset's `0.75` the slab is at `0.5`. Under reduced transparency or more contrast the kit sets `--surface-fill-alpha` to `1`, and the same expression gives `1`, so the slab turns opaque together with the cards although the kit does not reset `shellContentFill`.
+- Glass sets no token in its `when` entries, so the preset declares the Medium opacity of cards (`surfaceFillAlpha`) and popups (`overlayFillAlpha`) itself, and steers the canvas with `gradientPattern` and `backgroundIntensity`. The user still moves Transparency, Blur and the canvas.
+- `shellGroundGradient` replaces the shell's ground under the Gradient background, Glass's default. A value with no opaque layer, here a single accent bloom, lets the page canvas show through the shell. Under Solid the shell keeps its opaque ground: the page colour, recessed 5% toward the text colour under the inset and island shells.
+- The content pane is a translucent slab: `shellContentFill` is the card colour at an alpha computed from `--surface-alpha`. With the preset's `0.75` the slab is at `0.5` at Medium and moves with Transparency. Under reduced transparency or more contrast the kit sets `--surface-fill-alpha` to `1`, `--surface-alpha` follows, and the same expression gives `1`, so the slab turns opaque together with the cards although the kit does not reset `shellContentFill`.
 - `dropdownShadow` is written under `light` and `dark`, because Glass sets it per mode.
 
 ### Braun Panel: a signal colour, seams and per-mode keys on Tactile
