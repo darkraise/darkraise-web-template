@@ -168,8 +168,8 @@ navigation away and back, both on `<html>` and in `localStorage`.
 
 Everything above again, this time through the popover a user actually operates:
 
-- Opens from the header, closes on Escape; under Quiet it shows the nine
-  Brand sections in order, then the eight Advanced sections once the Advanced
+- Opens from the header, closes on Escape; under Quiet it shows the twelve
+  Brand sections in order, then the six Advanced sections once the Advanced
   disclosure is opened (`openAdvanced` in `helpers/app.ts`).
 - Each of the 4 styles is selectable and persists across reload.
 - The glass Transparency and Backdrop Blur controls render after the Background controls under glass, and under no other style.
@@ -466,8 +466,9 @@ paint:
 - Every attribute axis in `create-app/bin/axes.json`, seeded with its last
   non-default value (mode dark), is stamped on `<html>` after a reload, with
   the same inline `--primary` the app wrote.
-- Five stored 6.x states (glass on a solid canvas, sci-fi, accent vibrancy,
-  glass axes stored at medium, a browser already at revision 1) are migrated
+- Eight stored states (glass on a solid canvas, sci-fi, accent vibrancy,
+  glass axes stored at medium, and browsers already at revision 1, 2, 3 or 4
+  with a strong glass opacity) are migrated
   before the app mounts: the painted attributes, the keys removed and kept,
   and `theme-settings-version` set to the kit's `LEGACY_REVISION`.
 
@@ -479,9 +480,9 @@ paint:
 - A stored Geist, IBM Plex Sans or Newsreader font renders at boot, its woff2
   file served from the app's own origin with a 200.
 - A stored Geist or Newsreader heading font sets the headings in that face,
-  loaded, and leaves the body in Inter.
-- The switcher offers Inter, Geist, IBM Plex Sans and Newsreader for the body,
-  and `body` plus the four for the headings; choosing Newsreader for the
+  loaded, and leaves the body in Hanken Grotesk.
+- The switcher offers Inter, Geist, IBM Plex Sans, Hanken Grotesk and
+  Newsreader for the body, and `body` plus the five for the headings; choosing Newsreader for the
   headings repaints them without a reload.
 - No request during the session leaves the app's origin.
 
