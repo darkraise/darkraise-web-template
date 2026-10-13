@@ -130,6 +130,49 @@
     "label": "Preset",
     "groupLabel": "Style"
   },
+  "backgroundStyle": {
+    "values": [
+      "solid",
+      "gradient"
+    ],
+    "default": "solid",
+    "storageKey": "theme-bg-style",
+    "attribute": "data-background-style",
+    "layer": "style",
+    "label": "Background",
+    "groupLabel": "Style"
+  },
+  "gradientPattern": {
+    "values": [
+      "blobs",
+      "aurora",
+      "spotlight",
+      "mesh",
+      "dots",
+      "grain"
+    ],
+    "default": "blobs",
+    "storageKey": "theme-gradient-pattern",
+    "attribute": "data-gradient-pattern",
+    "layer": "style",
+    "label": "Gradient Pattern",
+    "groupLabel": "Style"
+  },
+  "backgroundIntensity": {
+    "values": [
+      "neutral",
+      "subtle",
+      "balanced",
+      "vivid",
+      "intense"
+    ],
+    "default": "vivid",
+    "storageKey": "theme-bg-intensity",
+    "attribute": "data-background-intensity",
+    "layer": "style",
+    "label": "Background Intensity",
+    "groupLabel": "Style"
+  },
   "glassTransparency": {
     "values": [
       "low",
@@ -293,49 +336,6 @@
     "attribute": "data-inner-glow",
     "layer": "advanced",
     "label": "Inner Glow",
-    "groupLabel": "Advanced"
-  },
-  "backgroundStyle": {
-    "values": [
-      "solid",
-      "gradient"
-    ],
-    "default": "solid",
-    "storageKey": "theme-bg-style",
-    "attribute": "data-background-style",
-    "layer": "advanced",
-    "label": "Background",
-    "groupLabel": "Advanced"
-  },
-  "backgroundIntensity": {
-    "values": [
-      "neutral",
-      "subtle",
-      "balanced",
-      "vivid",
-      "intense"
-    ],
-    "default": "vivid",
-    "storageKey": "theme-bg-intensity",
-    "attribute": "data-background-intensity",
-    "layer": "advanced",
-    "label": "Background Intensity",
-    "groupLabel": "Advanced"
-  },
-  "gradientPattern": {
-    "values": [
-      "blobs",
-      "aurora",
-      "spotlight",
-      "mesh",
-      "dots",
-      "grain"
-    ],
-    "default": "blobs",
-    "storageKey": "theme-gradient-pattern",
-    "attribute": "data-gradient-pattern",
-    "layer": "advanced",
-    "label": "Gradient Pattern",
     "groupLabel": "Advanced"
   },
   "sidebarSelection": {

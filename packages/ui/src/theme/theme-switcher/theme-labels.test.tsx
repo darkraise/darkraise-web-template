@@ -9,9 +9,14 @@ import { viTheme } from "../../locales/viTheme"
 import { vi as viLocale } from "../../locales/vi"
 import { themeMessages } from "../../i18n/themeMessages"
 
-// Brand shows Mode and Density; Advanced shows Contrast and Background Intensity.
+// Brand shows Mode, Density and Background Intensity (the background is a
+// hidden gradient); Advanced shows Contrast.
 const config: ThemeConfig = {
-  defaults: { backgroundIntensity: "balanced", mode: "light" },
+  defaults: {
+    backgroundStyle: "gradient",
+    backgroundIntensity: "balanced",
+    mode: "light",
+  },
   switcher: {
     enabled: true,
     axes: {
@@ -87,11 +92,10 @@ describe("ThemeSwitcher labels", () => {
     expect(screen.getByText("Contrast")).toBeInTheDocument()
   })
 
-  it("labels the background intensity axis under Advanced", async () => {
+  it("labels the background intensity axis in the main section", async () => {
     const user = userEvent.setup()
     renderSwitcher()
     await user.click(trigger())
-    await user.click(screen.getByRole("button", { name: "Advanced" }))
     expect(screen.getByText("Background Intensity")).toBeInTheDocument()
   })
 

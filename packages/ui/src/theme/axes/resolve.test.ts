@@ -233,7 +233,7 @@ describe("presetOverrides", () => {
         font: "geist",
       },
       {},
-      ["elevation", "gradientPattern"],
+      ["gradientPattern", "elevation"],
     ],
     [
       "nothing under a style that sets no axis",
@@ -277,9 +277,9 @@ describe("presetOverrides", () => {
     )
     expect(listed).toEqual([
       "accentColor",
-      "elevation",
       "backgroundStyle",
       "gradientPattern",
+      "elevation",
     ])
   })
 })

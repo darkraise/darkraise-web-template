@@ -40,6 +40,8 @@ function sectionLabels(container: HTMLElement): string[] {
   ].map((label) => label.textContent ?? "")
 }
 
+// Gradient Pattern and Background Intensity are absent: the default
+// background is solid.
 const BRAND = [
   "Mode",
   "Accent Color",
@@ -47,6 +49,7 @@ const BRAND = [
   "Tint With Accent",
   "Style",
   "Preset",
+  "Background",
   "Font",
   "Heading Font",
   "Radius",
@@ -54,15 +57,12 @@ const BRAND = [
   "Font Size",
 ]
 
-// Gradient Pattern is absent: the default background is solid.
 const ADVANCED = [
   "Contrast",
   "Dark Accent Chroma",
   "Elevation",
   "Outer Glow",
   "Inner Glow",
-  "Background",
-  "Background Intensity",
   "Sidebar Selection",
 ]
 
@@ -178,9 +178,6 @@ describe("ThemeSettingsPanel", () => {
           elevation: false,
           outerGlow: false,
           innerGlow: false,
-          backgroundStyle: false,
-          backgroundIntensity: false,
-          gradientPattern: false,
           sidebarSelection: false,
         },
       }),
@@ -362,9 +359,12 @@ describe("ThemeSettingsPanel", () => {
     const { container } = renderPanel(<ThemeSettingsPanel layout="page" />)
     const labels = sectionLabels(container)
     const at = labels.indexOf("Style")
-    expect(labels.slice(at, at + 5)).toEqual([
+    expect(labels.slice(at, at + 8)).toEqual([
       "Style",
       "Preset",
+      "Background",
+      "Gradient Pattern",
+      "Background Intensity",
       "Transparency",
       "Backdrop Blur",
       "Font",

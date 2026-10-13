@@ -174,7 +174,7 @@ test("theme switcher popover controls fit", async ({ page }) => {
   })
   await gotoApp(page, "/settings")
   await openThemeSwitcher(page)
-  // The Gradient Pattern row sits under Advanced.
+  // Open Advanced too, so every row is measured.
   await openAdvanced(page)
   await expect(
     themeSwitcher(page).locator(".dr-theme-switcher-row", {

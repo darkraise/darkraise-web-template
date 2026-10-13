@@ -126,6 +126,38 @@ export const AXES = {
     layer: "style",
     control: "choice",
   }),
+  /** Page canvas: a `solid` fill or a `gradient`. */
+  backgroundStyle: axis({
+    values: BACKGROUND_STYLES,
+    default: "solid",
+    storageKey: "theme-bg-style",
+    attribute: "data-background-style",
+    layer: "style",
+    control: "choice",
+  }),
+  /** Which gradient shape the page paints; only meaningful when backgroundStyle is `gradient`. */
+  gradientPattern: axis({
+    values: GRADIENT_PATTERNS,
+    default: "blobs",
+    storageKey: "theme-gradient-pattern",
+    attribute: "data-gradient-pattern",
+    layer: "style",
+    control: "choice",
+    visibleWhen: (settings) => settings.backgroundStyle === "gradient",
+  }),
+  /**
+   * How loud the gradient overlay is. Shown only under `gradient`, but its
+   * value still caps the page tint under `solid`.
+   */
+  backgroundIntensity: axis({
+    values: BACKGROUND_INTENSITIES,
+    default: "vivid",
+    storageKey: "theme-bg-intensity",
+    attribute: "data-background-intensity",
+    layer: "style",
+    control: "ordinal",
+    visibleWhen: (settings) => settings.backgroundStyle === "gradient",
+  }),
   /** How much of what lies behind Glass's cards and overlays shows through; `high` lets the most through. */
   glassTransparency: axis({
     values: GLASS_TRANSPARENCIES,
@@ -237,34 +269,6 @@ export const AXES = {
     attribute: "data-inner-glow",
     layer: "advanced",
     control: "ordinal",
-  }),
-  /** Page canvas: a `solid` fill or a `gradient`. */
-  backgroundStyle: axis({
-    values: BACKGROUND_STYLES,
-    default: "solid",
-    storageKey: "theme-bg-style",
-    attribute: "data-background-style",
-    layer: "advanced",
-    control: "choice",
-  }),
-  /** How loud the gradient overlay is; under `solid` it still caps the canvas saturation. */
-  backgroundIntensity: axis({
-    values: BACKGROUND_INTENSITIES,
-    default: "vivid",
-    storageKey: "theme-bg-intensity",
-    attribute: "data-background-intensity",
-    layer: "advanced",
-    control: "ordinal",
-  }),
-  /** Which gradient shape the page paints; only meaningful when backgroundStyle is `gradient`. */
-  gradientPattern: axis({
-    values: GRADIENT_PATTERNS,
-    default: "blobs",
-    storageKey: "theme-gradient-pattern",
-    attribute: "data-gradient-pattern",
-    layer: "advanced",
-    control: "choice",
-    visibleWhen: (settings) => settings.backgroundStyle === "gradient",
   }),
   /** Look of the active sidebar row; `auto` follows the style. */
   sidebarSelection: axis({

@@ -31,6 +31,8 @@ import {
 
 const PROBE = "/components/buttons"
 
+// Gradient Pattern and Background Intensity are absent: these cases seed a
+// solid background.
 const BRAND_SECTIONS = [
   "Mode",
   "Accent Color",
@@ -38,6 +40,7 @@ const BRAND_SECTIONS = [
   "Tint With Accent",
   "Style",
   "Preset",
+  "Background",
   "Font",
   "Heading Font",
   "Radius",
@@ -45,15 +48,12 @@ const BRAND_SECTIONS = [
   "Font Size",
 ]
 
-// Gradient Pattern is absent: these cases seed a solid background.
 const ADVANCED_SECTIONS = [
   "Contrast",
   "Dark Accent Chroma",
   "Elevation",
   "Outer Glow",
   "Inner Glow",
-  "Background",
-  "Background Intensity",
   "Sidebar Selection",
 ]
 
@@ -140,8 +140,11 @@ test.describe("style selection through the UI", () => {
       const at = sections.indexOf("Style")
       expect(at).toBeGreaterThan(-1)
       if (style === "glass") {
-        expect(sections.slice(at + 1, at + 4)).toEqual([
+        expect(sections.slice(at + 1, at + 7)).toEqual([
           "Preset",
+          "Background",
+          "Gradient Pattern",
+          "Background Intensity",
           GLASS_TRANSPARENCY_LABEL,
           GLASS_BLUR_LABEL,
         ])
@@ -431,18 +434,20 @@ test.describe("accent and surface swatches", () => {
 })
 
 test.describe("background controls", () => {
-  test("gradient reveals intensity and pattern controls", async ({ page }) => {
+  test("gradient reveals intensity and pattern controls in the main section", async ({
+    page,
+  }) => {
     await seedApp(page, { style: "quiet", backgroundStyle: "solid" })
     await gotoApp(page, PROBE)
     await openThemeSwitcher(page)
-    await openAdvanced(page)
 
+    // Advanced is still closed, so a visible control sits in the main part.
+    const background = themeSwitcher(page).locator('[aria-label="Background"]')
+    await expect(background).toBeVisible()
     expect(await switcherSections(page)).not.toContain("Gradient Pattern")
+    expect(await switcherSections(page)).not.toContain("Background Intensity")
 
-    await themeSwitcher(page)
-      .locator('[aria-label="Background"]')
-      .getByRole("radio", { name: "Gradient" })
-      .click()
+    await background.getByRole("radio", { name: "Gradient" }).click()
 
     await expect
       .poll(async () => await switcherSections(page))
@@ -455,7 +460,6 @@ test.describe("background controls", () => {
       await seedApp(page, { style: "quiet", backgroundStyle: "gradient" })
       await gotoApp(page, PROBE)
       await openThemeSwitcher(page)
-      await openAdvanced(page)
       await themeSwitcher(page)
         .locator('[aria-label="Gradient Pattern"]')
         .getByRole("radio", { name: pattern })
@@ -472,7 +476,6 @@ test.describe("background controls", () => {
     await seedApp(page, { style: "quiet", backgroundStyle: "gradient" })
     await gotoApp(page, PROBE)
     await openThemeSwitcher(page)
-    await openAdvanced(page)
     await themeSwitcher(page)
       .locator('[aria-label="Background"]')
       .getByRole("radio", { name: "Solid" })
@@ -480,6 +483,7 @@ test.describe("background controls", () => {
     await expect
       .poll(async () => await switcherSections(page))
       .not.toContain("Gradient Pattern")
+    expect(await switcherSections(page)).not.toContain("Background Intensity")
   })
 })
 

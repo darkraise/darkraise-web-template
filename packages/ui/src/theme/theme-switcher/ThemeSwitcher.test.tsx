@@ -134,8 +134,11 @@ describe("ThemeSwitcher style section", () => {
     fireEvent.click(screen.getByRole("radio", { name: "Glass" }))
     const labels = sectionLabels()
     const at = labels.indexOf("Style")
-    expect(labels.slice(at + 1, at + 4)).toEqual([
+    expect(labels.slice(at + 1, at + 7)).toEqual([
       "Preset",
+      "Background",
+      "Gradient Pattern",
+      "Background Intensity",
       "Transparency",
       "Backdrop Blur",
     ])
@@ -266,22 +269,24 @@ describe("ThemeSwitcher Advanced part", () => {
     )
   })
 
-  // The axis absorbed canvasTint, so under `solid` it still drives the canvas
-  // saturation cap. Only its blob-scale half is gradient-specific, and that
-  // half goes inert rather than hiding the whole control.
-  it("renders Background Intensity when backgroundStyle is solid", () => {
+  // Hidden under `solid`, the axis still caps the page tint there; only the
+  // gradient's own loudness needs the control.
+  it("does NOT render Background Intensity when backgroundStyle is solid", () => {
     renderSwitcher()
     openSwitcher()
     openAdvanced()
-    expect(screen.getByText("Background Intensity")).toBeInTheDocument()
+    expect(screen.queryByText("Background Intensity")).not.toBeInTheDocument()
   })
 
-  it("renders Background Intensity when backgroundStyle is gradient", () => {
+  it("renders Background Intensity beside the Background control when backgroundStyle is gradient", () => {
     renderSwitcher()
     openSwitcher()
-    openAdvanced()
     fireEvent.click(screen.getByRole("radio", { name: "Gradient" }))
-    expect(screen.getByText("Background Intensity")).toBeInTheDocument()
+    const row = screen
+      .getByText("Background Intensity")
+      .closest(".dr-theme-switcher-row") as HTMLElement
+    expect(row.closest('[role="region"]')).toBeNull()
+    expect(within(row).getByText("vivid")).toBeInTheDocument()
     expect(
       document.documentElement.getAttribute("data-background-intensity"),
     ).toBe("vivid")
@@ -291,15 +296,14 @@ describe("ThemeSwitcher Advanced part", () => {
     renderSwitcher()
     openSwitcher()
     openAdvanced()
-    // Radius, Density, Font Size, Outer Glow, Inner Glow, Background Intensity.
-    expect(screen.getAllByRole("slider")).toHaveLength(6)
+    // Radius, Density, Font Size, Outer Glow, Inner Glow.
+    expect(screen.getAllByRole("slider")).toHaveLength(5)
     for (const name of ["Elevation", "Contrast", "Dark Accent Chroma"]) {
       expect(screen.getByRole("radiogroup", { name }), name).toBeInTheDocument()
     }
-    const bgIntensityRow = screen
-      .getByText("Background Intensity")
-      .closest(".dr-theme-switcher-row") as HTMLElement
-    expect(within(bgIntensityRow).getByText("vivid")).toBeInTheDocument()
+    fireEvent.click(screen.getByRole("radio", { name: "Gradient" }))
+    // Background Intensity joins them under the gradient background.
+    expect(screen.getAllByRole("slider")).toHaveLength(6)
     expect(screen.getByText("cozy")).toBeInTheDocument()
     expect(screen.getByText("rounded")).toBeInTheDocument()
   })

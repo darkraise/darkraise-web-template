@@ -25,6 +25,9 @@ describe("axis registry", () => {
       "signalColor",
       "style",
       "preset",
+      "backgroundStyle",
+      "gradientPattern",
+      "backgroundIntensity",
       "glassTransparency",
       "glassBlur",
       "font",
@@ -37,9 +40,6 @@ describe("axis registry", () => {
       "elevation",
       "outerGlow",
       "innerGlow",
-      "backgroundStyle",
-      "backgroundIntensity",
-      "gradientPattern",
       "sidebarSelection",
     ])
   })
@@ -62,13 +62,14 @@ describe("axis registry", () => {
       "mode",
       "style",
       "preset",
-      "font",
-      "headingFont",
       "backgroundStyle",
       "gradientPattern",
+      "font",
+      "headingFont",
       "sidebarSelection",
     ])
     expect(byKind("ordinal")).toEqual([
+      "backgroundIntensity",
       "glassTransparency",
       "glassBlur",
       "radius",
@@ -79,7 +80,6 @@ describe("axis registry", () => {
       "elevation",
       "outerGlow",
       "innerGlow",
-      "backgroundIntensity",
     ])
     expect(byKind("switch")).toEqual(["tintWithAccent"])
   })
@@ -107,9 +107,10 @@ describe("axis registry", () => {
     expect(AXIS_KEYS.filter((key) => AXES[key].visibleWhen)).toEqual([
       "tintWithAccent",
       "signalColor",
+      "gradientPattern",
+      "backgroundIntensity",
       "glassTransparency",
       "glassBlur",
-      "gradientPattern",
     ])
   })
 
@@ -131,11 +132,14 @@ describe("axis registry", () => {
     expect(visible?.({ signalColor: "none" }, [])).toBe(false)
   })
 
-  it("shows the gradient pattern only under the gradient style", () => {
-    const visible = AXES.gradientPattern.visibleWhen
-    expect(visible?.({ backgroundStyle: "gradient" }, [])).toBe(true)
-    expect(visible?.({ backgroundStyle: "solid" }, [])).toBe(false)
-  })
+  it.each(["gradientPattern", "backgroundIntensity"] as const)(
+    "shows %s only under the gradient background",
+    (key) => {
+      const visible = AXES[key].visibleWhen
+      expect(visible?.({ backgroundStyle: "gradient" }, [])).toBe(true)
+      expect(visible?.({ backgroundStyle: "solid" }, [])).toBe(false)
+    },
+  )
 
   it("hides tint with accent under the neutral accent", () => {
     const visible = AXES.tintWithAccent.visibleWhen
@@ -148,6 +152,22 @@ describe("axis registry", () => {
     expect(AXES.glassTransparency.layer).toBe("style")
     expect(AXES.glassBlur.layer).toBe("style")
     expect(AXES.font.layer).toBe("brand")
+  })
+
+  it("keeps the background controls in the style layer, right after the preset", () => {
+    for (const key of [
+      "backgroundStyle",
+      "gradientPattern",
+      "backgroundIntensity",
+    ] as const) {
+      expect(AXES[key].layer, key).toBe("style")
+    }
+    const at = AXIS_KEYS.indexOf("preset")
+    expect(AXIS_KEYS.slice(at + 1, at + 4)).toEqual([
+      "backgroundStyle",
+      "gradientPattern",
+      "backgroundIntensity",
+    ])
   })
 
   it("stores the style under theme-style and keeps the glass axes' 6.x keys", () => {
