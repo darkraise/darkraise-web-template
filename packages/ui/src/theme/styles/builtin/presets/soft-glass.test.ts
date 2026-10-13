@@ -105,6 +105,16 @@ describe("Soft Glass", () => {
     expect(shared.chromeBarFill).toBeUndefined()
   })
 
+  it("lifts the current nav row with the rail's own ink", () => {
+    expect(light.navSelectionFill).toBe(
+      "hsl(var(--sidebar-foreground-hover) / 0.1)",
+    )
+    expect(dark.navSelectionFill).toBe(
+      "hsl(var(--sidebar-foreground-hover) / 0.1)",
+    )
+    expect(shared.navSelectionFill).toBeUndefined()
+  })
+
   it("edges panes in white under one soft drop, with no highlight or ring", () => {
     expect(light.cardBorder).toBe("rgb(255 255 255 / 0.5)")
     expect(dark.cardBorder).toBe("rgb(255 255 255 / 0.07)")

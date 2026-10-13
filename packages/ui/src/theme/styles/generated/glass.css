@@ -416,6 +416,7 @@
     --surface-fill-alpha: 0.64;
     --chrome-rail-bg: hsl(var(--card) / max(0.12, calc(var(--surface-alpha) * 2.06 - 1.06)));
     --chrome-bar-bg: hsl(var(--card) / max(0.12, calc(var(--surface-alpha) * 2.06 - 1.06)));
+    --nav-selection-fill: hsl(var(--sidebar-foreground-hover) / 0.1);
     --card-border: rgb(255 255 255 / 0.5);
     --card-edge: 0 10px 26px -18px rgb(0 0 0 / 0.35);
     --scrim: hsl(var(--foreground) / 0.16);
@@ -424,6 +425,7 @@
     --surface-fill-alpha: 0.62;
     --chrome-rail-bg: hsl(var(--card) / max(0.12, calc(var(--surface-alpha) * 1.74 - 0.74)));
     --chrome-bar-bg: hsl(var(--card) / max(0.12, calc(var(--surface-alpha) * 1.74 - 0.74)));
+    --nav-selection-fill: hsl(var(--sidebar-foreground-hover) / 0.1);
     --card-border: rgb(255 255 255 / 0.07);
     --card-edge: 0 10px 26px -18px rgb(0 0 0 / 0.6);
     --scrim: rgb(0 0 0 / 0.65);
