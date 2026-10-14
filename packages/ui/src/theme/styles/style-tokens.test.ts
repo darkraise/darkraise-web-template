@@ -406,12 +406,19 @@ describe("button families", () => {
     },
   )
 
-  // Hover and press come from the state layer, so today no rule changes a
-  // variant's shadow; one that does must restate the whole list.
+  // Hover and press come from the state layer, so no state rule changes a
+  // variant's shadow; one that does must restate the whole list. A
+  // buttonStyle rule draws a different button on purpose and may replace
+  // the look's layers, but keeps the glow axis.
   it("restates the whole list wherever a variant's shadow is set", () => {
     const offenders = rulesOf(BUTTON)
       .filter((rule) => rule.body.includes("box-shadow:"))
       .filter((rule) => {
+        if (rule.selectors.every((s) => s.includes("[data-button-style="))) {
+          return !/box-shadow: (?:[^;]*, )?var\(--glow-outer\), var\(--glow-inner\);/.test(
+            rule.body,
+          )
+        }
         const selector = rule.selectors.join(", ")
         const filled = /data-variant="default"/.test(selector)
         const danger = /data-variant="destructive"/.test(selector)

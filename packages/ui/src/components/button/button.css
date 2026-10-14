@@ -14,7 +14,7 @@
 
 @layer components {
   .dr-btn {
-    @apply focus-ring inline-flex cursor-pointer items-center justify-center gap-2 rounded-[var(--btn-radius)] text-sm whitespace-nowrap transition-[background-image,background-color,border-color,color,text-decoration-color,box-shadow] disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)] aria-disabled:cursor-not-allowed aria-disabled:opacity-[var(--disabled-opacity)] [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
+    @apply focus-ring inline-flex cursor-pointer items-center justify-center gap-2 rounded-[var(--btn-radius)] text-sm whitespace-nowrap transition-[background-image,background-color,border-color,color,text-decoration-color,box-shadow,transform] disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)] aria-disabled:cursor-not-allowed aria-disabled:opacity-[var(--disabled-opacity)] [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
     font-weight: var(--btn-font-weight);
     transition-duration: var(--duration-fast);
     position: relative;
@@ -210,5 +210,172 @@
     @apply aspect-square p-0;
     height: var(--btn-height);
     width: var(--btn-height);
+  }
+
+  /* The buttonStyle signature. Each rule names the root attribute, which
+     lifts it over the variant rules above, and none names the kit default,
+     so a look that sets none draws exactly the rules above. Ghost and link
+     follow ghostButton and are left alone.
+
+     The key and glass sheens end at the top 35% of the face or at the top
+     of the label's line box, whichever comes first: a solved label sits at
+     4.5:1 on its fill, and even 4% white across it drops the weakest accent
+     to about 4:1. */
+
+  /* key: a hardware key. The base and the press are a shadow and a
+     transform, so the box and its neighbours never move. A look's edge and
+     sheen still apply on top; the key's drop shadow replaces the look's. */
+  [data-button-style="key"] .dr-btn[data-variant="default"],
+  [data-button-style="key"] .dr-btn[data-variant="destructive"] {
+    background-image:
+      var(--btn-sheen),
+      linear-gradient(
+        rgb(255 255 255 / 0.18),
+        rgb(255 255 255 / 0) min(35%, 50% - 0.5lh)
+      );
+    box-shadow:
+      var(--btn-edge),
+      0 var(--btn-key-depth, 2px) 0 color-mix(in oklab, var(--hue), black 30%),
+      0 3px 6px -1px rgb(0 0 0 / 0.2),
+      var(--glow-outer),
+      var(--glow-inner);
+  }
+  [data-button-style="key"] .dr-btn[data-variant="secondary"],
+  [data-button-style="key"] .dr-btn[data-variant="outline"] {
+    background-image:
+      var(--btn-neutral-sheen),
+      linear-gradient(
+        rgb(255 255 255 / 0.18),
+        rgb(255 255 255 / 0) min(35%, 50% - 0.5lh)
+      );
+    box-shadow:
+      var(--btn-neutral-edge),
+      0 var(--btn-key-depth, 2px) 0 hsl(var(--border-strong)),
+      0 3px 5px -1px rgb(0 0 0 / 0.1),
+      var(--glow-outer),
+      var(--glow-inner);
+  }
+  /* The reduced-motion rule in theme.css zeroes every transition, so there
+     the press is instant. */
+  [data-button-style="key"]
+    .dr-btn[data-variant="default"]:not(:disabled):not(
+      [aria-disabled="true"]
+    ):active,
+  [data-button-style="key"]
+    .dr-btn[data-variant="destructive"]:not(:disabled):not(
+      [aria-disabled="true"]
+    ):active,
+  [data-button-style="key"]
+    .dr-btn[data-variant="secondary"]:not(:disabled):not(
+      [aria-disabled="true"]
+    ):active,
+  [data-button-style="key"]
+    .dr-btn[data-variant="outline"]:not(:disabled):not(
+      [aria-disabled="true"]
+    ):active {
+    --btn-key-depth: 1px;
+    transform: translateY(1px);
+  }
+
+  /* soft: no solid fill at rest, so the tinted faces press at the neutral
+     strength, not a solid fill's. */
+  [data-button-style="soft"] .dr-btn[data-variant="default"],
+  [data-button-style="soft"] .dr-btn[data-variant="destructive"] {
+    --state-layer-press: 0.16;
+    background-image: none;
+    border-color: transparent;
+    box-shadow: var(--glow-outer), var(--glow-inner);
+  }
+  /* Hover is the next accent step, so the hover wash stays off; a press
+     washes toward the label as on a neutral surface. */
+  [data-button-style="soft"] .dr-btn[data-variant="default"] {
+    --state-layer-color: currentColor;
+    --btn-hover-layer: 0;
+    background-color: hsl(var(--primary-3));
+    color: hsl(var(--primary-text));
+  }
+  [data-mode="dark"][data-button-style="soft"] .dr-btn[data-variant="default"] {
+    background-color: hsl(var(--primary-4));
+  }
+  @media (hover: hover) {
+    [data-button-style="soft"]
+      .dr-btn[data-variant="default"]:not(:disabled):not(
+        [aria-disabled="true"]
+      ):hover {
+      background-color: hsl(var(--primary-4));
+    }
+    [data-mode="dark"][data-button-style="soft"]
+      .dr-btn[data-variant="default"]:not(:disabled):not(
+        [aria-disabled="true"]
+      ):hover {
+      background-color: hsl(var(--primary-5));
+    }
+  }
+  /* The engine solves no deeper destructive step, and its label sits close
+     to 4.5:1 on the subtle fill, so any wash toward the label fails. The
+     wash goes toward the page instead, away from the label in both modes. */
+  [data-button-style="soft"] .dr-btn[data-variant="destructive"] {
+    --state-layer-color: hsl(var(--background));
+    --btn-hover-layer: var(--state-layer-hover);
+    background-color: hsl(var(--destructive-subtle));
+    color: hsl(var(--destructive-text));
+  }
+  /* Secondary is the neutral well, so a style's --well-fill frosts it
+     inside glass panes as it does the other wells. */
+  [data-button-style="soft"] .dr-btn[data-variant="secondary"] {
+    background-color: var(--well-fill, hsl(var(--muted)));
+    color: hsl(var(--muted-foreground));
+  }
+  [data-button-style="soft"] .dr-btn[data-variant="outline"] {
+    border-color: hsl(var(--primary));
+    color: hsl(var(--primary-text));
+  }
+
+  /* glass: the filled faces keep their fill under a sheen held above the
+     label band. The neutral capsules are frosted only where the host makes
+     --surface-alpha translucent; secondary cannot read --btn-neutral-fill,
+     which is transparent unless a style sets it. No backdrop filter: the
+     pane behind already blurs. */
+  [data-button-style="glass"] .dr-btn[data-variant="default"],
+  [data-button-style="glass"] .dr-btn[data-variant="destructive"] {
+    background-image: linear-gradient(
+      rgb(255 255 255 / 0.3),
+      rgb(255 255 255 / 0) min(35%, 50% - 0.5lh)
+    );
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.4),
+      0 6px 16px -6px color-mix(in oklab, var(--hue) 70%, transparent),
+      var(--glow-outer),
+      var(--glow-inner);
+  }
+  [data-button-style="glass"] .dr-btn[data-variant="secondary"],
+  [data-button-style="glass"] .dr-btn[data-variant="outline"] {
+    border-color: rgb(255 255 255 / 0.7);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.6),
+      var(--btn-neutral-shadow),
+      var(--glow-outer),
+      var(--glow-inner);
+  }
+  [data-mode="dark"][data-button-style="glass"]
+    .dr-btn[data-variant="secondary"],
+  [data-mode="dark"][data-button-style="glass"]
+    .dr-btn[data-variant="outline"] {
+    border-color: rgb(255 255 255 / 0.14);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.08),
+      var(--btn-neutral-shadow),
+      var(--glow-outer),
+      var(--glow-inner);
+  }
+  [data-button-style="glass"] .dr-btn[data-variant="secondary"] {
+    background-color: hsl(var(--card) / var(--surface-alpha));
+  }
+
+  /* The iconButton signature. :where() keeps the root attribute out of the
+     specificity, so the rule beats only .dr-btn's own radius: a button
+     group's joined corners and a toolbar's own tool radius still win. */
+  :where([data-icon-button="round"]) .dr-btn[data-size="icon"] {
+    border-radius: var(--radius-pill);
   }
 }
