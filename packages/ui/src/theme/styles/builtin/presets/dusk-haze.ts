@@ -75,10 +75,9 @@ export const duskHaze: PresetDefinition = {
       cardBorder: "rgb(255 255 255 / 0.75)",
       cardEdge:
         "inset 0 1px 0 rgb(255 255 255 / 0.6), 0 0 0 1px hsl(var(--foreground) / 0.06), 0 10px 28px -14px hsl(var(--foreground) / 0.22)",
-      buttonNeutralFill: "hsl(var(--foreground) / 0.06)",
       fieldFocusRing: "0 0 0 3px hsl(var(--primary) / 0.18)",
       selectedViewShadow:
-        "0 0 0 1px hsl(var(--foreground) / 0.12), 0 1px 2px hsl(var(--foreground) / 0.06)",
+        "0 0 0 1px hsl(var(--border-strong)), 0 1px 2px hsl(var(--foreground) / 0.06)",
       thumbShadow: "0 1px 2px hsl(var(--foreground) / 0.2)",
       dropdownShadow: "0 12px 32px -8px hsl(var(--foreground) / 0.22)",
       modalShadow:
@@ -94,10 +93,7 @@ export const duskHaze: PresetDefinition = {
         "hsl(var(--card) / max(0.4, calc(var(--surface-alpha) * 1.25 - 0.25)))",
       cardEdge:
         "inset 0 1px 0 rgb(255 255 255 / 0.08), 0 0 3px rgb(0 0 0 / 0.05), 0 8px 12px rgb(0 0 0 / 0.05), 0 12px 20px rgb(0 0 0 / 0.05)",
-      buttonNeutralFill: "hsl(var(--foreground) / 0.14)",
       fieldFocusRing: "0 0 0 3px hsl(var(--primary) / 0.35)",
-      selectedViewFill: "hsl(var(--foreground) / 0.16)",
-      selectedViewShadow: "0 0 0 1px hsl(var(--foreground) / 0.24)",
       thumbShadow: "0 1px 2px rgb(0 0 0 / 0.2)",
       overlayBorder: "hsl(var(--foreground) / 0.16)",
       dropdownShadow: "0 16px 40px -8px rgb(0 0 0 / 0.6)",

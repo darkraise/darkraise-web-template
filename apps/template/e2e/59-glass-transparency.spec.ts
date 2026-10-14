@@ -8,6 +8,7 @@ import {
   type TokenMap,
 } from "darkraise-ui/theme-config"
 import { GLASS_TRANSPARENCIES } from "./fixtures/theme"
+import { openControlFixture } from "./helpers/controls"
 import {
   applyTheme,
   closeThemeSwitcher,
@@ -29,11 +30,12 @@ import {
  * Every glass look's cards and popovers let the page through by the share
  * its Medium alpha declares, scaled by the Transparency step; more contrast
  * makes cards, popovers and dialogs opaque and reduced transparency does not;
- * Blur None leaves no glass backdrop filter. Light mode only, but for text
- * on a card over the strongest ground, which is read from the rendered
- * pixels in both modes: the kit's contrast suite covers both modes in its
- * model, and the declared alphas come from the registry, so a look whose
- * values change is checked as it is.
+ * Blur None leaves no glass backdrop filter. Light mode only, but for the
+ * controls frosted inside a card and for text on a card over the strongest
+ * ground, read from the rendered pixels, which are checked in both modes:
+ * the kit's contrast suite covers both modes in its model, and the declared
+ * alphas come from the registry, so a look whose values change is checked
+ * as it is.
  */
 
 test.describe.configure({ timeout: 120_000 })
@@ -259,6 +261,56 @@ for (const look of LOOKS) {
           await textContrast(card.locator(`[data-text="${text}"]`)),
           `${text} text`,
         ).toBeGreaterThanOrEqual(4.5)
+      }
+    })
+  }
+}
+
+/** The controls a glass card frosts, inside the control fixture's card. */
+const FROSTED = [
+  ["the tab well", '[data-case="tabs"] .dr-tabs-list'],
+  ["the segment well", '[data-case="segment"] .dr-segment-group'],
+  ["the slider track", '[data-case="slider"] .dr-slider-track'],
+  ["the progress track", '.dr-progress[data-case="progress"]'],
+  ["the unchecked switch", '.dr-switch[data-case="switch"]'],
+  ["the outline button", '.dr-btn[data-case="outline"]'],
+  ["the field", '[data-case="input"] .dr-input'],
+] as const
+
+/** The fill alpha of each frosted control, by name. */
+async function frostedAlphas(page: Page): Promise<Record<string, number>> {
+  const card = page.locator('[data-probe="anatomy-card"]')
+  const out: Record<string, number> = {}
+  for (const [name, selector] of FROSTED) {
+    out[name] = alphaOf(
+      await computed(card.locator(selector).first(), "background-color"),
+    )
+  }
+  return out
+}
+
+for (const look of LOOKS) {
+  for (const mode of ["light", "dark"] as const) {
+    test(`${look.name} ${mode}: wells, tracks, neutral buttons and fields in a card are frosted, opaque under more contrast`, async ({
+      page,
+    }) => {
+      await seedLook(page, look, { mode })
+      await openControlFixture(page)
+      for (const [name, alpha] of Object.entries(await frostedAlphas(page))) {
+        expect(alpha, `${name} is translucent`).toBeLessThan(1)
+        expect(alpha, `${name} is painted`).toBeGreaterThan(0)
+      }
+      await underFallbackMedia(page, async (media) => {
+        await settle(page)
+        for (const [name, alpha] of Object.entries(await frostedAlphas(page))) {
+          expect(alpha, `${name} under ${media}`).toBe(1)
+        }
+      })
+      // Reduced transparency keeps glass, and the controls in it with it.
+      await emulateReducedTransparency(page, true)
+      await settle(page)
+      for (const [name, alpha] of Object.entries(await frostedAlphas(page))) {
+        expect(alpha, `${name} under reduced transparency`).toBeLessThan(1)
       }
     })
   }

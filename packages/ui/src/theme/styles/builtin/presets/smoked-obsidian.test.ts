@@ -27,7 +27,7 @@ describe("Smoked Obsidian", () => {
       cardDivider: "hairline",
       bannerMark: "stripe",
       badgeStyle: "chip",
-      fieldFill: "well",
+      fieldFill: "translucent",
     })
     expect(registry.signaturesFor("glass", "smoked-obsidian")).toMatchObject({
       ...smokedObsidian.signatures,

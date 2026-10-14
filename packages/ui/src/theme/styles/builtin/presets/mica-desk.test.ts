@@ -31,7 +31,7 @@ describe("Mica Desk", () => {
       ...micaDesk.signatures,
       tooltipTone: "inverse",
       bannerMark: "icon",
-      fieldFill: "surface",
+      fieldFill: "translucent",
       tableHead: "plain",
     })
   })

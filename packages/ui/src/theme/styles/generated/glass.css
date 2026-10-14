@@ -11,7 +11,7 @@
     --dialog-fill: hsl(var(--popover) / var(--overlay-alpha));
     --surface-overlay-base: hsl(var(--popover) / var(--overlay-alpha));
     --overlay-fill-alpha: 0.6;
-    --btn-neutral-fill: hsl(var(--card));
+    --btn-neutral-fill: hsl(var(--card) / var(--surface-alpha));
     --field-focus-ring: 0 0 0 3px hsl(var(--primary) / 0.15);
     --scrim: hsl(var(--foreground) / 0.3);
     --surface-backdrop: var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(180%));
@@ -25,6 +25,9 @@
     --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 1px 2px rgb(0 0 0 / 0.04);
     --overlay-border: rgb(255 255 255 / 0.7);
     --dialog-border: rgb(255 255 255 / 0.7);
+    --well-fill: rgb(255 255 255 / 0.35);
+    --selected-view-bg: rgb(255 255 255 / 0.75);
+    --selected-view-shadow: 0 0 0 1px hsl(var(--border-strong));
     --shadow-dropdown: 0 10px 30px -10px rgb(0 0 0 / 0.25);
   }
 }
@@ -37,6 +40,9 @@
     --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.08);
     --overlay-border: rgb(255 255 255 / 0.14);
     --dialog-border: rgb(255 255 255 / 0.14);
+    --well-fill: rgb(255 255 255 / 0.06);
+    --selected-view-bg: rgb(255 255 255 / 0.14);
+    --selected-view-shadow: 0 0 0 1px color-mix(in srgb, hsl(var(--border-strong)), hsl(var(--foreground)) 25%);
     --shadow-dropdown: 0 10px 30px -10px rgb(0 0 0 / 0.6);
     --field-focus-ring: 0 0 0 3px hsl(var(--primary) / 0.2);
     --scrim: rgb(0 0 0 / 0.5);
@@ -85,6 +91,7 @@
       --card-border: hsl(var(--border-subtle));
       --card-edge: 0 0 transparent;
       --dialog-border: hsl(var(--border));
+      --selected-view-shadow: 0 0 transparent;
     }
   }
 }
@@ -111,12 +118,10 @@
     --shell-ground-gradient: radial-gradient(80% 70% at 10% 0%, hsl(var(--primary) / 0.34), transparent 60%);
     --shell-content-edge: rgb(0 0 0 / 0.06);
     --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.6);
-    --btn-neutral-fill: hsl(var(--card) / 0.7);
     --btn-neutral-edge: inset 0 -1px 0 rgb(0 0 0 / 0.1);
     --field-shadow: 0 0 0 1px rgb(0 0 0 / 0.06);
     --field-focus-fill: hsl(var(--card));
     --state-layer-hover: 0.04;
-    --selected-view-shadow: 0 0 0 1px rgb(0 0 0 / 0.06);
     --banner-border: rgb(0 0 0 / 0.06);
     --shadow-dropdown: 0 0 2px rgb(0 0 0 / 0.12), 0 8px 16px rgb(0 0 0 / 0.14);
     --modal-shadow: 0 0 8px rgb(0 0 0 / 0.12), 0 32px 64px rgb(0 0 0 / 0.14);
@@ -126,7 +131,6 @@
     --shell-ground-gradient: radial-gradient(80% 70% at 10% 0%, hsl(var(--primary) / 0.28), transparent 60%);
     --shell-content-edge: rgb(0 0 0 / 0.1);
     --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.08);
-    --btn-neutral-fill: rgb(255 255 255 / 0.06);
     --btn-neutral-edge: 0 0 transparent;
     --field-shadow: 0 0 0 1px rgb(255 255 255 / 0.08);
     --field-focus-fill: hsl(var(--background) / 0.7);
@@ -159,10 +163,8 @@
     --shell-ground-gradient: radial-gradient(70% 55% at 80% -10%, hsl(var(--primary) / 0.34), transparent 60%);
     --surface-backdrop: var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(90%));
     --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.7), 0 12px 32px -8px hsl(var(--foreground) / 0.18);
-    --btn-neutral-fill: hsl(var(--foreground) / 0.04);
     --field-shadow: inset 0 1px 2px hsl(var(--foreground) / 0.14);
-    --selected-view-bg: hsl(var(--card) / 0.9);
-    --selected-view-shadow: inset 0 1px 0 rgb(255 255 255 / 0.7), 0 1px 2px hsl(var(--foreground) / 0.12);
+    --selected-view-shadow: 0 0 0 1px hsl(var(--border-strong)), inset 0 1px 0 rgb(255 255 255 / 0.7), 0 1px 2px hsl(var(--foreground) / 0.12);
     --shadow-dropdown: 0 16px 40px -10px hsl(var(--foreground) / 0.3);
     --modal-shadow: 0 24px 60px -12px hsl(var(--foreground) / 0.4);
     --scrim: hsl(var(--foreground) / 0.35);
@@ -172,10 +174,8 @@
     --shell-ground-gradient: radial-gradient(70% 55% at 80% -10%, hsl(var(--primary) / 0.2), transparent 60%);
     --surface-backdrop: var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(110%) brightness(0.7));
     --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 20px 50px -12px rgb(0 0 0 / 0.6);
-    --btn-neutral-fill: rgb(255 255 255 / 0.04);
     --field-shadow: inset 0 1px 2px rgb(0 0 0 / 0.5);
-    --selected-view-bg: rgb(255 255 255 / 0.08);
-    --selected-view-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
+    --selected-view-shadow: 0 0 0 1px color-mix(in srgb, hsl(var(--border-strong)), hsl(var(--foreground)) 25%), inset 0 1px 0 rgb(255 255 255 / 0.06);
     --shadow-dropdown: 0 20px 50px rgb(0 0 0 / 0.6);
     --modal-shadow: 0 30px 70px rgb(0 0 0 / 0.7);
     --scrim: rgb(0 0 0 / 0.6);
@@ -216,11 +216,10 @@
     --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 0 0 1px hsl(var(--foreground) / 0.04), 0 1px 1px hsl(var(--foreground) / 0.03), 0 8px 24px -6px hsl(var(--foreground) / 0.08), 0 24px 48px -12px hsl(var(--foreground) / 0.08);
     --nav-selection-fill: hsl(var(--card) / 0.92);
     --nav-selection-shadow: 0 1px 2px hsl(var(--foreground) / 0.05), 0 6px 14px -6px hsl(var(--foreground) / 0.12);
-    --btn-neutral-fill: hsl(var(--card) / 0.7);
     --btn-neutral-shadow: 0 1px 2px hsl(var(--foreground) / 0.06);
     --state-layer-hover: 0.05;
     --field-focus-ring: 0 0 0 4px hsl(var(--primary) / 0.15);
-    --selected-view-shadow: 0 1px 3px hsl(var(--foreground) / 0.1);
+    --selected-view-shadow: 0 0 0 1px hsl(var(--border-strong)), 0 1px 3px hsl(var(--foreground) / 0.1);
     --banner-shadow: 0 8px 20px -10px hsl(var(--foreground) / 0.15);
     --overlay-border: rgb(255 255 255 / 0.9);
     --shadow-dropdown: 0 0 0 1px hsl(var(--foreground) / 0.04), 0 16px 40px -8px hsl(var(--foreground) / 0.18);
@@ -234,11 +233,9 @@
     --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 24px 48px -12px rgb(0 0 0 / 0.55);
     --nav-selection-fill: rgb(255 255 255 / 0.14);
     --nav-selection-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1);
-    --btn-neutral-fill: rgb(255 255 255 / 0.08);
     --btn-neutral-edge: inset 0 1px 0 rgb(255 255 255 / 0.06);
     --state-layer-hover: 0.07;
     --field-focus-ring: 0 0 0 4px hsl(var(--primary) / 0.18);
-    --selected-view-bg: rgb(255 255 255 / 0.14);
     --shadow-dropdown: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 16px 40px -8px rgb(0 0 0 / 0.6);
     --modal-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 30px 60px -12px rgb(0 0 0 / 0.65);
     --scrim: hsl(var(--background) / 0.45);
@@ -270,10 +267,9 @@
     --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 20px 40px -16px hsl(var(--foreground) / 0.18);
     --nav-selection-glow: 0 0 16px -4px hsl(var(--primary) / 0.35);
     --btn-shadow: 0 0 0 1px hsl(var(--primary) / 0.35), 0 0 24px -4px hsl(var(--primary) / 0.35);
-    --btn-neutral-fill: hsl(var(--card) / 0.5);
     --state-layer-hover: 0.05;
     --field-focus-ring: 0 0 0 1px hsl(var(--primary) / 0.35), 0 0 24px -4px hsl(var(--primary) / 0.35);
-    --selected-view-shadow: 0 1px 3px hsl(var(--foreground) / 0.15);
+    --selected-view-shadow: 0 0 0 1px hsl(var(--border-strong)), 0 1px 3px hsl(var(--foreground) / 0.15);
     --overlay-border: rgb(255 255 255 / 0.8);
     --shadow-dropdown: 0 18px 40px -14px hsl(var(--foreground) / 0.28);
     --modal-shadow: 0 30px 60px -18px hsl(var(--foreground) / 0.35);
@@ -285,11 +281,9 @@
     --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.1), 0 30px 60px -20px rgb(0 0 0 / 0.7);
     --nav-selection-glow: 0 0 18px -4px hsl(var(--primary-text) / 0.45);
     --btn-shadow: 0 0 0 1px hsl(var(--primary-text) / 0.35), 0 0 24px -4px hsl(var(--primary-text) / 0.35);
-    --btn-neutral-fill: rgb(255 255 255 / 0.04);
     --state-layer-hover: 0.06;
     --field-focus-ring: 0 0 0 1px hsl(var(--primary-text) / 0.35), 0 0 24px -4px hsl(var(--primary-text) / 0.35);
-    --selected-view-bg: rgb(255 255 255 / 0.1);
-    --selected-view-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1);
+    --selected-view-shadow: 0 0 0 1px color-mix(in srgb, hsl(var(--border-strong)), hsl(var(--foreground)) 25%), inset 0 1px 0 rgb(255 255 255 / 0.1);
     --shadow-dropdown: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 24px 50px -16px rgb(0 0 0 / 0.8);
     --modal-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1), 0 30px 70px -20px rgb(0 0 0 / 0.85);
     --scrim: rgb(0 0 0 / 0.6);
@@ -319,7 +313,7 @@
     --nav-selection-fill: hsl(var(--card) / 0.9);
     --nav-selection-shadow: 0 1px 2px hsl(var(--foreground) / 0.16), 0 3px 8px -3px hsl(var(--foreground) / 0.18);
     --state-layer-hover: 0.06;
-    --selected-view-shadow: 0 1px 2px hsl(var(--foreground) / 0.14);
+    --selected-view-shadow: 0 0 0 1px hsl(var(--border-strong)), 0 1px 2px hsl(var(--foreground) / 0.14);
     --thumb-shadow: 0 1px 3px hsl(var(--foreground) / 0.3);
     --modal-shadow: 0 28px 64px -14px hsl(var(--foreground) / 0.45);
   }
@@ -331,9 +325,7 @@
     --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 1px 2px rgb(0 0 0 / 0.4);
     --nav-selection-fill: rgb(255 255 255 / 0.14);
     --nav-selection-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
-    --btn-neutral-fill: rgb(255 255 255 / 0.04);
     --state-layer-hover: 0.07;
-    --selected-view-bg: rgb(255 255 255 / 0.12);
     --thumb-shadow: 0 1px 3px rgb(0 0 0 / 0.5);
     --modal-shadow: 0 28px 64px -14px rgb(0 0 0 / 0.75);
   }
@@ -371,9 +363,8 @@
     --chrome-flat-fill: hsl(var(--card) / max(0.4, calc(var(--surface-alpha) * 1.6 - 0.6)));
     --card-border: rgb(255 255 255 / 0.75);
     --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 0 0 1px hsl(var(--foreground) / 0.06), 0 10px 28px -14px hsl(var(--foreground) / 0.22);
-    --btn-neutral-fill: hsl(var(--foreground) / 0.06);
     --field-focus-ring: 0 0 0 3px hsl(var(--primary) / 0.18);
-    --selected-view-shadow: 0 0 0 1px hsl(var(--foreground) / 0.12), 0 1px 2px hsl(var(--foreground) / 0.06);
+    --selected-view-shadow: 0 0 0 1px hsl(var(--border-strong)), 0 1px 2px hsl(var(--foreground) / 0.06);
     --thumb-shadow: 0 1px 2px hsl(var(--foreground) / 0.2);
     --shadow-dropdown: 0 12px 32px -8px hsl(var(--foreground) / 0.22);
     --modal-shadow: 0 0 3px rgb(0 0 0 / 0.05), 0 8px 12px rgb(0 0 0 / 0.05), 0 12px 20px rgb(0 0 0 / 0.05), 0 30px 60px -20px hsl(var(--foreground) / 0.3);
@@ -385,10 +376,7 @@
     --surface-backdrop: var(--glass-backdrop-off, blur(var(--glass-blur)));
     --chrome-flat-fill: hsl(var(--card) / max(0.4, calc(var(--surface-alpha) * 1.25 - 0.25)));
     --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 0 3px rgb(0 0 0 / 0.05), 0 8px 12px rgb(0 0 0 / 0.05), 0 12px 20px rgb(0 0 0 / 0.05);
-    --btn-neutral-fill: hsl(var(--foreground) / 0.14);
     --field-focus-ring: 0 0 0 3px hsl(var(--primary) / 0.35);
-    --selected-view-bg: hsl(var(--foreground) / 0.16);
-    --selected-view-shadow: 0 0 0 1px hsl(var(--foreground) / 0.24);
     --thumb-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
     --overlay-border: hsl(var(--foreground) / 0.16);
     --shadow-dropdown: 0 16px 40px -8px rgb(0 0 0 / 0.6);

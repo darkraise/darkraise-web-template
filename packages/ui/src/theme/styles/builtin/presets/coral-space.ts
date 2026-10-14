@@ -63,7 +63,8 @@ export const coralSpace: PresetDefinition = {
       navSelectionShadow:
         "0 1px 2px hsl(var(--foreground) / 0.16), 0 3px 8px -3px hsl(var(--foreground) / 0.18)",
       ghostHover: "0.06",
-      selectedViewShadow: "0 1px 2px hsl(var(--foreground) / 0.14)",
+      selectedViewShadow:
+        "0 0 0 1px hsl(var(--border-strong)), 0 1px 2px hsl(var(--foreground) / 0.14)",
       thumbShadow: "0 1px 3px hsl(var(--foreground) / 0.3)",
       modalShadow: "0 28px 64px -14px hsl(var(--foreground) / 0.45)",
     },
@@ -77,9 +78,7 @@ export const coralSpace: PresetDefinition = {
         "inset 0 1px 0 rgb(255 255 255 / 0.08), 0 1px 2px rgb(0 0 0 / 0.4)",
       navSelectionFill: "rgb(255 255 255 / 0.14)",
       navSelectionShadow: "inset 0 1px 0 rgb(255 255 255 / 0.08)",
-      buttonNeutralFill: "rgb(255 255 255 / 0.04)",
       ghostHover: "0.07",
-      selectedViewFill: "rgb(255 255 255 / 0.12)",
       thumbShadow: "0 1px 3px rgb(0 0 0 / 0.5)",
       modalShadow: "0 28px 64px -14px rgb(0 0 0 / 0.75)",
     },

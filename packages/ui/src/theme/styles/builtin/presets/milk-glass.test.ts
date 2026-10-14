@@ -30,7 +30,7 @@ describe("Milk Glass", () => {
       barEdge: "veil",
       menuHighlight: "tint",
       tooltipTone: "inverse",
-      fieldFill: "surface",
+      fieldFill: "translucent",
       tableHead: "plain",
     })
   })

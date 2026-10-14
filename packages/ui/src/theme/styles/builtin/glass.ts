@@ -29,7 +29,7 @@ export const glass: StyleDefinition = {
     menuHighlight: "tint",
     tooltipTone: "inverse",
     bannerMark: "icon",
-    fieldFill: "surface",
+    fieldFill: "translucent",
     tableHead: "plain",
   },
   frosted: true,
@@ -49,7 +49,7 @@ export const glass: StyleDefinition = {
       dialogFill: "hsl(var(--popover) / var(--overlay-alpha))",
       overlayFillBase: "hsl(var(--popover) / var(--overlay-alpha))",
       overlayFillAlpha: "0.6",
-      buttonNeutralFill: "hsl(var(--card))",
+      buttonNeutralFill: "hsl(var(--card) / var(--surface-alpha))",
       fieldFocusRing: "0 0 0 3px hsl(var(--primary) / 0.15)",
       scrim: "hsl(var(--foreground) / 0.3)",
       surfaceBackdrop: glassBackdrop("saturate(180%)"),
@@ -66,6 +66,12 @@ export const glass: StyleDefinition = {
         "inset 0 1px 0 rgb(255 255 255 / 0.6), 0 1px 2px rgb(0 0 0 / 0.04)",
       overlayBorder: "rgb(255 255 255 / 0.7)",
       dialogBorder: "rgb(255 255 255 / 0.7)",
+      wellFill: "rgb(255 255 255 / 0.35)",
+      selectedViewFill: "rgb(255 255 255 / 0.75)",
+      // The chip's edge clears 3:1 against the frosted well in every look
+      // (glass-selected-chip.test.ts); in dark a quarter of the ink lifts
+      // it over the light glows a look's ground can carry.
+      selectedViewShadow: "0 0 0 1px hsl(var(--border-strong))",
       dropdownShadow: "0 10px 30px -10px rgb(0 0 0 / 0.25)",
     },
     dark: {
@@ -75,6 +81,10 @@ export const glass: StyleDefinition = {
       cardEdge: "inset 0 1px 0 rgb(255 255 255 / 0.08)",
       overlayBorder: "rgb(255 255 255 / 0.14)",
       dialogBorder: "rgb(255 255 255 / 0.14)",
+      wellFill: "rgb(255 255 255 / 0.06)",
+      selectedViewFill: "rgb(255 255 255 / 0.14)",
+      selectedViewShadow:
+        "0 0 0 1px color-mix(in srgb, hsl(var(--border-strong)), hsl(var(--foreground)) 25%)",
       dropdownShadow: "0 10px 30px -10px rgb(0 0 0 / 0.6)",
       fieldFocusRing: "0 0 0 3px hsl(var(--primary) / 0.2)",
       scrim: "rgb(0 0 0 / 0.5)",
@@ -122,6 +132,7 @@ export const glass: StyleDefinition = {
       cardBorder: "hsl(var(--border-subtle))",
       cardEdge: "0 0 transparent",
       dialogBorder: "hsl(var(--border))",
+      selectedViewShadow: "0 0 transparent",
     },
   },
 }

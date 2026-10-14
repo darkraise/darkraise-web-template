@@ -6,7 +6,7 @@ import { glassBackdrop } from "../glass"
  * layout already defaults to. The dark accent is calmed to the direction's
  * brass. Geist stands in for Manrope. Chrome is a dark smoked strip in both
  * modes, rimmed in the accent; cards are dimming glass under one warm light
- * from the top right, and fields are recessed wells.
+ * from the top right, and fields are recessed glass.
  */
 export const smokedObsidian: PresetDefinition = {
   label: "Smoked Obsidian",
@@ -30,7 +30,7 @@ export const smokedObsidian: PresetDefinition = {
     cardDivider: "hairline",
     bannerMark: "stripe",
     badgeStyle: "chip",
-    fieldFill: "well",
+    fieldFill: "translucent",
   },
   tokens: {
     shared: {
@@ -64,11 +64,9 @@ export const smokedObsidian: PresetDefinition = {
       surfaceBackdrop: glassBackdrop("saturate(90%)"),
       cardEdge:
         "inset 0 1px 0 rgb(255 255 255 / 0.7), 0 12px 32px -8px hsl(var(--foreground) / 0.18)",
-      buttonNeutralFill: "hsl(var(--foreground) / 0.04)",
       fieldShadow: "inset 0 1px 2px hsl(var(--foreground) / 0.14)",
-      selectedViewFill: "hsl(var(--card) / 0.9)",
       selectedViewShadow:
-        "inset 0 1px 0 rgb(255 255 255 / 0.7), 0 1px 2px hsl(var(--foreground) / 0.12)",
+        "0 0 0 1px hsl(var(--border-strong)), inset 0 1px 0 rgb(255 255 255 / 0.7), 0 1px 2px hsl(var(--foreground) / 0.12)",
       dropdownShadow: "0 16px 40px -10px hsl(var(--foreground) / 0.3)",
       modalShadow: "0 24px 60px -12px hsl(var(--foreground) / 0.4)",
       scrim: "hsl(var(--foreground) / 0.35)",
@@ -80,10 +78,9 @@ export const smokedObsidian: PresetDefinition = {
       surfaceBackdrop: glassBackdrop("saturate(110%) brightness(0.7)"),
       cardEdge:
         "inset 0 1px 0 rgb(255 255 255 / 0.08), 0 20px 50px -12px rgb(0 0 0 / 0.6)",
-      buttonNeutralFill: "rgb(255 255 255 / 0.04)",
       fieldShadow: "inset 0 1px 2px rgb(0 0 0 / 0.5)",
-      selectedViewFill: "rgb(255 255 255 / 0.08)",
-      selectedViewShadow: "inset 0 1px 0 rgb(255 255 255 / 0.06)",
+      selectedViewShadow:
+        "0 0 0 1px color-mix(in srgb, hsl(var(--border-strong)), hsl(var(--foreground)) 25%), inset 0 1px 0 rgb(255 255 255 / 0.06)",
       dropdownShadow: "0 20px 50px rgb(0 0 0 / 0.6)",
       modalShadow: "0 30px 70px rgb(0 0 0 / 0.7)",
       scrim: "rgb(0 0 0 / 0.6)",

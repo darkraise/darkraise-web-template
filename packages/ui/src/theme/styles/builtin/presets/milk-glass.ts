@@ -74,11 +74,11 @@ export const milkGlass: PresetDefinition = {
       navSelectionFill: "hsl(var(--card) / 0.92)",
       navSelectionShadow:
         "0 1px 2px hsl(var(--foreground) / 0.05), 0 6px 14px -6px hsl(var(--foreground) / 0.12)",
-      buttonNeutralFill: "hsl(var(--card) / 0.7)",
       buttonNeutralShadow: "0 1px 2px hsl(var(--foreground) / 0.06)",
       ghostHover: "0.05",
       fieldFocusRing: "0 0 0 4px hsl(var(--primary) / 0.15)",
-      selectedViewShadow: "0 1px 3px hsl(var(--foreground) / 0.1)",
+      selectedViewShadow:
+        "0 0 0 1px hsl(var(--border-strong)), 0 1px 3px hsl(var(--foreground) / 0.1)",
       bannerShadow: "0 8px 20px -10px hsl(var(--foreground) / 0.15)",
       overlayBorder: "rgb(255 255 255 / 0.9)",
       dropdownShadow:
@@ -96,11 +96,9 @@ export const milkGlass: PresetDefinition = {
         "inset 0 1px 0 rgb(255 255 255 / 0.08), 0 24px 48px -12px rgb(0 0 0 / 0.55)",
       navSelectionFill: "rgb(255 255 255 / 0.14)",
       navSelectionShadow: "inset 0 1px 0 rgb(255 255 255 / 0.1)",
-      buttonNeutralFill: "rgb(255 255 255 / 0.08)",
       buttonNeutralEdge: "inset 0 1px 0 rgb(255 255 255 / 0.06)",
       ghostHover: "0.07",
       fieldFocusRing: "0 0 0 4px hsl(var(--primary) / 0.18)",
-      selectedViewFill: "rgb(255 255 255 / 0.14)",
       dropdownShadow:
         "inset 0 1px 0 rgb(255 255 255 / 0.08), 0 16px 40px -8px rgb(0 0 0 / 0.6)",
       modalShadow:

@@ -64,11 +64,11 @@ export const auroraNight: PresetDefinition = {
       navSelectionGlow: "0 0 16px -4px hsl(var(--primary) / 0.35)",
       buttonShadow:
         "0 0 0 1px hsl(var(--primary) / 0.35), 0 0 24px -4px hsl(var(--primary) / 0.35)",
-      buttonNeutralFill: "hsl(var(--card) / 0.5)",
       ghostHover: "0.05",
       fieldFocusRing:
         "0 0 0 1px hsl(var(--primary) / 0.35), 0 0 24px -4px hsl(var(--primary) / 0.35)",
-      selectedViewShadow: "0 1px 3px hsl(var(--foreground) / 0.15)",
+      selectedViewShadow:
+        "0 0 0 1px hsl(var(--border-strong)), 0 1px 3px hsl(var(--foreground) / 0.15)",
       overlayBorder: "rgb(255 255 255 / 0.8)",
       dropdownShadow: "0 18px 40px -14px hsl(var(--foreground) / 0.28)",
       modalShadow: "0 30px 60px -18px hsl(var(--foreground) / 0.35)",
@@ -83,12 +83,11 @@ export const auroraNight: PresetDefinition = {
       navSelectionGlow: "0 0 18px -4px hsl(var(--primary-text) / 0.45)",
       buttonShadow:
         "0 0 0 1px hsl(var(--primary-text) / 0.35), 0 0 24px -4px hsl(var(--primary-text) / 0.35)",
-      buttonNeutralFill: "rgb(255 255 255 / 0.04)",
       ghostHover: "0.06",
       fieldFocusRing:
         "0 0 0 1px hsl(var(--primary-text) / 0.35), 0 0 24px -4px hsl(var(--primary-text) / 0.35)",
-      selectedViewFill: "rgb(255 255 255 / 0.1)",
-      selectedViewShadow: "inset 0 1px 0 rgb(255 255 255 / 0.1)",
+      selectedViewShadow:
+        "0 0 0 1px color-mix(in srgb, hsl(var(--border-strong)), hsl(var(--foreground)) 25%), inset 0 1px 0 rgb(255 255 255 / 0.1)",
       dropdownShadow:
         "inset 0 1px 0 rgb(255 255 255 / 0.08), 0 24px 50px -16px rgb(0 0 0 / 0.8)",
       modalShadow:

@@ -192,6 +192,40 @@ describe("glass cards", () => {
   })
 })
 
+describe("glass controls", () => {
+  it("frosts wells in white, thinner in dark", () => {
+    expect(valueOf("style.base", inMode("light"), "--well-fill")).toBe(
+      "rgb(255 255 255 / 0.35)",
+    )
+    expect(valueOf("style.mode", inMode("dark"), "--well-fill")).toBe(
+      "rgb(255 255 255 / 0.06)",
+    )
+  })
+
+  it("lifts the selected chip in white with a 1px edge, inked in dark", () => {
+    expect(valueOf("style.base", inMode("light"), "--selected-view-bg")).toBe(
+      "rgb(255 255 255 / 0.75)",
+    )
+    expect(valueOf("style.mode", inMode("dark"), "--selected-view-bg")).toBe(
+      "rgb(255 255 255 / 0.14)",
+    )
+    expect(
+      valueOf("style.base", inMode("light"), "--selected-view-shadow"),
+    ).toBe("0 0 0 1px hsl(var(--border-strong))")
+    expect(
+      valueOf("style.mode", inMode("dark"), "--selected-view-shadow"),
+    ).toBe(
+      "0 0 0 1px color-mix(in srgb, hsl(var(--border-strong)), hsl(var(--foreground)) 25%)",
+    )
+  })
+
+  it("fills neutral buttons with the card at the card plane's alpha", () => {
+    expect(valueOf("style.base", GLASS_ROOT, "--btn-neutral-fill")).toBe(
+      "hsl(var(--card) / var(--surface-alpha))",
+    )
+  })
+})
+
 describe("glass blur", () => {
   /** `--glass-blur`, then `--glass-scrim-blur`, at each step that blurs. */
   const SIZES = {
@@ -303,6 +337,7 @@ describe("more contrast", () => {
     ["--card-border", "hsl(var(--border-subtle))"],
     ["--card-edge", "0 0 transparent"],
     ["--dialog-border", "hsl(var(--border))"],
+    ["--selected-view-shadow", "0 0 transparent"],
   ])("sets %s to %s", (name, value) => {
     expect(valueOf("style.fallback", GLASS_ROOT, name)).toBe(value)
   })

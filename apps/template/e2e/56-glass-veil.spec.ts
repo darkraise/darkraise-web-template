@@ -43,7 +43,7 @@ for (const mode of MODES) {
     expect(attrs["data-menu-highlight"]).toBe("tint")
     expect(attrs["data-tooltip-tone"]).toBe("inverse")
     expect(attrs["data-banner-mark"]).toBe("icon")
-    expect(attrs["data-field-fill"]).toBe("surface")
+    expect(attrs["data-field-fill"]).toBe("translucent")
     expect(attrs["data-table-head"]).toBe("plain")
     await expect(page.locator(".dr-sidebar-nav").first()).toHaveAttribute(
       "data-sidebar-selection",
