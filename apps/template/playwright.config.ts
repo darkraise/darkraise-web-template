@@ -2,6 +2,15 @@ import { defineConfig, devices } from "@playwright/test"
 
 const baselineIgnore = process.env.BASELINE ? [] : ["**/18-baseline.spec.ts"]
 const mobileSpec = "**/21-mobile-layout.spec.ts"
+/* The control anatomy specs also run on touch, where only their 24px
+   hit-area cases differ: the mobile project keeps those, tagged @touch. */
+const anatomySpecs = [
+  "**/61-button-anatomy.spec.ts",
+  "**/62-switch-anatomy.spec.ts",
+  "**/63-check-anatomy.spec.ts",
+  "**/64-tab-anatomy.spec.ts",
+  "**/66-slider-anatomy.spec.ts",
+]
 /* A flake that passes on retry leaves no trace under on-first-retry, so its
    cause is lost. E2E_TRACE=1 (and CI) keep the trace of the first failed
    attempt instead; local runs stay cheap by default. */
@@ -54,7 +63,8 @@ export default defineConfig({
         isMobile: true,
         hasTouch: true,
       },
-      testMatch: mobileSpec,
+      testMatch: [mobileSpec, ...anatomySpecs],
+      grep: [/21-mobile-layout/, /@touch/],
     },
   ],
   webServer: {

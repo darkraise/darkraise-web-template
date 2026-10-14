@@ -1,6 +1,12 @@
 import { test, expect, type Locator } from "@playwright/test"
-import { gotoApp, reloadApp, seedApp, watchConsole } from "./helpers/app"
-import { settle, textContrast } from "./helpers/measure"
+import {
+  gotoApp,
+  kitLook,
+  reloadApp,
+  seedApp,
+  watchConsole,
+} from "./helpers/app"
+import { contrast, markContrast, settle, textContrast } from "./helpers/measure"
 
 /**
  * A locator whose text sits on a background image, so textContrast takes
@@ -108,6 +114,77 @@ test.describe("e2e helpers", () => {
     const ink = page.locator("#ink")
     expect(await textContrast(ink)).toBe(1)
     expect(await textContrast(ink, { ground: "painted" })).toBe(21)
+  })
+
+  test("markContrast reads a round mark against a region beside it", async ({
+    page,
+  }) => {
+    await page.setContent(
+      `<style>
+        body { margin: 0; background: white; }
+        #track { position: absolute; left: 10px; top: 10px; width: 100px; height: 20px; border-radius: 10px; background: rgb(200, 200, 200); }
+        #thumb { position: absolute; left: 12px; top: 12px; width: 16px; height: 16px; border-radius: 50%; background: rgb(0, 0, 255); }
+      </style>
+      <div id="track"></div><div id="thumb"></div>`,
+    )
+    expect(
+      await markContrast(page, page.locator("#thumb"), {
+        x: 60,
+        y: 12,
+        width: 40,
+        height: 16,
+      }),
+    ).toBeCloseTo(contrast([0, 0, 255], [200, 200, 200]), 5)
+  })
+
+  test("markContrast returns the lowest contrast a mark reaches", async ({
+    page,
+  }) => {
+    await page.setContent(
+      `<style>
+        body { margin: 0; background: white; }
+        #mark { position: absolute; left: 20px; top: 20px; width: 40px; }
+        #mark div { height: 20px; }
+      </style>
+      <div id="mark">
+        <div style="background: black"></div>
+        <div style="background: rgb(119, 119, 119)"></div>
+      </div>`,
+    )
+    expect(
+      await markContrast(page, page.locator("#mark"), {
+        x: 100,
+        y: 20,
+        width: 40,
+        height: 40,
+      }),
+    ).toBeCloseTo(contrast([119, 119, 119], [255, 255, 255]), 5)
+  })
+
+  test("markContrast samples a hairline along its centre", async ({ page }) => {
+    await page.setContent(
+      `<style>
+        body { margin: 0; background: white; }
+        #rule { position: absolute; left: 10px; top: 50px; width: 100px; height: 2px; background: black; }
+      </style>
+      <div id="rule"></div>`,
+    )
+    const rule = { x: 10, y: 50, width: 100, height: 2 }
+    const ground = { x: 10, y: 56, width: 100, height: 2 }
+    expect(await markContrast(page, rule, ground)).toBe(21)
+  })
+
+  test("kitLook stamps the given signatures over the kit defaults", async ({
+    page,
+  }) => {
+    await page.setContent("<p>kit</p>")
+    await kitLook(page, { fieldFill: "translucent" })
+    const html = page.locator("html")
+    await expect(html).toHaveAttribute("data-style", "kit")
+    await expect(html).toHaveAttribute("data-field-fill", "translucent")
+    await expect(html).toHaveAttribute("data-badge-style", "subtle")
+    await kitLook(page)
+    await expect(html).toHaveAttribute("data-field-fill", "well")
   })
 
   test("watchConsole records a [vite] error but not a [vite] debug message", async ({

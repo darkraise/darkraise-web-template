@@ -104,6 +104,99 @@ export async function pixel(page: Page, x: number, y: number): Promise<Rgb> {
   }, png.toString("base64"))
 }
 
+/** A rectangle in viewport CSS pixels, as `boundingBox()` reports one. */
+export interface Region {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
+/**
+ * Sample positions along one axis of a region: its centre when the region
+ * is 4px or thinner (a hairline, a tick, a 2px bar), else the quarter, half
+ * and three-quarter points, which stay inside a round mark's circle and
+ * clear of its anti-aliased rim.
+ */
+function samplePoints(start: number, size: number): number[] {
+  const fractions = size <= 4 ? [0.5] : [0.25, 0.5, 0.75]
+  return fractions.map((fraction) => Math.floor(start + size * fraction))
+}
+
+/**
+ * The lowest contrast between a non-text mark's painted pixels and the
+ * colour beside it (WCAG 1.4.11 asks 3:1): a thumb against its track, a tick
+ * against the ground, a pseudo-element bar against the list, a lamp against
+ * its slot. `mark` and `beside` are each a locator, read through its
+ * bounding box, or a region the caller computed, which is how a mark drawn
+ * by a pseudo-element or a part of a box is named. Both are sampled on a
+ * grid (see `samplePoints`) from one screenshot, and every mark sample is
+ * compared with every beside sample, so a gradient or a sheen across either
+ * is judged at its weakest point. The caller scrolls a region into view.
+ */
+export async function markContrast(
+  page: Page,
+  mark: Locator | Region,
+  beside: Locator | Region,
+): Promise<number> {
+  const regionOf = async (target: Locator | Region): Promise<Region> => {
+    if (!("boundingBox" in target)) return target
+    await target.scrollIntoViewIfNeeded()
+    const box = await target.boundingBox()
+    if (!box) throw new Error("markContrast: the element has no box")
+    return box
+  }
+  const markRegion = await regionOf(mark)
+  const besideRegion = await regionOf(beside)
+  const points = (region: Region) =>
+    samplePoints(region.y, region.height).flatMap((y) =>
+      samplePoints(region.x, region.width).map((x) => ({ x, y })),
+    )
+  const markPoints = points(markRegion)
+  const besidePoints = points(besideRegion)
+  const all = [...markPoints, ...besidePoints]
+  const left = Math.min(...all.map((point) => point.x))
+  const top = Math.min(...all.map((point) => point.y))
+  const clip = {
+    x: left,
+    y: top,
+    width: Math.max(...all.map((point) => point.x)) - left + 1,
+    height: Math.max(...all.map((point) => point.y)) - top + 1,
+  }
+  const png = await page.screenshot({ clip, scale: "css" })
+  const colours = await page.evaluate(
+    async ({ b64, width, height, offsets }) => {
+      const img = new Image()
+      img.src = `data:image/png;base64,${b64}`
+      await img.decode()
+      const canvas = document.createElement("canvas")
+      canvas.width = width
+      canvas.height = height
+      const context = canvas.getContext("2d")
+      if (!context) throw new Error("no 2d context")
+      context.drawImage(img, 0, 0)
+      const { data } = context.getImageData(0, 0, width, height)
+      return offsets.map(({ x, y }) => {
+        const i = (y * width + x) * 4
+        return [data[i] ?? 0, data[i + 1] ?? 0, data[i + 2] ?? 0] as Rgb
+      })
+    },
+    {
+      b64: png.toString("base64"),
+      width: clip.width,
+      height: clip.height,
+      offsets: all.map(({ x, y }) => ({ x: x - left, y: y - top })),
+    },
+  )
+  const markColours = colours.slice(0, markPoints.length)
+  const besideColours = colours.slice(markPoints.length)
+  return Math.min(
+    ...markColours.flatMap((ink) =>
+      besideColours.map((ground) => contrast(ink, ground)),
+    ),
+  )
+}
+
 export function computed(locator: Locator, property: string): Promise<string> {
   return locator.evaluate(
     (el, name) => getComputedStyle(el).getPropertyValue(name),

@@ -10,6 +10,7 @@ import {
   SIGNATURES,
   signatureAttribute,
   type SignatureKey,
+  type SignatureValues,
   type StampedSignature,
 } from "darkraise-ui/theme-config"
 import { LS_KEYS, SHELL_STYLE_KEY, type Font } from "../fixtures/theme"
@@ -137,22 +138,32 @@ export async function seedApp(
   }, entries)
 }
 
+/** Signature values to stamp, each one a value its signature lists. */
+export type StampedSignatures = Partial<Pick<SignatureValues, StampedSignature>>
+
 /**
  * Shows the kit's own look on the loaded page: no style sheet matches the
  * root and every signature sits at its kit default, whatever the built-in
- * styles set. The engine's inline tokens stay those of the seeded style.
+ * styles set, except those `signatures` names, which take the given value.
+ * The engine's inline tokens stay those of the seeded style. Call it after
+ * the page has settled and change no theme setting afterwards: the
+ * ThemeProvider re-stamps every signature on any settings change.
  */
-export async function kitLook(page: Page) {
+export async function kitLook(page: Page, signatures: StampedSignatures = {}) {
   const stamped = (Object.keys(SIGNATURES) as SignatureKey[]).filter(
     (key): key is StampedSignature => key !== "navSelection",
   )
-  const defaults = stamped.map(
-    (key) => [signatureAttribute(key), SIGNATURES[key].default] as const,
+  const values = stamped.map(
+    (key) =>
+      [
+        signatureAttribute(key),
+        signatures[key] ?? SIGNATURES[key].default,
+      ] as const,
   )
   await page.locator("html").evaluate((el, pairs) => {
     el.setAttribute("data-style", "kit")
     for (const [name, value] of pairs) el.setAttribute(name, value)
-  }, defaults)
+  }, values)
 }
 
 /**
