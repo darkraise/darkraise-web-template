@@ -285,11 +285,60 @@ test.describe("preset selection through the UI", () => {
     expect((await readThemeAttrs(page))["data-signal-color"]).toBe("yellow")
   })
 
+  test("picking a preset clears the user's values it sets and the stored shell style", async ({
+    page,
+  }) => {
+    const consoleWatch = watchConsole(page)
+    await seedApp(page, {
+      style: "glass",
+      mode: "light",
+      accent: "rose",
+      density: "compact",
+      shellStyle: "island",
+    })
+    await gotoApp(page, PROBE)
+    await openThemeSwitcher(page)
+    const shell = page.locator(".dr-shell").first()
+    await expect(shell).toHaveAttribute("data-shell-style", "island")
+
+    // Mica Desk sets the accent and an inset shell; it leaves density alone.
+    await presetControl(page)
+      .getByRole("radio", { name: "Mica Desk", exact: true })
+      .click()
+    await expect(shell).toHaveAttribute("data-shell-style", "inset")
+    const attrs = await readThemeAttrs(page)
+    expect(attrs["data-preset"]).toBe("mica-desk")
+    expect(attrs["data-accent"]).toBe("blue")
+    expect(attrs["data-density"]).toBe("compact")
+    expect(
+      await page.evaluate(() => [
+        localStorage.getItem("theme-accent"),
+        localStorage.getItem("theme-shell-style"),
+        localStorage.getItem("theme-density"),
+      ]),
+    ).toEqual([null, null, "compact"])
+    await expect(
+      page.getByRole("button", { name: "Reset to preset", exact: true }),
+    ).toHaveCount(0)
+
+    await reloadApp(page)
+    expect((await readThemeAttrs(page))["data-accent"]).toBe("blue")
+    await expect(shell).toHaveAttribute("data-shell-style", "inset")
+    consoleWatch.assertClean()
+  })
+
   test("Reset to preset clears the user's overrides and the stored shell style", async ({
     page,
   }) => {
     const consoleWatch = watchConsole(page)
-    await seedApp(page, { style: "glass", mode: "light", shellStyle: "island" })
+    // Values stored while Mica Desk is active hide its accent and inset shell.
+    await seedApp(page, {
+      style: "glass",
+      preset: "mica-desk",
+      mode: "light",
+      accent: "rose",
+      shellStyle: "island",
+    })
     await gotoApp(page, PROBE)
     const panel = await openThemeSwitcher(page)
     const reset = panel.getByRole("button", {
@@ -301,21 +350,9 @@ test.describe("preset selection through the UI", () => {
       name: "Mica Desk",
       exact: true,
     })
-    // Under base nothing stored hides a value Glass sets.
-    await expect(presetControl(page)).toBeVisible()
-    await expect(reset).toHaveCount(0)
-
-    // Mica Desk sets an inset shell, which the stored island pick hides.
-    await micaDesk.click()
     await expect(reset).toBeVisible()
     await expect(shell).toHaveAttribute("data-shell-style", "island")
-    await panel
-      .locator(".dr-theme-switcher-row", { hasText: "Accent Color" })
-      .locator('.dr-theme-switcher-swatch[title="rose"]')
-      .click()
-    await expect
-      .poll(async () => (await readThemeAttrs(page))["data-accent"])
-      .toBe("rose")
+    expect((await readThemeAttrs(page))["data-accent"]).toBe("rose")
 
     await reset.click()
     await expect(reset).toHaveCount(0)

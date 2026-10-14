@@ -142,10 +142,17 @@ describe("ThemeProvider style orchestration", () => {
     expect(root.getAttribute("data-elevation")).toBe("flat")
   })
 
-  it("lets a user-set value beat the style's default", () => {
+  it("clears a user value on an axis the picked style sets", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
     act(() => result.current.setBackgroundStyle("solid"))
     act(() => result.current.setStyle("glass"))
+    expect(result.current.backgroundStyle).toBe("gradient")
+  })
+
+  it("lets a user value set after the pick beat the style's default", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+    act(() => result.current.setStyle("glass"))
+    act(() => result.current.setBackgroundStyle("solid"))
     expect(result.current.backgroundStyle).toBe("solid")
   })
 

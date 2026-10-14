@@ -70,6 +70,7 @@ function settlePair(
         picked as Partial<AxisValues>,
         moved,
         picked[moved],
+        defaults,
         registry,
       )
     : (picked as Partial<AxisValues>)

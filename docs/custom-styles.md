@@ -693,7 +693,7 @@ Signatures resolve preset, then style, then kit default. There is no user layer 
 
 The shell style of a layout is the first of: its `shellStyle` prop, the user's stored pick, the active preset's `shellStyle`, its `defaultShellStyle` prop, `classic`.
 
-Picking a preset in the switcher stores the preset and its style. Picking a style stores the style and resets the preset to `base`.
+Picking a preset in the switcher, or with `setPreset`, stores the preset and its style. Picking a style stores the style and resets the preset to `base`. Either pick clears the user's stored value on every axis the new preset or style sets, and the stored shell style when the preset sets `shellStyle`, so the pick shows as designed. Mode and every axis the pick does not set keep the user's value.
 
 If `defaults.preset` names a preset of another style than `defaults.style`, the provider warns (`themeConfig.defaults.preset "<name>" belongs to style "<its style>", not "<the default style>"; using "base".`) and uses `base`, and `darkraisePrerender` fails the build with the same finding. A style name in `defaults.preset`, which is what 6.x took there, warns and is ignored.
 

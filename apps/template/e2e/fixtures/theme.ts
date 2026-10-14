@@ -97,6 +97,7 @@ export const LS_KEYS = {
   accent: "theme-accent",
   surface: "theme-surface-color",
   style: "theme-style",
+  preset: "theme-preset",
   glassTransparency: "theme-glass-opacity",
   glassBlur: "theme-glass-blur",
   backgroundStyle: "theme-bg-style",

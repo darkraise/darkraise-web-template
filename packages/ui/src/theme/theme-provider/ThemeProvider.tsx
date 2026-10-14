@@ -149,6 +149,17 @@ function applyTokens(
   return Object.keys(tokens)
 }
 
+/** A stored shell style hides the one `preset` sets, so it is cleared. */
+function clearShellStyleUnder(preset: string, registry: ThemeRegistry) {
+  const layout = useLayoutStore.getState()
+  if (
+    layout.shellStyle !== null &&
+    registry.presets[preset]?.shellStyle !== undefined
+  ) {
+    layout.clearShellStyle()
+  }
+}
+
 /**
  * Stamps every attribute axis except mode, whose attribute holds the resolved
  * mode and is written by applyTheme, then every signature of the active style
@@ -434,7 +445,7 @@ export function ThemeProvider({
         return
       }
       const current = storedRef.current
-      const next = applyAxisChange(current, key, value, registry)
+      const next = applyAxisChange(current, key, value, defaults, registry)
       // A preset brings its style and a style resets the preset, so one
       // change can write two keys.
       for (const name of AXIS_KEYS) {
@@ -442,12 +453,18 @@ export function ThemeProvider({
           persist(AXES[name].storageKey, next[name])
         }
       }
+      if (key === "preset" || key === "style") {
+        clearShellStyleUnder(
+          effectiveSettings(next, defaults, registry).preset,
+          registry,
+        )
+      }
       const resolved =
         key === "mode" ? resolveMode(value as Mode) : resolvedRef.current
       commit(next, resolved)
       announce()
     },
-    [commit, announce, persist, registry],
+    [commit, announce, persist, defaults, registry],
   )
 
   const storedShellStyle = useLayoutStore((state) => state.shellStyle)
@@ -458,14 +475,10 @@ export function ThemeProvider({
 
   const resetToPreset = useCallback(() => {
     const current = storedRef.current
-    const { preset } = effectiveSettings(current, defaults, registry)
-    const layout = useLayoutStore.getState()
-    if (
-      layout.shellStyle !== null &&
-      registry.presets[preset]?.shellStyle !== undefined
-    ) {
-      layout.clearShellStyle()
-    }
+    clearShellStyleUnder(
+      effectiveSettings(current, defaults, registry).preset,
+      registry,
+    )
     const cleared = presetOverrides(current, defaults, registry)
     // The payload carries no shell style, so clearing one alone is no
     // change to announce.

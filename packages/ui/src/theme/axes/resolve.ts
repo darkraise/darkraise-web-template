@@ -54,30 +54,49 @@ export function presetOverrides(
   registry: ThemeRegistry,
 ): AxisKey[] {
   const { style, preset } = effectiveSettings(stored, defaults, registry)
-  const set: Partial<Record<AxisKey, string>> = {
-    ...registry.styles[style]?.defaults,
-    ...registry.presets[preset]?.axes,
-  }
+  const set = axesSetBy(registry, style, preset)
   return AXIS_KEYS.filter(
     (key) => stored[key] !== undefined && set[key] !== undefined,
   )
 }
 
+function axesSetBy(
+  registry: ThemeRegistry,
+  style: string,
+  preset: string,
+): Partial<Record<AxisKey, string>> {
+  return {
+    ...registry.styles[style]?.defaults,
+    ...registry.presets[preset]?.axes,
+  }
+}
+
 /**
  * The stored values after the user picks `value` for `key`. A preset other
  * than `base` brings its style along; a new style starts from its base.
+ * Picking a preset or a style shows it as designed: the user's values on the
+ * axes it sets are cleared, and every other axis keeps its value.
  */
 export function applyAxisChange(
   stored: Partial<AxisValues>,
   key: AxisKey,
   value: string,
+  defaults: AxisValues,
   registry: ThemeRegistry,
 ): Partial<AxisValues> {
-  if (key === "style") return { ...stored, style: value, preset: "base" }
   const next: Partial<Record<AxisKey, string>> = { ...stored, [key]: value }
-  if (key === "preset") {
+  if (key === "style") next.preset = "base"
+  else if (key === "preset") {
     const style = registry.presets[value]?.style
     if (style !== undefined) next.style = style
-  }
-  return next as Partial<AxisValues>
+  } else return next as Partial<AxisValues>
+  const { style, preset } = effectiveSettings(
+    next as Partial<AxisValues>,
+    defaults,
+    registry,
+  )
+  const set = axesSetBy(registry, style, preset)
+  return Object.fromEntries(
+    Object.entries(next).filter(([name]) => set[name as AxisKey] === undefined),
+  ) as Partial<AxisValues>
 }

@@ -242,3 +242,54 @@ describe("ThemeProvider resetToPreset", () => {
     expect(localStorage.getItem("theme-density")).toBe("compact")
   })
 })
+
+describe("ThemeProvider preset pick", () => {
+  it("clears the user's values on the axes the picked preset and its style set", () => {
+    store({
+      mode: "dark",
+      "theme-accent": "rose",
+      "theme-radius": "pill",
+      "theme-elevation": "high",
+      "theme-density": "compact",
+    })
+    const { result } = renderHook(() => useTheme(), { wrapper })
+
+    act(() => result.current.setPreset("night"))
+
+    expect(result.current).toMatchObject({
+      mode: "dark",
+      style: "ink",
+      preset: "night",
+      accentColor: "violet",
+      radius: "subtle",
+      elevation: "flat",
+      density: "compact",
+      canResetToPreset: false,
+    })
+    expect(root.getAttribute("data-accent")).toBe("violet")
+    for (const key of ["theme-accent", "theme-radius", "theme-elevation"]) {
+      expect(localStorage.getItem(key), key).toBeNull()
+    }
+    expect(localStorage.getItem("theme-density")).toBe("compact")
+  })
+
+  it.each([
+    ["a preset that sets a shell style", "night", true],
+    ["a preset that sets none", "dusk", false],
+  ])(
+    "treats the stored shell style when picking %s",
+    (_title, preset, clears) => {
+      pickShellStyle("island")
+      const { result } = renderHook(() => useTheme(), { wrapper })
+
+      act(() => result.current.setPreset(preset))
+
+      expect(useLayoutStore.getState().shellStyle).toBe(
+        clears ? null : "island",
+      )
+      expect(localStorage.getItem("theme-shell-style")).toBe(
+        clears ? null : "island",
+      )
+    },
+  )
+})

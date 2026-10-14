@@ -153,51 +153,108 @@ describe("applyAxisChange", () => {
   it("stores a preset's style along with the preset", () => {
     expect(
       applyAxisChange(
-        { style: "quiet", accentColor: "rose" },
+        { style: "quiet" },
         "preset",
         "night",
+        DEFAULTS,
         registry,
       ),
-    ).toEqual({ style: "ink", preset: "night", accentColor: "rose" })
+    ).toEqual({ style: "ink", preset: "night" })
   })
 
-  it("keeps the style when the preset goes back to base", () => {
+  it("clears the user's values on the axes a picked preset and its style set", () => {
     expect(
       applyAxisChange(
-        { style: "ink", preset: "night" },
+        {
+          mode: "dark",
+          style: "quiet",
+          accentColor: "rose",
+          elevation: "standard",
+          backgroundStyle: "solid",
+          radius: "pill",
+          density: "compact",
+        },
+        "preset",
+        "night",
+        DEFAULTS,
+        registry,
+      ),
+    ).toEqual({
+      mode: "dark",
+      style: "ink",
+      preset: "night",
+      radius: "pill",
+      density: "compact",
+    })
+  })
+
+  it("clears what the style sets when the preset goes back to base", () => {
+    expect(
+      applyAxisChange(
+        {
+          style: "ink",
+          preset: "night",
+          elevation: "high",
+          accentColor: "rose",
+        },
         "preset",
         "base",
+        DEFAULTS,
         registry,
       ),
-    ).toEqual({ style: "ink", preset: "base" })
+    ).toEqual({ style: "ink", preset: "base", accentColor: "rose" })
   })
 
-  it("resets the preset to base when the style changes", () => {
+  it("clears what the config's default style sets when base is picked with no style stored", () => {
     expect(
       applyAxisChange(
-        { style: "ink", preset: "night" },
-        "style",
-        "glass",
+        { elevation: "high", radius: "pill" },
+        "preset",
+        "base",
+        defaults({ style: "ink" }),
         registry,
       ),
-    ).toEqual({ style: "glass", preset: "base" })
+    ).toEqual({ preset: "base", radius: "pill" })
+  })
+
+  it("resets the preset to base and clears what the new style sets when the style changes", () => {
+    expect(
+      applyAxisChange(
+        {
+          style: "ink",
+          preset: "night",
+          backgroundStyle: "solid",
+          radius: "pill",
+        },
+        "style",
+        "glass",
+        DEFAULTS,
+        registry,
+      ),
+    ).toEqual({ style: "glass", preset: "base", radius: "pill" })
   })
 
   it("sets any other axis alone", () => {
     expect(
       applyAxisChange(
-        { style: "ink", preset: "night" },
+        { style: "ink", preset: "night", accentColor: "rose" },
         "elevation",
         "flat",
+        DEFAULTS,
         registry,
       ),
-    ).toEqual({ style: "ink", preset: "night", elevation: "flat" })
+    ).toEqual({
+      style: "ink",
+      preset: "night",
+      accentColor: "rose",
+      elevation: "flat",
+    })
   })
 
   it("does not change its input", () => {
     const stored = Object.freeze({ style: "quiet" })
     expect(() =>
-      applyAxisChange(stored, "preset", "night", registry),
+      applyAxisChange(stored, "preset", "night", DEFAULTS, registry),
     ).not.toThrow()
     expect(stored).toEqual({ style: "quiet" })
   })
