@@ -306,7 +306,7 @@ describe("signatures", () => {
       menuTone: "surface",
       avatarShape: "round",
     })
-    expect(Object.keys(resolved)).toHaveLength(24)
+    expect(Object.keys(resolved)).toHaveLength(30)
   })
 
   it("ignores a preset of another style and gives an unknown style the defaults", () => {
