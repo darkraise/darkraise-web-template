@@ -512,6 +512,10 @@ const FORCED_STATE_EXEMPT = new Map<string, string>([
     "swaps which icon shows; the visible icon is the state",
   ],
   [
+    "dr-switch-marks",
+    "repeats the state its switch's track and thumb restate; the lit lamp stays a Canvas dot and the glyphs are text",
+  ],
+  [
     "dr-tabs-indicator",
     "hides the indicator until it has measured; opacity survives forced colours",
   ],

@@ -58,4 +58,146 @@
   .dr-switch[data-state="checked"] .dr-switch-thumb {
     box-shadow: var(--thumb-shadow), var(--affordance-glow);
   }
+
+  /* switchStyle. pill, the kit default, is the rules above. Every value
+     keeps the 36x20 box, the focus ring and the 24px hit area that
+     .dr-switch::before draws. The accent marks (the track thumb, the lit
+     lamp) are --primary-text, because --primary falls under 3:1 on the
+     --primary-4 track and the --input slot. They are drawn as a
+     background-image: they carry no label, and an opaque accent background
+     is kept for label-bearing faces' --primary-fill. Thumb rings are
+     --border-strong, because --field-edge falls under 3:1 on the --input
+     well. */
+
+  /* track: the fill stops at the padding box, so transparent 3px block
+     borders narrow the track to 14px, and a 20px thumb overhangs it, pulled
+     2px past each end of the track to the edges of the box. */
+  [data-switch-style="track"] .dr-switch {
+    border-color: transparent;
+    border-block-width: calc(var(--spacing) * 0.75);
+    background-clip: padding-box;
+  }
+
+  [data-switch-style="track"] .dr-switch[data-state="checked"] {
+    background-color: hsl(var(--primary-4));
+  }
+
+  [data-switch-style="track"] .dr-switch .dr-switch-thumb {
+    width: calc(var(--spacing) * 5);
+    height: calc(var(--spacing) * 5);
+    margin-inline-start: calc(var(--spacing) * -0.5);
+    border-radius: var(--switch-radius);
+  }
+
+  [data-switch-style="track"]
+    .dr-switch[data-state="checked"]
+    .dr-switch-thumb {
+    background-image: linear-gradient(
+      hsl(var(--primary-text)),
+      hsl(var(--primary-text))
+    );
+  }
+
+  [data-switch-style="track"]
+    .dr-switch[data-state="unchecked"]
+    .dr-switch-thumb {
+    background-color: var(--surface-card-fill-opaque);
+    box-shadow:
+      0 0 0 1px hsl(var(--border-strong)),
+      var(--thumb-shadow);
+  }
+
+  /* slide: a recessed slot in both states, a ridged rectangular thumb, and
+     a lamp in the part of the slot the thumb has left. The thumb is 18px
+     wide, so it travels 14px, and the lamp sits centred in the 14px it
+     leaves free. The unlit lamp is --field-edge, since --border can equal
+     the --input well. */
+  [data-switch-style="slide"] .dr-switch {
+    --switch-slot-radius: min(var(--switch-radius), calc(var(--radius) * 0.25));
+    border-radius: var(--switch-slot-radius);
+    border-color: var(--field-edge);
+    background-color: var(--well-fill, hsl(var(--input)));
+    box-shadow: var(--check-well-shadow);
+  }
+
+  [data-switch-style="slide"] .dr-switch .dr-switch-thumb {
+    display: grid;
+    place-items: center;
+    width: calc(var(--spacing) * 4.5);
+    border-radius: max(0px, calc(var(--switch-slot-radius) - 2px));
+    background-color: var(--thumb-fill, var(--surface-card-fill-opaque));
+    box-shadow:
+      0 0 0 1px hsl(var(--border-strong)),
+      var(--thumb-shadow);
+  }
+
+  [data-switch-style="slide"] .dr-switch-thumb[data-state="checked"] {
+    --switch-thumb-x: calc(var(--spacing) * 3.5);
+  }
+
+  [data-switch-style="slide"] .dr-switch-thumb[data-state="checked"]:dir(rtl) {
+    --switch-thumb-x: calc(var(--spacing) * -3.5);
+  }
+
+  [data-switch-style="slide"] .dr-switch-thumb::after {
+    content: "";
+    width: 5px;
+    height: 8px;
+    background-image: repeating-linear-gradient(
+      to right,
+      var(--field-edge) 0 1px,
+      transparent 1px 2px
+    );
+  }
+
+  [data-switch-style="slide"] .dr-switch-marks {
+    position: absolute;
+    top: calc(50% - var(--spacing) * 0.75);
+    inset-inline-end: var(--spacing);
+    width: calc(var(--spacing) * 1.5);
+    height: calc(var(--spacing) * 1.5);
+    border-radius: var(--radius-pill);
+    background-color: var(--field-edge);
+  }
+
+  [data-switch-style="slide"] .dr-switch-marks[data-state="checked"] {
+    inset-inline-start: var(--spacing);
+    inset-inline-end: auto;
+    background-image: linear-gradient(
+      hsl(var(--primary-text)),
+      hsl(var(--primary-text))
+    );
+    box-shadow: 0 0 4px hsl(var(--primary-text));
+  }
+
+  /* marked: the marks span covers the padding box in two halves, and the
+     glyph of the current state sits in the half the thumb does not cover:
+     an O at the inline end when unchecked, an I at the inline start when
+     checked, each in the text tier of its track. */
+  [data-switch-style="marked"] .dr-switch-marks {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    place-items: center;
+    font-size: calc(var(--text-2xs) * 0.9);
+    font-weight: 600;
+    line-height: 1;
+    color: hsl(var(--muted-foreground));
+  }
+
+  [data-switch-style="marked"] .dr-switch-marks[data-state="checked"] {
+    color: var(--selected-check-fg);
+  }
+
+  [data-switch-style="marked"]
+    .dr-switch-marks[data-state="unchecked"]::before {
+    content: "O";
+    grid-column: 2;
+  }
+
+  [data-switch-style="marked"] .dr-switch-marks[data-state="checked"]::after {
+    content: "I";
+    grid-column: 1;
+  }
 }
