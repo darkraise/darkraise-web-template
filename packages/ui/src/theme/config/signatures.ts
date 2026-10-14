@@ -52,6 +52,21 @@ export const SIGNATURES = {
   dialogFooter: { values: ["plain", "ruled", "band"], default: "plain" },
   ghostButton: { values: ["wash", "link"], default: "wash" },
   avatarShape: { values: ["round", "square"], default: "round" },
+  buttonStyle: { values: ["solid", "key", "soft", "glass"], default: "solid" },
+  iconButton: { values: ["square", "round"], default: "square" },
+  switchStyle: {
+    values: ["pill", "track", "slide", "marked"],
+    default: "pill",
+  },
+  checkStyle: { values: ["box", "outline", "round"], default: "box" },
+  tabStyle: {
+    values: ["well", "underline", "pill", "outline"],
+    default: "well",
+  },
+  sliderStyle: {
+    values: ["round", "bar", "knob", "ruled"],
+    default: "round",
+  },
 } as const
 
 export type SignatureKey = keyof typeof SIGNATURES
