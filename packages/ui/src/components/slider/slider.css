@@ -4,7 +4,8 @@
   }
 
   .dr-slider-track {
-    @apply bg-secondary relative h-[var(--track-height)] w-full grow overflow-hidden rounded-[var(--radius-pill)];
+    @apply relative h-[var(--track-height)] w-full grow overflow-hidden rounded-[var(--radius-pill)];
+    background-color: var(--well-fill, hsl(var(--secondary)));
     box-shadow: var(--track-well);
   }
 

@@ -1,6 +1,7 @@
 @layer components {
   .dr-progress {
-    @apply bg-secondary relative h-[var(--track-height)] w-full overflow-hidden rounded-[var(--radius-pill)];
+    @apply relative h-[var(--track-height)] w-full overflow-hidden rounded-[var(--radius-pill)];
+    background-color: var(--well-fill, hsl(var(--secondary)));
   }
 
   .dr-progress-indicator {

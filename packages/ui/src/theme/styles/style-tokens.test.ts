@@ -26,7 +26,12 @@ const CONTROL_TOKENS = [
 ]
 
 /** Surface depth a style may bind; no-ops at :root, so Flat sets none. */
-const SURFACE_TOKENS = ["--card-edge", "--card-sheen", "--track-well"]
+const SURFACE_TOKENS = [
+  "--card-edge",
+  "--card-sheen",
+  "--track-well",
+  "--well-fill",
+]
 
 const CHROME_TOKENS = [
   "--chrome-rail-bg",
@@ -686,6 +691,7 @@ describe("style files", () => {
     expect(lightBase["--card-edge"]).toBe("0 0 transparent")
     expect(lightBase["--card-sheen"]).toBe("none")
     expect(lightBase["--track-well"]).toBe("0 0 transparent")
+    expect(lightBase["--well-fill"]).toBe("initial")
     const card = readFileSync(
       join("src", "components", "card", "card.css"),
       "utf8",

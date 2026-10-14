@@ -159,6 +159,7 @@
       --overlay-fill-alpha: 1;
       --surface-backdrop: none;
       --scrim-backdrop: none;
+      --well-fill: initial;
     }
   }
 }
@@ -1004,6 +1005,9 @@
     --card-edge: 0 0 transparent;
     --card-sheen: none;
     --track-well: 0 0 transparent;
+    /* Unset: each well (tab list, segment group, slider and progress
+       track, unchecked switch) paints its own opaque fill. */
+    --well-fill: initial;
 
     /* Style-driven affordance tokens. Each style binds these once in
      its own CSS file; components consume them as a single source of

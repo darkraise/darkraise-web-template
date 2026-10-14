@@ -13,7 +13,7 @@
 
 @layer components {
   .dr-switch {
-    @apply data-[state=unchecked]:bg-input focus-ring hit-area-24 inline-flex h-5 w-9 shrink-0 cursor-pointer items-center border-2 border-transparent transition-colors disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
+    @apply focus-ring hit-area-24 inline-flex h-5 w-9 shrink-0 cursor-pointer items-center border-2 border-transparent transition-colors disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
     border-radius: var(--switch-radius);
   }
 
@@ -22,6 +22,7 @@
   }
 
   .dr-switch[data-state="unchecked"] {
+    background-color: var(--well-fill, hsl(var(--input)));
     border-color: var(--field-edge);
     box-shadow: var(--check-well-shadow);
   }

@@ -10,7 +10,8 @@
 
 @layer components {
   .dr-segment-group {
-    @apply bg-muted relative inline-flex p-1;
+    @apply relative inline-flex p-1;
+    background-color: var(--well-fill, hsl(var(--muted)));
     border-radius: var(--segment-radius);
     box-shadow: var(--track-well);
   }
