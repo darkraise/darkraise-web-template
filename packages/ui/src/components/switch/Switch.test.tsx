@@ -76,6 +76,21 @@ describe("Switch", () => {
     expect(sw).toHaveAttribute("aria-checked", "true")
   })
 
+  it("renders an aria-hidden marks span after the thumb that follows the state", async () => {
+    const user = userEvent.setup()
+    render(<Switch />)
+    const sw = screen.getByRole("switch")
+    const [thumb, marks, ...rest] = [...sw.children]
+    expect(thumb).toHaveClass("dr-switch-thumb")
+    expect(marks).toHaveClass("dr-switch-marks")
+    expect(rest).toEqual([])
+    expect(marks).toHaveAttribute("aria-hidden", "true")
+    expect(marks).toHaveAttribute("data-state", "unchecked")
+    expect(marks).toBeEmptyDOMElement()
+    await user.click(sw)
+    expect(marks).toHaveAttribute("data-state", "checked")
+  })
+
   it("forwards ref", () => {
     const ref = createRef<HTMLButtonElement>()
     render(<Switch ref={ref} />)

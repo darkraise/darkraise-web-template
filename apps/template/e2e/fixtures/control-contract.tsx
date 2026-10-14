@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { createRoot } from "react-dom/client"
 import type { ColumnDef } from "@tanstack/react-table"
-import { Check, ChevronDown, Eye, EyeOff, Info } from "lucide-react"
+import { Check, ChevronDown, Eye, EyeOff, Info, Plus } from "lucide-react"
 import {
   Accordion,
   AccordionContent,
@@ -16,10 +16,14 @@ import {
 import { Badge } from "darkraise-ui/components/badge"
 import { Banner } from "darkraise-ui/components/banner"
 import { AngleSlider } from "darkraise-ui/components/angle-slider"
-import { Button, type ButtonVariant } from "darkraise-ui/components/button"
+import {
+  Button,
+  type ButtonSize,
+  type ButtonVariant,
+} from "darkraise-ui/components/button"
 import { Calendar } from "darkraise-ui/components/calendar"
 import { Card, CardContent } from "darkraise-ui/components/card"
-import { Checkbox } from "darkraise-ui/components/checkbox"
+import { Checkbox, type CheckboxSize } from "darkraise-ui/components/checkbox"
 import {
   ColorPicker,
   ColorPickerArea,
@@ -108,6 +112,20 @@ import {
   NumberInputTriggerGroup,
 } from "darkraise-ui/components/number-input"
 import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "darkraise-ui/components/pagination"
+import { Progress } from "darkraise-ui/components/progress"
+import {
+  RadioGroup,
+  RadioGroupItem,
+  type RadioSize,
+} from "darkraise-ui/components/radio-group"
+import {
   SegmentGroup,
   SegmentGroupIndicator,
   SegmentGroupItem,
@@ -126,6 +144,12 @@ import {
 } from "darkraise-ui/components/select"
 import { Slider } from "darkraise-ui/components/slider"
 import { Switch } from "darkraise-ui/components/switch"
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  type TabsVariant,
+} from "darkraise-ui/components/tabs"
 import {
   TagsInput,
   TagsInputClearTrigger,
@@ -737,6 +761,307 @@ function ControlStates() {
   )
 }
 
+const BUTTON_SIZES: ButtonSize[] = ["sm", "default", "lg", "icon"]
+const CHECK_SIZES: CheckboxSize[] = ["sm", "default", "lg"]
+const RADIO_SIZES: RadioSize[] = ["sm", "default", "lg"]
+const TAB_VARIANTS: TabsVariant[] = ["outline", "underline", "enclosed"]
+
+const ROW = {
+  display: "flex",
+  flexWrap: "wrap",
+  gap: 8,
+  alignItems: "center",
+} as const
+
+function AnatomyTabs(props: {
+  case: string
+  variant?: TabsVariant
+  color?: "accent"
+  orientation?: "vertical"
+  dir?: "rtl"
+}) {
+  return (
+    <div data-case={props.case}>
+      <Tabs
+        defaultValue="one"
+        variant={props.variant}
+        color={props.color}
+        orientation={props.orientation}
+        dir={props.dir}
+      >
+        <TabsList aria-label={`Tabs ${props.case}`}>
+          <TabsTrigger value="one">One</TabsTrigger>
+          <TabsTrigger value="two">Two</TabsTrigger>
+          <TabsTrigger value="three" disabled>
+            Three
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+    </div>
+  )
+}
+
+function AnatomySegment(props: {
+  case: string
+  variant?: "outline"
+  color?: "accent"
+  orientation?: "vertical"
+  disabled?: boolean
+}) {
+  return (
+    <div data-case={props.case}>
+      <SegmentGroup
+        defaultValue="day"
+        variant={props.variant}
+        color={props.color}
+        orientation={props.orientation}
+        disabled={props.disabled}
+        aria-label={`Segment ${props.case}`}
+      >
+        <SegmentGroupIndicator />
+        <SegmentGroupItem value="day">Day</SegmentGroupItem>
+        <SegmentGroupItem value="week">Week</SegmentGroupItem>
+        <SegmentGroupItem value="month">Month</SegmentGroupItem>
+      </SegmentGroup>
+    </div>
+  )
+}
+
+// The anatomy probes: every control the preset signatures restyle, in every
+// variant, size and state they are tested in. They sit last so the probes
+// above keep their positions on screen.
+function Anatomy() {
+  return (
+    <div style={{ display: "grid", gap: 16 }}>
+      <div data-probe="anatomy-buttons" style={{ display: "grid", gap: 8 }}>
+        {VARIANTS.map((variant) => (
+          <div key={variant} style={ROW}>
+            {BUTTON_SIZES.map((size) => (
+              <Button
+                key={size}
+                data-case={`btn-${variant}-${size}`}
+                variant={variant}
+                size={size}
+                aria-label={size === "icon" ? `Add ${variant}` : undefined}
+              >
+                {size === "icon" ? <Plus /> : `${variant} ${size}`}
+              </Button>
+            ))}
+            <Button
+              data-case={`btn-${variant}-disabled`}
+              variant={variant}
+              disabled
+            >
+              {`${variant} disabled`}
+            </Button>
+            <Button
+              data-case={`btn-${variant}-icon-disabled`}
+              variant={variant}
+              size="icon"
+              disabled
+              aria-label={`Add ${variant} disabled`}
+            >
+              <Plus />
+            </Button>
+          </div>
+        ))}
+      </div>
+      <div data-probe="anatomy-pagination">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious href="#page-1" />
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink href="#page-1" isActive>
+                1
+              </PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink href="#page-2">2</PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationNext href="#page-2" />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
+      <div data-probe="anatomy-switches" style={ROW}>
+        <Switch data-case="off" aria-label="Switch off" />
+        <Switch data-case="on" aria-label="Switch on" defaultChecked />
+        <Switch
+          data-case="off-disabled"
+          aria-label="Switch off disabled"
+          disabled
+        />
+        <Switch
+          data-case="on-disabled"
+          aria-label="Switch on disabled"
+          defaultChecked
+          disabled
+        />
+      </div>
+      <div data-probe="anatomy-checkboxes" style={ROW}>
+        {CHECK_SIZES.map((size) => (
+          <div key={size} style={ROW}>
+            <Checkbox
+              data-case={`${size}-unchecked`}
+              size={size}
+              aria-label={`Checkbox ${size} unchecked`}
+            />
+            <Checkbox
+              data-case={`${size}-checked`}
+              size={size}
+              defaultChecked
+              aria-label={`Checkbox ${size} checked`}
+            />
+            <Checkbox
+              data-case={`${size}-indeterminate`}
+              size={size}
+              defaultChecked="indeterminate"
+              aria-label={`Checkbox ${size} indeterminate`}
+            />
+          </div>
+        ))}
+        <Checkbox
+          data-case="unchecked-disabled"
+          disabled
+          aria-label="Checkbox unchecked disabled"
+        />
+        <Checkbox
+          data-case="checked-disabled"
+          defaultChecked
+          disabled
+          aria-label="Checkbox checked disabled"
+        />
+      </div>
+      <div data-probe="anatomy-radios" style={ROW}>
+        {RADIO_SIZES.map((size) => (
+          <RadioGroup
+            key={size}
+            data-case={size}
+            defaultValue="b"
+            aria-label={`Radio ${size}`}
+            style={ROW}
+          >
+            <RadioGroupItem
+              value="a"
+              size={size}
+              aria-label={`Radio ${size} a`}
+            />
+            <RadioGroupItem
+              value="b"
+              size={size}
+              aria-label={`Radio ${size} b`}
+            />
+          </RadioGroup>
+        ))}
+        <RadioGroup
+          data-case="disabled"
+          defaultValue="b"
+          disabled
+          aria-label="Radio disabled"
+          style={ROW}
+        >
+          <RadioGroupItem value="a" aria-label="Radio disabled a" />
+          <RadioGroupItem value="b" aria-label="Radio disabled b" />
+        </RadioGroup>
+      </div>
+      <div
+        data-probe="anatomy-tabs"
+        style={{ display: "flex", flexWrap: "wrap", gap: 16 }}
+      >
+        <AnatomyTabs case="default" />
+        <AnatomyTabs case="default-accent" color="accent" />
+        <AnatomyTabs case="default-vertical" orientation="vertical" />
+        <AnatomyTabs
+          case="default-vertical-accent"
+          orientation="vertical"
+          color="accent"
+        />
+        <AnatomyTabs case="default-rtl" dir="rtl" />
+        {TAB_VARIANTS.map((variant) => (
+          <AnatomyTabs key={variant} case={variant} variant={variant} />
+        ))}
+      </div>
+      <div
+        data-probe="anatomy-segments"
+        style={{ display: "flex", flexWrap: "wrap", gap: 16 }}
+      >
+        <AnatomySegment case="default" />
+        <AnatomySegment case="default-accent" color="accent" />
+        <AnatomySegment case="default-vertical" orientation="vertical" />
+        <AnatomySegment case="default-disabled" disabled />
+        <AnatomySegment case="outline" variant="outline" />
+      </div>
+      <div
+        data-probe="anatomy-sliders"
+        style={{ display: "flex", flexWrap: "wrap", gap: 24 }}
+      >
+        <div data-case="single" style={{ width: 200 }}>
+          <Slider defaultValue={[40]} aria-label="Single" />
+        </div>
+        <div data-case="range" style={{ width: 200 }}>
+          <Slider defaultValue={[20, 70]} aria-label="Range" />
+        </div>
+        <div data-case="inverted" style={{ width: 200 }}>
+          <Slider defaultValue={[40]} inverted aria-label="Inverted" />
+        </div>
+        <div data-case="steps" style={{ width: 200 }}>
+          <Slider defaultValue={[50]} step={10} showSteps aria-label="Steps" />
+        </div>
+        <div data-case="disabled" style={{ width: 200 }}>
+          <Slider defaultValue={[40]} disabled aria-label="Disabled" />
+        </div>
+        <div data-case="vertical" style={{ width: 40, height: 160 }}>
+          <Slider
+            orientation="vertical"
+            defaultValue={[40]}
+            aria-label="Vertical"
+          />
+        </div>
+        <div data-case="vertical-range" style={{ width: 40, height: 160 }}>
+          <Slider
+            orientation="vertical"
+            defaultValue={[25, 75]}
+            aria-label="Vertical range"
+          />
+        </div>
+      </div>
+      <div
+        data-probe="anatomy-progress"
+        style={{ display: "grid", gap: 12, width: 240 }}
+      >
+        <Progress data-case="determinate" value={60} aria-label="Determinate" />
+        <Progress data-case="indeterminate" aria-label="Indeterminate" />
+      </div>
+      <Card data-probe="anatomy-card" style={{ width: 320 }}>
+        <CardContent style={{ display: "grid", gap: 12 }}>
+          <AnatomyTabs case="tabs" />
+          <AnatomySegment case="segment" />
+          <div data-case="slider">
+            <Slider defaultValue={[40]} aria-label="Slider on card" />
+          </div>
+          <Progress data-case="progress" value={60} aria-label="On card" />
+          <div style={ROW}>
+            <Switch data-case="switch" aria-label="Switch on card" />
+            <Checkbox data-case="checkbox" aria-label="Checkbox on card" />
+            <Button data-case="secondary" variant="secondary">
+              Secondary
+            </Button>
+            <Button data-case="outline" variant="outline">
+              Outline
+            </Button>
+          </div>
+          <div data-case="input">
+            <Input aria-label="Input on card" placeholder="On card" />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
 const root = document.getElementById("root")
 if (!root) throw new Error("Missing test fixture root")
 createRoot(root).render(
@@ -845,6 +1170,9 @@ createRoot(root).render(
       </div>
       <div style={{ marginTop: 24 }}>
         <ControlStates />
+      </div>
+      <div style={{ marginTop: 24 }}>
+        <Anatomy />
       </div>
     </div>
   </ThemeProvider>,
