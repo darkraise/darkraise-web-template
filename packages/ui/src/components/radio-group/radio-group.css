@@ -48,4 +48,34 @@
   .dr-radio-group-item[data-state="checked"] {
     box-shadow: var(--affordance-glow);
   }
+
+  /* SegmentGroup items render RadioGroupItem, so they carry
+     .dr-radio-group-item too; checkStyle leaves them to tabStyle. */
+  [data-check-style="outline"]
+    .dr-radio-group-item:not(.dr-segment-group-item)[data-state="checked"] {
+    border-width: 1.5px;
+    border-color: hsl(var(--primary));
+  }
+
+  /* Half the item's box (h-3.5, h-4, h-5), in rem like the box. */
+  [data-check-style="outline"]
+    .dr-radio-group-item:not(.dr-segment-group-item)
+    .dr-radio-group-indicator-sm {
+    width: 0.4375rem;
+    height: 0.4375rem;
+  }
+
+  [data-check-style="outline"]
+    .dr-radio-group-item:not(.dr-segment-group-item)
+    .dr-radio-group-indicator-default {
+    width: 0.5rem;
+    height: 0.5rem;
+  }
+
+  [data-check-style="outline"]
+    .dr-radio-group-item:not(.dr-segment-group-item)
+    .dr-radio-group-indicator-lg {
+    width: 0.625rem;
+    height: 0.625rem;
+  }
 }

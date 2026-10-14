@@ -50,4 +50,16 @@
   .dr-checkbox[data-state="indeterminate"] {
     box-shadow: var(--affordance-glow);
   }
+
+  [data-check-style="outline"] .dr-checkbox[data-state="checked"],
+  [data-check-style="outline"] .dr-checkbox[data-state="indeterminate"] {
+    border-width: 1.5px;
+    border-color: hsl(var(--primary));
+    background-color: transparent;
+    color: hsl(var(--primary));
+  }
+
+  [data-check-style="round"] .dr-checkbox {
+    border-radius: var(--radius-pill);
+  }
 }

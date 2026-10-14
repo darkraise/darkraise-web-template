@@ -20,6 +20,11 @@ const GRAPHICS = new Map([
  */
 const GRAPHIC_DECLARATIONS: Array<[string, string, string]> = [
   [
+    "src/components/checkbox/checkbox.css",
+    '[data-check-style="outline"] .dr-checkbox',
+    "the outline check style's tick and bar are graphics",
+  ],
+  [
     "src/layout/sidebar/sidebar-nav.css",
     ".dr-sidebar-nav-icon-svg",
     "the active nav icon is a graphic",

@@ -406,6 +406,11 @@ const ALLOWED: Array<[string, string, string]> = [
     "the menu highlight signature marks the row under the pointer or the keyboard, not a selection",
   ],
   [
+    "components/checkbox/checkbox.css",
+    '[data-check-style="outline"]',
+    "the outline check style draws the edge and tick as accent marks on the unfilled ground; the checked fill is what it drops",
+  ],
+  [
     "components/color-picker/color-picker.css",
     '.dr-color-picker-swatch-item[data-active="true"]',
     "a colour swatch ring is tool chrome around a colour",
@@ -479,6 +484,11 @@ const ALLOWED: Array<[string, string, string]> = [
     "components/progress/progress.css",
     ".dr-progress-indicator",
     "a progress bar shows a value, not a selection",
+  ],
+  [
+    "components/radio-group/radio-group.css",
+    '[data-check-style="outline"]',
+    "the outline check style rings the chosen radio in the accent around an accent dot on the unfilled ground",
   ],
   [
     "components/steps/steps.css",
