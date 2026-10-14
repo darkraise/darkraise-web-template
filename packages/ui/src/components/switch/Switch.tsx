@@ -60,6 +60,11 @@ function Switch({
         {...buttonProps}
       >
         <span data-state={state} className="dr-switch-thumb" />
+        <span
+          data-state={state}
+          className="dr-switch-marks"
+          aria-hidden="true"
+        />
       </button>
       <input
         type="checkbox"
