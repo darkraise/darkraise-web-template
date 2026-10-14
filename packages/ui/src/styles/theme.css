@@ -1340,7 +1340,8 @@
       h s l / var(--field-alpha);
   }
 }
-``` [data-density="compact"] {
+
+[data-density="compact"] {
   --btn-px: 0.5rem;
   --btn-px-tight: 0.25rem;
   --btn-py-tight: 0.25rem;

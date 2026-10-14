@@ -191,4 +191,9 @@ describe("fieldFill translucent", () => {
       }
     }
   })
+
+  it("leaves no markdown fence in theme.css", () => {
+    const lines = readFileSync(THEME, "utf8").split("\n")
+    expect(lines.filter((line) => line.startsWith("```"))).toEqual([])
+  })
 })
