@@ -2707,6 +2707,44 @@
     border-color: Highlight;
   }
 
+  /* tabStyle (tabs.css, segment-group.css). Under underline the current
+     tab is a bar below its label, not a box behind it: the indicator drops
+     the Highlight box, its ::after bar takes Highlight, and the label stays
+     CanvasText. Pill keeps the Highlight box above. Under outline the
+     current cell is the trigger, so the cell takes the box and the
+     indicator under it drops its own: emulated Highlight is translucent,
+     and two layers of it darken. */
+  [data-tab-style="underline"] .dr-tabs-indicator[data-variant="default"],
+  [data-tab-style="underline"]
+    .dr-segment-group-indicator[data-variant="default"],
+  [data-tab-style="outline"] .dr-tabs-indicator[data-variant="default"],
+  [data-tab-style="outline"]
+    .dr-segment-group-indicator[data-variant="default"] {
+    background-color: transparent;
+  }
+
+  [data-tab-style="underline"]
+    .dr-tabs-indicator[data-variant="default"]::after,
+  [data-tab-style="underline"]
+    .dr-segment-group-indicator[data-variant="default"]::after {
+    background-color: Highlight;
+    background-image: none;
+  }
+
+  [data-tab-style="underline"]
+    .dr-tabs-trigger[data-variant="default"][data-state="active"],
+  [data-tab-style="underline"]
+    .dr-segment-group-item[data-variant="default"][data-state="checked"] {
+    color: CanvasText;
+  }
+
+  [data-tab-style="outline"]
+    .dr-tabs-trigger[data-variant="default"][data-state="active"],
+  [data-tab-style="outline"]
+    .dr-segment-group-item[data-variant="default"][data-state="checked"] {
+    background-color: Highlight;
+  }
+
   /* Chosen rows and items in menus, pickers and navigation. A menu row is
      highlighted by focus, which follows the pointer. */
   .dr-time-column-item[data-selected="true"],
@@ -2879,6 +2917,12 @@
     background-color: Canvas;
   }
 
+  /* sliderStyle ruled draws step marks as 1px ticks across the hairline
+     track, so most of each tick lies on Canvas beside it. */
+  [data-slider-style="ruled"] .dr-slider-step {
+    background-color: CanvasText;
+  }
+
   .dr-skeleton,
   .dr-chart-placeholder {
     background-color: GrayText;
@@ -2955,6 +2999,13 @@
   .dr-tags-input-item-preview[data-highlighted="true"]:focus-visible,
   .dr-listbox-item[data-selected="true"][data-focused="true"] {
     outline-color: HighlightText;
+  }
+
+  /* tabStyle underline leaves the checked segment on Canvas, with no fill
+     for its inset ring to sit inside. */
+  [data-tab-style="underline"]
+    .dr-segment-group-item[data-variant="default"][data-state="checked"]:focus-visible {
+    outline-color: Highlight;
   }
 }
 

@@ -491,6 +491,21 @@ const ALLOWED: Array<[string, string, string]> = [
     "the outline check style rings the chosen radio in the accent around an accent dot on the unfilled ground",
   ],
   [
+    "components/segment-group/segment-group.css",
+    '[data-tab-style="outline"]',
+    "the outline tab style edges the current cell in the accent around the accent tint and text; the tint alone does not mark it at 3:1",
+  ],
+  [
+    "components/segment-group/segment-group.css",
+    '[data-tab-style="pill"]',
+    "the pill tab style's current item is a solid labelled accent face, the accent fill under the label solved against it, edged in the accent because the fill alone can sit under 3:1 against the page",
+  ],
+  [
+    "components/segment-group/segment-group.css",
+    '[data-tab-style="underline"]',
+    "the underline tab style's bar is an accent mark on the neutral ground below the current item's label",
+  ],
+  [
     "components/steps/steps.css",
     '.dr-steps-indicator[data-status="current"]',
     "the current step is in progress, not selected",
@@ -504,6 +519,21 @@ const ALLOWED: Array<[string, string, string]> = [
     "components/switch/switch.css",
     '[data-switch-style="slide"] .dr-switch-marks[data-state="checked"]',
     "the slide style's lit lamp is an accent mark on the slot, drawn in --primary-text because --primary falls under 3:1 on the --input slot",
+  ],
+  [
+    "components/tabs/tabs.css",
+    '[data-tab-style="outline"]',
+    "the outline tab style edges the current cell in the accent around the accent tint and text; the tint alone does not mark it at 3:1",
+  ],
+  [
+    "components/tabs/tabs.css",
+    '[data-tab-style="pill"]',
+    "the pill tab style's current tab is a solid labelled accent face, the accent fill under the label solved against it, edged in the accent because the fill alone can sit under 3:1 against the page",
+  ],
+  [
+    "components/tabs/tabs.css",
+    '[data-tab-style="underline"]',
+    "the underline tab style's bar is an accent mark on the neutral ground below the current tab's label",
   ],
   [
     "components/tabs/tabs.css",
