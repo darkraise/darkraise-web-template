@@ -55,7 +55,9 @@ directly, such as a single spec, skip the warm-up unless `E2E_WARM=1` is set;
 `18` warms the routes it captures in its own `beforeAll`.
 
 **Projects.** `21-mobile-layout.spec.ts` runs only in the `mobile` project
-(390×844, touch); every other spec runs in `chromium`.
+(390×844, touch); every other spec runs in `chromium`. The control anatomy
+specs (61-64, 66) run in both: in `mobile`, only their tests tagged `@touch`
+(the 24px hit-area cases).
 
 **Flaky failures.** Local runs retry a failed test once (CI twice), and a test
 that passes on retry is reported as flaky. The known source of local flakes is
@@ -103,12 +105,15 @@ E2E_TRACE=1 TMPDIR=/root/.cache/pw-tmp pnpm test:e2e
 
 ### 00 · Helpers (`00-helpers.spec.ts`)
 
-| Helper         | Checks                                                                              |
-| -------------- | ----------------------------------------------------------------------------------- |
-| `settle`       | Throws at its 5,000 ms deadline even when the page produces no frames               |
-| `textContrast` | Reads a ground a pseudo-element paints from pixels under `ground: "painted"`        |
-| `watchConsole` | Records a `[vite]` console error, ignores a `[vite]` debug message                  |
-| `seedApp`      | Seeds once per tab, so a sign-out survives a reload; a failing iframe is not seeded |
+| Helper          | Checks                                                                                                    |
+| --------------- | --------------------------------------------------------------------------------------------------------- |
+| `settle`        | Throws at its 5,000 ms deadline even when the page produces no frames                                     |
+| `textContrast`  | Reads a ground a pseudo-element paints from pixels under `ground: "painted"`                              |
+| `markContrast`  | Reads a round mark, the weakest band of a two-tone mark and a 2px hairline against the colour beside them |
+| `kitLook`       | Stamps the given signatures over the kit defaults                                                         |
+| `labelContrast` | Reads the face behind a label's line of text, with an icon in the label hidden                            |
+| `watchConsole`  | Records a `[vite]` console error, ignores a `[vite]` debug message                                        |
+| `seedApp`       | Seeds once per tab, so a sign-out survives a reload; a failing iframe is not seeded                       |
 
 ### 01 · Authentication (`01-auth.spec.ts`)
 
@@ -775,6 +780,55 @@ here. Each preset test is titled `<preset name> <mode>: …`, so
 - Solid and Gradient paint the shell differently under Quiet, Glass and a glass preset; Card Stock keeps its own ground under Solid.
 - Soft Glass stamps the island shell, Newsreader headings and a Hanken Grotesk body, paints its accent ground, and rounds its cards from the radius step.
 - A global floating panel opened under Glass stays anchored to the viewport.
+
+### 61 · Button anatomy (`61-button-anatomy.spec.ts`)
+
+- On the control fixture's anatomy probes under Quiet in light and dark, and at compact and spacious density, every `buttonStyle` value and `iconButton: round` keep every button's box, and ghost and link buttons ignore `buttonStyle`.
+- `key` sets the default, destructive, secondary and outline faces on a 2px base (`--border-strong` under the neutral two) with a sheen that ends above the label's line box; a press moves the face 1px through a transform onto a 1px base without moving a neighbour, instantly under reduced motion, and never on a disabled button.
+- `soft` paints the default face at accent step 3 (light) or 4 (dark) under `--primary-text` and steps one deeper on hover, destructive on its subtle pair, secondary on the neutral well (`--well-fill`, else `--muted`), and the outline edge in `--primary` at 3:1 against the page.
+- `glass` keeps the filled faces with a sheen above the label band, and rims the neutral capsules; secondary paints the card at the surface alpha, opaque under Quiet and translucent when the host's alpha drops, and outline reads `--btn-neutral-fill`.
+- Every label clears 4.5:1 under every value, at rest and hovered, read from the pixels behind its line of text (`labelContrast`); the keyboard focus ring survives every value.
+- `round` turns every icon-size button, Pagination's page links and the Calendar's month arrows included, into a circle, square under the sharp Radius step, and changes nothing else; it composes with every `buttonStyle` value. Tagged `@touch`, also run in `mobile`: a round icon button answers a tap anywhere in a 24px circle and not in the corners its square face would fill.
+
+### 62 · Switch anatomy (`62-switch-anatomy.spec.ts`)
+
+- On the control fixture's switches under Quiet, light and dark, each `switchStyle` value keeps the 36×20 box, the 24px hit area of `::before` and the keyboard focus ring, and a disabled switch keeps its value's parts and fades.
+- `track` narrows the track to 14px under a 20px thumb that overhangs it; `slide` draws a slot, an 18px ridged thumb and a 6px lamp in the end the thumb has left; `marked` writes an `O` in the inline-end half of an unchecked switch and an `I` in the inline-start half of a checked one.
+- The card-tone thumb's ring keeps 3:1 against the track, the slot, the page and a card; the checked `track` thumb (`--primary-text`) 3:1 against its `--primary-4` track and the page; the lit `slide` lamp (`--primary-text`) 3:1 against its slot; and the glyphs 4.5:1 against their track. Thumbs, lamps and glyphs mirror right to left.
+- Under forced colours a checked switch of each value keeps its thumb, lit lamp and glyph visible.
+- Tagged `@touch`, also run in `mobile`: a tap in the 2px band outside the face, inside the 24px hit area, toggles a switch of each value, and a tap 3px out misses it.
+
+### 63 · Check anatomy (`63-check-anatomy.spec.ts`)
+
+- On the control fixture's checkboxes and radios, at default, compact and spacious density, every `checkStyle` value keeps each box's size and place and the keyboard focus ring.
+- `outline` leaves a checked or indeterminate checkbox unfilled behind a 1.5px `--primary` edge with a `--primary` tick or bar, and draws a chosen radio as a 1.5px `--primary` ring around a dot half the box across; `round` circles every checkbox (`--radius-pill`), squares them under the sharp Radius step, and leaves radios alone.
+- In light and dark, the `outline` marks reach 3:1 against the ground beside them and the `round` fill and tick 3:1; every SegmentGroup draws as the kit default does under every value.
+- Tagged `@touch`, also run in `mobile`: a tap 2px outside a checkbox's or radio's face, inside the 24px hit area, toggles it under each value.
+
+### 64 · Tab anatomy (`64-tab-anatomy.spec.ts`)
+
+- On the control fixture's default-variant Tabs lists and SegmentGroups (horizontal, vertical, right to left, with and without `color="accent"`, and the two on a card), at default, compact and spacious density, every `tabStyle` value keeps each item's box, each strip's cross size and the keyboard focus ring; an `outline` strip loses only the gaps between its items.
+- `underline` drops the well and draws a 2px `--primary` bar on the indicator's edge facing the panel, reaching across the strip's padding to a 1px baseline; `pill` fills the current item as a `--primary-fill` pill under `--primary-foreground`, edged 1px in `--primary`; `outline` closes the gaps so the cells meet, draws a 1px `--border-strong` frame inside the strip's padding and tints the current cell, edged in `--primary`. `pill` and `outline` follow the sharp Radius step, and other items wash on hover in their own shape.
+- In light and dark, labels reach 4.5:1 under every value, and the underline bar, the pill's edge (under Quiet and under Forest & Lime's own look) and the outline cell's edge reach 3:1 against the ground beside them; the app variants `outline`, `underline` and `enclosed` do not change, and `checkStyle` leaves every SegmentGroup alone under every `tabStyle`.
+- Under forced colours (light and dark schemes) each value still marks the current item.
+
+### 65 · Anatomy defaults (`65-anatomy-defaults.spec.ts`)
+
+- On the control fixture's anatomy probes (buttons of every variant and size, pagination, the calendar's navigation arrows, switches, checkboxes, radios, tabs, segment groups, sliders, progress bars and the controls on a card), under Quiet in light and dark with every signature at its kit default, every element's box, paint, border, radius, shadow, outline and `::before` / `::after` at rest, and what each hover and keyboard focus changes, equal the committed `fixtures/anatomy-defaults.json`.
+- `ANATOMY_DEFAULTS_UPDATE=1` rewrites the snapshot; only a change meant to alter the kit defaults re-records it, never a failing comparison.
+
+### 66 · Slider anatomy (`66-slider-anatomy.spec.ts`)
+
+- On the control fixture's sliders (single, range, inverted, with step marks, disabled, vertical, vertical range) and progress bars (determinate and indeterminate), in light and dark and at compact and spacious density, every `sliderStyle` value keeps each slider's box, thumb centres and range, and each progress bar's box but under `knob`, which makes it 2px taller than the track (`--track-height`).
+- `bar` squares the ends and draws a 6×18 `--primary` bar thumb; `knob` recesses the track under a 22px domed knob with an 8px `--primary` dot; `ruled` draws 2px hairlines, a 2×18 needle with a head and ticks below the track, mirrored right to left when vertical.
+- The value marks (range, thumb, needle, dot, progress fill) keep 3:1 against what is beside them, and every thumb keeps its keyboard focus ring.
+- Under forced colours (light and dark schemes) `ruled` paints a slider's step ticks `CanvasText`, at 3:1 against the Canvas beside them.
+- Tagged `@touch`, also run in `mobile`: a press 2px outside a thumb's face, inside its 24px hit area, grabs it under each value.
+
+### 67 · Look sweep (`67-look-sweep.spec.ts`)
+
+- Every built-in look (the four styles and the sixteen presets, read from the registry), in light and dark, on the kitchen sink at 1440×1000: the six control anatomy attributes on `<html>` are the look's picks; every button, tab, segment and form label clears 4.5:1 against the face behind its line of text (`labelContrast`); and stamping the six anatomy signatures back to their kit defaults changes the size of no control (buttons, switches, checkboxes, radios, sliders, tab lists and their tabs, segment groups and their items). A tab list or segment group is measured without the space between its items, which `outline` closes so its cells meet.
+- Runs in `chromium` only.
 
 ## Regression tests for fixed defects
 
