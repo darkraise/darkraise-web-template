@@ -54,6 +54,20 @@ async function resolved(page: Page, property: string, value: string) {
   )
 }
 
+/** A computed colour as the 8-bit RGBA a canvas stores for it. */
+async function eightBit(page: Page, colour: string) {
+  return page.evaluate((value) => {
+    const canvas = document.createElement("canvas")
+    canvas.width = 1
+    canvas.height = 1
+    const context = canvas.getContext("2d")
+    if (!context) throw new Error("no 2d context")
+    context.fillStyle = value
+    context.fillRect(0, 0, 1, 1)
+    return context.getImageData(0, 0, 1, 1).data.join(",")
+  }, colour)
+}
+
 async function setRoot(page: Page, attributes: Record<string, string>) {
   await page.evaluate((pairs) => {
     for (const [name, value] of Object.entries(pairs)) {
@@ -230,24 +244,43 @@ for (const mode of MODES) {
       )
     })
 
-    test("field fill translucent lets the ground show through", async ({
+    test("field fill translucent follows the card plane's alpha", async ({
       page,
     }) => {
       await setRoot(page, { "data-field-fill": "translucent" })
-      const expected = await resolved(
+      const probes = ['[data-probe="input"]', '[data-probe="edge-card"]']
+      const fill = async (probe: string) =>
+        eightBit(
+          page,
+          await computed(
+            page.locator(`${probe} .dr-input`),
+            "background-color",
+          ),
+        )
+      // An opaque card plane paints the opaque card, as fieldFill: surface
+      // does inside a card. The dark field is a relative colour, which
+      // computes as color(srgb …), so colours compare as 8-bit values.
+      const opaque = await eightBit(
         page,
-        "background-color",
-        mode === "dark"
-          ? "hsl(var(--foreground) / 0.06)"
-          : "hsl(var(--card) / 0.6)",
+        await resolved(page, "background-color", "hsl(var(--card))"),
       )
-      for (const probe of [
-        '[data-probe="input"]',
-        '[data-probe="edge-card"]',
-      ]) {
-        const field = page.locator(`${probe} .dr-input`)
-        expect(await computed(field, "background-color"), probe).toBe(expected)
-      }
+      for (const probe of probes) expect(await fill(probe), probe).toBe(opaque)
+      // At base Glass's Medium alphas the field paints the fixed values
+      // the rule held before it read the alpha.
+      await setTokens(page, {
+        "--surface-fill-alpha": mode === "dark" ? "0.6" : "0.55",
+      })
+      const medium = await eightBit(
+        page,
+        await resolved(
+          page,
+          "background-color",
+          mode === "dark"
+            ? "hsl(var(--foreground) / 0.06)"
+            : "hsl(var(--card) / 0.6)",
+        ),
+      )
+      for (const probe of probes) expect(await fill(probe), probe).toBe(medium)
     })
 
     test("label case upper and lower reach field labels; auto and none leave them", async ({
