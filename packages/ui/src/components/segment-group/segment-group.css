@@ -158,4 +158,211 @@
   .dr-segment-group[data-disabled="true"] > * {
     --disabled-opacity: 1;
   }
+
+  /* --- tabStyle ------------------------------------------------------
+     A look's tabStyle restyles groups of the default variant, as it does
+     Tabs (tabs.css), in both orientations and with or without
+     color="accent": the indicator and label rules repeat the accent rules'
+     specificity and come after them, so the structure applies and the
+     accent still tints it. No value resizes an item or the group's
+     padding: every item keeps the control height of its density (e2e 16)
+     and the group its height. Only outline drops the gaps, so its cells
+     meet. */
+
+  /* underline: the bar reaches past the indicator across the group's
+     0.25rem padding (p-1) to the baseline at its padding edge. */
+  [data-tab-style="underline"] .dr-segment-group[data-variant="default"] {
+    border-radius: 0;
+    background-color: transparent;
+    box-shadow: inset 0 -1px 0 hsl(var(--border));
+  }
+
+  [data-tab-style="underline"]
+    .dr-segment-group[data-variant="default"][data-orientation="vertical"] {
+    box-shadow: inset -1px 0 0 hsl(var(--border));
+  }
+
+  /* box-shadow has no logical form. */
+  [data-tab-style="underline"]
+    .dr-segment-group[data-variant="default"][data-orientation="vertical"]:dir(
+      rtl
+    ) {
+    box-shadow: inset 1px 0 0 hsl(var(--border));
+  }
+
+  [data-tab-style="underline"]
+    .dr-segment-group
+    .dr-segment-group-item[data-variant="default"][data-state="checked"] {
+    color: var(--selected-mark-fg);
+  }
+
+  [data-tab-style="underline"]
+    .dr-segment-group
+    .dr-segment-group-indicator[data-variant="default"] {
+    background: transparent;
+    box-shadow: none;
+  }
+
+  [data-tab-style="underline"]
+    .dr-segment-group
+    .dr-segment-group-indicator[data-variant="default"]::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: -0.25rem;
+    height: 2px;
+    background-image: linear-gradient(hsl(var(--primary)), hsl(var(--primary)));
+  }
+
+  [data-tab-style="underline"]
+    .dr-segment-group
+    .dr-segment-group-indicator[data-variant="default"][data-orientation="vertical"]::after {
+    inset-block: 0;
+    inset-inline: auto -0.25rem;
+    width: 2px;
+    height: auto;
+  }
+
+  /* pill: the accent edge marks the pill where the fill alone sits under
+     3:1 against the page, as on Tabs. */
+  [data-tab-style="pill"] .dr-segment-group[data-variant="default"] {
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  [data-tab-style="pill"]
+    .dr-segment-group
+    .dr-segment-group-item[data-variant="default"] {
+    border-radius: var(--radius-pill);
+  }
+
+  [data-tab-style="pill"]
+    .dr-segment-group
+    .dr-segment-group-item[data-variant="default"][data-state="checked"] {
+    color: hsl(var(--primary-foreground));
+  }
+
+  [data-tab-style="pill"]
+    .dr-segment-group
+    .dr-segment-group-indicator[data-variant="default"] {
+    border-radius: var(--radius-pill);
+    background: hsl(var(--primary-fill));
+    box-shadow:
+      inset 0 0 0 1px hsl(var(--primary)),
+      var(--affordance-glow);
+  }
+
+  /* outline: a ruled row, as on Tabs. The group keeps its padding and
+     drops the 0.5rem gap it takes from .dr-radio-group, so the cells meet;
+     its ::before draws the frame around the items, rounded as the well's
+     chip is. Items have no border (border-0), so the dividers and the
+     current cell's accent edge are inset shadows, which take no room. An
+     item also carries the radio's well shadow (radio-group.css), which a
+     cell does without. */
+  [data-tab-style="outline"] .dr-segment-group[data-variant="default"] {
+    gap: 0;
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  [data-tab-style="outline"] .dr-segment-group[data-variant="default"]::before {
+    content: "";
+    position: absolute;
+    inset: 0.25rem;
+    border: 1px solid hsl(var(--border-strong));
+    border-radius: calc(var(--segment-radius) - 2px);
+    pointer-events: none;
+  }
+
+  [data-tab-style="outline"]
+    .dr-segment-group
+    .dr-segment-group-indicator[data-variant="default"] {
+    background: transparent;
+    box-shadow: none;
+  }
+
+  [data-tab-style="outline"]
+    .dr-segment-group
+    .dr-segment-group-item[data-variant="default"] {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  [data-tab-style="outline"]
+    .dr-segment-group[data-orientation="horizontal"]
+    .dr-segment-group-item[data-variant="default"]:first-of-type {
+    border-start-start-radius: calc(var(--segment-radius) - 2px);
+    border-end-start-radius: calc(var(--segment-radius) - 2px);
+  }
+
+  [data-tab-style="outline"]
+    .dr-segment-group[data-orientation="horizontal"]
+    .dr-segment-group-item[data-variant="default"]:last-of-type {
+    border-start-end-radius: calc(var(--segment-radius) - 2px);
+    border-end-end-radius: calc(var(--segment-radius) - 2px);
+  }
+
+  [data-tab-style="outline"]
+    .dr-segment-group[data-orientation="vertical"]
+    .dr-segment-group-item[data-variant="default"]:first-of-type {
+    border-start-start-radius: calc(var(--segment-radius) - 2px);
+    border-start-end-radius: calc(var(--segment-radius) - 2px);
+  }
+
+  [data-tab-style="outline"]
+    .dr-segment-group[data-orientation="vertical"]
+    .dr-segment-group-item[data-variant="default"]:last-of-type {
+    border-end-start-radius: calc(var(--segment-radius) - 2px);
+    border-end-end-radius: calc(var(--segment-radius) - 2px);
+  }
+
+  /* :where() keeps the dividers below the current cell's edge. box-shadow
+     has no logical form, so right-to-left mirrors the divider. */
+  [data-tab-style="outline"]
+    .dr-segment-group:where([data-orientation="horizontal"])
+    .dr-segment-group-item[data-variant="default"]:where(:not(:first-of-type)) {
+    box-shadow: inset 1px 0 0 hsl(var(--border-strong));
+  }
+
+  [data-tab-style="outline"]
+    .dr-segment-group:where([data-orientation="horizontal"])
+    .dr-segment-group-item[data-variant="default"]:where(
+      :not(:first-of-type):dir(rtl)
+    ) {
+    box-shadow: inset -1px 0 0 hsl(var(--border-strong));
+  }
+
+  [data-tab-style="outline"]
+    .dr-segment-group:where([data-orientation="vertical"])
+    .dr-segment-group-item[data-variant="default"]:where(:not(:first-of-type)) {
+    box-shadow: inset 0 1px 0 hsl(var(--border-strong));
+  }
+
+  [data-tab-style="outline"]
+    .dr-segment-group
+    .dr-segment-group-item[data-variant="default"][data-state="checked"] {
+    background-color: hsl(var(--primary-3));
+    color: hsl(var(--primary-text));
+    box-shadow: inset 0 0 0 1px hsl(var(--primary));
+  }
+
+  [data-tab-style="outline"][data-mode="dark"]
+    .dr-segment-group
+    .dr-segment-group-item[data-variant="default"][data-state="checked"] {
+    background-color: hsl(var(--primary-4));
+  }
+
+  /* The current cell's edge stands in for the divider after it; a named
+     group renders a form input after each item. */
+  [data-tab-style="outline"]
+    .dr-segment-group
+    .dr-segment-group-item[data-variant="default"][data-state="checked"]
+    + .dr-segment-group-item[data-variant="default"],
+  [data-tab-style="outline"]
+    .dr-segment-group
+    .dr-segment-group-item[data-variant="default"][data-state="checked"]
+    + input
+    + .dr-segment-group-item[data-variant="default"] {
+    box-shadow: none;
+  }
 }

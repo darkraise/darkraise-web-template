@@ -779,4 +779,15 @@ describe("forced-colours details", () => {
     )
     expect(THEME).not.toContain("animate-caret-blink")
   })
+
+  // A step dot sits inside the CanvasText track and paints Canvas; a ruled
+  // step tick crosses the hairline track and lies mostly on Canvas.
+  it("paints ruled slider step ticks in the text colour", () => {
+    expect(selectorsOf(STATES, "background-color: Canvas;")).toContain(
+      ".dr-slider-step",
+    )
+    expect(selectorsOf(STATES, "background-color: CanvasText;")).toContain(
+      '[data-slider-style="ruled"] .dr-slider-step',
+    )
+  })
 })

@@ -486,4 +486,187 @@
       @apply rounded-t-sm;
     }
   }
+
+  /* --- tabStyle ------------------------------------------------------
+     A look's tabStyle restyles lists of the default variant, in both
+     orientations and with or without color="accent"; the outline,
+     underline and enclosed variants an app picks keep their own look. No
+     value resizes a trigger or the list's padding: every trigger keeps
+     the control height of its density (e2e 16) and the list its height,
+     so a layout never shifts between looks. Only outline drops the gaps,
+     so its cells meet. */
+
+  /* underline: no well and no chip. The indicator's ::after draws a 2px
+     --primary bar on the edge that faces the panel, as a gradient image:
+     an accent mark, where background colours are kept for labelled fills.
+     The bar reaches past the indicator across the list's 0.25rem padding
+     (p-1) to the list's padding edge, where the list draws a 1px baseline
+     as an inset shadow. Square, so the baseline runs straight. */
+  [data-tab-style="underline"] .dr-tabs-list[data-variant="default"] {
+    border-radius: 0;
+    background-color: transparent;
+    box-shadow: inset 0 -1px 0 hsl(var(--border));
+  }
+
+  [data-tab-style="underline"]
+    .dr-tabs-list[data-variant="default"][data-orientation="vertical"] {
+    box-shadow: inset -1px 0 0 hsl(var(--border));
+  }
+
+  /* box-shadow has no logical form. */
+  [data-tab-style="underline"]
+    .dr-tabs-list[data-variant="default"][data-orientation="vertical"]:dir(
+      rtl
+    ) {
+    box-shadow: inset 1px 0 0 hsl(var(--border));
+  }
+
+  [data-tab-style="underline"]
+    .dr-tabs-trigger[data-variant="default"][data-state="active"] {
+    color: var(--selected-mark-fg);
+  }
+
+  [data-tab-style="underline"] .dr-tabs-indicator[data-variant="default"] {
+    background: transparent;
+    box-shadow: none;
+  }
+
+  [data-tab-style="underline"]
+    .dr-tabs-indicator[data-variant="default"]::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: -0.25rem;
+    height: 2px;
+    background-image: linear-gradient(hsl(var(--primary)), hsl(var(--primary)));
+  }
+
+  /* The indicator inherits the list's direction, so inline-end is the
+     panel side in both directions. */
+  [data-tab-style="underline"]
+    .dr-tabs-indicator[data-variant="default"][data-orientation="vertical"]::after {
+    inset-block: 0;
+    inset-inline: auto -0.25rem;
+    width: 2px;
+    height: auto;
+  }
+
+  /* pill: no well; the current tab is a solid labelled accent face, the
+     accent fill under the label solved against it, edged in the accent:
+     the fill alone can sit under 3:1 against the page (1.88:1 under a
+     lime accent in light mode). The triggers take the pill's radius too,
+     so the hover wash is a pill. */
+  [data-tab-style="pill"] .dr-tabs-list[data-variant="default"] {
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  [data-tab-style="pill"] .dr-tabs-trigger[data-variant="default"] {
+    border-radius: var(--radius-pill);
+  }
+
+  [data-tab-style="pill"]
+    .dr-tabs-trigger[data-variant="default"][data-state="active"] {
+    color: hsl(var(--primary-foreground));
+  }
+
+  [data-tab-style="pill"] .dr-tabs-indicator[data-variant="default"] {
+    border-radius: var(--radius-pill);
+    background: hsl(var(--primary-fill));
+    box-shadow:
+      inset 0 0 0 1px hsl(var(--primary)),
+      var(--affordance-glow);
+  }
+
+  /* outline: a ruled row. The list keeps its padding, so the strip keeps
+     its height, and drops its gaps, so the cells meet. Its ::before draws
+     the 1px frame inside the padding, around the triggers, rounded as the
+     well's chip is. Each trigger's reserved 1px border is its divider
+     (inline start, top when vertical), on the cell boundary, and the
+     current cell takes the accent tint under the accent label, edged in
+     the accent: the tint alone is too faint to mark the current tab at
+     3:1. The cell is the trigger, not the sliding indicator, because only
+     the first and last triggers know to round their outer corners. */
+  [data-tab-style="outline"] .dr-tabs-list[data-variant="default"] {
+    gap: 0;
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  [data-tab-style="outline"] .dr-tabs-list[data-variant="default"]::before {
+    content: "";
+    position: absolute;
+    inset: 0.25rem;
+    border: 1px solid hsl(var(--border-strong));
+    border-radius: var(--radius-sm);
+    pointer-events: none;
+  }
+
+  [data-tab-style="outline"] .dr-tabs-indicator[data-variant="default"] {
+    background: transparent;
+    box-shadow: none;
+  }
+
+  [data-tab-style="outline"] .dr-tabs-trigger[data-variant="default"] {
+    border-radius: 0;
+  }
+
+  [data-tab-style="outline"]
+    .dr-tabs-trigger[data-variant="default"][data-orientation="horizontal"]:first-of-type {
+    border-start-start-radius: var(--radius-sm);
+    border-end-start-radius: var(--radius-sm);
+  }
+
+  [data-tab-style="outline"]
+    .dr-tabs-trigger[data-variant="default"][data-orientation="horizontal"]:last-of-type {
+    border-start-end-radius: var(--radius-sm);
+    border-end-end-radius: var(--radius-sm);
+  }
+
+  [data-tab-style="outline"]
+    .dr-tabs-trigger[data-variant="default"][data-orientation="vertical"]:first-of-type {
+    border-start-start-radius: var(--radius-sm);
+    border-start-end-radius: var(--radius-sm);
+  }
+
+  [data-tab-style="outline"]
+    .dr-tabs-trigger[data-variant="default"][data-orientation="vertical"]:last-of-type {
+    border-end-start-radius: var(--radius-sm);
+    border-end-end-radius: var(--radius-sm);
+  }
+
+  /* :where() keeps the dividers below the current cell's edge. */
+  [data-tab-style="outline"]
+    .dr-tabs-trigger[data-variant="default"]:where(
+      [data-orientation="horizontal"]:not(:first-of-type)
+    ) {
+    border-inline-start-color: hsl(var(--border-strong));
+  }
+
+  [data-tab-style="outline"]
+    .dr-tabs-trigger[data-variant="default"]:where(
+      [data-orientation="vertical"]:not(:first-of-type)
+    ) {
+    border-top-color: hsl(var(--border-strong));
+  }
+
+  [data-tab-style="outline"]
+    .dr-tabs-trigger[data-variant="default"][data-state="active"] {
+    border-color: hsl(var(--primary));
+    background-color: hsl(var(--primary-3));
+    color: hsl(var(--primary-text));
+  }
+
+  [data-tab-style="outline"][data-mode="dark"]
+    .dr-tabs-trigger[data-variant="default"][data-state="active"] {
+    background-color: hsl(var(--primary-4));
+  }
+
+  /* The current cell's edge stands in for the divider after it. */
+  [data-tab-style="outline"]
+    .dr-tabs-trigger[data-variant="default"][data-state="active"]
+    + .dr-tabs-trigger[data-variant="default"] {
+    border-inline-start-color: transparent;
+    border-top-color: transparent;
+  }
 }
