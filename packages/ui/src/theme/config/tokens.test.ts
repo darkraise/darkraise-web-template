@@ -17,6 +17,7 @@ describe("PAINT_TOKENS", () => {
       "cardEdge",
       "cardSheen",
       "trackWell",
+      "wellFill",
       "chromeRailFill",
       "chromeBarFill",
       "chromeEdge",
@@ -92,7 +93,7 @@ describe("PAINT_TOKENS", () => {
   })
 
   it("names the custom properties the components read", () => {
-    expect(Object.values(PAINT_TOKENS).slice(26)).toEqual([
+    expect(Object.values(PAINT_TOKENS).slice(27)).toEqual([
       "--btn-border",
       "--btn-danger-shadow",
       "--btn-neutral-fill",
@@ -174,6 +175,7 @@ describe("KIT_FALLBACK", () => {
       overlayFillAlpha: "1",
       surfaceBackdrop: "none",
       scrimBackdrop: "none",
+      wellFill: "initial",
     })
   })
 })

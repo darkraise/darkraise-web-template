@@ -13,6 +13,7 @@ export const PAINT_TOKENS = {
   cardEdge: "--card-edge",
   cardSheen: "--card-sheen",
   trackWell: "--track-well",
+  wellFill: "--well-fill",
   chromeRailFill: "--chrome-rail-bg",
   chromeBarFill: "--chrome-bar-bg",
   chromeEdge: "--chrome-edge",
@@ -92,7 +93,8 @@ export type PaintToken = keyof typeof PAINT_TOKENS
  * Opaque, unblurred values the kit restores under more contrast, whatever
  * the style or preset set: every backdrop and the canvas `none`, the card
  * plane and the overlays at full alpha, and the overlay fill at its light
- * `@layer base` value in theme.css.
+ * `@layer base` value in theme.css, and the well fill unset, so every well
+ * paints its opaque fallback.
  */
 export const KIT_FALLBACK: Readonly<Partial<Record<PaintToken, string>>> = {
   chromeBackdrop: "none",
@@ -105,4 +107,5 @@ export const KIT_FALLBACK: Readonly<Partial<Record<PaintToken, string>>> = {
   overlayFillAlpha: "1",
   surfaceBackdrop: "none",
   scrimBackdrop: "none",
+  wellFill: "initial",
 }
