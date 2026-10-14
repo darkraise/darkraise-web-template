@@ -47,6 +47,9 @@ describe("Card Stock", () => {
       fieldFill: "well",
       dialogFooter: "plain",
       avatarShape: "round",
+      switchStyle: "slide",
+      checkStyle: "outline",
+      sliderStyle: "bar",
     })
     expect(registry.signaturesFor("tactile", "card-stock")).toMatchObject({
       ...cardStock.signatures,

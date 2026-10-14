@@ -34,6 +34,10 @@ describe("Paper & Ink", () => {
       dialogHeader: "plain",
       dialogFooter: "ruled",
       avatarShape: "round",
+      switchStyle: "track",
+      checkStyle: "outline",
+      tabStyle: "underline",
+      sliderStyle: "ruled",
     })
     expect(registry.signaturesFor("quiet", "paper-ink")).toMatchObject(
       paperInk.signatures ?? {},

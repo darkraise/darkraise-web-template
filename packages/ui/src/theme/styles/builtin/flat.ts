@@ -20,6 +20,7 @@ export const flat: StyleDefinition = {
     badgeStyle: "tint",
     bannerMark: "icon",
     dialogHeader: "band",
+    tabStyle: "underline",
   },
   tokens: {
     shared: {

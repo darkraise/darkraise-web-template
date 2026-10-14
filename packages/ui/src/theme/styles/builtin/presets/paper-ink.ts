@@ -37,6 +37,10 @@ export const paperInk: PresetDefinition = {
     dialogHeader: "plain",
     dialogFooter: "ruled",
     avatarShape: "round",
+    switchStyle: "track",
+    checkStyle: "outline",
+    tabStyle: "underline",
+    sliderStyle: "ruled",
   },
   tokens: {
     shared: {

@@ -922,6 +922,10 @@ export const paperInk: PresetDefinition = {
     dialogHeader: "plain",
     dialogFooter: "ruled",
     avatarShape: "round",
+    switchStyle: "track",
+    checkStyle: "outline",
+    tabStyle: "underline",
+    sliderStyle: "ruled",
   },
   tokens: {
     shared: {
@@ -998,6 +1002,11 @@ export const micaDesk: PresetDefinition = {
     badgeStyle: "tint",
     fieldBorder: "bottom",
     dialogFooter: "band",
+    buttonStyle: "solid",
+    iconButton: "square",
+    switchStyle: "track",
+    checkStyle: "box",
+    tabStyle: "underline",
   },
   tokens: {
     // The other tokens are left out of this excerpt.
@@ -1027,6 +1036,7 @@ export const micaDesk: PresetDefinition = {
 - `shellGroundGradient` replaces the shell's ground under the Gradient background, Glass's default. A value with no opaque layer, here a single accent bloom, lets the page canvas show through the shell. Under Solid the shell keeps its opaque ground: the page colour, recessed 5% toward the text colour under the inset and island shells.
 - The content pane is a translucent slab: `shellContentFill` is the card colour at an alpha computed from `--surface-alpha`. With the preset's `0.75` the slab is at `0.5` at Medium and moves with Transparency. Under more contrast the kit sets `--surface-fill-alpha` to `1`, `--surface-alpha` follows, and the same expression gives `1`, so the slab turns opaque together with the cards although the kit does not reset `shellContentFill`.
 - `dropdownShadow` is written under `light` and `dark`, because Glass sets it per mode.
+- `buttonStyle: "solid"`, `iconButton: "square"` and `checkStyle: "box"` return to the kit defaults, because Glass picks `glass`, `round` and `round`. The preset keeps Glass's `knob` slider by not naming `sliderStyle`.
 
 ### Braun Panel: a signal colour, seams and per-mode keys on Tactile
 
@@ -1061,6 +1071,9 @@ export const braunPanel: PresetDefinition = {
     fieldFill: "well",
     dialogFooter: "plain",
     avatarShape: "round",
+    switchStyle: "slide",
+    tabStyle: "outline",
+    sliderStyle: "bar",
   },
   tokens: {
     // The other tokens are left out of this excerpt.
@@ -1092,6 +1105,7 @@ export const braunPanel: PresetDefinition = {
 
 - `signalColor: "yellow"` gives the preset a second hue beside its neutral accent. `bannerMark: "lamp"` lights info and neutral banners in it, and the focus ring reads `--signal-fill` directly. Because the preset sets a signal colour, the Signal Color control appears in the switcher.
 - `bannerSurface: "card"` is paired with the lamp mark, which does not depend on the banner's border.
+- It keeps Tactile's `key` buttons by not naming `buttonStyle`, and replaces Tactile's `knob` slider with `bar`.
 - `cardDivider: "seam"` and `tableHead: "seam"` draw the `seam` line over the `seamHighlight` line. The preset sets them per mode: a white highlight under the default line in light mode, and a black line over a faint white highlight in dark mode.
 - Tactile sets `buttonEdge` and `cardEdge` values of its own, and a `dark` value for `buttonEdge`. The preset writes each under `light` and `dark`, never under `shared`.
 - The dark `cardSheen` opens with its white alpha, `0.015`, in the top-down form described under [What the vocabulary does not do](#what-the-vocabulary-does-not-do).

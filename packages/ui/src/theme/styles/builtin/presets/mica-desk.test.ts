@@ -26,6 +26,11 @@ describe("Mica Desk", () => {
       badgeStyle: "tint",
       fieldBorder: "bottom",
       dialogFooter: "band",
+      buttonStyle: "solid",
+      iconButton: "square",
+      switchStyle: "track",
+      checkStyle: "box",
+      tabStyle: "underline",
     })
     expect(registry.signaturesFor("glass", "mica-desk")).toMatchObject({
       ...micaDesk.signatures,

@@ -24,6 +24,11 @@ export const pastelSoft: PresetDefinition = {
     navSelection: "chip",
     menuHighlight: "tint",
     labelCase: "auto",
+    buttonStyle: "soft",
+    iconButton: "round",
+    checkStyle: "round",
+    tabStyle: "pill",
+    sliderStyle: "knob",
   },
   tokens: {
     shared: {

@@ -21,6 +21,11 @@ describe("Pastel Soft-Flat", () => {
       navSelection: "chip",
       menuHighlight: "tint",
       labelCase: "auto",
+      buttonStyle: "soft",
+      iconButton: "round",
+      checkStyle: "round",
+      tabStyle: "pill",
+      sliderStyle: "knob",
     })
     expect(registry.signaturesFor("flat", "pastel-soft")).toMatchObject({
       navSelection: "chip",

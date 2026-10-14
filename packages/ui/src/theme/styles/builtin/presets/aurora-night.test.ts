@@ -23,10 +23,13 @@ describe("Aurora Night", () => {
       figureFamily: "mono",
       cardDivider: "hairline",
       badgeStyle: "tint",
-      fieldFill: "translucent",
+      checkStyle: "box",
+      tabStyle: "pill",
+      sliderStyle: "round",
     })
     expect(registry.signaturesFor("glass", "aurora-night")).toMatchObject({
       ...auroraNight.signatures,
+      fieldFill: "translucent",
       barEdge: "veil",
       menuHighlight: "tint",
       tooltipTone: "inverse",

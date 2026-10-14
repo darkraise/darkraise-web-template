@@ -24,6 +24,7 @@ describe("Milk Glass", () => {
       bannerMark: "lamp",
       bannerSurface: "card",
       badgeStyle: "tint",
+      tabStyle: "pill",
     })
     expect(registry.signaturesFor("glass", "milk-glass")).toMatchObject({
       ...milkGlass.signatures,

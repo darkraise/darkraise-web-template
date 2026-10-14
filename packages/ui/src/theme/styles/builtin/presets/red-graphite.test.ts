@@ -31,6 +31,9 @@ describe("Red Graphite", () => {
       rowSelection: "stripe",
       dialogHeader: "plain",
       avatarShape: "round",
+      switchStyle: "marked",
+      tabStyle: "outline",
+      sliderStyle: "bar",
     })
     expect(registry.signaturesFor("quiet", "red-graphite")).toMatchObject(
       redGraphite.signatures ?? {},

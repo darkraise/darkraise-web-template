@@ -29,6 +29,7 @@ export const milkGlass: PresetDefinition = {
     bannerMark: "lamp",
     bannerSurface: "card",
     badgeStyle: "tint",
+    tabStyle: "pill",
   },
   tokens: {
     shared: {

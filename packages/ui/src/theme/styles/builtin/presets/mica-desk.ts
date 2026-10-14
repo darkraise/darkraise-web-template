@@ -29,6 +29,11 @@ export const micaDesk: PresetDefinition = {
     badgeStyle: "tint",
     fieldBorder: "bottom",
     dialogFooter: "band",
+    buttonStyle: "solid",
+    iconButton: "square",
+    switchStyle: "track",
+    checkStyle: "box",
+    tabStyle: "underline",
   },
   tokens: {
     shared: {

@@ -37,6 +37,9 @@ export const redGraphite: PresetDefinition = {
     rowSelection: "stripe",
     dialogHeader: "plain",
     avatarShape: "round",
+    switchStyle: "marked",
+    tabStyle: "outline",
+    sliderStyle: "bar",
   },
   tokens: {
     shared: {

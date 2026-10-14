@@ -39,6 +39,9 @@ export const braunPanel: PresetDefinition = {
     fieldFill: "well",
     dialogFooter: "plain",
     avatarShape: "round",
+    switchStyle: "slide",
+    tabStyle: "outline",
+    sliderStyle: "bar",
   },
   tokens: {
     shared: {

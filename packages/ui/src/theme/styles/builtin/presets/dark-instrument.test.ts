@@ -47,6 +47,9 @@ describe("Dark Instrument", () => {
       bannerSurface: "card",
       fieldFill: "well",
       dialogFooter: "plain",
+      switchStyle: "marked",
+      tabStyle: "outline",
+      sliderStyle: "ruled",
     })
     expect(registry.signaturesFor("tactile", "dark-instrument")).toMatchObject({
       ...darkInstrument.signatures,

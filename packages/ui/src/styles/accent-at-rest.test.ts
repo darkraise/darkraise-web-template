@@ -58,6 +58,23 @@ describe("buttons at rest", () => {
     expect(body).not.toContain("text-muted-foreground")
     expect(body).not.toMatch(/(?<![\w-])hover:/)
   })
+
+  // The one exception, approved by the owner on 2026-10-14: buttonStyle
+  // "soft" draws the outline button with an accent edge under accent text
+  // at rest. Every other value leaves the neutral variants on neutrals.
+  it("puts accent on a resting neutral button only under buttonStyle soft", () => {
+    const resting = rulesOf(BUTTON)
+      .filter((rule) => rule.body.includes("--primary"))
+      .flatMap((rule) => rule.selectors)
+      .filter(
+        (s) =>
+          /\.dr-btn\[data-variant="(outline|secondary)"\]/.test(s) &&
+          !/:(hover|active|focus)/.test(s),
+      )
+    expect(resting).toEqual([
+      '[data-button-style="soft"] .dr-btn[data-variant="outline"]',
+    ])
+  })
 })
 
 const THEME = "src/styles/theme.css"

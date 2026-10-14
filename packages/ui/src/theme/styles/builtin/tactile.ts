@@ -19,6 +19,8 @@ export const tactile: StyleDefinition = {
     badgeStyle: "tint",
     dialogFooter: "ruled",
     avatarShape: "square",
+    buttonStyle: "key",
+    sliderStyle: "knob",
   },
   vars: {
     shared: {

@@ -48,6 +48,9 @@ export const softGlass: PresetDefinition = {
     headingFont: "newsreader",
     glassBlur: "high",
   },
+  signatures: {
+    sliderStyle: "round",
+  },
   tokens: {
     shared: {
       cardRadius: "var(--radius)",

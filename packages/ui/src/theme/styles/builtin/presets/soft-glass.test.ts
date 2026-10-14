@@ -31,7 +31,7 @@ describe("Soft Glass", () => {
       headingFont: "newsreader",
       glassBlur: "high",
     })
-    expect(softGlass.signatures).toBeUndefined()
+    expect(softGlass.signatures).toEqual({ sliderStyle: "round" })
   })
 
   it("paints four accent blobs over a page-to-tint ground, each with a flat fallback", () => {

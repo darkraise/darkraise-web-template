@@ -35,6 +35,9 @@ export const linenTeal: PresetDefinition = {
     fieldFill: "surface",
     dialogHeader: "plain",
     avatarShape: "round",
+    buttonStyle: "soft",
+    iconButton: "round",
+    tabStyle: "pill",
   },
   tokens: {
     shared: {

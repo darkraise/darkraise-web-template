@@ -35,10 +35,12 @@ describe("Dusk Haze", () => {
       cardDivider: "hairline",
       bannerSurface: "card",
       badgeStyle: "tint",
-      fieldFill: "translucent",
+      switchStyle: "track",
+      tabStyle: "pill",
     })
     expect(registry.signaturesFor("glass", "dusk-haze")).toMatchObject({
       ...duskHaze.signatures,
+      fieldFill: "translucent",
       barEdge: "veil",
       tooltipTone: "inverse",
       bannerMark: "icon",

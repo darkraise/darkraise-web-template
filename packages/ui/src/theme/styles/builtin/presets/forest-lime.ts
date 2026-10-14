@@ -31,6 +31,9 @@ export const forestLime: PresetDefinition = {
     fieldFill: "surface",
     fieldBorder: "box",
     dialogHeader: "plain",
+    iconButton: "round",
+    switchStyle: "track",
+    tabStyle: "pill",
   },
   tokens: {
     shared: {

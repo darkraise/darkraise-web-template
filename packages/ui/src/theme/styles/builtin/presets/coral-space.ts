@@ -28,7 +28,9 @@ export const coralSpace: PresetDefinition = {
     labelCase: "none",
     cardDivider: "hairline",
     badgeStyle: "tint",
-    fieldFill: "translucent",
+    buttonStyle: "soft",
+    tabStyle: "underline",
+    sliderStyle: "round",
   },
   tokens: {
     shared: {

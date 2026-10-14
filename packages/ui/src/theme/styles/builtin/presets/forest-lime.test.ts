@@ -26,6 +26,9 @@ describe("Forest & Lime", () => {
       fieldFill: "surface",
       fieldBorder: "box",
       dialogHeader: "plain",
+      iconButton: "round",
+      switchStyle: "track",
+      tabStyle: "pill",
     })
     expect(registry.signaturesFor("flat", "forest-lime")).toMatchObject({
       railTone: "accent",

@@ -26,6 +26,9 @@ describe("Linen & Teal", () => {
       fieldFill: "surface",
       dialogHeader: "plain",
       avatarShape: "round",
+      buttonStyle: "soft",
+      iconButton: "round",
+      tabStyle: "pill",
     })
     expect(registry.signaturesFor("quiet", "linen-teal")).toMatchObject(
       linenTeal.signatures ?? {},

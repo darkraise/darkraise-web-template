@@ -27,10 +27,13 @@ describe("Smoked Obsidian", () => {
       cardDivider: "hairline",
       bannerMark: "stripe",
       badgeStyle: "chip",
-      fieldFill: "translucent",
+      iconButton: "square",
+      switchStyle: "track",
+      checkStyle: "box",
     })
     expect(registry.signaturesFor("glass", "smoked-obsidian")).toMatchObject({
       ...smokedObsidian.signatures,
+      fieldFill: "translucent",
       tooltipTone: "inverse",
       tableHead: "plain",
     })

@@ -31,7 +31,8 @@ export const duskHaze: PresetDefinition = {
     cardDivider: "hairline",
     bannerSurface: "card",
     badgeStyle: "tint",
-    fieldFill: "translucent",
+    switchStyle: "track",
+    tabStyle: "pill",
   },
   tokens: {
     shared: {

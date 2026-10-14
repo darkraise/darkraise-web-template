@@ -27,7 +27,9 @@ export const auroraNight: PresetDefinition = {
     figureFamily: "mono",
     cardDivider: "hairline",
     badgeStyle: "tint",
-    fieldFill: "translucent",
+    checkStyle: "box",
+    tabStyle: "pill",
+    sliderStyle: "round",
   },
   tokens: {
     shared: {

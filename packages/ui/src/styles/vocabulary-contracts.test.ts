@@ -207,26 +207,6 @@ describe("signatures in the kit stylesheets", () => {
   // `raised` needs no rule of its own.
   const ENGINE_DRAWN = new Set(["railTone:raised", "barTone:raised"])
 
-  // Control anatomy values whose kit rules are not written yet. The set is
-  // deleted, with its guard, once every value has its rules.
-  const PENDING_SIGNATURE_VALUES = new Set([
-    "buttonStyle:key",
-    "buttonStyle:soft",
-    "buttonStyle:glass",
-    "iconButton:round",
-    "switchStyle:track",
-    "switchStyle:slide",
-    "switchStyle:marked",
-    "checkStyle:outline",
-    "checkStyle:round",
-    "tabStyle:underline",
-    "tabStyle:pill",
-    "tabStyle:outline",
-    "sliderStyle:bar",
-    "sliderStyle:knob",
-    "sliderStyle:ruled",
-  ])
-
   const SELECTORS = KIT_TEXT.join("\n")
 
   const NON_DEFAULT = STAMPED_SIGNATURES.flatMap((key) =>
@@ -237,15 +217,7 @@ describe("signatures in the kit stylesheets", () => {
 
   it.each(NON_DEFAULT)("draws %s %s", (key, value) => {
     if (ENGINE_DRAWN.has(`${key}:${value}`)) return
-    if (PENDING_SIGNATURE_VALUES.has(`${key}:${value}`)) return
     expect(SELECTORS).toContain(`[${signatureAttribute(key)}="${value}"]`)
-  })
-
-  it("holds back only non-default values of stamped signatures", () => {
-    const known = new Set(NON_DEFAULT.map(([key, value]) => `${key}:${value}`))
-    expect(
-      [...PENDING_SIGNATURE_VALUES].filter((entry) => !known.has(entry)),
-    ).toEqual([])
   })
 
   it.each(SIGNATURES.navSelection.values as readonly string[])(

@@ -28,6 +28,11 @@ describe("Studio Green", () => {
       dialogHeader: "plain",
       dialogFooter: "ruled",
       avatarShape: "round",
+      buttonStyle: "soft",
+      switchStyle: "track",
+      checkStyle: "round",
+      tabStyle: "underline",
+      sliderStyle: "knob",
     })
     expect(registry.signaturesFor("quiet", "studio-green")).toMatchObject(
       studioGreen.signatures ?? {},

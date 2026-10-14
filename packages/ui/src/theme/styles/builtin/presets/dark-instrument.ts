@@ -38,6 +38,9 @@ export const darkInstrument: PresetDefinition = {
     bannerSurface: "card",
     fieldFill: "well",
     dialogFooter: "plain",
+    switchStyle: "marked",
+    tabStyle: "outline",
+    sliderStyle: "ruled",
   },
   tokens: {
     shared: {

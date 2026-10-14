@@ -30,7 +30,9 @@ export const smokedObsidian: PresetDefinition = {
     cardDivider: "hairline",
     bannerMark: "stripe",
     badgeStyle: "chip",
-    fieldFill: "translucent",
+    iconButton: "square",
+    switchStyle: "track",
+    checkStyle: "box",
   },
   tokens: {
     shared: {

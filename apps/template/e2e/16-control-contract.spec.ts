@@ -46,6 +46,17 @@ const SIZED = [
   '[data-probe="password"] .dr-password-input-field',
 ]
 
+/**
+ * Holds tabStyle at its kit default, `well`, for the glow probes: under
+ * `underline` and `outline` the tab indicator draws no shadow at all (spec
+ * section 2), so there is nothing for --affordance-glow to join.
+ */
+async function wellTabs(page: Page) {
+  await page
+    .locator("html")
+    .evaluate((el) => el.setAttribute("data-tab-style", "well"))
+}
+
 async function measuredHeights(page: Page) {
   const rows: { selector: string; index: number; height: number }[] = []
   for (const selector of SIZED) {
@@ -631,6 +642,7 @@ for (const style of STYLES) {
   test(`controls compose the glow probes · ${style}`, async ({ page }) => {
     await seedApp(page, { style, mode: "light" })
     await gotoApp(page, "/components/kitchen-sink")
+    await wellTabs(page)
     await page.mouse.move(0, 0)
     const field = page.getByLabel("Focused field")
     await field.focus()

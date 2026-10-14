@@ -56,6 +56,9 @@ export const cardStock: PresetDefinition = {
     fieldFill: "well",
     dialogFooter: "plain",
     avatarShape: "round",
+    switchStyle: "slide",
+    checkStyle: "outline",
+    sliderStyle: "bar",
   },
   tokens: {
     shared: {

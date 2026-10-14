@@ -266,22 +266,47 @@ for (const look of LOOKS) {
   }
 }
 
-/** The controls a glass card frosts, inside the control fixture's card. */
-const FROSTED = [
-  ["the tab well", '[data-case="tabs"] .dr-tabs-list'],
-  ["the segment well", '[data-case="segment"] .dr-segment-group'],
-  ["the slider track", '[data-case="slider"] .dr-slider-track'],
-  ["the progress track", '.dr-progress[data-case="progress"]'],
-  ["the unchecked switch", '.dr-switch[data-case="switch"]'],
-  ["the outline button", '.dr-btn[data-case="outline"]'],
-  ["the field", '[data-case="input"] .dr-input'],
-] as const
+/**
+ * The controls a glass card frosts, inside the control fixture's card, as
+ * the look builds them: a tab or segment list has a well only under
+ * `tabStyle: well`, and the secondary button is frosted only under
+ * `buttonStyle: glass` (a capsule) and `soft` (the neutral well).
+ */
+function frostedControls(look: Look): [string, string][] {
+  const { tabStyle, buttonStyle } = registry.signaturesFor(
+    look.style,
+    look.preset ?? "base",
+  )
+  const wells: [string, string][] =
+    tabStyle === "well"
+      ? [
+          ["the tab well", '[data-case="tabs"] .dr-tabs-list'],
+          ["the segment well", '[data-case="segment"] .dr-segment-group'],
+        ]
+      : []
+  const capsules: [string, string][] =
+    buttonStyle === "glass" || buttonStyle === "soft"
+      ? [["the secondary button", '.dr-btn[data-case="secondary"]']]
+      : []
+  return [
+    ...wells,
+    ["the slider track", '[data-case="slider"] .dr-slider-track'],
+    ["the progress track", '.dr-progress[data-case="progress"]'],
+    ["the unchecked switch", '.dr-switch[data-case="switch"]'],
+    ["the outline button", '.dr-btn[data-case="outline"]'],
+    ...capsules,
+    ["the field", '[data-case="input"] .dr-input'],
+  ]
+}
 
-/** The fill alpha of each frosted control, by name. */
-async function frostedAlphas(page: Page): Promise<Record<string, number>> {
+/** The fill alpha of each frosted control of `look`, by name. */
+async function frostedAlphas(
+  page: Page,
+  look: Look,
+): Promise<Record<string, number>> {
   const card = page.locator('[data-probe="anatomy-card"]')
   const out: Record<string, number> = {}
-  for (const [name, selector] of FROSTED) {
+  for (const [name, selector] of frostedControls(look)) {
     out[name] = alphaOf(
       await computed(card.locator(selector).first(), "background-color"),
     )
@@ -296,20 +321,26 @@ for (const look of LOOKS) {
     }) => {
       await seedLook(page, look, { mode })
       await openControlFixture(page)
-      for (const [name, alpha] of Object.entries(await frostedAlphas(page))) {
+      for (const [name, alpha] of Object.entries(
+        await frostedAlphas(page, look),
+      )) {
         expect(alpha, `${name} is translucent`).toBeLessThan(1)
         expect(alpha, `${name} is painted`).toBeGreaterThan(0)
       }
       await underFallbackMedia(page, async (media) => {
         await settle(page)
-        for (const [name, alpha] of Object.entries(await frostedAlphas(page))) {
+        for (const [name, alpha] of Object.entries(
+          await frostedAlphas(page, look),
+        )) {
           expect(alpha, `${name} under ${media}`).toBe(1)
         }
       })
       // Reduced transparency keeps glass, and the controls in it with it.
       await emulateReducedTransparency(page, true)
       await settle(page)
-      for (const [name, alpha] of Object.entries(await frostedAlphas(page))) {
+      for (const [name, alpha] of Object.entries(
+        await frostedAlphas(page, look),
+      )) {
         expect(alpha, `${name} under reduced transparency`).toBeLessThan(1)
       }
     })

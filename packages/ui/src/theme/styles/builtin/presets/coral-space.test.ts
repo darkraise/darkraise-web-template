@@ -23,10 +23,13 @@ describe("Coral Space", () => {
       labelCase: "none",
       cardDivider: "hairline",
       badgeStyle: "tint",
-      fieldFill: "translucent",
+      buttonStyle: "soft",
+      tabStyle: "underline",
+      sliderStyle: "round",
     })
     expect(registry.signaturesFor("glass", "coral-space")).toMatchObject({
       ...coralSpace.signatures,
+      fieldFill: "translucent",
       navSelection: "chip",
       menuHighlight: "tint",
       tooltipTone: "inverse",

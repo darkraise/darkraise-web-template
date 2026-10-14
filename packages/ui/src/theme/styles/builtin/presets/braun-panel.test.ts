@@ -46,6 +46,9 @@ describe("Braun Panel", () => {
       fieldFill: "well",
       dialogFooter: "plain",
       avatarShape: "round",
+      switchStyle: "slide",
+      tabStyle: "outline",
+      sliderStyle: "bar",
     })
     expect(registry.signaturesFor("tactile", "braun-panel")).toMatchObject({
       ...braunPanel.signatures,
