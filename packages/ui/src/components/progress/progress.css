@@ -14,4 +14,30 @@
   .dr-progress-indicator:dir(rtl) {
     scale: -1 1;
   }
+
+  /* sliderStyle: a progress bar follows the slider's track. */
+  [data-slider-style="bar"] .dr-progress {
+    border-radius: 0;
+  }
+
+  [data-slider-style="knob"] .dr-progress {
+    height: calc(var(--track-height) + 2px);
+    box-shadow:
+      var(--check-well-shadow),
+      inset 0 1px 2px rgb(0 0 0 / 0.16);
+  }
+
+  /* The hairline is painted in the middle of the bar's own box, so the
+     layout does not move; the indicator fills the content box. */
+  [data-slider-style="ruled"] .dr-progress {
+    padding-block: calc((var(--track-height) - 2px) / 2);
+    background-color: hsl(var(--border-strong));
+    background-clip: content-box;
+  }
+
+  /* An accent mark, drawn as the slider draws its range: a 1px inset
+     shadow covers the 2px hairline. */
+  [data-slider-style="ruled"] .dr-progress-indicator {
+    box-shadow: inset 0 0 0 1px hsl(var(--primary));
+  }
 }
