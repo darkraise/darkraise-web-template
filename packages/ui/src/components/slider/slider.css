@@ -64,4 +64,190 @@
   .dr-slider-step[data-orientation="vertical"] {
     @apply h-1 w-1;
   }
+
+  /* sliderStyle: every value restyles every slider, in both orientations;
+     the thumb's ::before stays its 24px hit area. */
+  [data-slider-style="bar"] .dr-slider-track {
+    border-radius: 0;
+  }
+
+  /* Accent marks are drawn with borders and inset shadows, as the round
+     thumb draws its ring: a --primary background is kept off the kit,
+     whose labelled faces paint --primary-fill. The bar is its own 3px
+     border closed on itself. */
+  [data-slider-style="bar"] .dr-slider-thumb {
+    width: 6px;
+    height: 18px;
+    border-width: 3px;
+    border-color: hsl(var(--primary));
+    border-radius: 0;
+    background-color: transparent;
+  }
+
+  [data-slider-style="bar"] .dr-slider-thumb[data-orientation="vertical"] {
+    width: 18px;
+    height: 6px;
+  }
+
+  /* The well shadow is transparent unless a look sets one, so a fixed
+     inset shade keeps the track recessed in every look. */
+  [data-slider-style="knob"] .dr-slider-track {
+    box-shadow:
+      var(--check-well-shadow),
+      inset 0 1px 2px rgb(0 0 0 / 0.16);
+  }
+
+  /* The dome's shade starts below the centre dot: across the dot it
+     would take the dot under 3:1 against the face. */
+  [data-slider-style="knob"] .dr-slider-thumb {
+    width: 22px;
+    height: 22px;
+    border-color: hsl(var(--border-strong));
+    background-image:
+      radial-gradient(
+        circle at 50% 30%,
+        rgb(255 255 255 / 0.6),
+        rgb(255 255 255 / 0) 70%
+      ),
+      linear-gradient(rgb(0 0 0 / 0) 70%, rgb(0 0 0 / 0.12));
+  }
+
+  [data-slider-style="knob"] .dr-slider-thumb::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 8px;
+    height: 8px;
+    margin: auto;
+    border: 4px solid hsl(var(--primary));
+    border-radius: var(--radius-pill);
+  }
+
+  /* The root keeps the track's height, so the 2px hairline moves no
+     layout. */
+  [data-slider-style="ruled"] .dr-slider[data-orientation="horizontal"] {
+    min-height: var(--track-height);
+  }
+
+  [data-slider-style="ruled"] .dr-slider[data-orientation="vertical"] {
+    min-width: var(--track-height);
+  }
+
+  /* The tick scale: one 1px tick every 10%, the last one flush with the
+     end, below the track, or inline-end of it when vertical. */
+  [data-slider-style="ruled"] .dr-slider::before {
+    content: "";
+    position: absolute;
+  }
+
+  [data-slider-style="ruled"]
+    .dr-slider[data-orientation="horizontal"]::before {
+    inset-inline: 0;
+    top: calc(50% + 3px);
+    height: 5px;
+    background-image: repeating-linear-gradient(
+      to right,
+      hsl(var(--border-strong)) 0 1px,
+      transparent 1px calc((100% - 1px) / 10)
+    );
+  }
+
+  [data-slider-style="ruled"] .dr-slider[data-orientation="vertical"]::before {
+    inset-block: 0;
+    inset-inline-start: calc(50% + 3px);
+    width: 5px;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      hsl(var(--border-strong)) 0 1px,
+      transparent 1px calc((100% - 1px) / 10)
+    );
+  }
+
+  /* A slider that shows its own step marks draws them as the ticks. */
+  [data-slider-style="ruled"] .dr-slider:has(.dr-slider-step)::before {
+    content: none;
+  }
+
+  [data-slider-style="ruled"] .dr-slider-track {
+    height: 2px;
+    overflow: visible;
+    background-color: hsl(var(--border-strong));
+    box-shadow: none;
+  }
+
+  [data-slider-style="ruled"] .dr-slider-track[data-orientation="vertical"] {
+    width: 2px;
+    height: 100%;
+  }
+
+  /* A 1px inset shadow covers the whole 2px range. */
+  [data-slider-style="ruled"] .dr-slider-range {
+    box-shadow: inset 0 0 0 1px hsl(var(--primary));
+  }
+
+  /* `translate` adds to the inline centring transform, moving each mark
+     to where the root's ticks would sit. */
+  [data-slider-style="ruled"] .dr-slider-step {
+    width: 1px;
+    height: 5px;
+    border-radius: 0;
+    background-color: hsl(var(--border-strong));
+    translate: 0 calc(50% + 3px);
+  }
+
+  [data-slider-style="ruled"] .dr-slider-step[data-orientation="vertical"] {
+    width: 5px;
+    height: 1px;
+    translate: calc(50% + 3px) 0;
+  }
+
+  /* A vertical slider centres its marks with a physical left, which RTL
+     does not mirror. */
+  [data-slider-style="ruled"]
+    .dr-slider-step[data-orientation="vertical"]:dir(rtl) {
+    translate: calc(-50% - 3px) 0;
+  }
+
+  [data-slider-style="ruled"] .dr-slider-thumb {
+    width: 2px;
+    height: 18px;
+    border-width: 1px;
+    border-color: hsl(var(--primary));
+    border-radius: 0;
+    background-color: transparent;
+  }
+
+  [data-slider-style="ruled"] .dr-slider-thumb[data-orientation="vertical"] {
+    width: 18px;
+    height: 2px;
+  }
+
+  /* The needle's head is a border triangle pointing at the track from the
+     end away from the ticks. The needle is drawn by its 1px border, so the
+     head steps out 1px to sit flush with the needle's end; its centring
+     offset is half its own width, so it centres in RTL too, and vertical,
+     its inline-start border mirrors itself. */
+  [data-slider-style="ruled"] .dr-slider-thumb::after {
+    content: "";
+    position: absolute;
+    inset-block-start: -1px;
+    inset-inline-start: calc(50% - 4px);
+    width: 8px;
+    height: 6px;
+    border-style: solid;
+    border-width: 6px 4px 0;
+    border-color: hsl(var(--primary)) transparent transparent;
+  }
+
+  [data-slider-style="ruled"]
+    .dr-slider-thumb[data-orientation="vertical"]::after {
+    inset-block-start: calc(50% - 4px);
+    inset-inline-start: -1px;
+    width: 6px;
+    height: 8px;
+    border-width: 4px 0;
+    border-inline-start-width: 6px;
+    border-color: transparent;
+    border-inline-start-color: hsl(var(--primary));
+  }
 }
