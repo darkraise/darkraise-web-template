@@ -1258,8 +1258,11 @@
 /* The field fill signature. `surface` paints a field in the surface it sits
    on rather than a rung below it, inside a card or an overlay; on the bare
    page a field keeps the default rung. `translucent` lets a frosted canvas
-   show through. Each restates the containers above, and `.dr-card`, so it
-   wins over their own rung. */
+   show through, as far as the card plane does: it reads --surface-alpha, so
+   it thins with the Transparency step and paints the opaque card, as
+   `surface` does, wherever the card is opaque (outside Glass, and under the
+   kit's more-contrast fallback). Each restates the containers above, and
+   `.dr-card`, so it wins over their own rung. */
 [data-field-fill="surface"] .dr-card {
   --control-surface: var(--card);
 }
@@ -1285,7 +1288,10 @@
     .dr-popover-content,
     .dr-floating-panel
   ) {
-  --control-surface: var(--card) / 0.6;
+  /* The field lets through 1/1.125 of what the card does: the card at 0.6
+     where the card is at 0.55, base Glass's Medium light alpha. */
+  --control-surface: var(--card) /
+    max(0, 1 - (1 - var(--surface-alpha)) / 1.125);
 }
 
 [data-mode="dark"][data-field-fill="translucent"],
@@ -1299,6 +1305,40 @@
     .dr-floating-panel
   ) {
   --control-surface: var(--foreground) / 0.06;
+}
+
+/* In dark mode the field is a 6% foreground wash once the card lets
+   through 0.40, base Glass's Medium dark share, or more. Toward an opaque
+   card the field is a card layer under that wash, the layer thickening and
+   the wash fading together, as one colour: --field-clear runs from 0 (the
+   card is opaque) to 1, --field-alpha is the pair's combined alpha and the
+   mix share is the wash's part of it. Without relative colour syntax the
+   fixed wash above stays. */
+@supports (color: hsl(from red h s l / 0.5)) {
+  [data-mode="dark"][data-field-fill="translucent"],
+  [data-mode="dark"][data-field-fill="translucent"]
+    :is(
+      .dr-card,
+      .dr-dialog-content,
+      .dr-sheet-content,
+      .dr-drawer-content,
+      .dr-popover-content,
+      .dr-floating-panel
+    ) {
+    --field-clear: clamp(0, (1 - var(--surface-alpha)) / 0.4, 1);
+    --field-alpha: calc(
+      0.06 * var(--field-clear) + (1 - 0.06 * var(--field-clear)) *
+        (1 - var(--field-clear))
+    );
+    --control-surface: from
+      color-mix(
+        in srgb,
+        hsl(var(--foreground))
+          calc(6% * var(--field-clear) / var(--field-alpha)),
+        hsl(var(--card))
+      )
+      h s l / var(--field-alpha);
+  }
 }
 
 [data-density="compact"] {
