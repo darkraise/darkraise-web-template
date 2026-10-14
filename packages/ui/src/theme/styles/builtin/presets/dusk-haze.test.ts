@@ -65,6 +65,15 @@ describe("Dusk Haze", () => {
       /^radial-gradient\(42% 24% at 46% 12%, rgb\(255 255 255 \/ 0\.85\), transparent 70%\), /,
     )
     expect(named(light.shellGroundGradient)).toEqual(["neutral-6", "neutral-7"])
+    // The ridges, and in dark the glow at the top right, are strong enough
+    // that a card over them shows the ground (glass-see-through.test.ts);
+    // the light over the page header's text stays faint.
+    expect(light.shellGroundGradient).toContain(
+      "radial-gradient(90% 34% at 16% 104%, hsl(var(--neutral-7) / 0.34), transparent 70%), radial-gradient(80% 30% at 90% 106%, hsl(var(--neutral-7) / 0.38), transparent 70%)",
+    )
+    expect(dark.shellGroundGradient).toContain(
+      "radial-gradient(60% 30% at 82% 8%, hsl(var(--neutral-7) / 0.4), transparent 70%)",
+    )
     expect(light.shellGroundGradient).toMatch(
       /, linear-gradient\(180deg, hsl\(var\(--neutral-6\) \/ 0\.35\), hsl\(var\(--neutral-6\)\) 46%\)$/,
     )
@@ -83,8 +92,8 @@ describe("Dusk Haze", () => {
   })
 
   it("makes cards thin glass through tokens the kit's fallback resets", () => {
-    expect(light.surfaceFillAlpha).toBe("0.72")
-    expect(dark.surfaceFillAlpha).toBe("0.7")
+    expect(light.surfaceFillAlpha).toBe("0.55")
+    expect(dark.surfaceFillAlpha).toBe("0.6")
     expect(light.surfaceBackdrop).toBe(
       "var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(140%))",
     )
@@ -104,21 +113,40 @@ describe("Dusk Haze", () => {
   })
 
   // No fallback resets the flat chrome fill, so its alpha is computed from
-  // the card alpha the kit's fallback sets to 1.
+  // the card alpha the kit's fallback sets to 1, and never clears past 0.4.
   it("thins the rail's glass from the card alpha, opaque when the cards are", () => {
     expect(KIT_FALLBACK.surfaceFillAlpha).toBe("1")
     expect(shared.chromeFlatFill).toBeUndefined()
     for (const tokens of [light, dark]) {
-      const [, factor, offset] =
-        /^hsl\(var\(--card\) \/ calc\(var\(--surface-alpha\) \* ([\d.]+) - ([\d.]+)\)\)$/.exec(
+      const [, floor, factor, offset] =
+        /^hsl\(var\(--card\) \/ max\(([\d.]+), calc\(var\(--surface-alpha\) \* ([\d.]+) - ([\d.]+)\)\)\)$/.exec(
           tokens.chromeFlatFill ?? "",
         ) ?? []
+      expect(floor).toBe("0.4")
       expect(Number(factor) - Number(offset)).toBeCloseTo(1)
       const cards = Number(tokens.surfaceFillAlpha)
-      const rail = cards * Number(factor) - Number(offset)
-      expect(rail).toBeGreaterThan(0.5)
+      const rail = Math.max(
+        Number(floor),
+        cards * Number(factor) - Number(offset),
+      )
+      expect(rail).toBeGreaterThanOrEqual(0.4)
       expect(rail).toBeLessThan(cards)
     }
+  })
+
+  // The light card rim is brighter than Glass's and stays, and so is the
+  // dark overlay rim; the others are Glass's.
+  it("rims panes in a pale edge under a top highlight", () => {
+    expect(light.cardBorder).toBe("rgb(255 255 255 / 0.75)")
+    expect(dark.cardBorder).toBeUndefined()
+    expect(light.overlayBorder).toBeUndefined()
+    expect(dark.overlayBorder).toBe("hsl(var(--foreground) / 0.16)")
+    expect(light.cardEdge).toMatch(
+      /^inset 0 1px 0 rgb\(255 255 255 \/ 0\.6\), /,
+    )
+    expect(dark.cardEdge).toMatch(
+      /^inset 0 1px 0 rgb\(255 255 255 \/ 0\.08\), /,
+    )
   })
 
   it("draws flat capsule buttons and sets the type light", () => {

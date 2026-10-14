@@ -38,7 +38,6 @@ export const smokedObsidian: PresetDefinition = {
       // light ink cannot be read on; this is the fill that ink is solved on.
       chromeRailFill: "hsl(var(--surface-sidebar))",
       chromeEdge: "hsl(var(--primary) / 0.3)",
-      surfaceFillAlpha: "0.7",
       // Lit from the top right, where the ground's light is.
       cardRim:
         "linear-gradient(200deg, hsl(var(--primary) / 0.4), rgb(255 255 255 / 0.04) 40%, rgb(255 255 255 / 0.02) 70%, hsl(var(--primary) / 0.12))",
@@ -54,15 +53,15 @@ export const smokedObsidian: PresetDefinition = {
       dialogTitleTracking: "-0.015em",
     },
     light: {
+      surfaceFillAlpha: "0.58",
       // Menus open over the smoked rail and bar, which are dark in light
       // mode too; at High a lighter overlay drops its text under 4.5:1.
       overlayFillAlpha: "0.85",
       // No base layer under the light: the shell ground stays clear, so the
       // page canvas and its grain show through.
       shellGroundGradient:
-        "radial-gradient(70% 55% at 80% -10%, hsl(var(--primary) / 0.14), transparent 60%)",
+        "radial-gradient(70% 55% at 80% -10%, hsl(var(--primary) / 0.34), transparent 60%)",
       surfaceBackdrop: glassBackdrop("saturate(90%)"),
-      cardBorder: "hsl(var(--foreground) / 0.1)",
       cardEdge:
         "inset 0 1px 0 rgb(255 255 255 / 0.7), 0 12px 32px -8px hsl(var(--foreground) / 0.18)",
       buttonNeutralFill: "hsl(var(--foreground) / 0.04)",
@@ -75,12 +74,12 @@ export const smokedObsidian: PresetDefinition = {
       scrim: "hsl(var(--foreground) / 0.35)",
     },
     dark: {
+      surfaceFillAlpha: "0.62",
       shellGroundGradient:
         "radial-gradient(70% 55% at 80% -10%, hsl(var(--primary) / 0.2), transparent 60%)",
       surfaceBackdrop: glassBackdrop("saturate(110%) brightness(0.7)"),
-      cardBorder: "rgb(255 255 255 / 0.07)",
       cardEdge:
-        "inset 0 1px 0 rgb(255 255 255 / 0.05), 0 20px 50px -12px rgb(0 0 0 / 0.6)",
+        "inset 0 1px 0 rgb(255 255 255 / 0.08), 0 20px 50px -12px rgb(0 0 0 / 0.6)",
       buttonNeutralFill: "rgb(255 255 255 / 0.04)",
       fieldShadow: "inset 0 1px 2px rgb(0 0 0 / 0.5)",
       selectedViewFill: "rgb(255 255 255 / 0.08)",

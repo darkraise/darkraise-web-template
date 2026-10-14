@@ -62,6 +62,19 @@ describe("Aurora Night", () => {
     expect(shared.shellGroundGradient).toBeUndefined()
   })
 
+  // The light rims are brighter than Glass's and stay; the dark ones are
+  // Glass's, and every card carries a top highlight.
+  it("rims panes in white under a top highlight", () => {
+    expect(light.cardBorder).toBe("rgb(255 255 255 / 0.8)")
+    expect(light.overlayBorder).toBe(light.cardBorder)
+    expect(dark.cardBorder).toBeUndefined()
+    expect(dark.overlayBorder).toBeUndefined()
+    expect(light.cardEdge).toMatch(
+      /^inset 0 1px 0 rgb\(255 255 255 \/ 0\.6\), /,
+    )
+    expect(dark.cardEdge).toMatch(/^inset 0 1px 0 rgb\(255 255 255 \/ 0\.1\), /)
+  })
+
   it("glows the primary action, the focused field and the current nav row", () => {
     const glow = (token: string) =>
       `0 0 0 1px hsl(var(--${token}) / 0.35), 0 0 24px -4px hsl(var(--${token}) / 0.35)`
@@ -81,8 +94,8 @@ describe("Aurora Night", () => {
   })
 
   it("makes cards thin glass through tokens the kit's fallback resets", () => {
-    expect(light.surfaceFillAlpha).toBe("0.62")
-    expect(dark.surfaceFillAlpha).toBe("0.57")
+    expect(light.surfaceFillAlpha).toBe("0.5")
+    expect(dark.surfaceFillAlpha).toBe("0.58")
     expect(shared.surfaceBackdrop).toBe(
       "var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(160%))",
     )
@@ -100,18 +113,22 @@ describe("Aurora Night", () => {
   })
 
   // No fallback resets the flat chrome fill, so its alpha is computed from
-  // the card alpha the kit's fallback sets to 1.
+  // the card alpha the kit's fallback sets to 1, and never clears past 0.4.
   it("thins the rail's glass from the card alpha, opaque when the cards are", () => {
     expect(KIT_FALLBACK.surfaceFillAlpha).toBe("1")
-    const [, factor, offset] =
-      /^hsl\(var\(--card\) \/ calc\(var\(--surface-alpha\) \* ([\d.]+) - ([\d.]+)\)\)$/.exec(
+    const [, floor, factor, offset] =
+      /^hsl\(var\(--card\) \/ max\(([\d.]+), calc\(var\(--surface-alpha\) \* ([\d.]+) - ([\d.]+)\)\)\)$/.exec(
         shared.chromeFlatFill ?? "",
       ) ?? []
+    expect(floor).toBe("0.4")
     expect(Number(factor) - Number(offset)).toBeCloseTo(1)
     for (const tokens of [light, dark]) {
       const cards = Number(tokens.surfaceFillAlpha)
-      const rail = cards * Number(factor) - Number(offset)
-      expect(rail).toBeGreaterThan(0.4)
+      const rail = Math.max(
+        Number(floor),
+        cards * Number(factor) - Number(offset),
+      )
+      expect(rail).toBeGreaterThanOrEqual(0.4)
       expect(rail).toBeLessThan(cards)
       expect(tokens.chromeFlatFill).toBeUndefined()
     }

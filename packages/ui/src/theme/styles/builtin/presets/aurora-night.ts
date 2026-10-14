@@ -36,7 +36,7 @@ export const auroraNight: PresetDefinition = {
       // alpha, so it turns opaque with the cards when the kit's fallback
       // sets the alpha to 1.
       chromeFlatFill:
-        "hsl(var(--card) / calc(var(--surface-alpha) * 1.2 - 0.2))",
+        "hsl(var(--card) / max(0.4, calc(var(--surface-alpha) * 1.2 - 0.2)))",
       surfaceBackdrop: glassBackdrop("saturate(160%)"),
       cardRadius: "calc(var(--radius) * 2.25)",
       overlayRadius: "calc(var(--radius) * 1.75)",
@@ -57,9 +57,10 @@ export const auroraNight: PresetDefinition = {
       // page canvas shows around it.
       shellGroundGradient:
         "radial-gradient(38% 30% at 72% 4%, hsl(var(--primary) / 0.3), transparent 70%), radial-gradient(32% 28% at 92% 18%, hsl(var(--primary) / 0.18), transparent 70%), radial-gradient(30% 24% at 52% 12%, hsl(var(--primary) / 0.14), transparent 70%)",
-      surfaceFillAlpha: "0.62",
+      surfaceFillAlpha: "0.5",
       cardBorder: "rgb(255 255 255 / 0.8)",
-      cardEdge: "0 20px 40px -16px hsl(var(--foreground) / 0.18)",
+      cardEdge:
+        "inset 0 1px 0 rgb(255 255 255 / 0.6), 0 20px 40px -16px hsl(var(--foreground) / 0.18)",
       navSelectionGlow: "0 0 16px -4px hsl(var(--primary) / 0.35)",
       buttonShadow:
         "0 0 0 1px hsl(var(--primary) / 0.35), 0 0 24px -4px hsl(var(--primary) / 0.35)",
@@ -76,8 +77,7 @@ export const auroraNight: PresetDefinition = {
     dark: {
       shellGroundGradient:
         "radial-gradient(38% 30% at 72% 4%, hsl(var(--primary-text) / 0.3), transparent 70%), radial-gradient(32% 28% at 92% 18%, hsl(var(--primary-text) / 0.18), transparent 70%), radial-gradient(30% 24% at 52% 12%, hsl(var(--primary-text) / 0.14), transparent 70%)",
-      surfaceFillAlpha: "0.57",
-      cardBorder: "rgb(255 255 255 / 0.08)",
+      surfaceFillAlpha: "0.58",
       cardEdge:
         "inset 0 1px 0 rgb(255 255 255 / 0.1), 0 30px 60px -20px rgb(0 0 0 / 0.7)",
       navSelectionGlow: "0 0 18px -4px hsl(var(--primary-text) / 0.45)",
@@ -89,7 +89,6 @@ export const auroraNight: PresetDefinition = {
         "0 0 0 1px hsl(var(--primary-text) / 0.35), 0 0 24px -4px hsl(var(--primary-text) / 0.35)",
       selectedViewFill: "rgb(255 255 255 / 0.1)",
       selectedViewShadow: "inset 0 1px 0 rgb(255 255 255 / 0.1)",
-      overlayBorder: "rgb(255 255 255 / 0.08)",
       dropdownShadow:
         "inset 0 1px 0 rgb(255 255 255 / 0.08), 0 24px 50px -16px rgb(0 0 0 / 0.8)",
       modalShadow:

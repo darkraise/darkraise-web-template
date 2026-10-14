@@ -3,8 +3,9 @@ import { gotoApp, readThemeAttrs, seedApp } from "./helpers/app"
 import { alphaOf, computed, settle } from "./helpers/measure"
 
 /**
- * Glass is glass where content passes under it: translucent, frosted cards,
- * dialogs and menus over a frosting scrim, a solid rail and a veiled bar.
+ * Glass is glass where content passes under it: translucent, frosted cards
+ * with a white rim and a lit top edge, dialogs and menus over a frosting
+ * scrim, a solid rail and a veiled bar.
  * Each value is read through computed style in Chromium, against a
  * throwaway element styled with the value Glass should resolve to, at the
  * default radius (rounded), Transparency and Blur (medium). The exact alphas
@@ -125,13 +126,17 @@ for (const mode of MODES) {
     const [fill, edge, radius] = await probe(
       page,
       `background-color: hsl(var(--card) / var(--surface-alpha)); border: 1px solid ${
-        mode === "light" ? "hsl(var(--border))" : "hsl(var(--border-subtle))"
+        mode === "light" ? "rgb(255 255 255 / 0.7)" : "rgb(255 255 255 / 0.14)"
       }; border-radius: 12px`,
       ["background-color", "border-top-color", "border-top-left-radius"],
     )
     expect(await computed(card, "background-color")).toBe(fill)
     expect(alphaOf(fill ?? "")).toBeLessThan(1)
     expect(await computed(card, "border-top-color")).toBe(edge)
+    // A white highlight along the top edge, inside the rim.
+    expect(await computed(card, "box-shadow")).toContain(
+      `rgba(255, 255, 255, ${mode === "light" ? "0.6" : "0.08"}) 0px 1px 0px 0px inset`,
+    )
     expect(await computed(card, "border-top-left-radius")).toBe(radius)
     expect(await computed(card, "backdrop-filter")).toBe(
       "blur(8px) saturate(1.8)",

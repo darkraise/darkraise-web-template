@@ -64,23 +64,22 @@ export const duskHaze: PresetDefinition = {
       // canvas shows. Text stands on this ground, so the ridges stay above
       // the tone the muted ink clears 4.5:1 on.
       shellGroundGradient:
-        "radial-gradient(42% 24% at 46% 12%, rgb(255 255 255 / 0.85), transparent 70%), radial-gradient(90% 34% at 16% 104%, hsl(var(--neutral-7) / 0.14), transparent 70%), radial-gradient(80% 30% at 90% 106%, hsl(var(--neutral-7) / 0.16), transparent 70%), linear-gradient(180deg, hsl(var(--neutral-6) / 0.35), hsl(var(--neutral-6)) 46%)",
-      surfaceFillAlpha: "0.72",
+        "radial-gradient(42% 24% at 46% 12%, rgb(255 255 255 / 0.85), transparent 70%), radial-gradient(90% 34% at 16% 104%, hsl(var(--neutral-7) / 0.34), transparent 70%), radial-gradient(80% 30% at 90% 106%, hsl(var(--neutral-7) / 0.38), transparent 70%), linear-gradient(180deg, hsl(var(--neutral-6) / 0.35), hsl(var(--neutral-6)) 46%)",
+      surfaceFillAlpha: "0.55",
       surfaceBackdrop: glassBackdrop("saturate(140%)"),
       // The rail's glass is thinner than a card's and follows the card
       // alpha, so it turns opaque with the cards when the kit's fallback
       // sets the alpha to 1.
       chromeFlatFill:
-        "hsl(var(--card) / calc(var(--surface-alpha) * 1.6 - 0.6))",
+        "hsl(var(--card) / max(0.4, calc(var(--surface-alpha) * 1.6 - 0.6)))",
       cardBorder: "rgb(255 255 255 / 0.75)",
       cardEdge:
-        "0 0 0 1px hsl(var(--foreground) / 0.06), 0 10px 28px -14px hsl(var(--foreground) / 0.22)",
+        "inset 0 1px 0 rgb(255 255 255 / 0.6), 0 0 0 1px hsl(var(--foreground) / 0.06), 0 10px 28px -14px hsl(var(--foreground) / 0.22)",
       buttonNeutralFill: "hsl(var(--foreground) / 0.06)",
       fieldFocusRing: "0 0 0 3px hsl(var(--primary) / 0.18)",
       selectedViewShadow:
         "0 0 0 1px hsl(var(--foreground) / 0.12), 0 1px 2px hsl(var(--foreground) / 0.06)",
       thumbShadow: "0 1px 2px hsl(var(--foreground) / 0.2)",
-      overlayBorder: "hsl(var(--foreground) / 0.12)",
       dropdownShadow: "0 12px 32px -8px hsl(var(--foreground) / 0.22)",
       modalShadow:
         "0 0 3px rgb(0 0 0 / 0.05), 0 8px 12px rgb(0 0 0 / 0.05), 0 12px 20px rgb(0 0 0 / 0.05), 0 30px 60px -20px hsl(var(--foreground) / 0.3)",
@@ -88,14 +87,13 @@ export const duskHaze: PresetDefinition = {
     },
     dark: {
       shellGroundGradient:
-        "radial-gradient(38% 20% at 45% 22%, hsl(var(--primary-text) / 0.14), transparent 70%), radial-gradient(60% 30% at 82% 8%, hsl(var(--neutral-7) / 0.1), transparent 70%), linear-gradient(180deg, hsl(var(--neutral-3) / 0.7), transparent 70%)",
-      surfaceFillAlpha: "0.7",
+        "radial-gradient(38% 20% at 45% 22%, hsl(var(--primary-text) / 0.14), transparent 70%), radial-gradient(60% 30% at 82% 8%, hsl(var(--neutral-7) / 0.4), transparent 70%), linear-gradient(180deg, hsl(var(--neutral-3) / 0.7), transparent 70%)",
+      surfaceFillAlpha: "0.6",
       surfaceBackdrop: glassBackdrop(),
       chromeFlatFill:
-        "hsl(var(--card) / calc(var(--surface-alpha) * 1.25 - 0.25))",
-      cardBorder: "hsl(var(--foreground) / 0.14)",
+        "hsl(var(--card) / max(0.4, calc(var(--surface-alpha) * 1.25 - 0.25)))",
       cardEdge:
-        "0 0 3px rgb(0 0 0 / 0.05), 0 8px 12px rgb(0 0 0 / 0.05), 0 12px 20px rgb(0 0 0 / 0.05)",
+        "inset 0 1px 0 rgb(255 255 255 / 0.08), 0 0 3px rgb(0 0 0 / 0.05), 0 8px 12px rgb(0 0 0 / 0.05), 0 12px 20px rgb(0 0 0 / 0.05)",
       buttonNeutralFill: "hsl(var(--foreground) / 0.14)",
       fieldFocusRing: "0 0 0 3px hsl(var(--primary) / 0.35)",
       selectedViewFill: "hsl(var(--foreground) / 0.16)",

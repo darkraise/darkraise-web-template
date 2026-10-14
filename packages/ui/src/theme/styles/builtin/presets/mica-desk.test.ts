@@ -49,32 +49,48 @@ describe("Mica Desk", () => {
     })
   })
 
+  // The bloom is strong enough that a card over it shows the accent
+  // (glass-see-through.test.ts).
   it("shows the canvas through the shell ground under an accent bloom", () => {
-    for (const tokens of [light, dark]) {
-      expect(tokens.shellGroundGradient).toMatch(
-        /^radial-gradient\(80% 70% at 10% 0%, hsl\(var\(--primary\) \/ 0\.1\d\), transparent 60%\)$/,
-      )
-    }
+    expect(light.shellGroundGradient).toBe(
+      "radial-gradient(80% 70% at 10% 0%, hsl(var(--primary) / 0.34), transparent 60%)",
+    )
+    expect(dark.shellGroundGradient).toBe(
+      "radial-gradient(80% 70% at 10% 0%, hsl(var(--primary) / 0.28), transparent 60%)",
+    )
     expect(shared.shellGroundGradient).toBeUndefined()
   })
 
   it("lays content on a slab fainter than its cards, opaque when they are", () => {
-    expect(shared.surfaceFillAlpha).toBe("0.75")
+    expect(shared.surfaceFillAlpha).toBeUndefined()
+    expect(light.surfaceFillAlpha).toBe("0.6")
+    expect(dark.surfaceFillAlpha).toBe("0.62")
+    // The slab never clears past 0.35, and turns opaque with the cards.
     expect(shared.shellContentFill).toBe(
-      "hsl(var(--card) / calc(var(--surface-alpha) * 2 - 1))",
+      "hsl(var(--card) / max(0.35, calc(var(--surface-alpha) * 2 - 1)))",
     )
     expect(KIT_FALLBACK.surfaceFillAlpha).toBe("1")
   })
 
   it("keeps content flat: cards and buttons cast no shadow", () => {
-    for (const token of [
-      "cardEdge",
-      "buttonShadow",
-      "buttonNeutralShadow",
-    ] as const) {
+    for (const token of ["buttonShadow", "buttonNeutralShadow"] as const) {
       expect(shared[token], token).toBe("0 0 transparent")
       expect(light[token], token).toBeUndefined()
       expect(dark[token], token).toBeUndefined()
+    }
+    // A card carries Glass's top highlight and no drop shadow.
+    expect(shared.cardEdge).toBeUndefined()
+    expect(light.cardEdge).toBe("inset 0 1px 0 rgb(255 255 255 / 0.6)")
+    expect(dark.cardEdge).toBe("inset 0 1px 0 rgb(255 255 255 / 0.08)")
+  })
+
+  it("rims cards, menus and dialogs in Glass's white edge", () => {
+    for (const token of [
+      "cardBorder",
+      "overlayBorder",
+      "dialogBorder",
+    ] as const) {
+      expect(written(micaDesk.tokens), token).not.toContain(token)
     }
   })
 
@@ -86,7 +102,7 @@ describe("Mica Desk", () => {
   it("edges banners in the ink of each mode, so a dark banner keeps its edge", () => {
     expect(shared.bannerBorder).toBeUndefined()
     expect(light.bannerBorder).toBe("rgb(0 0 0 / 0.06)")
-    expect(dark.bannerBorder).toBe(dark.dialogBorder)
+    expect(dark.bannerBorder).toBe("hsl(var(--foreground) / 0.08)")
   })
 
   it("rounds cards, menus and dialogs at twice the control radius", () => {

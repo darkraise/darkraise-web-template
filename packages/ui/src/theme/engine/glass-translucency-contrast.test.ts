@@ -22,6 +22,29 @@ const TEXT = 4.5
 /** An engine colour a ground layer names, with the alpha it paints at. */
 const LAYER = /hsl\(var\((--[\w-]+)\)(?:\s*\/\s*([\d.]+))?\)/g
 
+/**
+ * A fill whose alpha follows the card's, `hsl(var(--x) / calc(var(--surface-alpha) * k - c))`,
+ * optionally under a floor, `hsl(var(--x) / max(floor, calc(…)))`: the
+ * alpha it paints over a card plane at `card`.
+ */
+function derivedFill(
+  value: string,
+): { fill: string; alpha: (card: number) => number } | null {
+  const match =
+    /^hsl\(var\((--[\w-]+)\) \/ (?:max\(([\d.]+), )?calc\(var\(--surface-alpha\) \* ([\d.]+) - ([\d.]+)\)(\)?)\)$/.exec(
+      value,
+    )
+  if (!match) return null
+  const [, fill, floor, k, c, close] = match
+  // A floor opens max( and needs its closing bracket; a bare calc() has none.
+  if ((floor === undefined) !== (close === "")) return null
+  return {
+    fill: fill as string,
+    alpha: (card) =>
+      Math.min(1, Math.max(Number(floor ?? 0), card * Number(k) - Number(c))),
+  }
+}
+
 interface Look {
   name: string
   preset: string
@@ -144,18 +167,20 @@ function failures(look: Look, mode: "light" | "dark"): string[] {
     ["--foreground", "--muted-foreground"],
   )
   // A flat rail derives its glass from the card alpha (Milk Glass, Aurora
-  // Night, Dusk Haze), so it thins with Transparency too.
-  const rail = /calc\(var\(--surface-alpha\) \* ([\d.]+) - ([\d.]+)\)/.exec(
-    paint.chromeFlatFill ?? "",
-  )
+  // Night, Dusk Haze), under a floor, so it thins with Transparency too.
+  const railFill = paint.chromeFlatFill ?? ""
+  const rail = derivedFill(railFill)
+  if (railFill.includes("--surface-alpha") && !rail) {
+    out.push(`an unmodelled flat rail fill: ${railFill}`)
+  }
   if (rail) {
-    const [, k, c] = rail
     const declared = Number(paint.surfaceFillAlpha ?? "1")
     for (const [step, scale] of Object.entries(TRANSPARENCY_SCALE)) {
-      const card = effectiveAlpha(declared, scale, SURFACE_ALPHA_FLOOR)
-      const alpha = Math.min(1, Math.max(0, card * Number(k) - Number(c)))
+      const alpha = rail.alpha(
+        effectiveAlpha(declared, scale, SURFACE_ALPHA_FLOOR),
+      )
       for (const [ground, colour] of page) {
-        const face = composite(colour, at("--card"), alpha)
+        const face = composite(colour, at(rail.fill), alpha)
         for (const text of [
           "--sidebar-foreground",
           "--sidebar-foreground-muted",
@@ -171,24 +196,21 @@ function failures(look: Look, mode: "light" | "dark"): string[] {
     }
   }
   // An inset shell's content pane derives its glass from the card alpha
-  // (Mica Desk, Coral Space), and page text that sits outside a card stands
-  // on it.
+  // (Mica Desk, Coral Space), under a floor, and page text that sits
+  // outside a card stands on it.
   const paneFill = paint.shellContentFill ?? ""
   if (paneFill.includes("--surface-alpha")) {
-    const pane =
-      /^hsl\(var\((--[\w-]+)\) \/ calc\(var\(--surface-alpha\) \* ([\d.]+) - ([\d.]+)\)\)$/.exec(
-        paneFill,
-      )
+    const pane = derivedFill(paneFill)
     if (!pane) {
       out.push(`an unmodelled content pane fill: ${paneFill}`)
     } else {
-      const [, fill, k, c] = pane
       const declared = Number(paint.surfaceFillAlpha ?? "1")
       for (const [step, scale] of Object.entries(TRANSPARENCY_SCALE)) {
-        const card = effectiveAlpha(declared, scale, SURFACE_ALPHA_FLOOR)
-        const alpha = Math.min(1, Math.max(0, card * Number(k) - Number(c)))
+        const alpha = pane.alpha(
+          effectiveAlpha(declared, scale, SURFACE_ALPHA_FLOOR),
+        )
         for (const [ground, colour] of page) {
-          const face = composite(colour, at(fill as string), alpha)
+          const face = composite(colour, at(pane.fill), alpha)
           for (const text of ["--foreground", "--muted-foreground"]) {
             const ratio = contrastRatio(at(text), face)
             if (ratio < TEXT) {
