@@ -486,6 +486,16 @@ const ALLOWED: Array<[string, string, string]> = [
     "the current step is in progress, not selected",
   ],
   [
+    "components/switch/switch.css",
+    '[data-switch-style="track"] .dr-switch[data-state="checked"] .dr-switch-thumb',
+    "the track style's thumb is an accent mark on the tinted track, drawn in --primary-text because --primary falls under 3:1 on --primary-4",
+  ],
+  [
+    "components/switch/switch.css",
+    '[data-switch-style="slide"] .dr-switch-marks[data-state="checked"]',
+    "the slide style's lit lamp is an accent mark on the slot, drawn in --primary-text because --primary falls under 3:1 on the --input slot",
+  ],
+  [
     "components/tabs/tabs.css",
     '[data-variant="enclosed"]',
     'enclosed tabs with color="accent" are an opt-in accent',
