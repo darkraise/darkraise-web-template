@@ -115,11 +115,15 @@ describe("Soft Glass", () => {
     expect(shared.navSelectionFill).toBeUndefined()
   })
 
-  it("edges panes in white under one soft drop, with no highlight or ring", () => {
-    expect(light.cardBorder).toBe("rgb(255 255 255 / 0.5)")
-    expect(dark.cardBorder).toBe("rgb(255 255 255 / 0.07)")
-    expect(light.cardEdge).toBe("0 10px 26px -18px rgb(0 0 0 / 0.35)")
-    expect(dark.cardEdge).toBe("0 10px 26px -18px rgb(0 0 0 / 0.6)")
+  // Glass's white rim and top highlight, over the preset's one soft drop.
+  it("edges panes in white under a top highlight and one soft drop, with no ring", () => {
+    expect(written(softGlass.tokens)).not.toContain("cardBorder")
+    expect(light.cardEdge).toBe(
+      "inset 0 1px 0 rgb(255 255 255 / 0.6), 0 10px 26px -18px rgb(0 0 0 / 0.35)",
+    )
+    expect(dark.cardEdge).toBe(
+      "inset 0 1px 0 rgb(255 255 255 / 0.08), 0 10px 26px -18px rgb(0 0 0 / 0.6)",
+    )
     expect(written(softGlass.tokens)).not.toContain("cardSheen")
     expect(written(softGlass.tokens)).not.toContain("cardRim")
   })

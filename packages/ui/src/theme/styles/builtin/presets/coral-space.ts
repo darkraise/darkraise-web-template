@@ -35,7 +35,7 @@ export const coralSpace: PresetDefinition = {
       // Twice the card alpha's distance from opaque, as Mica Desk's slab, so
       // the pane turns opaque with the cards under the kit's fallback.
       shellContentFill:
-        "hsl(var(--background) / calc(var(--surface-alpha) * 2 - 1))",
+        "hsl(var(--background) / max(0.35, calc(var(--surface-alpha) * 2 - 1)))",
       overlayFillAlpha: "0.65",
       cardRadius: "calc(var(--radius) * 1.25)",
       bannerRadius: "calc(var(--radius) * 1.25)",
@@ -48,7 +48,7 @@ export const coralSpace: PresetDefinition = {
       dialogTitleTracking: "-0.011em",
     },
     light: {
-      surfaceFillAlpha: "0.82",
+      surfaceFillAlpha: "0.56",
       // Opaque paint from the accent ramp's tint steps, no lower than the
       // step the rail's muted ink still clears 4.5:1 on, under grain drawn
       // as dot tiles.
@@ -57,9 +57,8 @@ export const coralSpace: PresetDefinition = {
       shellContentEdge: "hsl(var(--foreground) / 0.1)",
       shellContentShadow:
         "0 2px 6px -1px hsl(var(--foreground) / 0.22), 0 12px 28px -14px hsl(var(--foreground) / 0.35)",
-      cardBorder: "hsl(var(--foreground) / 0.07)",
       cardEdge:
-        "0 1px 2px hsl(var(--foreground) / 0.06), 0 4px 12px -6px hsl(var(--foreground) / 0.1)",
+        "inset 0 1px 0 rgb(255 255 255 / 0.6), 0 1px 2px hsl(var(--foreground) / 0.06), 0 4px 12px -6px hsl(var(--foreground) / 0.1)",
       navSelectionFill: "hsl(var(--card) / 0.9)",
       navSelectionShadow:
         "0 1px 2px hsl(var(--foreground) / 0.16), 0 3px 8px -3px hsl(var(--foreground) / 0.18)",
@@ -69,13 +68,13 @@ export const coralSpace: PresetDefinition = {
       modalShadow: "0 28px 64px -14px hsl(var(--foreground) / 0.45)",
     },
     dark: {
-      surfaceFillAlpha: "0.8",
+      surfaceFillAlpha: "0.6",
       shellGroundGradient:
         "radial-gradient(circle at 1px 1px, rgb(0 0 0 / 0.1) 0.7px, transparent 1.1px) 0 0 / 3px 3px, radial-gradient(circle at 3px 2px, rgb(0 0 0 / 0.14) 0.7px, transparent 1.1px) 0 0 / 5px 5px, radial-gradient(circle at 2px 5px, rgb(0 0 0 / 0.1) 0.8px, transparent 1.2px) 0 0 / 7px 7px, radial-gradient(circle at 8px 4px, rgb(0 0 0 / 0.14) 0.8px, transparent 1.2px) 0 0 / 11px 11px, linear-gradient(155deg, hsl(var(--primary-6) / 0.22), transparent 55%), linear-gradient(155deg, hsl(var(--primary-2)), hsl(var(--primary-1)))",
       shellContentEdge: "rgb(0 0 0 / 0.6)",
       shellContentShadow: "0 12px 28px -12px rgb(0 0 0 / 0.7)",
-      cardBorder: "rgb(255 255 255 / 0.06)",
-      cardEdge: "0 1px 2px rgb(0 0 0 / 0.4)",
+      cardEdge:
+        "inset 0 1px 0 rgb(255 255 255 / 0.08), 0 1px 2px rgb(0 0 0 / 0.4)",
       navSelectionFill: "rgb(255 255 255 / 0.14)",
       navSelectionShadow: "inset 0 1px 0 rgb(255 255 255 / 0.08)",
       buttonNeutralFill: "rgb(255 255 255 / 0.04)",

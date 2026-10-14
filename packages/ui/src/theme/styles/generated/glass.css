@@ -8,7 +8,6 @@
     --card-radius: calc(var(--radius) * 1.5);
     --overlay-radius: calc(var(--radius) * 1.25);
     --dialog-radius: calc(var(--radius) * 1.75);
-    --overlay-border: hsl(var(--foreground) / 0.08);
     --dialog-fill: hsl(var(--popover) / var(--overlay-alpha));
     --surface-overlay-base: hsl(var(--popover) / var(--overlay-alpha));
     --overlay-fill-alpha: 0.6;
@@ -21,10 +20,11 @@
   }
   [data-style="glass"]:not([data-mode="dark"]) {
     --chrome-rail-bg: hsl(var(--background));
-    --surface-fill-alpha: 0.72;
-    --card-border: hsl(var(--border));
-    --card-edge: 0 1px 2px rgb(0 0 0 / 0.04);
-    --dialog-border: hsl(var(--border));
+    --surface-fill-alpha: 0.55;
+    --card-border: rgb(255 255 255 / 0.7);
+    --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 1px 2px rgb(0 0 0 / 0.04);
+    --overlay-border: rgb(255 255 255 / 0.7);
+    --dialog-border: rgb(255 255 255 / 0.7);
     --shadow-dropdown: 0 10px 30px -10px rgb(0 0 0 / 0.25);
   }
 }
@@ -32,8 +32,11 @@
 @layer style.mode {
   [data-mode="dark"][data-style="glass"] {
     --chrome-rail-bg: hsl(var(--card));
-    --surface-fill-alpha: 0.66;
-    --dialog-border: hsl(var(--foreground) / 0.1);
+    --surface-fill-alpha: 0.6;
+    --card-border: rgb(255 255 255 / 0.14);
+    --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.08);
+    --overlay-border: rgb(255 255 255 / 0.14);
+    --dialog-border: rgb(255 255 255 / 0.14);
     --shadow-dropdown: 0 10px 30px -10px rgb(0 0 0 / 0.6);
     --field-focus-ring: 0 0 0 3px hsl(var(--primary) / 0.2);
     --scrim: rgb(0 0 0 / 0.5);
@@ -79,21 +82,22 @@
       --surface-overlay-blend-mode: normal;
       --overlay-border: hsl(var(--border));
       --overlay-backdrop: none;
+      --card-border: hsl(var(--border-subtle));
+      --card-edge: 0 0 transparent;
+      --dialog-border: hsl(var(--border));
     }
   }
 }
 
 @layer style.preset {
   [data-preset="mica-desk"] {
-    --shell-content-fill: hsl(var(--card) / calc(var(--surface-alpha) * 2 - 1));
-    --surface-fill-alpha: 0.75;
+    --shell-content-fill: hsl(var(--card) / max(0.35, calc(var(--surface-alpha) * 2 - 1)));
     --card-radius: calc(var(--radius) * 2);
     --overlay-radius: calc(var(--radius) * 2);
     --dialog-radius: calc(var(--radius) * 2);
     --nav-item-radius: var(--radius);
     --menu-item-radius: var(--radius);
     --check-radius: var(--radius);
-    --card-edge: 0 0 transparent;
     --btn-edge: inset 0 -1px 0 rgb(0 0 0 / 0.4);
     --btn-shadow: 0 0 transparent;
     --btn-neutral-shadow: 0 0 transparent;
@@ -103,31 +107,30 @@
     --type-page-title-tracking: 0;
   }
   [data-preset="mica-desk"]:not([data-mode="dark"]) {
-    --shell-ground-gradient: radial-gradient(80% 70% at 10% 0%, hsl(var(--primary) / 0.12), transparent 60%);
+    --surface-fill-alpha: 0.6;
+    --shell-ground-gradient: radial-gradient(80% 70% at 10% 0%, hsl(var(--primary) / 0.34), transparent 60%);
     --shell-content-edge: rgb(0 0 0 / 0.06);
-    --card-border: rgb(0 0 0 / 0.06);
+    --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.6);
     --btn-neutral-fill: hsl(var(--card) / 0.7);
     --btn-neutral-edge: inset 0 -1px 0 rgb(0 0 0 / 0.1);
     --field-shadow: 0 0 0 1px rgb(0 0 0 / 0.06);
     --field-focus-fill: hsl(var(--card));
     --state-layer-hover: 0.04;
     --selected-view-shadow: 0 0 0 1px rgb(0 0 0 / 0.06);
-    --overlay-border: rgb(0 0 0 / 0.06);
-    --dialog-border: rgb(0 0 0 / 0.06);
     --banner-border: rgb(0 0 0 / 0.06);
     --shadow-dropdown: 0 0 2px rgb(0 0 0 / 0.12), 0 8px 16px rgb(0 0 0 / 0.14);
     --modal-shadow: 0 0 8px rgb(0 0 0 / 0.12), 0 32px 64px rgb(0 0 0 / 0.14);
   }
   [data-mode="dark"][data-preset="mica-desk"] {
-    --shell-ground-gradient: radial-gradient(80% 70% at 10% 0%, hsl(var(--primary) / 0.16), transparent 60%);
+    --surface-fill-alpha: 0.62;
+    --shell-ground-gradient: radial-gradient(80% 70% at 10% 0%, hsl(var(--primary) / 0.28), transparent 60%);
     --shell-content-edge: rgb(0 0 0 / 0.1);
+    --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.08);
     --btn-neutral-fill: rgb(255 255 255 / 0.06);
     --btn-neutral-edge: 0 0 transparent;
     --field-shadow: 0 0 0 1px rgb(255 255 255 / 0.08);
     --field-focus-fill: hsl(var(--background) / 0.7);
     --state-layer-hover: 0.06;
-    --overlay-border: rgb(0 0 0 / 0.2);
-    --dialog-border: hsl(var(--foreground) / 0.08);
     --banner-border: hsl(var(--foreground) / 0.08);
     --shadow-dropdown: 0 0 2px rgb(0 0 0 / 0.24), 0 8px 16px rgb(0 0 0 / 0.28);
     --modal-shadow: 0 0 8px rgb(0 0 0 / 0.3), 0 32px 64px rgb(0 0 0 / 0.37);
@@ -138,7 +141,6 @@
   [data-preset="smoked-obsidian"] {
     --chrome-rail-bg: hsl(var(--surface-sidebar));
     --chrome-edge: hsl(var(--primary) / 0.3);
-    --surface-fill-alpha: 0.7;
     --card-rim: linear-gradient(200deg, hsl(var(--primary) / 0.4), rgb(255 255 255 / 0.04) 40%, rgb(255 255 255 / 0.02) 70%, hsl(var(--primary) / 0.12));
     --card-radius: calc(var(--radius) * 1.75);
     --overlay-radius: calc(var(--radius) * 1.5);
@@ -152,10 +154,10 @@
     --type-dialog-title-tracking: -0.015em;
   }
   [data-preset="smoked-obsidian"]:not([data-mode="dark"]) {
+    --surface-fill-alpha: 0.58;
     --overlay-fill-alpha: 0.85;
-    --shell-ground-gradient: radial-gradient(70% 55% at 80% -10%, hsl(var(--primary) / 0.14), transparent 60%);
+    --shell-ground-gradient: radial-gradient(70% 55% at 80% -10%, hsl(var(--primary) / 0.34), transparent 60%);
     --surface-backdrop: var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(90%));
-    --card-border: hsl(var(--foreground) / 0.1);
     --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.7), 0 12px 32px -8px hsl(var(--foreground) / 0.18);
     --btn-neutral-fill: hsl(var(--foreground) / 0.04);
     --field-shadow: inset 0 1px 2px hsl(var(--foreground) / 0.14);
@@ -166,10 +168,10 @@
     --scrim: hsl(var(--foreground) / 0.35);
   }
   [data-mode="dark"][data-preset="smoked-obsidian"] {
+    --surface-fill-alpha: 0.62;
     --shell-ground-gradient: radial-gradient(70% 55% at 80% -10%, hsl(var(--primary) / 0.2), transparent 60%);
     --surface-backdrop: var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(110%) brightness(0.7));
-    --card-border: rgb(255 255 255 / 0.07);
-    --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 20px 50px -12px rgb(0 0 0 / 0.6);
+    --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 20px 50px -12px rgb(0 0 0 / 0.6);
     --btn-neutral-fill: rgb(255 255 255 / 0.04);
     --field-shadow: inset 0 1px 2px rgb(0 0 0 / 0.5);
     --selected-view-bg: rgb(255 255 255 / 0.08);
@@ -207,11 +209,11 @@
     --figure-weight: 700;
   }
   [data-preset="milk-glass"]:not([data-mode="dark"]) {
-    --shell-ground-gradient: radial-gradient(45% 40% at 12% 18%, hsl(var(--primary) / 0.26), transparent 70%), radial-gradient(40% 40% at 88% 12%, hsl(var(--primary) / 0.14), transparent 70%), radial-gradient(50% 45% at 70% 92%, hsl(var(--primary) / 0.18), transparent 70%);
-    --surface-fill-alpha: 0.78;
-    --chrome-flat-fill: hsl(var(--card) / calc(var(--surface-alpha) * 1.75 - 0.75));
+    --shell-ground-gradient: radial-gradient(45% 40% at 12% 18%, hsl(var(--primary) / 0.26), transparent 70%), radial-gradient(40% 40% at 88% 12%, hsl(var(--primary) / 0.14), transparent 70%), radial-gradient(50% 45% at 70% 92%, hsl(var(--primary) / 0.38), transparent 70%);
+    --surface-fill-alpha: 0.62;
+    --chrome-flat-fill: hsl(var(--card) / max(0.4, calc(var(--surface-alpha) * 1.75 - 0.75)));
     --card-border: rgb(255 255 255 / 0.9);
-    --card-edge: 0 0 0 1px hsl(var(--foreground) / 0.04), 0 1px 1px hsl(var(--foreground) / 0.03), 0 8px 24px -6px hsl(var(--foreground) / 0.08), 0 24px 48px -12px hsl(var(--foreground) / 0.08);
+    --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 0 0 1px hsl(var(--foreground) / 0.04), 0 1px 1px hsl(var(--foreground) / 0.03), 0 8px 24px -6px hsl(var(--foreground) / 0.08), 0 24px 48px -12px hsl(var(--foreground) / 0.08);
     --nav-selection-fill: hsl(var(--card) / 0.92);
     --nav-selection-shadow: 0 1px 2px hsl(var(--foreground) / 0.05), 0 6px 14px -6px hsl(var(--foreground) / 0.12);
     --btn-neutral-fill: hsl(var(--card) / 0.7);
@@ -226,10 +228,9 @@
     --scrim: hsl(var(--background) / 0.45);
   }
   [data-mode="dark"][data-preset="milk-glass"] {
-    --shell-ground-gradient: radial-gradient(45% 40% at 12% 18%, hsl(var(--primary) / 0.2), transparent 70%), radial-gradient(40% 40% at 88% 12%, hsl(var(--primary) / 0.1), transparent 70%), radial-gradient(50% 45% at 70% 92%, hsl(var(--primary) / 0.12), transparent 70%);
-    --surface-fill-alpha: 0.8;
-    --chrome-flat-fill: hsl(var(--card) / calc(var(--surface-alpha) * 1.5 - 0.5));
-    --card-border: rgb(255 255 255 / 0.1);
+    --shell-ground-gradient: radial-gradient(45% 40% at 12% 18%, hsl(var(--primary) / 0.2), transparent 70%), radial-gradient(40% 40% at 88% 12%, hsl(var(--primary) / 0.1), transparent 70%), radial-gradient(50% 45% at 70% 92%, hsl(var(--primary) / 0.32), transparent 70%);
+    --surface-fill-alpha: 0.64;
+    --chrome-flat-fill: hsl(var(--card) / max(0.4, calc(var(--surface-alpha) * 1.5 - 0.5)));
     --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 24px 48px -12px rgb(0 0 0 / 0.55);
     --nav-selection-fill: rgb(255 255 255 / 0.14);
     --nav-selection-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1);
@@ -238,7 +239,6 @@
     --state-layer-hover: 0.07;
     --field-focus-ring: 0 0 0 4px hsl(var(--primary) / 0.18);
     --selected-view-bg: rgb(255 255 255 / 0.14);
-    --overlay-border: rgb(255 255 255 / 0.1);
     --shadow-dropdown: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 16px 40px -8px rgb(0 0 0 / 0.6);
     --modal-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 30px 60px -12px rgb(0 0 0 / 0.65);
     --scrim: hsl(var(--background) / 0.45);
@@ -248,7 +248,7 @@
 @layer style.preset {
   [data-preset="aurora-night"] {
     --overlay-fill-alpha: 0.55;
-    --chrome-flat-fill: hsl(var(--card) / calc(var(--surface-alpha) * 1.2 - 0.2));
+    --chrome-flat-fill: hsl(var(--card) / max(0.4, calc(var(--surface-alpha) * 1.2 - 0.2)));
     --surface-backdrop: var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(160%));
     --card-radius: calc(var(--radius) * 2.25);
     --overlay-radius: calc(var(--radius) * 1.75);
@@ -265,9 +265,9 @@
   }
   [data-preset="aurora-night"]:not([data-mode="dark"]) {
     --shell-ground-gradient: radial-gradient(38% 30% at 72% 4%, hsl(var(--primary) / 0.3), transparent 70%), radial-gradient(32% 28% at 92% 18%, hsl(var(--primary) / 0.18), transparent 70%), radial-gradient(30% 24% at 52% 12%, hsl(var(--primary) / 0.14), transparent 70%);
-    --surface-fill-alpha: 0.62;
+    --surface-fill-alpha: 0.5;
     --card-border: rgb(255 255 255 / 0.8);
-    --card-edge: 0 20px 40px -16px hsl(var(--foreground) / 0.18);
+    --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 20px 40px -16px hsl(var(--foreground) / 0.18);
     --nav-selection-glow: 0 0 16px -4px hsl(var(--primary) / 0.35);
     --btn-shadow: 0 0 0 1px hsl(var(--primary) / 0.35), 0 0 24px -4px hsl(var(--primary) / 0.35);
     --btn-neutral-fill: hsl(var(--card) / 0.5);
@@ -281,8 +281,7 @@
   }
   [data-mode="dark"][data-preset="aurora-night"] {
     --shell-ground-gradient: radial-gradient(38% 30% at 72% 4%, hsl(var(--primary-text) / 0.3), transparent 70%), radial-gradient(32% 28% at 92% 18%, hsl(var(--primary-text) / 0.18), transparent 70%), radial-gradient(30% 24% at 52% 12%, hsl(var(--primary-text) / 0.14), transparent 70%);
-    --surface-fill-alpha: 0.57;
-    --card-border: rgb(255 255 255 / 0.08);
+    --surface-fill-alpha: 0.58;
     --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.1), 0 30px 60px -20px rgb(0 0 0 / 0.7);
     --nav-selection-glow: 0 0 18px -4px hsl(var(--primary-text) / 0.45);
     --btn-shadow: 0 0 0 1px hsl(var(--primary-text) / 0.35), 0 0 24px -4px hsl(var(--primary-text) / 0.35);
@@ -291,7 +290,6 @@
     --field-focus-ring: 0 0 0 1px hsl(var(--primary-text) / 0.35), 0 0 24px -4px hsl(var(--primary-text) / 0.35);
     --selected-view-bg: rgb(255 255 255 / 0.1);
     --selected-view-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1);
-    --overlay-border: rgb(255 255 255 / 0.08);
     --shadow-dropdown: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 24px 50px -16px rgb(0 0 0 / 0.8);
     --modal-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1), 0 30px 70px -20px rgb(0 0 0 / 0.85);
     --scrim: rgb(0 0 0 / 0.6);
@@ -300,7 +298,7 @@
 
 @layer style.preset {
   [data-preset="coral-space"] {
-    --shell-content-fill: hsl(var(--background) / calc(var(--surface-alpha) * 2 - 1));
+    --shell-content-fill: hsl(var(--background) / max(0.35, calc(var(--surface-alpha) * 2 - 1)));
     --overlay-fill-alpha: 0.65;
     --card-radius: calc(var(--radius) * 1.25);
     --banner-radius: calc(var(--radius) * 1.25);
@@ -313,12 +311,11 @@
     --type-dialog-title-tracking: -0.011em;
   }
   [data-preset="coral-space"]:not([data-mode="dark"]) {
-    --surface-fill-alpha: 0.82;
+    --surface-fill-alpha: 0.56;
     --shell-ground-gradient: radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.14) 0.7px, transparent 1.1px) 0 0 / 3px 3px, radial-gradient(circle at 3px 2px, rgb(255 255 255 / 0.1) 0.7px, transparent 1.1px) 0 0 / 5px 5px, radial-gradient(circle at 2px 5px, rgb(255 255 255 / 0.14) 0.8px, transparent 1.2px) 0 0 / 7px 7px, radial-gradient(circle at 8px 4px, rgb(255 255 255 / 0.1) 0.8px, transparent 1.2px) 0 0 / 11px 11px, linear-gradient(155deg, transparent 30%, hsl(var(--primary-6) / 0.18)), hsl(var(--primary-5));
     --shell-content-edge: hsl(var(--foreground) / 0.1);
     --shell-content-shadow: 0 2px 6px -1px hsl(var(--foreground) / 0.22), 0 12px 28px -14px hsl(var(--foreground) / 0.35);
-    --card-border: hsl(var(--foreground) / 0.07);
-    --card-edge: 0 1px 2px hsl(var(--foreground) / 0.06), 0 4px 12px -6px hsl(var(--foreground) / 0.1);
+    --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 1px 2px hsl(var(--foreground) / 0.06), 0 4px 12px -6px hsl(var(--foreground) / 0.1);
     --nav-selection-fill: hsl(var(--card) / 0.9);
     --nav-selection-shadow: 0 1px 2px hsl(var(--foreground) / 0.16), 0 3px 8px -3px hsl(var(--foreground) / 0.18);
     --state-layer-hover: 0.06;
@@ -327,12 +324,11 @@
     --modal-shadow: 0 28px 64px -14px hsl(var(--foreground) / 0.45);
   }
   [data-mode="dark"][data-preset="coral-space"] {
-    --surface-fill-alpha: 0.8;
+    --surface-fill-alpha: 0.6;
     --shell-ground-gradient: radial-gradient(circle at 1px 1px, rgb(0 0 0 / 0.1) 0.7px, transparent 1.1px) 0 0 / 3px 3px, radial-gradient(circle at 3px 2px, rgb(0 0 0 / 0.14) 0.7px, transparent 1.1px) 0 0 / 5px 5px, radial-gradient(circle at 2px 5px, rgb(0 0 0 / 0.1) 0.8px, transparent 1.2px) 0 0 / 7px 7px, radial-gradient(circle at 8px 4px, rgb(0 0 0 / 0.14) 0.8px, transparent 1.2px) 0 0 / 11px 11px, linear-gradient(155deg, hsl(var(--primary-6) / 0.22), transparent 55%), linear-gradient(155deg, hsl(var(--primary-2)), hsl(var(--primary-1)));
     --shell-content-edge: rgb(0 0 0 / 0.6);
     --shell-content-shadow: 0 12px 28px -12px rgb(0 0 0 / 0.7);
-    --card-border: rgb(255 255 255 / 0.06);
-    --card-edge: 0 1px 2px rgb(0 0 0 / 0.4);
+    --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 1px 2px rgb(0 0 0 / 0.4);
     --nav-selection-fill: rgb(255 255 255 / 0.14);
     --nav-selection-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
     --btn-neutral-fill: rgb(255 255 255 / 0.04);
@@ -369,28 +365,26 @@
     --figure-weight: 360;
   }
   [data-preset="dusk-haze"]:not([data-mode="dark"]) {
-    --shell-ground-gradient: radial-gradient(42% 24% at 46% 12%, rgb(255 255 255 / 0.85), transparent 70%), radial-gradient(90% 34% at 16% 104%, hsl(var(--neutral-7) / 0.14), transparent 70%), radial-gradient(80% 30% at 90% 106%, hsl(var(--neutral-7) / 0.16), transparent 70%), linear-gradient(180deg, hsl(var(--neutral-6) / 0.35), hsl(var(--neutral-6)) 46%);
-    --surface-fill-alpha: 0.72;
+    --shell-ground-gradient: radial-gradient(42% 24% at 46% 12%, rgb(255 255 255 / 0.85), transparent 70%), radial-gradient(90% 34% at 16% 104%, hsl(var(--neutral-7) / 0.34), transparent 70%), radial-gradient(80% 30% at 90% 106%, hsl(var(--neutral-7) / 0.38), transparent 70%), linear-gradient(180deg, hsl(var(--neutral-6) / 0.35), hsl(var(--neutral-6)) 46%);
+    --surface-fill-alpha: 0.55;
     --surface-backdrop: var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(140%));
-    --chrome-flat-fill: hsl(var(--card) / calc(var(--surface-alpha) * 1.6 - 0.6));
+    --chrome-flat-fill: hsl(var(--card) / max(0.4, calc(var(--surface-alpha) * 1.6 - 0.6)));
     --card-border: rgb(255 255 255 / 0.75);
-    --card-edge: 0 0 0 1px hsl(var(--foreground) / 0.06), 0 10px 28px -14px hsl(var(--foreground) / 0.22);
+    --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 0 0 1px hsl(var(--foreground) / 0.06), 0 10px 28px -14px hsl(var(--foreground) / 0.22);
     --btn-neutral-fill: hsl(var(--foreground) / 0.06);
     --field-focus-ring: 0 0 0 3px hsl(var(--primary) / 0.18);
     --selected-view-shadow: 0 0 0 1px hsl(var(--foreground) / 0.12), 0 1px 2px hsl(var(--foreground) / 0.06);
     --thumb-shadow: 0 1px 2px hsl(var(--foreground) / 0.2);
-    --overlay-border: hsl(var(--foreground) / 0.12);
     --shadow-dropdown: 0 12px 32px -8px hsl(var(--foreground) / 0.22);
     --modal-shadow: 0 0 3px rgb(0 0 0 / 0.05), 0 8px 12px rgb(0 0 0 / 0.05), 0 12px 20px rgb(0 0 0 / 0.05), 0 30px 60px -20px hsl(var(--foreground) / 0.3);
     --scrim: hsl(var(--foreground) / 0.24);
   }
   [data-mode="dark"][data-preset="dusk-haze"] {
-    --shell-ground-gradient: radial-gradient(38% 20% at 45% 22%, hsl(var(--primary-text) / 0.14), transparent 70%), radial-gradient(60% 30% at 82% 8%, hsl(var(--neutral-7) / 0.1), transparent 70%), linear-gradient(180deg, hsl(var(--neutral-3) / 0.7), transparent 70%);
-    --surface-fill-alpha: 0.7;
+    --shell-ground-gradient: radial-gradient(38% 20% at 45% 22%, hsl(var(--primary-text) / 0.14), transparent 70%), radial-gradient(60% 30% at 82% 8%, hsl(var(--neutral-7) / 0.4), transparent 70%), linear-gradient(180deg, hsl(var(--neutral-3) / 0.7), transparent 70%);
+    --surface-fill-alpha: 0.6;
     --surface-backdrop: var(--glass-backdrop-off, blur(var(--glass-blur)));
-    --chrome-flat-fill: hsl(var(--card) / calc(var(--surface-alpha) * 1.25 - 0.25));
-    --card-border: hsl(var(--foreground) / 0.14);
-    --card-edge: 0 0 3px rgb(0 0 0 / 0.05), 0 8px 12px rgb(0 0 0 / 0.05), 0 12px 20px rgb(0 0 0 / 0.05);
+    --chrome-flat-fill: hsl(var(--card) / max(0.4, calc(var(--surface-alpha) * 1.25 - 0.25)));
+    --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 0 3px rgb(0 0 0 / 0.05), 0 8px 12px rgb(0 0 0 / 0.05), 0 12px 20px rgb(0 0 0 / 0.05);
     --btn-neutral-fill: hsl(var(--foreground) / 0.14);
     --field-focus-ring: 0 0 0 3px hsl(var(--primary) / 0.35);
     --selected-view-bg: hsl(var(--foreground) / 0.16);
@@ -417,8 +411,7 @@
     --chrome-rail-bg: hsl(var(--card) / max(0.12, calc(var(--surface-alpha) * 2.06 - 1.06)));
     --chrome-bar-bg: hsl(var(--card) / max(0.12, calc(var(--surface-alpha) * 2.06 - 1.06)));
     --nav-selection-fill: hsl(var(--sidebar-foreground-hover) / 0.1);
-    --card-border: rgb(255 255 255 / 0.5);
-    --card-edge: 0 10px 26px -18px rgb(0 0 0 / 0.35);
+    --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 10px 26px -18px rgb(0 0 0 / 0.35);
     --scrim: hsl(var(--foreground) / 0.16);
   }
   [data-mode="dark"][data-preset="soft-glass"] {
@@ -426,8 +419,7 @@
     --chrome-rail-bg: hsl(var(--card) / max(0.12, calc(var(--surface-alpha) * 1.74 - 0.74)));
     --chrome-bar-bg: hsl(var(--card) / max(0.12, calc(var(--surface-alpha) * 1.74 - 0.74)));
     --nav-selection-fill: hsl(var(--sidebar-foreground-hover) / 0.1);
-    --card-border: rgb(255 255 255 / 0.07);
-    --card-edge: 0 10px 26px -18px rgb(0 0 0 / 0.6);
+    --card-edge: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 10px 26px -18px rgb(0 0 0 / 0.6);
     --scrim: rgb(0 0 0 / 0.65);
   }
 }

@@ -60,12 +60,15 @@ describe("Smoked Obsidian", () => {
     }
   })
 
+  // The light is strong enough in light mode that a card over it shows
+  // the accent (glass-see-through.test.ts).
   it("lights the page and the card rims from the top right", () => {
-    for (const tokens of [light, dark]) {
-      expect(tokens.shellGroundGradient).toMatch(
-        /^radial-gradient\(70% 55% at 80% -10%, hsl\(var\(--primary\) \/ 0\.\d+\), transparent 60%\)$/,
-      )
-    }
+    expect(light.shellGroundGradient).toBe(
+      "radial-gradient(70% 55% at 80% -10%, hsl(var(--primary) / 0.34), transparent 60%)",
+    )
+    expect(dark.shellGroundGradient).toBe(
+      "radial-gradient(70% 55% at 80% -10%, hsl(var(--primary) / 0.2), transparent 60%)",
+    )
     expect(shared.shellGroundGradient).toBeUndefined()
     expect(shared.cardRim).toMatch(
       /^linear-gradient\(200deg, hsl\(var\(--primary\) \/ 0\.4\), /,
@@ -73,7 +76,9 @@ describe("Smoked Obsidian", () => {
   })
 
   it("makes cards dimming glass through tokens the kit's fallback resets", () => {
-    expect(shared.surfaceFillAlpha).toBe("0.7")
+    expect(shared.surfaceFillAlpha).toBeUndefined()
+    expect(light.surfaceFillAlpha).toBe("0.58")
+    expect(dark.surfaceFillAlpha).toBe("0.62")
     expect(light.surfaceBackdrop).toBe(
       "var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(90%))",
     )
@@ -91,6 +96,18 @@ describe("Smoked Obsidian", () => {
     for (const token of translucency) {
       expect(KIT_FALLBACK[token], token).toBeDefined()
     }
+  })
+
+  // Glass's white rim edges the cards; the light card keeps its own,
+  // brighter top highlight and the dark one takes Glass's.
+  it("rims cards in Glass's white edge under a top highlight", () => {
+    expect(written(smokedObsidian.tokens)).not.toContain("cardBorder")
+    expect(light.cardEdge).toMatch(
+      /^inset 0 1px 0 rgb\(255 255 255 \/ 0\.7\), /,
+    )
+    expect(dark.cardEdge).toMatch(
+      /^inset 0 1px 0 rgb\(255 255 255 \/ 0\.08\), /,
+    )
   })
 
   it("recesses fields with an inner top shadow", () => {

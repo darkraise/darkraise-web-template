@@ -35,15 +35,14 @@ export const micaDesk: PresetDefinition = {
       // Twice the card alpha's distance from opaque, so the slab is the
       // fainter layer and turns opaque with the cards when the kit's
       // fallback sets the alpha to 1.
-      shellContentFill: "hsl(var(--card) / calc(var(--surface-alpha) * 2 - 1))",
-      surfaceFillAlpha: "0.75",
+      shellContentFill:
+        "hsl(var(--card) / max(0.35, calc(var(--surface-alpha) * 2 - 1)))",
       cardRadius: "calc(var(--radius) * 2)",
       overlayRadius: "calc(var(--radius) * 2)",
       dialogRadius: "calc(var(--radius) * 2)",
       navItemRadius: "var(--radius)",
       menuItemRadius: "var(--radius)",
       checkRadius: "var(--radius)",
-      cardEdge: "0 0 transparent",
       buttonEdge: "inset 0 -1px 0 rgb(0 0 0 / 0.4)",
       buttonShadow: "0 0 transparent",
       buttonNeutralShadow: "0 0 transparent",
@@ -55,35 +54,34 @@ export const micaDesk: PresetDefinition = {
       pageTitleTracking: "0",
     },
     light: {
+      surfaceFillAlpha: "0.6",
       // No base layer under the bloom: the shell ground stays clear, so the
       // page canvas shows through the chrome.
       shellGroundGradient:
-        "radial-gradient(80% 70% at 10% 0%, hsl(var(--primary) / 0.12), transparent 60%)",
+        "radial-gradient(80% 70% at 10% 0%, hsl(var(--primary) / 0.34), transparent 60%)",
       shellContentEdge: "rgb(0 0 0 / 0.06)",
-      cardBorder: "rgb(0 0 0 / 0.06)",
+      cardEdge: "inset 0 1px 0 rgb(255 255 255 / 0.6)",
       buttonNeutralFill: "hsl(var(--card) / 0.7)",
       buttonNeutralEdge: "inset 0 -1px 0 rgb(0 0 0 / 0.1)",
       fieldShadow: "0 0 0 1px rgb(0 0 0 / 0.06)",
       fieldFocusFill: "hsl(var(--card))",
       ghostHover: "0.04",
       selectedViewShadow: "0 0 0 1px rgb(0 0 0 / 0.06)",
-      overlayBorder: "rgb(0 0 0 / 0.06)",
-      dialogBorder: "rgb(0 0 0 / 0.06)",
       bannerBorder: "rgb(0 0 0 / 0.06)",
       dropdownShadow: "0 0 2px rgb(0 0 0 / 0.12), 0 8px 16px rgb(0 0 0 / 0.14)",
       modalShadow: "0 0 8px rgb(0 0 0 / 0.12), 0 32px 64px rgb(0 0 0 / 0.14)",
     },
     dark: {
+      surfaceFillAlpha: "0.62",
       shellGroundGradient:
-        "radial-gradient(80% 70% at 10% 0%, hsl(var(--primary) / 0.16), transparent 60%)",
+        "radial-gradient(80% 70% at 10% 0%, hsl(var(--primary) / 0.28), transparent 60%)",
       shellContentEdge: "rgb(0 0 0 / 0.1)",
+      cardEdge: "inset 0 1px 0 rgb(255 255 255 / 0.08)",
       buttonNeutralFill: "rgb(255 255 255 / 0.06)",
       buttonNeutralEdge: "0 0 transparent",
       fieldShadow: "0 0 0 1px rgb(255 255 255 / 0.08)",
       fieldFocusFill: "hsl(var(--background) / 0.7)",
       ghostHover: "0.06",
-      overlayBorder: "rgb(0 0 0 / 0.2)",
-      dialogBorder: "hsl(var(--foreground) / 0.08)",
       bannerBorder: "hsl(var(--foreground) / 0.08)",
       dropdownShadow: "0 0 2px rgb(0 0 0 / 0.24), 0 8px 16px rgb(0 0 0 / 0.28)",
       modalShadow: "0 0 8px rgb(0 0 0 / 0.3), 0 32px 64px rgb(0 0 0 / 0.37)",

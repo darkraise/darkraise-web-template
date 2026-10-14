@@ -18,7 +18,7 @@ import {
   seedApp,
   type ThemeSeed,
 } from "./helpers/app"
-import { alphaOf, computed, settle } from "./helpers/measure"
+import { alphaOf, computed, settle, textContrast } from "./helpers/measure"
 import {
   emulateReducedTransparency,
   filtering,
@@ -29,9 +29,11 @@ import {
  * Every glass look's cards and popovers let the page through by the share
  * its Medium alpha declares, scaled by the Transparency step; more contrast
  * makes cards, popovers and dialogs opaque and reduced transparency does not;
- * Blur None leaves no glass backdrop filter. Light mode only: the kit's
- * contrast suite covers both modes, and the declared alphas come from the
- * registry, so a look whose values change is checked as it is.
+ * Blur None leaves no glass backdrop filter. Light mode only, but for text
+ * on a card over the strongest ground, which is read from the rendered
+ * pixels in both modes: the kit's contrast suite covers both modes in its
+ * model, and the declared alphas come from the registry, so a look whose
+ * values change is checked as it is.
  */
 
 test.describe.configure({ timeout: 120_000 })
@@ -144,6 +146,122 @@ for (const look of LOOKS) {
     expectFalling(cards, "the card alpha")
     expectFalling(popovers, "the popover alpha")
   })
+}
+
+const GROUND_CARD = { width: 260, height: 104 }
+
+/**
+ * The viewport point where the ground differs most from the page colour,
+ * read with the shell's regions hidden so only the body canvas and the
+ * shell's ground art paint, and far enough from the edges for a card
+ * centred on it to fit. A blur as wide as a frosted card's averages the
+ * noise layer away first.
+ */
+async function strongestGround(page: Page): Promise<{ x: number; y: number }> {
+  await page.evaluate(() => {
+    for (const region of document.querySelectorAll<HTMLElement>(
+      ".dr-shell > *",
+    )) {
+      region.style.visibility = "hidden"
+    }
+  })
+  await settle(page)
+  const png = await page.screenshot()
+  return page.evaluate(
+    async ({ b64, card }) => {
+      const img = new Image()
+      img.src = `data:image/png;base64,${b64}`
+      await img.decode()
+      const scale = img.width / window.innerWidth
+      const canvas = document.createElement("canvas")
+      canvas.width = img.width
+      canvas.height = img.height
+      const context = canvas.getContext("2d", { willReadFrequently: true })
+      if (!context) throw new Error("no 2d context")
+      context.fillStyle = `hsl(${getComputedStyle(document.documentElement)
+        .getPropertyValue("--background")
+        .trim()})`
+      context.fillRect(0, 0, 1, 1)
+      const [pr = 0, pg = 0, pb = 0] = context.getImageData(0, 0, 1, 1).data
+      context.filter = "blur(8px)"
+      context.drawImage(img, 0, 0)
+      const { data } = context.getImageData(0, 0, img.width, img.height)
+      let best = { x: 0, y: 0, distance: -1 }
+      for (
+        let y = card.height / 2;
+        y <= window.innerHeight - card.height / 2;
+        y += 8
+      ) {
+        for (
+          let x = card.width / 2;
+          x <= window.innerWidth - card.width / 2;
+          x += 8
+        ) {
+          const i =
+            (Math.floor(y * scale) * img.width + Math.floor(x * scale)) * 4
+          const distance = Math.hypot(
+            (data[i] ?? 0) - pr,
+            (data[i + 1] ?? 0) - pg,
+            (data[i + 2] ?? 0) - pb,
+          )
+          if (distance > best.distance) best = { x, y, distance }
+        }
+      }
+      return { x: best.x, y: best.y }
+    },
+    { b64: png.toString("base64"), card: GROUND_CARD },
+  )
+}
+
+/** A card centred on `point`, holding a line of body text and one of muted text. */
+async function cardOver(page: Page, point: { x: number; y: number }) {
+  await page.evaluate(
+    ({ point, card }) => {
+      const el = document.createElement("div")
+      el.className = "dr-card"
+      el.dataset.testid = "ground-card"
+      Object.assign(el.style, {
+        position: "fixed",
+        left: `${point.x - card.width / 2}px`,
+        top: `${point.y - card.height / 2}px`,
+        width: `${card.width}px`,
+        height: `${card.height}px`,
+        padding: "16px",
+        zIndex: "1000",
+        visibility: "visible",
+        display: "grid",
+        alignContent: "center",
+        gap: "8px",
+      })
+      el.innerHTML =
+        '<p data-text="body" style="margin:0">Body text on glass</p>' +
+        '<p data-text="muted" style="margin:0;color:hsl(var(--muted-foreground))">Muted text on glass</p>'
+      document.body.append(el)
+    },
+    { point, card: GROUND_CARD },
+  )
+  const card = page.getByTestId("ground-card")
+  await settle(page)
+  return card
+}
+
+for (const look of LOOKS) {
+  for (const mode of ["light", "dark"] as const) {
+    test(`${look.name} ${mode}: text on a card over the strongest ground keeps 4.5:1`, async ({
+      page,
+    }) => {
+      await seedLook(page, look, { mode })
+      await gotoApp(page, PAGE)
+      await settle(page)
+      const card = await cardOver(page, await strongestGround(page))
+      for (const text of ["body", "muted"]) {
+        expect(
+          await textContrast(card.locator(`[data-text="${text}"]`)),
+          `${text} text`,
+        ).toBeGreaterThanOrEqual(4.5)
+      }
+    })
+  }
 }
 
 for (const name of ["glass", "soft-glass"]) {

@@ -65,8 +65,8 @@ export const softGlass: PresetDefinition = {
       chromeRailFill: LIGHT_CHROME,
       chromeBarFill: LIGHT_CHROME,
       navSelectionFill: "hsl(var(--sidebar-foreground-hover) / 0.1)",
-      cardBorder: "rgb(255 255 255 / 0.5)",
-      cardEdge: "0 10px 26px -18px rgb(0 0 0 / 0.35)",
+      cardEdge:
+        "inset 0 1px 0 rgb(255 255 255 / 0.6), 0 10px 26px -18px rgb(0 0 0 / 0.35)",
       scrim: "hsl(var(--foreground) / 0.16)",
     },
     dark: {
@@ -74,8 +74,8 @@ export const softGlass: PresetDefinition = {
       chromeRailFill: DARK_CHROME,
       chromeBarFill: DARK_CHROME,
       navSelectionFill: "hsl(var(--sidebar-foreground-hover) / 0.1)",
-      cardBorder: "rgb(255 255 255 / 0.07)",
-      cardEdge: "0 10px 26px -18px rgb(0 0 0 / 0.6)",
+      cardEdge:
+        "inset 0 1px 0 rgb(255 255 255 / 0.08), 0 10px 26px -18px rgb(0 0 0 / 0.6)",
       scrim: "rgb(0 0 0 / 0.65)",
     },
   },

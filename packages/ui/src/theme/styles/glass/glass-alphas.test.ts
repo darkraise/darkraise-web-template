@@ -9,13 +9,13 @@ const registry = resolveRegistry()
  * overlay in light and dark. A preset that writes none inherits Glass's.
  */
 const DECLARED = [
-  ["base", "0.72", "0.66", "0.6", "0.6"],
-  ["mica-desk", "0.75", "0.75", "0.6", "0.6"],
-  ["smoked-obsidian", "0.7", "0.7", "0.85", "0.6"],
-  ["milk-glass", "0.78", "0.8", "0.7", "0.7"],
-  ["aurora-night", "0.62", "0.57", "0.55", "0.55"],
-  ["coral-space", "0.82", "0.8", "0.65", "0.65"],
-  ["dusk-haze", "0.72", "0.7", "0.6", "0.6"],
+  ["base", "0.55", "0.6", "0.6", "0.6"],
+  ["mica-desk", "0.6", "0.62", "0.6", "0.6"],
+  ["smoked-obsidian", "0.58", "0.62", "0.85", "0.6"],
+  ["milk-glass", "0.62", "0.64", "0.7", "0.7"],
+  ["aurora-night", "0.5", "0.58", "0.55", "0.55"],
+  ["coral-space", "0.56", "0.6", "0.65", "0.65"],
+  ["dusk-haze", "0.55", "0.6", "0.6", "0.6"],
 ] as const
 
 describe("glass declared alphas", () => {

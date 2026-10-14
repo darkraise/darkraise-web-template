@@ -35,7 +35,7 @@ describe("Milk Glass", () => {
     })
   })
 
-  it("sets a faint blob canvas under nearly opaque, hard-blurring menus", () => {
+  it("sets a faint blob canvas under milky, hard-blurring menus", () => {
     expect(milkGlass.axes).toEqual({
       accentColor: "coral",
       surfaceColor: "cool",
@@ -48,18 +48,27 @@ describe("Milk Glass", () => {
     })
   })
 
+  // The halo at the bottom right is strong enough that a card over it shows
+  // the accent (glass-see-through.test.ts); the two at the top stay faint
+  // under the page header's text.
   it("shows the canvas through the shell ground between three accent halos", () => {
+    const alphas = (value: string | undefined) =>
+      [...(value ?? "").matchAll(/hsl\(var\(--primary\) \/ ([\d.]+)\)/g)].map(
+        ([, alpha]) => alpha,
+      )
     for (const tokens of [light, dark]) {
       expect(tokens.shellGroundGradient).toMatch(
         /^(?:radial-gradient\(\d+% \d+% at \d+% \d+%, hsl\(var\(--primary\) \/ 0\.\d+\), transparent 70%\)(?:, )?){3}$/,
       )
     }
+    expect(alphas(light.shellGroundGradient)).toEqual(["0.26", "0.14", "0.38"])
+    expect(alphas(dark.shellGroundGradient)).toEqual(["0.2", "0.1", "0.32"])
     expect(shared.shellGroundGradient).toBeUndefined()
   })
 
   it("makes cards blurring milk through tokens the kit's fallback resets", () => {
-    expect(light.surfaceFillAlpha).toBe("0.78")
-    expect(dark.surfaceFillAlpha).toBe("0.8")
+    expect(light.surfaceFillAlpha).toBe("0.62")
+    expect(dark.surfaceFillAlpha).toBe("0.64")
     expect(shared.surfaceBackdrop).toBe(
       "var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(180%))",
     )
@@ -77,30 +86,37 @@ describe("Milk Glass", () => {
   })
 
   // No fallback resets the flat chrome fill, so its alpha is computed from
-  // the card alpha the kit's fallback sets to 1.
+  // the card alpha the kit's fallback sets to 1, and never clears past 0.4.
   it("thins the rail's milk from the card alpha, opaque when the cards are", () => {
     expect(KIT_FALLBACK.surfaceFillAlpha).toBe("1")
     for (const tokens of [light, dark]) {
-      const [, factor, offset] =
-        /^hsl\(var\(--card\) \/ calc\(var\(--surface-alpha\) \* ([\d.]+) - ([\d.]+)\)\)$/.exec(
+      const [, floor, factor, offset] =
+        /^hsl\(var\(--card\) \/ max\(([\d.]+), calc\(var\(--surface-alpha\) \* ([\d.]+) - ([\d.]+)\)\)\)$/.exec(
           tokens.chromeFlatFill ?? "",
         ) ?? []
+      expect(floor).toBe("0.4")
       expect(Number(factor) - Number(offset)).toBeCloseTo(1)
       const cards = Number(tokens.surfaceFillAlpha)
-      const rail = cards * Number(factor) - Number(offset)
-      expect(rail).toBeGreaterThan(0.5)
+      const rail = Math.max(
+        Number(floor),
+        cards * Number(factor) - Number(offset),
+      )
+      expect(rail).toBeGreaterThanOrEqual(0.4)
       expect(rail).toBeLessThan(cards)
     }
     expect(shared.chromeFlatFill).toBeUndefined()
   })
 
   it("edges panes in white and floats them on wide soft shadows", () => {
+    // The light rim is brighter than Glass's and stays; the dark one is
+    // Glass's.
     expect(light.cardBorder).toBe("rgb(255 255 255 / 0.9)")
-    expect(dark.cardBorder).toBe("rgb(255 255 255 / 0.1)")
     expect(light.overlayBorder).toBe(light.cardBorder)
-    expect(dark.overlayBorder).toBe(dark.cardBorder)
+    expect(dark.cardBorder).toBeUndefined()
+    expect(dark.overlayBorder).toBeUndefined()
     for (const tokens of [light, dark]) {
       expect(tokens.cardEdge).toMatch(/0 24px 48px -12px /)
+      expect(tokens.cardEdge).toMatch(/^inset 0 1px 0 rgb\(255 255 255 \/ /)
     }
   })
 

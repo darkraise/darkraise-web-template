@@ -108,9 +108,28 @@ describe("glass overlays", () => {
     }
   })
 
-  it("rims overlays with a hairline of the ink", () => {
-    expect(valueOf("style.base", GLASS_ROOT, "--overlay-border")).toBe(
-      "hsl(var(--foreground) / 0.08)",
+  it("rims cards, overlays and dialogs in white, brighter in light", () => {
+    for (const name of [
+      "--card-border",
+      "--overlay-border",
+      "--dialog-border",
+    ]) {
+      expect(valueOf("style.base", inMode("light"), name), name).toBe(
+        "rgb(255 255 255 / 0.7)",
+      )
+      expect(valueOf("style.mode", inMode("dark"), name), name).toBe(
+        "rgb(255 255 255 / 0.14)",
+      )
+      expect(declares("style.base", GLASS_ROOT, name), name).toBe(false)
+    }
+  })
+
+  it("lights the top edge of a card", () => {
+    expect(valueOf("style.base", inMode("light"), "--card-edge")).toBe(
+      "inset 0 1px 0 rgb(255 255 255 / 0.6), 0 1px 2px rgb(0 0 0 / 0.04)",
+    )
+    expect(valueOf("style.mode", inMode("dark"), "--card-edge")).toBe(
+      "inset 0 1px 0 rgb(255 255 255 / 0.08)",
     )
   })
 
@@ -165,10 +184,10 @@ describe("glass transparency", () => {
 describe("glass cards", () => {
   it("lets the card plane through at its Medium alpha in each mode", () => {
     expect(valueOf("style.base", inMode("light"), "--surface-fill-alpha")).toBe(
-      "0.72",
+      "0.55",
     )
     expect(valueOf("style.mode", inMode("dark"), "--surface-fill-alpha")).toBe(
-      "0.66",
+      "0.6",
     )
   })
 })
@@ -281,6 +300,9 @@ describe("more contrast", () => {
     ["--surface-overlay-blend-mode", "normal"],
     ["--overlay-border", "hsl(var(--border))"],
     ["--overlay-backdrop", "none"],
+    ["--card-border", "hsl(var(--border-subtle))"],
+    ["--card-edge", "0 0 transparent"],
+    ["--dialog-border", "hsl(var(--border))"],
   ])("sets %s to %s", (name, value) => {
     expect(valueOf("style.fallback", GLASS_ROOT, name)).toBe(value)
   })

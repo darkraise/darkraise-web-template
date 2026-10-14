@@ -80,11 +80,12 @@ describe("Coral Space", () => {
   })
 
   it("sets the work on a pane fainter than its cards, with a shadow, opaque when they are", () => {
+    // The pane never clears past 0.35, and turns opaque with the cards.
     expect(shared.shellContentFill).toBe(
-      "hsl(var(--background) / calc(var(--surface-alpha) * 2 - 1))",
+      "hsl(var(--background) / max(0.35, calc(var(--surface-alpha) * 2 - 1)))",
     )
-    expect(light.surfaceFillAlpha).toBe("0.82")
-    expect(dark.surfaceFillAlpha).toBe("0.8")
+    expect(light.surfaceFillAlpha).toBe("0.56")
+    expect(dark.surfaceFillAlpha).toBe("0.6")
     expect(shared.overlayFillAlpha).toBe("0.65")
     for (const tokens of [light, dark]) {
       expect(tokens.shellContentFill).toBeUndefined()
@@ -101,6 +102,16 @@ describe("Coral Space", () => {
     for (const token of translucency) {
       expect(KIT_FALLBACK[token], token).toBeDefined()
     }
+  })
+
+  it("rims cards in Glass's white edge under a top highlight", () => {
+    expect(written(coralSpace.tokens)).not.toContain("cardBorder")
+    expect(light.cardEdge).toMatch(
+      /^inset 0 1px 0 rgb\(255 255 255 \/ 0\.6\), /,
+    )
+    expect(dark.cardEdge).toMatch(
+      /^inset 0 1px 0 rgb\(255 255 255 \/ 0\.08\), /,
+    )
   })
 
   it("marks the current nav row with a white pill that has no edge", () => {
