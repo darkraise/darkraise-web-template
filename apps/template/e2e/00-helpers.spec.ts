@@ -6,7 +6,13 @@ import {
   seedApp,
   watchConsole,
 } from "./helpers/app"
-import { contrast, markContrast, settle, textContrast } from "./helpers/measure"
+import {
+  contrast,
+  labelContrast,
+  markContrast,
+  settle,
+  textContrast,
+} from "./helpers/measure"
 
 /**
  * A locator whose text sits on a background image, so textContrast takes
@@ -172,6 +178,30 @@ test.describe("e2e helpers", () => {
     const rule = { x: 10, y: 50, width: 100, height: 2 }
     const ground = { x: 10, y: 56, width: 100, height: 2 }
     expect(await markContrast(page, rule, ground)).toBe(21)
+  })
+
+  test("labelContrast reads the face behind a label's line, an icon beside it hidden", async ({
+    page,
+  }) => {
+    await page.setContent(
+      `<style>
+        body { margin: 0; background: white; }
+        button { display: inline-flex; gap: 8px; align-items: center; height: 48px; padding: 0 16px; border: 0; font: 16px/20px sans-serif; color: rgb(255, 255, 255); background: linear-gradient(rgb(0, 0, 0) 0 8px, rgb(0, 0, 160) 8px); }
+        svg { width: 16px; height: 16px; }
+      </style>
+      <button><svg viewBox="0 0 16 16"><rect width="16" height="16" fill="currentColor" /></svg>Next</button>`,
+    )
+    const face = page.locator("button")
+    expect(await labelContrast(page, face)).toBeCloseTo(
+      contrast([255, 255, 255], [0, 0, 160]),
+      5,
+    )
+    expect(
+      await face.evaluate((el) => [
+        el.style.cssText,
+        el.querySelector("svg")?.getAttribute("style") ?? "",
+      ]),
+    ).toEqual(["", ""])
   })
 
   test("kitLook stamps the given signatures over the kit defaults", async ({

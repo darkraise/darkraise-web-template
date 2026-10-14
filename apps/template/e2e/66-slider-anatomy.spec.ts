@@ -697,3 +697,35 @@ test.describe("slider anatomy · hit area", () => {
     )
   }
 })
+
+for (const mode of MODES) {
+  test.describe(`slider anatomy under forced colours · ${mode}`, () => {
+    test("ruled paints the step ticks in CanvasText, visible on the Canvas beside them", async ({
+      page,
+    }) => {
+      await seedApp(page, { style: "quiet", mode })
+      await page.emulateMedia({ forcedColors: "active", colorScheme: mode })
+      await openControlFixture(page)
+      await stamp(page, "ruled")
+      const canvasText = await colour(page, "CanvasText")
+      const { steps, thumbs } = slider(await read(page), "steps")
+      const [thumb] = thumbs
+      if (!thumb) throw new Error("no thumb")
+      // The needle and its head cross the tick under the thumb.
+      const clear = steps.filter(
+        (step) => Math.abs(centre(step).x - centre(thumb).x) > 8,
+      )
+      expect(clear.length).toBeGreaterThan(0)
+      for (const [i, step] of clear.entries()) {
+        expect(step.background, `step ${i}`).toBe(canvasText)
+        const ratio = await markContrast(
+          page,
+          step,
+          region(step.x + 4, step.y, 1, step.height),
+        )
+        note(`${mode} forced step ${i}: ${ratio.toFixed(2)}`)
+        expect(ratio, `step ${i}`).toBeGreaterThanOrEqual(3)
+      }
+    })
+  })
+}

@@ -6,13 +6,12 @@ import { tactile } from "./tactile"
 /** A white sheen or a black scrim reads the same over either mode's fills. */
 const MODE_NEUTRAL = ["buttonSheen", "scrim"]
 
-/** Where a linear gradient's first colour stop sits, in percent of the box. */
-function firstStop(gradient: string): number {
+/** Where a linear gradient's first colour stop sits, as written. */
+function firstStop(gradient: string): string {
   const inner = /^linear-gradient\((.*)\)$/.exec(gradient)?.[1]
   if (inner === undefined) throw new Error(`not a linear gradient: ${gradient}`)
-  const stops = inner.split(/,(?![^(]*\))/).slice(1)
-  const at = /(\d+(?:\.\d+)?)%\s*$/.exec(stops[0] as string)
-  return at ? Number(at[1]) : 0
+  const [first = ""] = inner.split(/,(?![^(]*\))/).slice(1)
+  return first.trim().replace(/^\S+\s+/, "")
 }
 
 describe("Tactile", () => {
@@ -102,7 +101,9 @@ describe("Tactile", () => {
         mode,
       ).toEqual(mode === "shared" ? ["buttonSheen"] : [])
       for (const [name, value] of sheens) {
-        expect(firstStop(value), name).toBeGreaterThanOrEqual(75)
+        // 75% of the face, or the foot of the label's line box where that
+        // is lower (a 32px or smaller face).
+        expect(firstStop(value), name).toBe("max(75%, 50% + 0.5lh)")
       }
     }
   })

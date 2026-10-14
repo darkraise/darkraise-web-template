@@ -3,8 +3,9 @@ import type { StyleDefinition } from "../../config/schema"
 /**
  * Admin Bevel: every raised surface carries a four-line bevel (darker sides,
  * darkest bottom, light top) and every key is lit from below. The filled
- * key's sheen starts at 75% of its height, below the label's descenders, so
- * the fill keeps its label's 4.5:1 floor wherever the glyphs sit.
+ * key's sheen starts at 75% of its height or at the foot of the label's
+ * line box, whichever is lower, so the fill keeps its label's 4.5:1 floor
+ * wherever the glyphs sit.
  */
 export const tactile: StyleDefinition = {
   label: "Tactile",
@@ -39,7 +40,7 @@ export const tactile: StyleDefinition = {
       buttonEdge:
         "inset 0 -1px 0 1px rgb(0 0 0 / 0.45), inset 0 0.5px 0 1.5px rgb(255 255 255 / 0.25)",
       buttonSheen:
-        "linear-gradient(180deg, transparent 75%, rgb(255 255 255 / 0.15))",
+        "linear-gradient(180deg, transparent max(75%, 50% + 0.5lh), rgb(255 255 255 / 0.15))",
       buttonShadow: "0 0 transparent",
       buttonDangerShadow: "0 0 transparent",
       buttonBorder: "transparent",

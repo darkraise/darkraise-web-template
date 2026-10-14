@@ -205,6 +205,80 @@ export function computed(locator: Locator, property: string): Promise<string> {
 }
 
 /**
+ * The lowest contrast between a control's label colour and every pixel of
+ * the face behind its line of text, read with the glyphs hidden. Where a
+ * background image paints the face, textContrast samples the whole box,
+ * whose rounded corners show the page and whose top row carries the look's
+ * edge highlight; the label sits on neither. The line box spans the
+ * label's full ascent, so a sheen that crosses any glyph is in it. Hiding
+ * the glyphs through their fill keeps a hover wash painted in currentColor,
+ * which hiding them through the colour would clear.
+ */
+export async function labelContrast(
+  page: Page,
+  face: Locator,
+): Promise<number> {
+  await face.scrollIntoViewIfNeeded()
+  const { band, colour } = await face.evaluate((el) => {
+    const range = document.createRange()
+    range.selectNodeContents(el)
+    const rect = range.getBoundingClientRect()
+    const colour = getComputedStyle(el).color
+    // The glyphs go, not the colour: washes painted in currentColor stay.
+    el.style.setProperty("transition", "none", "important")
+    el.style.setProperty("-webkit-text-fill-color", "transparent", "important")
+    // An icon in the label's line is drawn in the label colour: it is ink,
+    // not ground.
+    for (const icon of el.querySelectorAll<SVGElement>("svg")) {
+      icon.style.setProperty("visibility", "hidden", "important")
+    }
+    return {
+      band: {
+        x: Math.ceil(rect.x),
+        y: Math.ceil(rect.y),
+        width: Math.floor(rect.width),
+        height: Math.floor(rect.height),
+      },
+      colour,
+    }
+  })
+  try {
+    const png = await page.screenshot({ clip: band, scale: "css" })
+    const ground = await page.evaluate(
+      async ({ b64, width, height }) => {
+        const img = new Image()
+        img.src = `data:image/png;base64,${b64}`
+        await img.decode()
+        const canvas = document.createElement("canvas")
+        canvas.width = width
+        canvas.height = height
+        const context = canvas.getContext("2d")
+        if (!context) throw new Error("no 2d context")
+        context.drawImage(img, 0, 0)
+        const { data } = context.getImageData(0, 0, width, height)
+        const out: [number, number, number][] = []
+        for (let i = 0; i < data.length; i += 4) {
+          out.push([data[i] ?? 0, data[i + 1] ?? 0, data[i + 2] ?? 0])
+        }
+        return out
+      },
+      { b64: png.toString("base64"), width: band.width, height: band.height },
+    )
+    const ink = rgbOf(colour)
+    return Math.min(...ground.map((pixel) => contrast(ink, pixel as Rgb)))
+  } finally {
+    await face.evaluate((el) => {
+      el.style.removeProperty("-webkit-text-fill-color")
+      for (const icon of el.querySelectorAll<SVGElement>("svg")) {
+        icon.style.removeProperty("visibility")
+      }
+      el.getBoundingClientRect()
+      el.style.removeProperty("transition")
+    })
+  }
+}
+
+/**
  * The lowest contrast each colour reaches against the page painted in `clip`.
  * A 4px blur first averages away the canvas noise layer. The image is padded
  * with its own edge pixels so the blur does not fade the outermost rows, which

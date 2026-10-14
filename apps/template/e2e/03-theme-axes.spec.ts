@@ -71,7 +71,7 @@ const STYLE_SIGNATURES: Record<
     tokens: {
       "--btn-shadow": "0 0 transparent",
       "--btn-sheen":
-        "linear-gradient(180deg, transparent 75%, rgb(255 255 255 / 0.15))",
+        "linear-gradient(180deg, transparent max(75%, 50% + 0.5lh), rgb(255 255 255 / 0.15))",
       "--field-shadow": "0 0 transparent",
       "--chrome-backdrop": "none",
     },

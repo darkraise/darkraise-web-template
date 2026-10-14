@@ -5,7 +5,7 @@
     --tactile-bevel: inset 1px 0 0 rgb(0 0 0 / 0.13), inset -1px 0 0 rgb(0 0 0 / 0.13), inset 0 -1px 0 rgb(0 0 0 / 0.17), inset 0 1px 0 rgb(204 204 204 / 0.5);
     --tactile-lift: 0 1px 0 rgb(26 26 26 / 0.07);
     --btn-edge: inset 0 -1px 0 1px rgb(0 0 0 / 0.45), inset 0 0.5px 0 1.5px rgb(255 255 255 / 0.25);
-    --btn-sheen: linear-gradient(180deg, transparent 75%, rgb(255 255 255 / 0.15));
+    --btn-sheen: linear-gradient(180deg, transparent max(75%, 50% + 0.5lh), rgb(255 255 255 / 0.15));
     --btn-shadow: 0 0 transparent;
     --btn-danger-shadow: 0 0 transparent;
     --btn-border: transparent;
