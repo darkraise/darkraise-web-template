@@ -27,17 +27,19 @@
       inset 0 1px 2px rgb(0 0 0 / 0.16);
   }
 
-  /* The hairline is painted in the middle of the bar's own box, so the
-     layout does not move; the indicator fills the content box. */
+  /* The hairline and the indicator sit in the middle of the bar's own box,
+     whatever height an app gives it, so the layout does not move. */
   [data-slider-style="ruled"] .dr-progress {
-    padding-block: calc((var(--track-height) - 2px) / 2);
-    background-color: hsl(var(--border-strong));
-    background-clip: content-box;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(hsl(var(--border-strong)) 0 0) center / 100% 2px
+      no-repeat;
   }
 
   /* An accent mark, drawn as the slider draws its range: a 1px inset
      shadow covers the 2px hairline. */
   [data-slider-style="ruled"] .dr-progress-indicator {
+    height: 2px;
     box-shadow: inset 0 0 0 1px hsl(var(--primary));
   }
 }

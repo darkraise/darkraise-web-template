@@ -72,8 +72,13 @@ interface SliderReading {
 }
 
 interface ProgressReading {
-  box: Rect & { radius: string; boxShadow: string; background: string }
-  content: Rect
+  box: Rect & {
+    radius: string
+    boxShadow: string
+    background: string
+    backgroundImage: string
+    backgroundSize: string
+  }
   indicator: Rect & { boxShadow: string }
 }
 
@@ -185,13 +190,8 @@ async function read(page: Page): Promise<Reading> {
             radius: style.borderTopLeftRadius,
             boxShadow: style.boxShadow,
             background: style.backgroundColor,
-          },
-          content: {
-            x: outer.x + px(style.paddingLeft),
-            y: outer.y + px(style.paddingTop),
-            width: outer.width - px(style.paddingLeft) - px(style.paddingRight),
-            height:
-              outer.height - px(style.paddingTop) - px(style.paddingBottom),
+            backgroundImage: style.backgroundImage,
+            backgroundSize: style.backgroundSize,
           },
           indicator: {
             ...rectOf(indicator),
@@ -427,13 +427,14 @@ async function ruledShape(page: Page) {
     }
   }
   for (const name of BARS) {
-    const { box, content, indicator } = reading.bars[name]
+    const { box, indicator } = reading.bars[name]
     expect(box.height, name).toBe(trackPx)
-    expect(content.height, name).toBe(2)
-    expect(content.y, name).toBeCloseTo(box.y + (trackPx - 2) / 2, 1)
-    expect(box.background, name).toBe(strong)
+    expect(box.background, name).toBe(CLEAR)
+    expect(box.backgroundImage, name).toContain(strong)
+    expect(box.backgroundSize, name).toBe("100% 2px")
     expect(indicator.boxShadow, name).toBe(`${primary} 0px 0px 0px 1px inset`)
     expect(indicator.height, name).toBe(2)
+    expect(indicator.y, name).toBeCloseTo(box.y + (trackPx - 2) / 2, 1)
   }
 }
 
@@ -516,6 +517,58 @@ for (const mode of MODES) {
       expect([ticked.y, ticked.height]).toEqual([root.y, root.height])
     })
 
+    // An app sizes a bar with a height class, which beats the kit's own
+    // height; the inline height stands in for that class.
+    for (const height of [4, 24]) {
+      test(`ruled keeps the ${height}px height an app gives a progress bar`, async ({
+        page,
+      }) => {
+        await stamp(page, "ruled")
+        const primary = await colour(page, "hsl(var(--primary))")
+        const box = await page.evaluate(
+          ({ progress, height }) => {
+            const source = document.querySelector(
+              `${progress} [data-case="determinate"]`,
+            )
+            if (!source) throw new Error("no progress bar")
+            const bar = source.cloneNode(true) as HTMLElement
+            bar.dataset.case = "app-sized"
+            bar.style.height = `${height}px`
+            source.after(bar)
+            bar.scrollIntoView({ block: "center" })
+            const indicator = bar.querySelector(".dr-progress-indicator")
+            if (!indicator) throw new Error("no indicator")
+            const rect = (el: Element) => {
+              const { x, y, width, height } = el.getBoundingClientRect()
+              return { x, y, width, height }
+            }
+            return {
+              bar: rect(bar),
+              indicator: {
+                ...rect(indicator),
+                boxShadow: getComputedStyle(indicator).boxShadow,
+              },
+            }
+          },
+          { progress: PROGRESS, height },
+        )
+        expect(box.bar.height).toBe(height)
+        expect(box.indicator.height).toBe(2)
+        expect(box.indicator.boxShadow).toBe(`${primary} 0px 0px 0px 1px inset`)
+        expect(box.indicator.y).toBeCloseTo(box.bar.y + (height - 2) / 2, 1)
+        // The unfilled hairline against the bar's own top row: a slab
+        // would match the hairline there.
+        const x = box.bar.x + box.bar.width - 12
+        const ratio = await markContrast(
+          page,
+          region(x, box.bar.y + (height - 2) / 2, 4, 2),
+          region(x, box.bar.y, 4, 1),
+        )
+        note(`${mode} ruled ${height}px hairline: ${ratio.toFixed(2)}`)
+        expect(ratio).toBeGreaterThanOrEqual(3)
+      })
+    }
+
     for (const value of VALUES) {
       test(`${value} keeps the value marks at 3:1`, async ({ page }) => {
         await stamp(page, value)
@@ -582,11 +635,11 @@ for (const mode of MODES) {
             ),
           ])
         }
-        const { box, content } = reading.bars.determinate
+        const { box, indicator } = reading.bars.determinate
         if (value === "ruled") {
           checks.push([
             "progress fill",
-            region(box.x + 8, content.y, 4, 2),
+            region(box.x + 8, indicator.y, 4, 2),
             region(box.x + 8, box.y, 4, 2),
           ])
         } else {

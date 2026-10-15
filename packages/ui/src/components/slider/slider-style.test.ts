@@ -281,10 +281,16 @@ describe("ruled", () => {
 
   it("draws the progress bar as a hairline in the middle of its own box", () => {
     expect(bodyOf("progress", '[data-slider-style="ruled"] .dr-progress')).toBe(
-      "padding-block: calc((var(--track-height) - 2px) / 2); background-color: hsl(var(--border-strong)); background-clip: content-box;",
+      "display: flex; align-items: center; background: linear-gradient(hsl(var(--border-strong)) 0 0) center / 100% 2px no-repeat;",
     )
     expect(
       bodyOf("progress", '[data-slider-style="ruled"] .dr-progress-indicator'),
-    ).toBe("box-shadow: inset 0 0 0 1px hsl(var(--primary));")
+    ).toBe("height: 2px; box-shadow: inset 0 0 0 1px hsl(var(--primary));")
+  })
+
+  it("derives the progress hairline from the bar, not from --track-height", () => {
+    const ruled = bodyOf("progress", '[data-slider-style="ruled"] .dr-progress')
+    expect(ruled).not.toContain("--track-height")
+    expect(ruled).not.toContain("padding")
   })
 })
