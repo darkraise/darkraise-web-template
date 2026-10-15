@@ -123,17 +123,26 @@ for (const { style, preset } of LOOKS) {
       }
 
       const low: string[] = []
+      let measured = 0
       const labels = page.locator("main").locator(LABELS)
       for (let i = 0; i < (await labels.count()); i++) {
         const label = labels.nth(i)
         const text = (await label.innerText()).trim()
         if (!text || !(await label.isVisible())) continue
+        measured += 1
         const ratio = await labelContrast(page, label)
         if (ratio < 4.5) low.push(`${text}: ${ratio.toFixed(2)}`)
       }
       expect(low, "labels under 4.5:1").toEqual([])
+      // The kitchen sink carries 22 labels and 25 controls; a selector that
+      // stops matching must not leave both checks passing on nothing.
+      expect(measured, "labels measured").toBeGreaterThanOrEqual(21)
 
       const asPicked = await sizes(page)
+      expect(
+        Object.keys(asPicked).length,
+        "controls measured",
+      ).toBeGreaterThanOrEqual(24)
       await kitAnatomy(page)
       await settle(page)
       expect(asPicked, "control sizes against the kit anatomy").toEqual(

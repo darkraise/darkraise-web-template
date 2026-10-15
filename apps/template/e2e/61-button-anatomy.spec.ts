@@ -239,6 +239,25 @@ for (const mode of MODES) {
       }
     })
 
+    test("key never presses an aria-disabled button", async ({ page }) => {
+      await stamp(page, { buttonStyle: "key" })
+      for (const variant of RESTYLED) {
+        // Chromium never applies :active to a natively disabled button, so
+        // only an aria-disabled one tests the press guard.
+        const face = button(page, variant, "default")
+        await face.evaluate((el) => el.setAttribute("aria-disabled", "true"))
+        const at = await centre(face)
+        await page.mouse.move(at.x, at.y)
+        await page.mouse.down()
+        await settle(page)
+        expect(await computed(face, "transform"), variant).toBe("none")
+        expect(bases(await computed(face, "box-shadow")), variant).toEqual([
+          expect.stringMatching(/ 0px 2px 0px 0px$/),
+        ])
+        await release(page)
+      }
+    })
+
     test("soft tints the faces and steps one deeper on hover", async ({
       page,
     }) => {
@@ -532,7 +551,7 @@ test.describe("button anatomy · touch", () => {
   test(
     "a round icon button answers a tap anywhere in a 24px circle and not in its corners",
     { tag: "@touch" },
-    async ({ page }) => {
+    async ({ page, hasTouch }) => {
       await seedApp(page, { style: "quiet" })
       await openControlFixture(page)
       await stamp(page, {})
@@ -543,9 +562,10 @@ test.describe("button anatomy · touch", () => {
         ),
       )
       await stamp(page, { iconButton: "round" })
+      let tapped = false
       for (const [index, face] of faces.entries()) {
         const point = await centre(face)
-        const { circle, corners } = await face.evaluate(
+        const { circle, corners, corner } = await face.evaluate(
           (el, { x, y, radius }) => {
             const inside = (px: number, py: number) => {
               const hit = document.elementFromPoint(px, py)
@@ -573,6 +593,7 @@ test.describe("button anatomy · touch", () => {
                   [-1, 1],
                 ] as const
               ).map(([dx, dy]) => inside(x + dx * offset, y + dy * offset)),
+              corner: { x: x - offset, y: y - offset },
             }
           },
           { ...point, radius: squareRadii[index] ?? 0 },
@@ -584,7 +605,36 @@ test.describe("button anatomy · touch", () => {
           false,
           false,
         ])
+
+        // A real tap on one enabled button of the probe: the circle's edge
+        // clicks it, the square's corner does not.
+        const tappable =
+          hasTouch &&
+          !tapped &&
+          (await face.isEnabled()) &&
+          (await face.evaluate(
+            (el) => el.closest('[data-probe="anatomy-buttons"]') !== null,
+          ))
+        if (tappable) {
+          tapped = true
+          await face.evaluate((el) => {
+            const counter = { clicks: 0 }
+            Object.assign(el, { counter })
+            el.addEventListener("click", () => counter.clicks++)
+          })
+          const clicks = () =>
+            face.evaluate(
+              (el) =>
+                (el as unknown as { counter: { clicks: number } }).counter
+                  .clicks,
+            )
+          await page.touchscreen.tap(corner.x, corner.y)
+          expect(await clicks(), "a tap in the square's corner").toBe(0)
+          await page.touchscreen.tap(point.x + 11.5, point.y)
+          expect(await clicks(), "a tap on the circle's edge").toBe(1)
+        }
       }
+      if (hasTouch) expect(tapped, "a button was tapped").toBe(true)
     },
   )
 })

@@ -299,6 +299,9 @@ test.describe("check anatomy", () => {
 
   test("keeps the keyboard focus ring", async ({ page }) => {
     await open(page, {}, "box")
+    // A key press puts the page in keyboard modality, so a scripted focus
+    // matches :focus-visible as a Tab press would.
+    await page.keyboard.press("Shift")
     const targets = [
       checkbox(page, "default-checked"),
       checkbox(page, "default-unchecked"),
@@ -316,8 +319,13 @@ test.describe("check anatomy", () => {
       })
     const expected = []
     for (const target of targets) expected.push(await ring(target))
-    expect(expected[0]).toMatchObject({ visible: true, offset: "2px" })
-    expect(expected[0]?.outline).toMatch(/^solid 2px /)
+    for (const [i, reading] of expected.entries()) {
+      expect(reading, `target ${i}`).toMatchObject({
+        visible: true,
+        offset: "2px",
+      })
+      expect(reading?.outline, `target ${i}`).toMatch(/^solid 2px /)
+    }
     for (const checkStyle of STYLES) {
       await restamp(page, checkStyle)
       for (const [i, target] of targets.entries()) {
