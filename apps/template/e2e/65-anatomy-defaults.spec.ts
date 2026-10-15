@@ -10,9 +10,9 @@ import { openControlFixture } from "./helpers/controls"
  * ::before and ::after, are recorded at rest, then the change each hover
  * and keyboard focus makes, and compared with the committed snapshot.
  *
- * ANATOMY_DEFAULTS_UPDATE=1 rewrites the snapshot. Only the plan's closing
- * task may run it; a failing comparison is a regression to fix, never a
- * reason to re-record.
+ * ANATOMY_DEFAULTS_UPDATE=1 rewrites the snapshot. Only a change meant to
+ * alter the kit defaults re-records it; a failing comparison is a regression
+ * to fix, never a reason to re-record.
  */
 
 const SNAPSHOT = new URL("./fixtures/anatomy-defaults.json", import.meta.url)

@@ -48,8 +48,8 @@ const SIZED = [
 
 /**
  * Holds tabStyle at its kit default, `well`, for the glow probes: under
- * `underline` and `outline` the tab indicator draws no shadow at all (spec
- * section 2), so there is nothing for --affordance-glow to join.
+ * `underline` and `outline` the tab indicator draws no shadow at all, so
+ * there is nothing for --affordance-glow to join.
  */
 async function wellTabs(page: Page) {
   await page

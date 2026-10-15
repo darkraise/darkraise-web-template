@@ -16,7 +16,7 @@ import {
  * switchStyle restyles every switch from the root attribute. On the control
  * fixture's switches, under Quiet in light and dark with every other
  * signature at its kit default: each value keeps the 36x20 box, the 24px
- * hit area and the focus ring, draws the structure the spec promises, keeps
+ * hit area and the focus ring, draws its own track, thumb and marks, keeps
  * 3:1 for its state marks and 4.5:1 for its glyphs, and mirrors right to
  * left.
  */
