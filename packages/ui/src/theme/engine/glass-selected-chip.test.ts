@@ -67,7 +67,11 @@ function lowestEdge(preset: string, mode: "light" | "dark") {
   )
   const well = FROST.exec(paint.wellFill ?? "")
   if (!well) throw new Error(`${preset} ${mode}: well ${paint.wellFill}`)
-  const edgeColour = chipEdgeColour(paint.selectedViewShadow, at)
+  const edgeColour = chipEdgeColour(
+    paint.selectedViewShadow,
+    at,
+    `${preset} ${mode}`,
+  )
 
   const page = at("--background")
   const grounds: [string, string][] = [
@@ -182,5 +186,13 @@ describe("the selected chip on a frosted glass well", () => {
   )("edges a %s %s chip at 3:1 against the well", (look, mode) => {
     const { ratio, where } = lowestEdge(look, mode)
     expect(ratio, `${look} ${mode} ${where}`).toBeGreaterThanOrEqual(MARK)
+  })
+})
+
+describe("chipEdgeColour", () => {
+  it("names the look whose shadow has no chip edge", () => {
+    expect(() => chipEdgeColour("none", () => "", "milk-glass light")).toThrow(
+      "milk-glass light: no chip edge in none",
+    )
   })
 })

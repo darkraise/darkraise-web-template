@@ -210,7 +210,11 @@ describe("control anatomy contrast over the engine matrix", () => {
     expect(
       failures((combo, at) => {
         if (!combo.frosted) return []
-        const ink = chipEdgeColour(glassPaint(combo).selectedViewShadow, at)
+        const ink = chipEdgeColour(
+          glassPaint(combo).selectedViewShadow,
+          at,
+          comboName(combo),
+        )
         return glassPlanes(combo, at).map(([plane, under]) => ({
           where: `on the frosted well ${plane}`,
           ink,

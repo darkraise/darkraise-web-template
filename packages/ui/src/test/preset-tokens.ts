@@ -62,15 +62,17 @@ export const CHIP_EDGE =
 
 /**
  * The colour of a selected chip's 1px edge, from the first layer of its
- * shadow, with `at` resolving each engine colour the edge names.
+ * shadow, with `at` resolving each engine colour the edge names. `where`
+ * names the look in the error.
  */
 export function chipEdgeColour(
   shadow: string | undefined,
   at: (key: string) => string,
+  where: string,
 ): string {
   const [first] = layers(shadow)
   const edge = CHIP_EDGE.exec(first ?? "")
-  if (!edge) throw new Error(`no chip edge in ${shadow}`)
+  if (!edge) throw new Error(`${where}: no chip edge in ${shadow}`)
   const [, single, base, mixed, share] = edge
   return single
     ? at(single)
