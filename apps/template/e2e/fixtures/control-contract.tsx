@@ -148,6 +148,7 @@ import {
   Tabs,
   TabsList,
   TabsTrigger,
+  type TabsBorder,
   type TabsVariant,
 } from "darkraise-ui/components/tabs"
 import {
@@ -765,6 +766,7 @@ const BUTTON_SIZES: ButtonSize[] = ["sm", "default", "lg", "icon"]
 const CHECK_SIZES: CheckboxSize[] = ["sm", "default", "lg"]
 const RADIO_SIZES: RadioSize[] = ["sm", "default", "lg"]
 const TAB_VARIANTS: TabsVariant[] = ["outline", "underline", "enclosed"]
+const TAB_BORDERS: TabsBorder[] = ["default", "strong", "accent", "none"]
 
 const ROW = {
   display: "flex",
@@ -779,6 +781,7 @@ function AnatomyTabs(props: {
   color?: "accent"
   orientation?: "vertical"
   dir?: "rtl"
+  border?: TabsBorder
 }) {
   return (
     <div data-case={props.case}>
@@ -788,6 +791,7 @@ function AnatomyTabs(props: {
         color={props.color}
         orientation={props.orientation}
         dir={props.dir}
+        border={props.border}
       >
         <TabsList aria-label={`Tabs ${props.case}`}>
           <TabsTrigger value="one">One</TabsTrigger>
@@ -983,6 +987,28 @@ function Anatomy() {
         {TAB_VARIANTS.map((variant) => (
           <AnatomyTabs key={variant} case={variant} variant={variant} />
         ))}
+      </div>
+      <div
+        data-probe="anatomy-tab-frames"
+        style={{ display: "flex", flexWrap: "wrap", gap: 16 }}
+      >
+        {TAB_BORDERS.map((border) => (
+          <AnatomyTabs key={border} case={border} border={border} />
+        ))}
+        {TAB_BORDERS.map((border) => (
+          <AnatomyTabs
+            key={`${border}-vertical`}
+            case={`${border}-vertical`}
+            orientation="vertical"
+            border={border}
+          />
+        ))}
+        <AnatomyTabs
+          case="default-vertical-rtl"
+          orientation="vertical"
+          dir="rtl"
+          border="default"
+        />
       </div>
       <div
         data-probe="anatomy-segments"

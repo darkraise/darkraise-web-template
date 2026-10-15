@@ -911,7 +911,7 @@ for (const mode of MODES) {
       await open(page, { mode }, "underline")
       const readings: [string, number][] = []
       for (const strip of ENABLED) {
-        await part(page, strip, "current").scrollIntoViewIfNeeded()
+        await part(page, strip, "list").scrollIntoViewIfNeeded()
         const { bar, vertical, rtl } = await geometry(page, strip)
         const b = bar as Box
         const beside = vertical
@@ -1131,5 +1131,183 @@ for (const scheme of MODES) {
         }
       })
     }
+  })
+}
+
+const FRAME_TIERS = ["default", "strong", "accent", "none"] as const
+type Tier = (typeof FRAME_TIERS)[number]
+
+/** The colour each `border` tier gives a framed strip. */
+const TIER_COLOUR: Record<Tier, string> = {
+  default: "hsl(var(--border))",
+  strong: "hsl(var(--border-strong))",
+  accent: "hsl(var(--primary) / 0.35)",
+  none: "transparent",
+}
+
+interface FrameStrip extends Strip {
+  tier: Tier
+}
+
+const frameScope = (name: string) =>
+  `[data-probe="anatomy-tab-frames"] [data-case="${name}"]`
+
+/** The default-variant strips the `border` prop frames. */
+const FRAME_STRIPS: FrameStrip[] = [
+  ...FRAME_TIERS.flatMap((tier): FrameStrip[] => [
+    { name: `frame ${tier}`, kind: "tabs", tier, scope: frameScope(tier) },
+    {
+      name: `frame ${tier} vertical`,
+      kind: "tabs",
+      tier,
+      scope: frameScope(`${tier}-vertical`),
+    },
+  ]),
+  {
+    name: "frame default vertical rtl",
+    kind: "tabs",
+    tier: "default",
+    scope: frameScope("default-vertical-rtl"),
+  },
+]
+
+for (const mode of MODES) {
+  test.describe(`tab frames · ${mode}`, () => {
+    test("outline: the tier recolours the ruled frame and dividers, never a second frame", async ({
+      page,
+    }) => {
+      await open(page, { mode }, "outline")
+      for (const strip of FRAME_STRIPS) {
+        const label = strip.name
+        const g = await geometry(page, strip)
+        const [list] = await stylesOf(page, strip, "list", [
+          "border-top-color",
+          "border-right-color",
+          "border-bottom-color",
+          "border-left-color",
+        ])
+        expect(Object.values(list ?? {}), `${label} list edge`).toEqual([
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)",
+        ])
+        expect(g.frame, `${label} frame`).not.toBeNull()
+        const { color: rule } = await resolve(page, strip, {
+          color: TIER_COLOUR[strip.tier],
+        })
+        const [frame] = await stylesOf(
+          page,
+          strip,
+          "list",
+          ["border-top-color"],
+          "::before",
+        )
+        expect(frame?.["border-top-color"], `${label} frame colour`).toBe(rule)
+        // One, the current cell, then Two, whose divider the current
+        // cell's edge replaces, then Three.
+        const side = g.vertical
+          ? "border-top-color"
+          : "border-inline-start-color"
+        const items = await stylesOf(page, strip, "item", [side])
+        expect(items[2]?.[side], `${label} divider`).toBe(rule)
+        expect(
+          items[1]?.[side],
+          `${label} divider after the current cell`,
+        ).toBe("rgba(0, 0, 0, 0)")
+        const { color: edge } = await resolve(page, strip, {
+          color: "hsl(var(--primary))",
+        })
+        const [current] = await stylesOf(page, strip, "current", [
+          "border-top-color",
+        ])
+        expect(current?.["border-top-color"], `${label} current edge`).toBe(
+          edge,
+        )
+      }
+    })
+
+    test("underline: a tier's frame replaces the baseline and none keeps it", async ({
+      page,
+    }) => {
+      await open(page, { mode }, "underline")
+      for (const strip of FRAME_STRIPS) {
+        const label = strip.name
+        const [list] = await stylesOf(page, strip, "list", [
+          "border-top-width",
+          "border-top-color",
+          "box-shadow",
+          "border-top-left-radius",
+        ])
+        if (strip.tier === "none") {
+          expect(list?.["border-top-color"], label).toBe("rgba(0, 0, 0, 0)")
+          expect(list?.["box-shadow"], `${label} baseline`).not.toBe("none")
+          expect(list?.["border-top-left-radius"], `${label} corners`).toBe(
+            "0px",
+          )
+          continue
+        }
+        const expected = await resolve(page, strip, {
+          color: TIER_COLOUR[strip.tier],
+          "border-top-left-radius": "var(--radius)",
+        })
+        expect(list?.["border-top-width"], `${label} frame width`).toBe("1px")
+        expect(list?.["border-top-color"], `${label} frame`).toBe(
+          expected.color,
+        )
+        expect(list?.["box-shadow"], `${label} no baseline`).toBe("none")
+        expect(list?.["border-top-left-radius"], `${label} corners`).toBe(
+          expected["border-top-left-radius"],
+        )
+      }
+    })
+
+    test("outline under forced colours paints the framed strip's own edge as Canvas", async ({
+      page,
+    }) => {
+      await seedApp(page, { style: "quiet", mode })
+      await page.emulateMedia({
+        forcedColors: "active",
+        colorScheme: mode,
+        reducedMotion: "reduce",
+      })
+      await openControlFixture(page)
+      await kitLook(page, { tabStyle: "outline" })
+      await page.mouse.move(0, 0)
+      await settle(page)
+      const canvas = await systemColour(page, "Canvas")
+      const canvasText = await systemColour(page, "CanvasText")
+      for (const strip of FRAME_STRIPS.filter(
+        (s) => s.tier !== "none" && !s.name.includes("vertical"),
+      )) {
+        const list = part(page, strip, "list")
+        await list.scrollIntoViewIfNeeded()
+        const box = await boxOf(list)
+        const edge = await pixel(
+          page,
+          Math.floor(box.x + box.width / 2),
+          Math.floor(box.y + 0.5),
+        )
+        expect(close(edge, canvas), `${strip.name} edge ${edge}`).toBe(true)
+        expect(close(edge, canvasText), `${strip.name} edge ${edge}`).toBe(
+          false,
+        )
+      }
+      // The ruled frame lies under the triggers' forced edges, so a pixel
+      // cannot show it; the computed colour can.
+      for (const strip of FRAME_STRIPS.filter((s) => s.tier === "none")) {
+        const [frame] = await stylesOf(
+          page,
+          strip,
+          "list",
+          ["border-top-color"],
+          "::before",
+        )
+        const colour = rgbOf(frame?.["border-top-color"] ?? "")
+        expect(close(colour, canvas), `${strip.name} frame ${colour}`).toBe(
+          true,
+        )
+      }
+    })
   })
 }
