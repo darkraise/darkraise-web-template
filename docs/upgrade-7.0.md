@@ -241,7 +241,7 @@ In a right-to-left page, horizontal arrow keys, sliders, progress bars, resizabl
 
 In forced-colours mode chosen items are painted `Highlight`. A stylesheet that set its own background on a selected kit item inside `@media (forced-colors: active)` competes with the kit's unlayered rules there; select the item with at least the kit's specificity, or remove the override.
 
-The control anatomy values keep every state readable in forced-colours mode, but a few decorations are not drawn there: forced colours drops gradients, so the `ruled` slider's tick scale (a slider's own step marks are restated) and the `slide` switch's ridged grip lines disappear, and the `track` switch's narrow track draws at the switch's full height under the forced 1px border. The thumb's position, the checked fill and the focus ring still show each state.
+The control anatomy values keep every state readable in forced-colours mode, but a few decorations are not drawn there: forced colours drops gradients, so the `ruled` slider's tick scale (a slider's own step marks are restated) and the `slide` switch's ridged grip lines disappear, and the `track` switch's 14px track fills the switch's full height inside the forced 1px border: a checked track is a full-height `Highlight` bar and an unchecked one stays unfilled. The thumb's position, the checked fill and the focus ring still show each state.
 
 ## Fonts
 

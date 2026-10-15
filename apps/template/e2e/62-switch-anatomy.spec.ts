@@ -5,6 +5,7 @@ import {
   computed,
   contrast,
   markContrast,
+  pixel,
   rgbOf,
   settle,
   textContrast,
@@ -500,6 +501,53 @@ for (const mode of MODES) {
       expect(
         await inkPixels(page, at(await boxOf(on), 5, 5, 10, 10), ground),
       ).toBeGreaterThan(4)
+    })
+
+    // theme.css's forced 1px ButtonBorder replaces the track's 3px
+    // transparent block borders, so the narrow track fills the switch.
+    test("under forced colours the track switch fills its full height", async ({
+      page,
+    }) => {
+      await page.emulateMedia({ forcedColors: "active", colorScheme: mode })
+      await look(page, "track")
+      // Highlight as Chromium's emulation paints it, from a probe.
+      await page.evaluate(() => {
+        const probe = document.createElement("div")
+        probe.id = "highlight-probe"
+        probe.style.cssText =
+          "position: fixed; left: 0; top: 0; width: 20px; height: 20px; z-index: 2147483647; forced-color-adjust: none; background: Highlight"
+        document.body.append(probe)
+      })
+      const lit = await pixel(page, 10, 10)
+      await page.evaluate(() =>
+        document.getElementById("highlight-probe")?.remove(),
+      )
+      const near = (a: Rgb, b: Rgb) =>
+        a.every((channel, i) => Math.abs(channel - (b[i] ?? 0)) <= 24)
+      const off = switchOf(page, "off")
+      const on = switchOf(page, "on")
+      for (const sw of [off, on]) {
+        expect(await computed(sw, "border-top-width")).toBe("1px")
+        expect(await computed(sw, "border-bottom-width")).toBe("1px")
+      }
+      // Just inside the top border, left of the checked thumb.
+      const topRow = async (sw: Locator) => {
+        const box = await boxOf(sw)
+        return pixel(
+          page,
+          Math.floor(box.x + box.width * 0.3),
+          Math.ceil(box.y) + 2,
+        )
+      }
+      const onTop = await topRow(on)
+      expect(near(onTop, lit), `checked top row ${onTop}`).toBe(true)
+      const offTop = await topRow(off)
+      expect(near(offTop, lit), `unchecked top row ${offTop}`).toBe(false)
+      await switchOf(page, "off").focus()
+      await page.keyboard.press("Tab")
+      await expect(on).toBeFocused()
+      expect(await computed(on, "outline-style")).toBe("solid")
+      await on.blur()
     })
   })
 }

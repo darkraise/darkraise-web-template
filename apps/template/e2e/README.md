@@ -797,7 +797,7 @@ here. Each preset test is titled `<preset name> <mode>: …`, so
 - On the control fixture's switches under Quiet, light and dark, each `switchStyle` value keeps the 36×20 box, the 24px hit area of `::before` and the keyboard focus ring, and a disabled switch keeps its value's parts and fades.
 - `track` narrows the track to 14px under a 20px thumb that overhangs it; `slide` draws a slot, an 18px ridged thumb and a 6px lamp in the end the thumb has left; `marked` writes an `O` in the inline-end half of an unchecked switch and an `I` in the inline-start half of a checked one.
 - The card-tone thumb's ring keeps 3:1 against the track, the slot, the page and a card; the checked `track` thumb (`--primary-text`) 3:1 against its `--primary-4` track and the page; the lit `slide` lamp (`--primary-text`) 3:1 against its slot; and the glyphs 4.5:1 against their track. Thumbs, lamps and glyphs mirror right to left.
-- Under forced colours a checked switch of each value keeps its thumb, lit lamp and glyph visible.
+- Under forced colours a checked switch of each value keeps its thumb, lit lamp and glyph visible, and the `track` switch takes the forced 1px border and fills its full height, `Highlight` when checked and unfilled when not, with its focus ring.
 - Tagged `@touch`, also run in `mobile`: a tap in the 2px band outside the face, inside the 24px hit area, toggles a switch of each value, and a tap 3px out misses it.
 
 ### 63 · Check anatomy (`63-check-anatomy.spec.ts`)
