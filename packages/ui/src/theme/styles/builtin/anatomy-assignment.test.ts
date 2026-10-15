@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { resolveRegistry } from "@theme/config/registry"
+import { SIGNATURES } from "@theme/config/signatures"
 
 const registry = resolveRegistry()
 
@@ -70,6 +71,18 @@ describe("control anatomy of the built-in looks", () => {
       for (const key of ANATOMY) {
         if (key in own) {
           expect(own[key], `${preset} ${key}`).not.toBe(inherited[key])
+        }
+      }
+    },
+  )
+
+  it.each(ASSIGNMENT.filter(([, preset]) => preset === "base"))(
+    "writes for %s %s only the anatomy that differs from the kit default",
+    (style) => {
+      const own = registry.styles[style]?.signatures ?? {}
+      for (const key of ANATOMY) {
+        if (key in own) {
+          expect(own[key], `${style} ${key}`).not.toBe(SIGNATURES[key].default)
         }
       }
     },

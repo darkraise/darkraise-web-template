@@ -10,9 +10,34 @@ const MODE_NEUTRAL = ["buttonSheen", "scrim"]
 function firstStop(gradient: string): string {
   const inner = /^linear-gradient\((.*)\)$/.exec(gradient)?.[1]
   if (inner === undefined) throw new Error(`not a linear gradient: ${gradient}`)
-  const [first = ""] = inner.split(/,(?![^(]*\))/).slice(1)
-  return first.trim().replace(/^\S+\s+/, "")
+  const args = inner.split(/,(?![^(]*\))/).map((arg) => arg.trim())
+  const direction = /^(?:to\s|-?[\d.]+(?:deg|grad|rad|turn)\b)/.test(
+    args[0] ?? "",
+  )
+  const [first = ""] = direction ? args.slice(1) : args
+  let depth = 0
+  for (let i = 0; i < first.length; i++) {
+    const char = first[i]
+    if (char === "(") depth++
+    else if (char === ")") depth--
+    else if (char === " " && depth === 0) return first.slice(i + 1).trim()
+  }
+  return ""
 }
+
+describe("firstStop", () => {
+  it("reads the position after a colour that contains spaces", () => {
+    expect(
+      firstStop(
+        "linear-gradient(180deg, rgb(255 255 255 / 0.5) max(75%, 50% + 0.5lh), transparent)",
+      ),
+    ).toBe("max(75%, 50% + 0.5lh)")
+  })
+
+  it("reads the first stop of a gradient with no direction", () => {
+    expect(firstStop("linear-gradient(white 40%, black)")).toBe("40%")
+  })
+})
 
 describe("Tactile", () => {
   const registry = resolveRegistry()
