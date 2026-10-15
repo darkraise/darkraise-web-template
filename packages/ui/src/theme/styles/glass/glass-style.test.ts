@@ -334,7 +334,7 @@ describe("more contrast", () => {
     ["--surface-overlay-blend-mode", "normal"],
     ["--overlay-border", "hsl(var(--border))"],
     ["--overlay-backdrop", "none"],
-    ["--card-border", "hsl(var(--border-subtle))"],
+    ["--card-border", "hsl(var(--border))"],
     ["--card-edge", "0 0 transparent"],
     ["--dialog-border", "hsl(var(--border))"],
     ["--selected-view-shadow", "0 0 transparent"],

@@ -134,7 +134,7 @@ export const glass: StyleDefinition = {
       overlayFillBlend: "normal",
       overlayBorder: "hsl(var(--border))",
       overlayBackdrop: "none",
-      cardBorder: "hsl(var(--border-subtle))",
+      cardBorder: "hsl(var(--border))",
       cardEdge: "0 0 transparent",
       dialogBorder: "hsl(var(--border))",
       selectedViewShadow: "0 0 transparent",
