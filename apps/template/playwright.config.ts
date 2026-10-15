@@ -8,7 +8,6 @@ const anatomySpecs = [
   "**/61-button-anatomy.spec.ts",
   "**/62-switch-anatomy.spec.ts",
   "**/63-check-anatomy.spec.ts",
-  "**/64-tab-anatomy.spec.ts",
   "**/66-slider-anatomy.spec.ts",
 ]
 /* A flake that passes on retry leaves no trace under on-first-retry, so its

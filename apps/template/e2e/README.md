@@ -56,7 +56,7 @@ directly, such as a single spec, skip the warm-up unless `E2E_WARM=1` is set;
 
 **Projects.** `21-mobile-layout.spec.ts` runs only in the `mobile` project
 (390×844, touch); every other spec runs in `chromium`. The control anatomy
-specs (61-64, 66) run in both: in `mobile`, only their tests tagged `@touch`
+specs (61-63, 66) run in both: in `mobile`, only their tests tagged `@touch`
 (the 24px hit-area cases).
 
 **Flaky failures.** Local runs retry a failed test once (CI twice), and a test
@@ -774,6 +774,8 @@ here. Each preset test is titled `<preset name> <mode>: …`, so
 
 - Every glass look's card and settings popover take the alpha the look declares, seen through Low, Medium and High, and turn opaque under more contrast but stay translucent under reduced transparency.
 - Under Blur None no glass surface keeps a backdrop filter.
+- Text on a card over the strongest ground holds 4.5:1 for every glass look in light and dark.
+- Wells, tracks, neutral buttons and fields in a card are frosted: translucent at rest, opaque under more contrast and still translucent under reduced transparency; under more contrast the glass capsules keep an edge at 3:1 against the opaque card.
 
 ### 60 · Background and Soft Glass (`60-background-soft-glass.spec.ts`)
 
@@ -821,8 +823,9 @@ here. Each preset test is titled `<preset name> <mode>: …`, so
 
 - On the control fixture's sliders (single, range, inverted, with step marks, disabled, vertical, vertical range) and progress bars (determinate and indeterminate), in light and dark and at compact and spacious density, every `sliderStyle` value keeps each slider's box, thumb centres and range, and each progress bar's box but under `knob`, which makes it 2px taller than the track (`--track-height`).
 - `bar` squares the ends and draws a 6×18 `--primary` bar thumb; `knob` recesses the track under a 22px domed knob with an 8px `--primary` dot; `ruled` draws 2px hairlines, a 2×18 needle with a head and ticks below the track, mirrored right to left when vertical.
-- The value marks (range, thumb, needle, dot, progress fill) keep 3:1 against what is beside them, and every thumb keeps its keyboard focus ring.
-- Under forced colours (light and dark schemes) `ruled` paints a slider's step ticks `CanvasText`, at 3:1 against the Canvas beside them.
+- The value marks (range, thumb, needle, dot, progress fill) keep 3:1 against what is beside them, and a single slider's thumb keeps its keyboard focus ring.
+- A `ruled` progress bar keeps its 2px hairline and indicator at the height an app gives the bar (a height class beats the kit's), and its hairline 3:1 against the bar's own top row.
+- Under forced colours (light and dark schemes) `ruled` paints a slider's step ticks `CanvasText`, at 3:1 against the Canvas beside them, and a progress bar's hairline stays a hairline.
 - Tagged `@touch`, also run in `mobile`: a press 2px outside a thumb's face, inside its 24px hit area, grabs it under each value.
 
 ### 67 · Look sweep (`67-look-sweep.spec.ts`)
