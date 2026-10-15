@@ -137,10 +137,13 @@ describe("tabStyle scope", () => {
           rule.selectors.some((s) => s.includes("[data-tab-style=")),
         )
         .map((rule) => rule.start)
+      expect(accent.length, `${file} accent rules`).toBeGreaterThan(0)
+      expect(signature.length, `${file} signature rules`).toBeGreaterThan(0)
       expect(Math.min(...signature)).toBeGreaterThan(Math.max(...accent))
     }
   })
 
+  // No tabStyle rule hovers today; this guards the next one that does.
   it("puts any hover rule inside @media (hover: hover)", () => {
     for (const file of ["tabs", "segment"] as const) {
       for (const rule of rules(file)) {

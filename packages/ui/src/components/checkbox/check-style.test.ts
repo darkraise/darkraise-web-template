@@ -105,6 +105,7 @@ describe("checkStyle scope", () => {
     }
   })
 
+  // No checkStyle rule hovers today; this guards the next one that does.
   it("puts any hover rule inside @media (hover: hover)", () => {
     for (const file of Object.keys(SOURCES) as Source[]) {
       for (const rule of rules(file)) {
@@ -149,7 +150,7 @@ describe("checkStyle outline", () => {
 })
 
 describe("checkStyle round", () => {
-  it("rounds every checkbox with the pill radius, square under sharp", () => {
+  it("rounds every checkbox with the pill radius", () => {
     expect(bodyOf("checkbox", `${ROUND} .dr-checkbox`)).toBe(
       "border-radius: var(--radius-pill);",
     )

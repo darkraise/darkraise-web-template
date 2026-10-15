@@ -76,9 +76,11 @@ describe("switch style signature scope", () => {
   })
 
   it("names no rule after the kit default", () => {
-    expect(readFileSync(SOURCE, "utf8")).not.toContain(
-      'data-switch-style="pill"',
-    )
+    expect(
+      rules().filter((rule) =>
+        rule.selectors.some((s) => s.includes('data-switch-style="pill"')),
+      ),
+    ).toEqual([])
   })
 
   it("scopes every rule to a switch part under the root attribute", () => {

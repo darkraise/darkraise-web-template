@@ -2,6 +2,11 @@ import { describe, expect, it } from "vitest"
 import { written } from "@test/preset-tokens"
 import { resolveRegistry } from "../../../config/registry"
 import { KIT_FALLBACK } from "../../../config/tokens"
+import {
+  SURFACE_ALPHA_FLOOR,
+  TRANSPARENCY_SCALE,
+  effectiveAlpha,
+} from "../../../config/transparency"
 import { duskHaze } from "./dusk-haze"
 
 /** The engine tokens a value names, sorted. */
@@ -131,7 +136,16 @@ describe("Dusk Haze", () => {
         Number(floor),
         cards * Number(factor) - Number(offset),
       )
-      expect(rail).toBeGreaterThanOrEqual(0.4)
+      // At High the cards turn as clear as the kit allows; the unfloored
+      // term is then under the floor, so the floor is what holds the rail.
+      const clearest = effectiveAlpha(
+        cards,
+        TRANSPARENCY_SCALE.high,
+        SURFACE_ALPHA_FLOOR,
+      )
+      expect(clearest * Number(factor) - Number(offset)).toBeLessThan(
+        Number(floor),
+      )
       expect(rail).toBeLessThan(cards)
     }
   })

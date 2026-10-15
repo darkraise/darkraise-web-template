@@ -3,8 +3,8 @@ import { resolveRegistry } from "@theme/config/registry"
 
 const registry = resolveRegistry()
 
-// The owner-approved control anatomy of every built-in look (spec section 4,
-// 2026-10-14): style, preset ("base" for the style itself), then
+// The owner-approved control anatomy of every built-in look (2026-10-14,
+// tabled in docs/custom-styles.md): style, preset ("base" for the style itself), then
 // buttonStyle, iconButton, switchStyle, checkStyle, tabStyle, sliderStyle.
 // prettier-ignore
 const ASSIGNMENT = [
