@@ -371,6 +371,19 @@
   [data-button-style="glass"] .dr-btn[data-variant="secondary"] {
     background-color: hsl(var(--card) / var(--surface-alpha));
   }
+  /* The rim is a literal, which a style's fallback cannot reset, and the
+     capsule turns opaque on an opaque card: the edge returns as the
+     neutral edge solved to 3:1. */
+  @media (prefers-contrast: more) {
+    [data-button-style="glass"] .dr-btn[data-variant="secondary"],
+    [data-button-style="glass"] .dr-btn[data-variant="outline"],
+    [data-mode="dark"][data-button-style="glass"]
+      .dr-btn[data-variant="secondary"],
+    [data-mode="dark"][data-button-style="glass"]
+      .dr-btn[data-variant="outline"] {
+      border-color: var(--btn-neutral-border, var(--field-edge));
+    }
+  }
 
   /* The iconButton signature. :where() keeps the root attribute out of the
      specificity, so the rule beats only .dr-btn's own radius: a button

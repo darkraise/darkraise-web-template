@@ -238,6 +238,17 @@ describe("buttonStyle glass", () => {
     }
   })
 
+  it("restores the neutral edge on the capsules under more contrast", () => {
+    const media = ["@layer components", "@media (prefers-contrast: more)"]
+    for (const variant of ["secondary", "outline"]) {
+      for (const selector of [at("glass", variant), dark("glass", variant)]) {
+        expect(bodyOf(selector, media), selector).toBe(
+          "border-color: var(--btn-neutral-border, var(--field-edge));",
+        )
+      }
+    }
+  })
+
   it("fills secondary from the card at the surface alpha, and outline from --btn-neutral-fill", () => {
     expect(bodyOf(at("glass", "secondary"))).toContain(
       "background-color: hsl(var(--card) / var(--surface-alpha));",

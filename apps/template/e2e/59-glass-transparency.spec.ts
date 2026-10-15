@@ -19,7 +19,15 @@ import {
   seedApp,
   type ThemeSeed,
 } from "./helpers/app"
-import { alphaOf, computed, settle, textContrast } from "./helpers/measure"
+import {
+  alphaOf,
+  computed,
+  contrast,
+  rgbOf,
+  settle,
+  textContrast,
+  type Rgb,
+} from "./helpers/measure"
 import {
   emulateReducedTransparency,
   filtering,
@@ -333,6 +341,29 @@ for (const look of LOOKS) {
           await frostedAlphas(page, look),
         )) {
           expect(alpha, `${name} under ${media}`).toBe(1)
+        }
+        if (
+          registry.signaturesFor(look.style, look.preset ?? "base")
+            .buttonStyle === "glass"
+        ) {
+          // The capsules' bright rim is a literal, so Glass's fallback
+          // cannot reset it; an edge must still show on the opaque card.
+          const panel = page.locator('[data-probe="anatomy-card"]')
+          const ground = rgbOf(await computed(panel, "background-color"))
+          for (const variant of ["outline", "secondary"]) {
+            const paint = await computed(
+              panel.locator(`.dr-btn[data-case="${variant}"]`),
+              "border-top-color",
+            )
+            const alpha = alphaOf(paint)
+            const edge = rgbOf(paint).map((channel, i) =>
+              Math.round(channel * alpha + (ground[i] ?? 0) * (1 - alpha)),
+            ) as Rgb
+            expect(
+              contrast(edge, ground),
+              `the ${variant} button's edge on the card under ${media}`,
+            ).toBeGreaterThanOrEqual(3)
+          }
         }
       })
       // Reduced transparency keeps glass, and the controls in it with it.
