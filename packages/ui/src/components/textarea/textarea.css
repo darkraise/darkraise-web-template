@@ -6,7 +6,6 @@
        -- see `--control-surface` in theme.css. */
     background-color: hsl(var(--control-surface));
     border-radius: var(--radius);
-    border-bottom-color: var(--field-edge);
   }
 
   /* Grouped form — relative wrapper hosts an absolute action button. The

@@ -22,7 +22,6 @@
     transition:
       border-color var(--duration-fast),
       box-shadow var(--duration-fast);
-    border-bottom-color: var(--field-edge);
   }
 
   /* The field shares typography and density-padding with .dr-input but

@@ -25,7 +25,6 @@
       var(--field-py),
       calc((var(--field-height) - 1.75rem) / 2)
     );
-    border-bottom-color: var(--field-edge);
   }
 
   .dr-tags-input-item {

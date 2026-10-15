@@ -225,7 +225,7 @@ export const AXES = {
     layer: "brand",
     control: "ordinal",
   }),
-  /** Page-to-card separation and decorative edge strength; field edges hold 3:1 at every step. */
+  /** Page-to-card separation and decorative edge strength; control edges hold 3:1 at every step. */
   contrast: axis({
     values: CONTRASTS,
     default: "standard",

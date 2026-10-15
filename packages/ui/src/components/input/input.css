@@ -10,7 +10,6 @@
     transition:
       border-color var(--duration-fast),
       box-shadow var(--duration-fast);
-    border-bottom-color: var(--field-edge);
   }
 
   /* Group wrapper used when the consumer passes `prefix` or `suffix` to
@@ -28,7 +27,6 @@
     transition:
       border-color var(--duration-fast),
       box-shadow var(--duration-fast);
-    border-bottom-color: var(--field-edge);
   }
 
   /* Addon slot: shared visual for prefix and suffix. A muted block with a

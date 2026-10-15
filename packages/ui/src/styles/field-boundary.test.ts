@@ -4,9 +4,9 @@ import { resolveFieldTrigger } from "../test/fieldTrigger"
 import { cssRules } from "../test/css-rules"
 import { stripCssComments } from "../test/strip-css-comments"
 
-// A field keeps its faint --input border on the sides and top and draws the
-// 3:1 --field-edge along its bottom; an unchecked checkbox, radio or switch
-// draws the edge all round.
+// A field draws its look's --input border on every side, so no look's fields
+// carry a heavier bottom edge; an unchecked checkbox, radio or switch draws
+// the 3:1 --field-edge all round.
 
 interface Rule {
   selector: string
@@ -55,16 +55,33 @@ const SMALL_CONTROLS: Array<[string, string]> = [
 
 describe("field boundary", () => {
   it.each(FIELDS)(
-    "%s .%s draws a faint border and a 3:1 bottom edge",
+    "%s .%s draws its --input border on every side",
     (file, cls) => {
       const body = resolveFieldTrigger(bodyOf(file, `.${cls}`))
       expect(body).toMatch(
         /(?<![\w:-])border-input(?![\w-])|border-color:\s*hsl\(var\(--input\)\)/,
       )
-      // Last, so no border-color shorthand after it can take the bottom back.
-      expect(body).toMatch(/border-bottom-color: var\(--field-edge\);$/)
+      expect(body).not.toContain("--field-edge")
     },
   )
+
+  it("draws no border under fieldBorder none", () => {
+    const none =
+      "border-top-color: transparent; border-inline-color: transparent; border-bottom-color: transparent;"
+    const theme = stripCssComments(
+      readFileSync("src/styles/theme.css", "utf8"),
+    ).replace(/\s+/g, " ")
+    // focus-ring-input and focus-ring-input-wrapper each carry one.
+    expect(
+      theme.split(`[data-field-border="none"] & { ${none} }`),
+    ).toHaveLength(3)
+    expect(
+      bodyOf(
+        "input-otp/input-otp.css",
+        '[data-field-border="none"] .dr-input-otp-slot',
+      ),
+    ).toBe(none)
+  })
 
   // The base rule gives grouped slots top, bottom and inline-end borders and
   // the first slot its inline start, so neighbouring slots share one seam.

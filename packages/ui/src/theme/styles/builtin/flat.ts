@@ -4,7 +4,7 @@ import type { StyleDefinition } from "../../config/schema"
  * Tool panels on a grey canvas: depth comes only from surface tone, never
  * from a shadow. Panels, popovers and dialogs round 1.625 times the base
  * radius (13px at the default step) over 5-8px controls; fields are
- * borderless wells whose bottom edge alone holds 3:1.
+ * borderless wells marked by their fill.
  */
 export const flat: StyleDefinition = {
   label: "Flat",

@@ -18,7 +18,6 @@
       var(--field-py),
       calc((var(--field-height) - 1.75rem) / 2)
     );
-    border-bottom-color: var(--field-edge);
   }
 
   /* Outranks the fixed height .dr-combobox-control sets: the chip row grows

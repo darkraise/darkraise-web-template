@@ -7,8 +7,8 @@ import type { PresetDefinition } from "../../../config/schema"
  * A graphite rail stands beside a workspace whose top bar is the page
  * itself. The accent marks rather than fills: the current nav row is a
  * neutral lift, a selected table row and a banner carry a 3px stripe on a
- * grey fill, and tags are grey chips. Fields are grey wells that keep only
- * their bottom edge, and titles and figures are set bold.
+ * grey fill, and tags are grey chips. Fields are grey wells with no
+ * border, and titles and figures are set bold.
  *
  * The neutral button is clear in light, because Quiet's card fill would put
  * a white search trigger under the rail's light ink.

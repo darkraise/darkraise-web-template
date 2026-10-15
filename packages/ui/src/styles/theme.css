@@ -297,8 +297,9 @@
   box-shadow: var(--field-shadow);
 
   /* Before the focus rules, which tie on specificity: a focused field draws
-     its whole box in the focus colour whatever its resting border. Only the
-     top and the sides go, so the 3:1 bottom edge stays. */
+     its whole box in the focus colour whatever its resting border. Under
+     `bottom` the top and the sides go; under `none` every side does, and the
+     fill alone marks the field. */
   [data-field-border="bottom"] & {
     border-top-color: transparent;
     border-inline-color: transparent;
@@ -309,6 +310,7 @@
   [data-field-border="none"] & {
     border-top-color: transparent;
     border-inline-color: transparent;
+    border-bottom-color: transparent;
   }
 
   &:focus,
@@ -350,6 +352,7 @@
   [data-field-border="none"] & {
     border-top-color: transparent;
     border-inline-color: transparent;
+    border-bottom-color: transparent;
   }
 
   &:focus-within {
@@ -371,9 +374,7 @@
 
 /* A picker's closed trigger, drawn as a field. Its value sits in a direct
    child span, which truncates with an ellipsis, and its icon in a direct
-   child svg, which never shrinks. border-bottom-color stays the last
-   declaration so no border shorthand after it takes the bottom edge back,
-   which is why the nested rules come first. */
+   child svg, which never shrinks. */
 @utility field-trigger {
   @apply border-input text-card-foreground focus-ring-input data-[placeholder]:text-muted-foreground flex w-full cursor-pointer items-center justify-between gap-2 border px-[var(--field-px)] text-sm transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)];
 
@@ -396,7 +397,6 @@
      `--control-surface`. */
   background-color: hsl(var(--control-surface));
   border-radius: var(--field-radius);
-  border-bottom-color: var(--field-edge);
 }
 
 @theme inline {

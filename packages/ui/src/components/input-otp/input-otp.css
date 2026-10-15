@@ -27,11 +27,10 @@
     width: var(--field-height);
     transition-duration: var(--duration-fast);
     box-shadow: var(--field-shadow);
-    border-bottom-color: var(--field-edge);
   }
 
   /* Before the active rules, which tie on specificity: an active slot draws
-     its whole box in the focus colour. The bottom edge always stays. */
+     its whole box in the focus colour. */
   [data-field-border="bottom"] .dr-input-otp-slot {
     border-top-color: transparent;
     border-inline-color: transparent;
@@ -41,6 +40,7 @@
   [data-field-border="none"] .dr-input-otp-slot {
     border-top-color: transparent;
     border-inline-color: transparent;
+    border-bottom-color: transparent;
   }
 
   .dr-input-otp-slot[data-active] {

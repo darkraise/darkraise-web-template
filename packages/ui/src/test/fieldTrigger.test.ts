@@ -84,6 +84,7 @@ describe("field-trigger resolution", () => {
     expect(body).toContain(
       "&:disabled { cursor: not-allowed; opacity: var(--disabled-opacity); }",
     )
-    expect(body).toMatch(/border-bottom-color: var\(--field-edge\);$/)
+    expect(body).not.toContain("--field-edge")
+    expect(body).toMatch(/border-radius: var\(--field-radius\);$/)
   })
 })
