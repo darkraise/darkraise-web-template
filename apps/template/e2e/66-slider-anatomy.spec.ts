@@ -780,5 +780,24 @@ for (const mode of MODES) {
         expect(ratio, `step ${i}`).toBeGreaterThanOrEqual(3)
       }
     })
+
+    test("ruled keeps the progress hairline a hairline, not a CanvasText slab", async ({
+      page,
+    }) => {
+      await seedApp(page, { style: "quiet", mode })
+      await page.emulateMedia({ forcedColors: "active", colorScheme: mode })
+      await openControlFixture(page)
+      await stamp(page, "ruled")
+      const { box, indicator } = (await read(page)).bars.determinate
+      // The unfilled hairline against the bar's own top row.
+      const x = box.x + box.width - 12
+      const ratio = await markContrast(
+        page,
+        region(x, indicator.y, 4, 2),
+        region(x, box.y, 4, 1),
+      )
+      note(`${mode} forced progress hairline: ${ratio.toFixed(2)}`)
+      expect(ratio).toBeGreaterThanOrEqual(3)
+    })
   })
 }

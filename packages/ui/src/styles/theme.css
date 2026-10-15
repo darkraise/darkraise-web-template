@@ -2923,6 +2923,24 @@
     background-color: CanvasText;
   }
 
+  /* sliderStyle ruled draws the progress hairline as a gradient, which this
+     mode drops, and the rule above would fill the whole bar. The hairline
+     is a pseudo-element instead, under the indicator. */
+  [data-slider-style="ruled"] .dr-progress {
+    background-color: transparent;
+  }
+  [data-slider-style="ruled"] .dr-progress::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: calc(50% - 1px);
+    height: 2px;
+    background-color: CanvasText;
+  }
+  [data-slider-style="ruled"] .dr-progress-indicator {
+    position: relative;
+  }
+
   .dr-skeleton,
   .dr-chart-placeholder {
     background-color: GrayText;
