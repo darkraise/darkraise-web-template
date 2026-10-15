@@ -392,17 +392,11 @@ except where a page is named.
 - Data table rows measure `--control-height` plus 8px under quiet and glass ×
   both modes × every density, and a sortable header's label lines up with the
   cell text and matches a plain header's font and colour.
-- A field's bottom edge reaches 3:1 against the page and against a card,
-  sampled from rendered pixels, for every style and for glass with a vivid
-  fuchsia accent, a sand surface, an intense gradient, and subtle and strong
-  opacity × both modes; in dark
-  also on low, medium and high cards, in a popover, a dialog and a muted
-  dialog.
 - A card paints the plane its `surface` prop names (card, page, muted, none,
   and card again inside a muted ancestor), under quiet and glass × both modes.
 - At sharp and pill radius, the password input keeps the control height with
-  its reveal button filling the field's inline end, and the textarea takes the
-  field edge and `--radius` rather than `--radius-control`.
+  its reveal button filling the field's inline end, and the textarea draws the
+  same border on every side and takes `--radius` rather than `--radius-control`.
 - Under Quiet with a gradient background, the top 300px of the content area
   (the canvas strip) is sampled with the content hidden: `--field-edge-color`,
   `--primary` and `--focus-ring` clear 3:1 and `--muted-foreground` and

@@ -204,21 +204,40 @@ for (const mode of MODES) {
       )
     })
 
-    test("field border none keeps the bottom edge and the radius", async ({
+    test("field border none draws no border, the fill marking the field", async ({
       page,
     }) => {
-      const input = page.locator(FIELDS[0].box).first()
-      const radius = await computed(input, "border-bottom-left-radius")
-      const edge = await computed(input, "border-bottom-color")
+      const radii = await Promise.all(
+        FIELDS.map((field) =>
+          computed(
+            page.locator(field.box).first(),
+            "border-bottom-left-radius",
+          ),
+        ),
+      )
       await setRoot(page, { "data-field-border": "none" })
-      expect(await computed(input, "border-top-color")).toBe("rgba(0, 0, 0, 0)")
-      expect(await computed(input, "border-left-color")).toBe(
+      for (const [index, field] of FIELDS.entries()) {
+        const box = page.locator(field.box).first()
+        for (const side of ["top", "right", "bottom", "left"]) {
+          expect(
+            await computed(box, `border-${side}-color`),
+            `${field.name} ${side}`,
+          ).toBe("rgba(0, 0, 0, 0)")
+        }
+        expect(
+          await computed(box, "border-bottom-left-radius"),
+          field.name,
+        ).toBe(radii[index])
+      }
+      const slot = page.locator('[data-probe="otp"] .dr-input-otp-slot').nth(1)
+      expect(await computed(slot, "border-bottom-color")).toBe(
         "rgba(0, 0, 0, 0)",
       )
-      expect(await computed(input, "border-bottom-color")).toBe(edge)
-      expect(await computed(input, "border-bottom-left-radius")).toBe(radius)
-      const slot = page.locator('[data-probe="otp"] .dr-input-otp-slot').nth(1)
-      expect(await computed(slot, "border-top-color")).toBe("rgba(0, 0, 0, 0)")
+      // A focused field still draws its whole box in the focus colour.
+      const box = await focusField(page, FIELDS[0])
+      expect(await computed(box, "border-bottom-color")).toBe(
+        await resolved(page, "border-top-color", "hsl(var(--primary))"),
+      )
     })
 
     test("field fill surface paints a card's field in the card", async ({

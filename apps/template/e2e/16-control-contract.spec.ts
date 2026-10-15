@@ -3,21 +3,13 @@ import { resolveRegistry } from "darkraise-ui/theme-config"
 import { DENSITIES, LS_KEYS, MATRIX_STYLES, STYLES } from "./fixtures/theme"
 import { boxOf, gotoApp, seedApp, watchConsole } from "./helpers/app"
 import { openControlFixture } from "./helpers/controls"
-import {
-  computed,
-  contrast,
-  minContrastOver,
-  pixel,
-  rgbOf,
-  settle,
-} from "./helpers/measure"
+import { computed, minContrastOver, rgbOf, settle } from "./helpers/measure"
 
 /**
  * The control contract: every button and field sits at --control-height, at
  * every density and font size, in both modes and under every style, since a
  * style changes only shadows; on a coarse pointer they floor at
- * --control-height-xl; and a field's bottom edge reaches 3:1 against what it
- * sits on (WCAG 1.4.11).
+ * --control-height-xl.
  *
  * Heights are compared against probe elements sized with the tokens rather
  * than hard-coded pixels, because --control-scale moves them with the
@@ -239,117 +231,6 @@ for (const style of MATRIX_STYLES) {
   }
 }
 
-// Fields are opaque under every style, so one 3:1 floor holds everywhere.
-// The glass cases add the loudest grounds frosted chrome sits over: a vivid
-// accent, a warm surface and an intense gradient.
-const EDGE_THEMES = [
-  ...STYLES.map((style) => ({ name: style, seed: { style } })),
-  {
-    name: "glass vivid fuchsia",
-    seed: { style: "glass", accent: "fuchsia", darkAccentChroma: "vivid" },
-  },
-  { name: "glass sand surface", seed: { style: "glass", surface: "sand" } },
-  {
-    name: "glass intense gradient",
-    seed: {
-      style: "glass",
-      backgroundStyle: "gradient",
-      backgroundIntensity: "intense",
-    },
-  },
-  // Transparency changes how much of the page a frosted face lets through, so
-  // the lifted faces differ at each end of the range.
-  {
-    name: "glass low transparency",
-    seed: { style: "glass", glassTransparency: "low" },
-  },
-  {
-    name: "glass high transparency",
-    seed: { style: "glass", glassTransparency: "high" },
-  },
-]
-
-for (const { name, seed } of EDGE_THEMES) {
-  for (const mode of MODES) {
-    test(`field bottom edge reaches 3:1 · ${name} · ${mode}`, async ({
-      page,
-    }) => {
-      await seedApp(page, { ...seed, mode })
-      await openControlFixture(page)
-      await page.mouse.move(0, 0)
-      for (const probe of ["edge-page", "edge-card"]) {
-        await expectEdgeFloor(page, probe, `${name} · ${mode}`)
-      }
-    })
-  }
-}
-
-// In dark, an elevated card or a popup lightens its face with a tonal lift,
-// so fields on it take the lifted edge. A modal takes the high step.
-for (const { name, seed } of EDGE_THEMES) {
-  test(`field bottom edge reaches 3:1 on lifted surfaces · ${name} · dark`, async ({
-    page,
-  }) => {
-    await seedApp(page, { ...seed, mode: "dark" })
-    await openControlFixture(page)
-    for (const level of ["low", "medium", "high"]) {
-      const probe = `edge-card-${level}`
-      await page
-        .locator(`[data-probe="${probe}"]`)
-        .evaluate((el) => el.scrollIntoView({ block: "center" }))
-      await page.mouse.move(0, 0)
-      await settle(page)
-      await expectEdgeFloor(page, probe, `${name} · dark`)
-    }
-    await page.getByRole("button", { name: "Open field popover" }).click()
-    const popover = page.locator('[data-probe="edge-popover"]')
-    await popover.waitFor()
-    // The popover focuses its field, and a focused field draws its ring.
-    await popover.locator("input").blur()
-    await page.mouse.move(0, 0)
-    await settle(page)
-    await expectEdgeFloor(page, "edge-popover", `${name} · dark`)
-    await page.keyboard.press("Escape")
-    await expect(popover).toBeHidden()
-    await page.getByRole("button", { name: "Open field dialog" }).click()
-    const dialog = page.locator('[data-probe="edge-dialog"]')
-    await dialog.waitFor()
-    await dialog.locator("input").blur()
-    await page.mouse.move(0, 0)
-    await settle(page)
-    await expectEdgeFloor(page, "edge-dialog", `${name} · dark`)
-    await page.keyboard.press("Escape")
-    await expect(dialog).toBeHidden()
-    // A muted face is a step lighter than the card the engine solves against.
-    await page.getByRole("button", { name: "Open muted field dialog" }).click()
-    const muted = page.locator('[data-probe="edge-dialog-muted"]')
-    await muted.waitFor()
-    await muted.locator("input").blur()
-    await page.mouse.move(0, 0)
-    await settle(page)
-    await expectEdgeFloor(page, "edge-dialog-muted", `${name} · dark`)
-  })
-}
-
-async function expectEdgeFloor(page: Page, probe: string, label: string) {
-  const field = page.locator(
-    `[data-probe="${probe}"] :is(.dr-input, .dr-textarea)`,
-  )
-  const box = await boxOf(field)
-  const x = Math.round(box.x + box.width / 2)
-  // A box centred by scrollIntoView can sit on a half pixel; its bottom
-  // border paints on the row the bottom edge rounds into.
-  const bottom = Math.round(box.y + box.height)
-  const edge = await pixel(page, x, bottom - 1)
-  const ground = await pixel(page, x, bottom + 4)
-  const ratio = contrast(edge, ground)
-  console.log(`edge contrast ${label} · ${probe}: ${ratio.toFixed(2)}:1`)
-  expect(
-    ratio,
-    `${probe}: edge rgb(${edge.join(",")}) on rgb(${ground.join(",")})`,
-  ).toBeGreaterThanOrEqual(3)
-}
-
 for (const style of STYLES) {
   test(`switch thumb sits evenly in its track · ${style}`, async ({ page }) => {
     await seedApp(page, { style, mode: "light" })
@@ -456,7 +337,7 @@ for (const radius of ["sharp", "pill"] as const) {
 // --radius, so at pill it rounds like a card rather than a lozenge.
 for (const mode of MODES) {
   for (const radius of ["sharp", "pill"] as const) {
-    test(`textarea takes the field edge and the radius · ${radius} · ${mode}`, async ({
+    test(`textarea takes an even border and the radius · ${radius} · ${mode}`, async ({
       page,
     }) => {
       await seedApp(page, { style: "quiet", mode, radius })
@@ -467,19 +348,16 @@ for (const mode of MODES) {
       await settle(page)
       const textarea = probe.locator(".dr-textarea")
       const expected = await resolvedIn(probe, {
-        "border-bottom-color": "var(--field-edge)",
-        "border-bottom-style": "solid",
         "border-radius": "var(--radius)",
       })
       await expect(textarea).toHaveCSS(
         "border-bottom-color",
-        expected["border-bottom-color"] ?? "",
+        await computed(textarea, "border-top-color"),
       )
       await expect(textarea).toHaveCSS(
         "border-radius",
         expected["border-radius"] ?? "",
       )
-      await expectEdgeFloor(page, "textarea", `textarea · ${radius} · ${mode}`)
     })
   }
 }
