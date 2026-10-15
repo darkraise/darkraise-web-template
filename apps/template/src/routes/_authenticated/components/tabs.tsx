@@ -301,9 +301,12 @@ function TabsPage() {
           <p className="text-muted-foreground text-sm">
             <code className="text-foreground">border</code> frames the tab
             strip. The default and outline variants already draw a box, so the
-            tier only retints theirs; underline and enclosed gain one. On
-            enclosed the frame stops short of the seam edge, leaving the folder
-            joint with the panel intact.
+            tier retints theirs; underline and enclosed gain one. On enclosed
+            the frame stops short of the seam edge, leaving the folder joint
+            with the panel intact. Under a look whose tab style draws its own
+            frame, the tier recolours that frame rather than adding a second
+            one: outline&apos;s ruled frame and dividers take its colour, and
+            under underline the frame replaces the baseline.
           </p>
           <VariantMatrix
             rows={{ label: "variant", values: TABS_VARIANTS }}

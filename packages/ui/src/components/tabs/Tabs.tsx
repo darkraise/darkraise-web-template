@@ -72,6 +72,11 @@ interface TabsProps extends Omit<
    * this prop is what turns the box on for the variants that have none.
    * The enclosed variant keeps its seam edge open, so the frame there
    * covers three sides and the folder joint stays intact.
+   *
+   * Under a look whose `tabStyle` draws its own frame, the tier recolours
+   * that frame instead of adding a second: `outline`'s ruled frame and
+   * dividers take the tier's colour (`none` clears them), and under
+   * `underline` the frame replaces the baseline.
    */
   border?: TabsBorder
   activationMode?: TabsActivationMode
