@@ -183,7 +183,7 @@ describe("buttonStyle soft", () => {
 
   it("tints the default face at step 3 (light) or 4 (dark) under the accent text", () => {
     expect(bodyOf(at("soft", "default"))).toContain(
-      "--state-layer-color: currentColor; --btn-hover-layer: 0; background-color: hsl(var(--primary-3)); color: hsl(var(--primary-text));",
+      "--state-layer-color: hsl(var(--background)); --btn-hover-layer: 0; background-color: hsl(var(--primary-3)); color: hsl(var(--primary-text));",
     )
     expect(bodyOf(dark("soft", "default"))).toBe(
       "background-color: hsl(var(--primary-4));",

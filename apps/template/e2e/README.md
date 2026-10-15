@@ -789,7 +789,7 @@ here. Each preset test is titled `<preset name> <mode>: …`, so
 - `key` sets the default, destructive, secondary and outline faces on a 2px base (`--border-strong` under the neutral two) with a sheen that ends above the label's line box; a press moves the face 1px through a transform onto a 1px base without moving a neighbour, instantly under reduced motion, and never on a disabled button.
 - `soft` paints the default face at accent step 3 (light) or 4 (dark) under `--primary-text` and steps one deeper on hover, destructive on its subtle pair, secondary on the neutral well (`--well-fill`, else `--muted`), and the outline edge in `--primary` at 3:1 against the page.
 - `glass` keeps the filled faces with a sheen above the label band, and rims the neutral capsules; secondary paints the card at the surface alpha, opaque under Quiet and translucent when the host's alpha drops, and outline reads `--btn-neutral-fill`.
-- Every label clears 4.5:1 under every value, at rest and hovered, read from the pixels behind its line of text (`labelContrast`); the keyboard focus ring survives every value.
+- Every label clears 4.5:1 under every value, at rest and hovered, and the `soft` default label while pressed, read from the pixels behind its line of text (`labelContrast`); the keyboard focus ring survives every value.
 - `round` turns every icon-size button, Pagination's page links and the Calendar's month arrows included, into a circle, square under the sharp Radius step, and changes nothing else; it composes with every `buttonStyle` value. Tagged `@touch`, also run in `mobile`: a round icon button answers a tap anywhere in a 24px circle and not in the corners its square face would fill.
 
 ### 62 · Switch anatomy (`62-switch-anatomy.spec.ts`)

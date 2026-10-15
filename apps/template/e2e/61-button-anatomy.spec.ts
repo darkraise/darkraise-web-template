@@ -421,6 +421,24 @@ for (const mode of MODES) {
       }
     })
 
+    test("soft's default label clears 4.5:1 while pressed", async ({
+      page,
+    }) => {
+      await stamp(page, { buttonStyle: "soft" })
+      for (const size of ["sm", "default", "lg"]) {
+        const face = button(page, "default", size)
+        const point = await centre(face)
+        await page.mouse.move(point.x, point.y)
+        await page.mouse.down()
+        await settle(page)
+        const ratio = await labelContrast(page, face)
+        expect(ratio, `soft default ${size} pressed`).toBeGreaterThanOrEqual(
+          4.5,
+        )
+        await release(page)
+      }
+    })
+
     test("soft's outline edge clears 3:1 against the page", async ({
       page,
     }) => {

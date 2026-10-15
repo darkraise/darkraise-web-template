@@ -34,6 +34,9 @@ const TEXT = 4.5
 const MARK = 3
 const WHITE = "0 0% 100%"
 
+/** The soft default button's press wash toward the page (button.css). */
+const PRESS = 0.16
+
 const registry = resolveRegistry()
 const COMBOS = [...reachableCombos(), ...presetCombos()]
 
@@ -121,7 +124,7 @@ describe("control anatomy contrast over the engine matrix", () => {
     )
   })
 
-  it("soft buttons and outline tab cells: the accent label clears 4.5:1 on its tint, at rest and on hover", () => {
+  it("soft buttons and outline tab cells: the accent label clears 4.5:1 on its tint, at rest, on hover and pressed", () => {
     expect(
       failures(
         (combo, at) => [
@@ -134,6 +137,16 @@ describe("control anatomy contrast over the engine matrix", () => {
             where: "on the hover tint",
             ink: at("--primary-text"),
             ground: tint(combo, at, 1),
+          },
+          {
+            where: "on the soft default press over the resting tint",
+            ink: at("--primary-text"),
+            ground: composite(tint(combo, at), at("--background"), PRESS),
+          },
+          {
+            where: "on the soft default press over the hover tint",
+            ink: at("--primary-text"),
+            ground: composite(tint(combo, at, 1), at("--background"), PRESS),
           },
         ],
         TEXT,

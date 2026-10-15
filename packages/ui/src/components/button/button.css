@@ -286,10 +286,11 @@
     border-color: transparent;
     box-shadow: var(--glow-outer), var(--glow-inner);
   }
-  /* Hover is the next accent step, so the hover wash stays off; a press
-     washes toward the label as on a neutral surface. */
+  /* Hover is the next accent step, so the hover wash stays off. The label
+     sits near 4.5:1 on the stepped tint, so a press washes toward the page,
+     away from the label, as soft destructive's does. */
   [data-button-style="soft"] .dr-btn[data-variant="default"] {
-    --state-layer-color: currentColor;
+    --state-layer-color: hsl(var(--background));
     --btn-hover-layer: 0;
     background-color: hsl(var(--primary-3));
     color: hsl(var(--primary-text));
