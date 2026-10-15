@@ -142,7 +142,7 @@ describe("switch style track", () => {
     expect(
       bodyOf(`${TRACK} .dr-switch[data-state="unchecked"] .dr-switch-thumb`),
     ).toBe(
-      "background-color: var(--surface-card-fill-opaque); box-shadow: 0 0 0 1px hsl(var(--border-strong)), var(--thumb-shadow);",
+      "background-color: var(--thumb-fill, var(--surface-card-fill-opaque)); box-shadow: 0 0 0 1px hsl(var(--border-strong)), var(--thumb-shadow);",
     )
   })
 })
