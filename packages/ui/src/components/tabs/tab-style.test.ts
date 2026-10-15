@@ -260,6 +260,11 @@ describe("tabStyle underline", () => {
     ],
     [
       "tabs",
+      `${UNDERLINE} ${LIST}[data-border]:not([data-border="none"])`,
+      "box-shadow: none; border-radius: var(--radius);",
+    ],
+    [
+      "tabs",
       `${UNDERLINE} ${TRIGGER}[data-state="active"]`,
       "color: var(--selected-mark-fg);",
     ],
@@ -307,6 +312,18 @@ describe("tabStyle underline", () => {
     ],
   ] as const)("%s %s", (file, selector, body) => {
     expect(bodyOf(file, selector, COMPONENTS)).toBe(body)
+  })
+
+  it("writes the framed-strip rule after every baseline rule", () => {
+    const all = rules("tabs")
+    const startOf = (selector: string) =>
+      all.find((rule) => rule.selectors.includes(selector))?.start ?? -1
+    const frame = startOf(
+      `${UNDERLINE} ${LIST}[data-border]:not([data-border="none"])`,
+    )
+    expect(frame).toBeGreaterThan(
+      startOf(`${UNDERLINE} ${LIST}[data-orientation="vertical"]:dir(rtl)`),
+    )
   })
 })
 
@@ -358,6 +375,7 @@ describe("tabStyle outline", () => {
   const T = "var(--radius-sm)"
   const R = "calc(var(--segment-radius) - 2px)"
   const DIVIDER = "hsl(var(--border-strong))"
+  const RULE = `var(--tab-rule, ${DIVIDER})`
 
   it.each([
     [
@@ -368,7 +386,27 @@ describe("tabStyle outline", () => {
     [
       "tabs",
       `${OUTLINE} ${LIST}::before`,
-      `content: ""; position: absolute; inset: 0.25rem; border: 1px solid ${DIVIDER}; border-radius: ${T}; pointer-events: none;`,
+      `content: ""; position: absolute; inset: 0.25rem; border: 1px solid ${RULE}; border-radius: ${T}; pointer-events: none;`,
+    ],
+    [
+      "tabs",
+      `${OUTLINE} ${LIST}[data-border]`,
+      "border-color: transparent; --tab-rule: hsl(var(--border));",
+    ],
+    [
+      "tabs",
+      `${OUTLINE} ${LIST}[data-border="strong"]`,
+      "--tab-rule: hsl(var(--border-strong));",
+    ],
+    [
+      "tabs",
+      `${OUTLINE} ${LIST}[data-border="accent"]`,
+      "--tab-rule: hsl(var(--primary) / 0.35);",
+    ],
+    [
+      "tabs",
+      `${OUTLINE} ${LIST}[data-border="none"]`,
+      "--tab-rule: transparent;",
     ],
     [
       "tabs",
@@ -399,12 +437,12 @@ describe("tabStyle outline", () => {
     [
       "tabs",
       `${OUTLINE} ${TRIGGER}:where(${H}:not(:first-of-type))`,
-      `border-inline-start-color: ${DIVIDER};`,
+      `border-inline-start-color: ${RULE};`,
     ],
     [
       "tabs",
       `${OUTLINE} ${TRIGGER}:where(${V}:not(:first-of-type))`,
-      `border-top-color: ${DIVIDER};`,
+      `border-top-color: ${RULE};`,
     ],
     [
       "tabs",
@@ -544,6 +582,14 @@ describe("tabStyle under forced colours", () => {
     [
       `${UNDERLINE} .dr-segment-group-item${DEFAULT}[data-state="checked"]:focus-visible`,
       "outline-color: Highlight;",
+    ],
+    [
+      `${OUTLINE} .dr-tabs-list${DEFAULT}[data-border]:not([data-border="none"])`,
+      "border-color: Canvas;",
+    ],
+    [
+      `${OUTLINE} .dr-tabs-list${DEFAULT}[data-border="none"]::before`,
+      "border-color: Canvas;",
     ],
   ])("%s", (selector, body) => {
     expect(bodyOf("theme", selector, FORCED)).toBe(body)

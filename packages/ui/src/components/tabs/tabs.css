@@ -386,8 +386,10 @@
      variants' (0,2,0) specificity, and the cascade falls to source order.
 
      default + outline already carry a border and a radius, so the tiers
-     only retint theirs. underline and enclosed have none, so they take the
-     width and radius here too. */
+     retint theirs. underline and enclosed have none, so they take the
+     width and radius here too. A strip never draws two frames: under
+     tabStyle outline the tier recolours the ruled frame and dividers, and
+     under underline the frame replaces the baseline (tabStyle, below). */
   .dr-tabs-list[data-variant="underline"][data-border],
   .dr-tabs-list[data-variant="enclosed"][data-border] {
     border-width: 1px;
@@ -521,6 +523,16 @@
     box-shadow: inset 1px 0 0 hsl(var(--border));
   }
 
+  /* A framed strip's edge is the baseline, so the inset line goes and the
+     frame takes the strip's radius back, as variant="underline" does. */
+  [data-tab-style="underline"]
+    .dr-tabs-list[data-variant="default"][data-border]:not(
+      [data-border="none"]
+    ) {
+    box-shadow: none;
+    border-radius: var(--radius);
+  }
+
   [data-tab-style="underline"]
     .dr-tabs-trigger[data-variant="default"][data-state="active"] {
     color: var(--selected-mark-fg);
@@ -597,9 +609,32 @@
     content: "";
     position: absolute;
     inset: 0.25rem;
-    border: 1px solid hsl(var(--border-strong));
+    border: 1px solid var(--tab-rule, hsl(var(--border-strong)));
     border-radius: var(--radius-sm);
     pointer-events: none;
+  }
+
+  /* The border prop recolours the ruled row rather than framing the strip
+     a second time. The tier reaches the frame and the dividers through
+     --tab-rule, so no trigger rule outranks the current cell's edge. */
+  [data-tab-style="outline"] .dr-tabs-list[data-variant="default"][data-border] {
+    border-color: transparent;
+    --tab-rule: hsl(var(--border));
+  }
+
+  [data-tab-style="outline"]
+    .dr-tabs-list[data-variant="default"][data-border="strong"] {
+    --tab-rule: hsl(var(--border-strong));
+  }
+
+  [data-tab-style="outline"]
+    .dr-tabs-list[data-variant="default"][data-border="accent"] {
+    --tab-rule: hsl(var(--primary) / 0.35);
+  }
+
+  [data-tab-style="outline"]
+    .dr-tabs-list[data-variant="default"][data-border="none"] {
+    --tab-rule: transparent;
   }
 
   [data-tab-style="outline"] .dr-tabs-indicator[data-variant="default"] {
@@ -640,14 +675,14 @@
     .dr-tabs-trigger[data-variant="default"]:where(
       [data-orientation="horizontal"]:not(:first-of-type)
     ) {
-    border-inline-start-color: hsl(var(--border-strong));
+    border-inline-start-color: var(--tab-rule, hsl(var(--border-strong)));
   }
 
   [data-tab-style="outline"]
     .dr-tabs-trigger[data-variant="default"]:where(
       [data-orientation="vertical"]:not(:first-of-type)
     ) {
-    border-top-color: hsl(var(--border-strong));
+    border-top-color: var(--tab-rule, hsl(var(--border-strong)));
   }
 
   [data-tab-style="outline"]

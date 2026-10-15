@@ -2745,6 +2745,21 @@
     background-color: Highlight;
   }
 
+  /* Forcing paints a framed strip's transparent edge CanvasText, which
+     would frame the ruled row twice; under `none` the ruled frame goes as
+     every other frame does. */
+  [data-tab-style="outline"]
+    .dr-tabs-list[data-variant="default"][data-border]:not(
+      [data-border="none"]
+    ) {
+    border-color: Canvas;
+  }
+
+  [data-tab-style="outline"]
+    .dr-tabs-list[data-variant="default"][data-border="none"]::before {
+    border-color: Canvas;
+  }
+
   /* Chosen rows and items in menus, pickers and navigation. A menu row is
      highlighted by focus, which follows the pointer. */
   .dr-time-column-item[data-selected="true"],
