@@ -73,8 +73,7 @@ export const glass: StyleDefinition = {
       wellFill: "rgb(255 255 255 / 0.35)",
       selectedViewFill: "rgb(255 255 255 / 0.75)",
       // The chip's edge clears 3:1 against the frosted well in every look
-      // (glass-selected-chip.test.ts); in dark a quarter of the ink lifts
-      // it over the light glows a look's ground can carry.
+      // (glass-selected-chip.test.ts).
       selectedViewShadow: "0 0 0 1px hsl(var(--border-strong))",
       dropdownShadow: "0 10px 30px -10px rgb(0 0 0 / 0.25)",
     },
@@ -87,6 +86,8 @@ export const glass: StyleDefinition = {
       dialogBorder: "rgb(255 255 255 / 0.14)",
       wellFill: "rgb(255 255 255 / 0.06)",
       selectedViewFill: "rgb(255 255 255 / 0.14)",
+      // A quarter of the ink lifts the chip's edge over the light glows a
+      // look's ground can carry.
       selectedViewShadow:
         "0 0 0 1px color-mix(in srgb, hsl(var(--border-strong)), hsl(var(--foreground)) 25%)",
       dropdownShadow: "0 10px 30px -10px rgb(0 0 0 / 0.6)",
