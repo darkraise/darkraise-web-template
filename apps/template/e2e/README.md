@@ -105,15 +105,15 @@ E2E_TRACE=1 TMPDIR=/root/.cache/pw-tmp pnpm test:e2e
 
 ### 00 · Helpers (`00-helpers.spec.ts`)
 
-| Helper          | Checks                                                                                                    |
-| --------------- | --------------------------------------------------------------------------------------------------------- |
-| `settle`        | Throws at its 5,000 ms deadline even when the page produces no frames                                     |
-| `textContrast`  | Reads a ground a pseudo-element paints from pixels under `ground: "painted"`                              |
-| `markContrast`  | Reads a round mark, the weakest band of a two-tone mark and a 2px hairline against the colour beside them |
-| `kitLook`       | Stamps the given signatures over the kit defaults                                                         |
-| `labelContrast` | Reads the face behind a label's line of text, with an icon in the label hidden                            |
-| `watchConsole`  | Records a `[vite]` console error, ignores a `[vite]` debug message                                        |
-| `seedApp`       | Seeds once per tab, so a sign-out survives a reload; a failing iframe is not seeded                       |
+| Helper          | Checks                                                                                                                                                                                                                    |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `settle`        | Throws at its 5,000 ms deadline even when the page produces no frames                                                                                                                                                     |
+| `textContrast`  | Reads a ground a pseudo-element paints from pixels under `ground: "painted"`                                                                                                                                              |
+| `markContrast`  | Reads a round mark, the weakest band of a two-tone mark and a 2px hairline against the colour beside them; throws when scrolling to the beside target moves the mark out of view or a sample falls outside the screenshot |
+| `kitLook`       | Stamps the given signatures over the kit defaults                                                                                                                                                                         |
+| `labelContrast` | Reads the face behind a label's line of text, with an icon in the label hidden, and restores the inline styles it overrides                                                                                               |
+| `watchConsole`  | Records a `[vite]` console error, ignores a `[vite]` debug message                                                                                                                                                        |
+| `seedApp`       | Seeds once per tab, so a sign-out survives a reload; a failing iframe is not seeded                                                                                                                                       |
 
 ### 01 · Authentication (`01-auth.spec.ts`)
 

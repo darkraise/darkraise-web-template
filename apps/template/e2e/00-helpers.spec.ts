@@ -180,6 +180,44 @@ test.describe("e2e helpers", () => {
     expect(await markContrast(page, rule, ground)).toBe(21)
   })
 
+  test("markContrast throws when scrolling to the beside target moves the mark out of view", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 400, height: 300 })
+    await page.setContent(
+      `<style>
+        body { margin: 0; background: white; height: 3000px; }
+        #mark { position: absolute; left: 10px; top: 10px; width: 20px; height: 20px; background: black; }
+        #far { position: absolute; left: 10px; top: 2000px; width: 20px; height: 20px; background: rgb(200, 200, 200); }
+      </style>
+      <div id="mark"></div><div id="far"></div>`,
+    )
+    await expect(
+      markContrast(page, page.locator("#mark"), page.locator("#far")),
+    ).rejects.toThrow(/outside the/)
+  })
+
+  test("markContrast throws on a sample outside the screenshot", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 400, height: 300 })
+    await page.setContent(
+      `<style>
+        body { margin: 0; background: white; }
+        #mark { position: absolute; left: 10px; top: 10px; width: 20px; height: 20px; background: black; }
+      </style>
+      <div id="mark"></div>`,
+    )
+    await expect(
+      markContrast(page, page.locator("#mark"), {
+        x: 10,
+        y: 280,
+        width: 20,
+        height: 60,
+      }),
+    ).rejects.toThrow(/outside the/)
+  })
+
   test("labelContrast reads the face behind a label's line, an icon beside it hidden", async ({
     page,
   }) => {
@@ -202,6 +240,34 @@ test.describe("e2e helpers", () => {
         el.querySelector("svg")?.getAttribute("style") ?? "",
       ]),
     ).toEqual(["", ""])
+  })
+
+  test("labelContrast restores the inline styles it overrides", async ({
+    page,
+  }) => {
+    await page.setContent(
+      `<style>
+        body { margin: 0; background: white; }
+        button { display: inline-flex; gap: 8px; align-items: center; height: 48px; padding: 0 16px; border: 0; font: 16px/20px sans-serif; color: rgb(255, 255, 255); background: rgb(0, 0, 160); }
+        svg { width: 16px; height: 16px; }
+      </style>
+      <button style="transition: color 2s; -webkit-text-fill-color: rgb(255, 255, 255)"><svg viewBox="0 0 16 16" style="visibility: visible"><rect width="16" height="16" fill="currentColor" /></svg>Next</button>`,
+    )
+    const face = page.locator("button")
+    const inline = () =>
+      face.evaluate((el) => {
+        const icon = el.querySelector("svg") as SVGElement
+        return [
+          el.style.getPropertyValue("transition"),
+          el.style.getPropertyPriority("transition"),
+          el.style.getPropertyValue("-webkit-text-fill-color"),
+          el.style.getPropertyPriority("-webkit-text-fill-color"),
+          icon.style.getPropertyValue("visibility"),
+        ]
+      })
+    const before = await inline()
+    await labelContrast(page, face)
+    expect(await inline()).toEqual(before)
   })
 
   test("kitLook stamps the given signatures over the kit defaults", async ({

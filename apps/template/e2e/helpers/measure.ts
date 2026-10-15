@@ -132,16 +132,22 @@ function samplePoints(start: number, size: number): number[] {
  * by a pseudo-element or a part of a box is named. Both are sampled on a
  * grid (see `samplePoints`) from one screenshot, and every mark sample is
  * compared with every beside sample, so a gradient or a sheen across either
- * is judged at its weakest point. The caller scrolls a region into view.
+ * is judged at its weakest point. Both locators are scrolled into view before
+ * either box is read; the caller scrolls a region into view. A sample the
+ * screenshot cannot hold throws.
  */
 export async function markContrast(
   page: Page,
   mark: Locator | Region,
   beside: Locator | Region,
 ): Promise<number> {
+  // Scrolling to the second target can move the first, so no box is read
+  // until both are in view.
+  for (const target of [mark, beside]) {
+    if ("boundingBox" in target) await target.scrollIntoViewIfNeeded()
+  }
   const regionOf = async (target: Locator | Region): Promise<Region> => {
     if (!("boundingBox" in target)) return target
-    await target.scrollIntoViewIfNeeded()
     const box = await target.boundingBox()
     if (!box) throw new Error("markContrast: the element has no box")
     return box
@@ -157,6 +163,11 @@ export async function markContrast(
   const all = [...markPoints, ...besidePoints]
   const left = Math.min(...all.map((point) => point.x))
   const top = Math.min(...all.map((point) => point.y))
+  if (left < 0 || top < 0) {
+    throw new Error(
+      `markContrast: a sample at (${left}, ${top}) is outside the screenshot`,
+    )
+  }
   const clip = {
     x: left,
     y: top,
@@ -177,6 +188,13 @@ export async function markContrast(
       context.drawImage(img, 0, 0)
       const { data } = context.getImageData(0, 0, width, height)
       return offsets.map(({ x, y }) => {
+        // A clip past the viewport comes back trimmed; reading past the
+        // image would report black.
+        if (x >= img.width || y >= img.height) {
+          throw new Error(
+            `markContrast: a sample at (${x}, ${y}) is outside the ${img.width}x${img.height} screenshot`,
+          )
+        }
         const i = (y * width + x) * 4
         return [data[i] ?? 0, data[i + 1] ?? 0, data[i + 2] ?? 0] as Rgb
       })
@@ -219,17 +237,27 @@ export async function labelContrast(
   face: Locator,
 ): Promise<number> {
   await face.scrollIntoViewIfNeeded()
-  const { band, colour } = await face.evaluate((el) => {
+  const { band, colour, saved } = await face.evaluate((el) => {
     const range = document.createRange()
     range.selectNodeContents(el)
     const rect = range.getBoundingClientRect()
     const colour = getComputedStyle(el).color
+    const keep = (style: CSSStyleDeclaration, name: string) => ({
+      value: style.getPropertyValue(name),
+      priority: style.getPropertyPriority(name),
+    })
+    const icons = [...el.querySelectorAll<SVGElement>("svg")]
+    const saved = {
+      transition: keep(el.style, "transition"),
+      fill: keep(el.style, "-webkit-text-fill-color"),
+      icons: icons.map((icon) => keep(icon.style, "visibility")),
+    }
     // The glyphs go, not the colour: washes painted in currentColor stay.
     el.style.setProperty("transition", "none", "important")
     el.style.setProperty("-webkit-text-fill-color", "transparent", "important")
     // An icon in the label's line is drawn in the label colour: it is ink,
     // not ground.
-    for (const icon of el.querySelectorAll<SVGElement>("svg")) {
+    for (const icon of icons) {
       icon.style.setProperty("visibility", "hidden", "important")
     }
     return {
@@ -240,6 +268,7 @@ export async function labelContrast(
         height: Math.floor(rect.height),
       },
       colour,
+      saved,
     }
   })
   try {
@@ -267,14 +296,23 @@ export async function labelContrast(
     const ink = rgbOf(colour)
     return Math.min(...ground.map((pixel) => contrast(ink, pixel as Rgb)))
   } finally {
-    await face.evaluate((el) => {
-      el.style.removeProperty("-webkit-text-fill-color")
-      for (const icon of el.querySelectorAll<SVGElement>("svg")) {
-        icon.style.removeProperty("visibility")
+    await face.evaluate((el, kept) => {
+      const put = (
+        style: CSSStyleDeclaration,
+        name: string,
+        { value, priority }: { value: string; priority: string },
+      ) => {
+        if (value) style.setProperty(name, value, priority)
+        else style.removeProperty(name)
       }
+      put(el.style, "-webkit-text-fill-color", kept.fill)
+      el.querySelectorAll<SVGElement>("svg").forEach((icon, i) => {
+        const was = kept.icons[i]
+        if (was) put(icon.style, "visibility", was)
+      })
       el.getBoundingClientRect()
-      el.style.removeProperty("transition")
-    })
+      put(el.style, "transition", kept.transition)
+    }, saved)
   }
 }
 
