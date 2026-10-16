@@ -85,11 +85,6 @@ import {
   PasswordInputVisibilityTrigger,
 } from "darkraise-ui/components/password-input"
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "darkraise-ui/components/popover"
-import {
   Dialog,
   DialogContent,
   DialogTitle,
@@ -1102,12 +1097,6 @@ createRoot(root).render(
         style={{ height: "var(--control-height-xl)", width: 1 }}
       />
       <Controls />
-      <div
-        data-probe="edge-page"
-        style={{ width: 200, marginTop: 24, paddingBottom: 12 }}
-      >
-        <Input aria-label="On page" placeholder="On page" />
-      </div>
       <Card style={{ width: 280, marginTop: 24 }}>
         <CardContent>
           <div data-probe="edge-card" style={{ paddingBottom: 12 }}>
@@ -1150,18 +1139,6 @@ createRoot(root).render(
           </CardContent>
         </Card>
       ))}
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button variant="outline" style={{ marginTop: 24 }}>
-            Open field popover
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent>
-          <div data-probe="edge-popover" style={{ paddingBottom: 12 }}>
-            <Input aria-label="In a popover" placeholder="In a popover" />
-          </div>
-        </PopoverContent>
-      </Popover>
       <Dialog>
         <DialogTrigger asChild>
           <Button variant="outline" style={{ marginTop: 24 }}>
@@ -1172,22 +1149,6 @@ createRoot(root).render(
           <DialogTitle>Field dialog</DialogTitle>
           <div data-probe="edge-dialog" style={{ paddingBottom: 12 }}>
             <Input aria-label="In a dialog" placeholder="In a dialog" />
-          </div>
-        </DialogContent>
-      </Dialog>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button variant="outline" style={{ marginTop: 24 }}>
-            Open muted field dialog
-          </Button>
-        </DialogTrigger>
-        <DialogContent surface="muted">
-          <DialogTitle>Muted field dialog</DialogTitle>
-          <div data-probe="edge-dialog-muted" style={{ paddingBottom: 12 }}>
-            <Input
-              aria-label="In a muted dialog"
-              placeholder="In a muted dialog"
-            />
           </div>
         </DialogContent>
       </Dialog>
