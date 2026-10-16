@@ -247,7 +247,7 @@ describe("glass controls", () => {
     expect(
       valueOf("style.mode", inMode("dark"), "--selected-view-shadow"),
     ).toBe(
-      "0 0 0 1px hsl(var(--primary-text) / 0.85), inset 0 1px 0 rgb(255 255 255 / 0.26), 0 6px 18px -8px hsl(var(--primary) / 0.6)",
+      "0 0 0 1px hsl(var(--primary-text) / 0.9), inset 0 1px 0 rgb(255 255 255 / 0.26), 0 6px 18px -8px hsl(var(--primary) / 0.6)",
     )
   })
 

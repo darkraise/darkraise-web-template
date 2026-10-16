@@ -67,8 +67,11 @@ export const smokedObsidian: PresetDefinition = {
       cardEdge:
         "inset 0 1px 0 rgb(255 255 255 / 0.7), 0 12px 32px -8px hsl(var(--foreground) / 0.18)",
       fieldShadow: "inset 0 1px 2px hsl(var(--foreground) / 0.14)",
-      selectedViewShadow:
-        "0 0 0 1px hsl(var(--border-strong)), inset 0 1px 0 rgb(255 255 255 / 0.7), 0 1px 2px hsl(var(--foreground) / 0.12)",
+      // The rail is dark in light mode too: its current row takes the
+      // values Glass sets on a dark rail, so the label stays readable.
+      navSelectionFill:
+        "linear-gradient(hsl(var(--primary) / 0.16), hsl(var(--primary) / 0.16)), linear-gradient(rgb(255 255 255 / 0.11), rgb(255 255 255 / 0.11))",
+      navSelectionEdge: "hsl(var(--primary) / 0.34)",
       dropdownShadow: "0 16px 40px -10px hsl(var(--foreground) / 0.3)",
       modalShadow: "0 24px 60px -12px hsl(var(--foreground) / 0.4)",
       scrim: "hsl(var(--foreground) / 0.35)",
@@ -81,8 +84,6 @@ export const smokedObsidian: PresetDefinition = {
       cardEdge:
         "inset 0 1px 0 rgb(255 255 255 / 0.08), 0 20px 50px -12px rgb(0 0 0 / 0.6)",
       fieldShadow: "inset 0 1px 2px rgb(0 0 0 / 0.5)",
-      selectedViewShadow:
-        "0 0 0 1px color-mix(in srgb, hsl(var(--border-strong)), hsl(var(--foreground)) 25%), inset 0 1px 0 rgb(255 255 255 / 0.06)",
       dropdownShadow: "0 20px 50px rgb(0 0 0 / 0.6)",
       modalShadow: "0 30px 70px rgb(0 0 0 / 0.7)",
       scrim: "rgb(0 0 0 / 0.6)",

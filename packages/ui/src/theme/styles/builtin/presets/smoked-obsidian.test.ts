@@ -118,4 +118,20 @@ describe("Smoked Obsidian", () => {
       expect(tokens.fieldShadow).toMatch(/^inset 0 1px 2px /)
     }
   })
+
+  // Its rail is dark in both modes (railTone inverse), so the light row
+  // takes the set-in values Glass uses on a dark rail, in the light accent.
+  it("takes Glass's pane and sets its row into the dark rail", () => {
+    expect(written(smokedObsidian.tokens)).not.toContain("selectedViewShadow")
+    expect(smokedObsidian.tokens?.light?.navSelectionFill).toBe(
+      "linear-gradient(hsl(var(--primary) / 0.16), hsl(var(--primary) / 0.16)), linear-gradient(rgb(255 255 255 / 0.11), rgb(255 255 255 / 0.11))",
+    )
+    expect(smokedObsidian.tokens?.light?.navSelectionEdge).toBe(
+      "hsl(var(--primary) / 0.34)",
+    )
+    for (const mode of ["shared", "dark"] as const) {
+      expect(smokedObsidian.tokens?.[mode]?.navSelectionFill, mode).toBeUndefined()
+      expect(smokedObsidian.tokens?.[mode]?.navSelectionEdge, mode).toBeUndefined()
+    }
+  })
 })
