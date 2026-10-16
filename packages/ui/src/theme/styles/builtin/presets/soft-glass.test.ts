@@ -105,14 +105,10 @@ describe("Soft Glass", () => {
     expect(shared.chromeBarFill).toBeUndefined()
   })
 
-  it("lifts the current nav row with the rail's own ink", () => {
-    expect(light.navSelectionFill).toBe(
-      "hsl(var(--sidebar-foreground-hover) / 0.1)",
-    )
-    expect(dark.navSelectionFill).toBe(
-      "hsl(var(--sidebar-foreground-hover) / 0.1)",
-    )
-    expect(shared.navSelectionFill).toBeUndefined()
+  it("takes Glass's set-in nav row", () => {
+    for (const token of ["navSelectionFill", "navSelectionEdge"] as const) {
+      expect(written(softGlass.tokens), token).not.toContain(token)
+    }
   })
 
   // Glass's white rim and top highlight, over the preset's one soft drop.

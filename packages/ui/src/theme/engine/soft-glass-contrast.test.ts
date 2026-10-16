@@ -23,6 +23,15 @@ if (!preset || !style) throw new Error("no Soft Glass preset")
 const CHROME =
   /^hsl\(var\(--card\) \/ max\(([\d.]+), calc\(var\(--surface-alpha\) \* ([\d.]+) - ([\d.]+)\)\)\)$/
 
+/** Glass's set-in nav row: an engine colour's tint over a pale white layer. */
+const SET_IN =
+  /^linear-gradient\(hsl\(var\((--[\w-]+)\) \/ ([\d.]+)\), hsl\(var\(\1\) \/ \2\)\), linear-gradient\(rgb\(255 255 255 \/ ([\d.]+)\), rgb\(255 255 255 \/ \3\)\)$/
+
+/** An engine colour at an alpha, as the set-in row's edge. */
+const EDGE = /^hsl\(var\((--[\w-]+)\) \/ ([\d.]+)\)$/
+
+const WHITE = "0 0% 100%"
+
 /** The chrome alpha the preset derives from the effective card alpha. */
 function chromeAlpha(fill: string | undefined, card: number): number {
   const match = CHROME.exec(fill ?? "")
@@ -126,27 +135,35 @@ describe("Soft Glass over its blobs", () => {
       overlay,
       [...grounds, at("--card"), at("--muted"), ...chromeFaces],
     )
-    // The current nav row is Soft Glass's chip: the rail's own ink at a low
-    // alpha over the rail, as the kit lifts a chip on a toned rail. It must
-    // stay 1.2:1 apart from the rail behind it, the floor every selection
-    // look clears (glass.ts, the docked rail comment), and keep the row's
-    // text, --sidebar-active-text's default, at 4.5:1 on the chip.
-    const lift = /^hsl\(var\((--[\w-]+)\) \/ ([\d.]+)\)$/.exec(
-      declared.navSelectionFill ?? "",
-    )
-    if (!lift) {
-      throw new Error(`unexpected nav chip ${declared.navSelectionFill}`)
+    // The current nav row is set into the rail: a pale white layer under
+    // the accent's tint, edged in the accent. Its fill or its edge stays
+    // 1.2:1 apart from the rail behind it, the floor every selection look
+    // clears (glass.ts, the docked rail comment), and the row's text,
+    // --sidebar-active-text's default, stays 4.5:1 on the fill.
+    const setIn = SET_IN.exec(declared.navSelectionFill ?? "")
+    if (!setIn) {
+      throw new Error(`unexpected nav row ${declared.navSelectionFill}`)
     }
-    const [, ink = "", inkAlpha = ""] = lift
+    const [, tintInk = "", tintAlpha = "", pale = ""] = setIn
+    const ring = EDGE.exec(declared.navSelectionEdge ?? "")
+    if (!ring) {
+      throw new Error(`unexpected nav edge ${declared.navSelectionEdge}`)
+    }
+    const [, edgeInk = "", edgeAlpha = ""] = ring
     for (const face of chromeFaces) {
-      const chip = composite(face, at(ink), Number(inkAlpha))
-      const ratio = contrastRatio(chip, face)
-      if (ratio < 1.2) {
-        failures.push(`nav chip over the rail at ${face}: ${ratio.toFixed(2)}`)
+      const row = composite(
+        composite(face, WHITE, Number(pale)),
+        at(tintInk),
+        Number(tintAlpha),
+      )
+      const edge = composite(face, at(edgeInk), Number(edgeAlpha))
+      const apart = Math.max(contrastRatio(row, face), contrastRatio(edge, face))
+      if (apart < 1.2) {
+        failures.push(`nav row over the rail at ${face}: ${apart.toFixed(2)}`)
       }
-      const text = contrastRatio(at("--sidebar-foreground-hover"), chip)
+      const text = contrastRatio(at("--sidebar-foreground-hover"), row)
       if (text < TEXT) {
-        failures.push(`nav chip text at ${face}: ${text.toFixed(2)}`)
+        failures.push(`nav row text at ${face}: ${text.toFixed(2)}`)
       }
     }
     expect(failures).toEqual([])
