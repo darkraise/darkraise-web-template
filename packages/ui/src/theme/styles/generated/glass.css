@@ -17,6 +17,9 @@
     --surface-backdrop: var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(180%));
     --overlay-backdrop: var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(180%));
     --scrim-backdrop: var(--glass-backdrop-off, blur(var(--glass-scrim-blur)));
+    --view-track-backdrop: var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(115%));
+    --nav-selection-shadow: 0 0 transparent;
+    --nav-selection-glow: 0 0 transparent;
   }
   [data-style="glass"]:not([data-mode="dark"]) {
     --chrome-rail-bg: hsl(var(--background));
@@ -26,8 +29,12 @@
     --overlay-border: rgb(255 255 255 / 0.7);
     --dialog-border: rgb(255 255 255 / 0.7);
     --well-fill: rgb(255 255 255 / 0.35);
-    --selected-view-bg: rgb(255 255 255 / 0.75);
-    --selected-view-shadow: 0 0 0 1px hsl(var(--border-strong));
+    --view-track-sheen: linear-gradient(180deg, rgb(255 255 255 / 0.5), transparent 75%);
+    --view-track-shadow: inset 0 -1px 0 rgb(255 255 255 / 0.8), inset 0 0 0 1px hsl(var(--foreground) / 0.08);
+    --selected-view-bg: linear-gradient(hsl(var(--primary) / 0.12), hsl(var(--primary) / 0.12)), linear-gradient(180deg, rgb(255 255 255 / 0.96), rgb(255 255 255 / 0.62));
+    --selected-view-shadow: 0 0 0 1px hsl(var(--primary) / 0.95), inset 0 1px 0 rgb(255 255 255 / 0.95), 0 6px 16px -8px hsl(var(--primary) / 0.5);
+    --nav-selection-fill: linear-gradient(hsl(var(--primary) / 0.12), hsl(var(--primary) / 0.12)), linear-gradient(rgb(255 255 255 / 0.7), rgb(255 255 255 / 0.7));
+    --nav-selection-edge: hsl(var(--primary) / 0.3);
     --shadow-dropdown: 0 10px 30px -10px rgb(0 0 0 / 0.25);
   }
 }
@@ -41,9 +48,13 @@
     --overlay-border: rgb(255 255 255 / 0.14);
     --dialog-border: rgb(255 255 255 / 0.14);
     --well-fill: rgb(255 255 255 / 0.06);
-    --view-track-label: color-mix(in srgb, hsl(var(--muted-foreground)), hsl(var(--foreground)) 50%);
-    --selected-view-bg: rgb(255 255 255 / 0.14);
-    --selected-view-shadow: 0 0 0 1px color-mix(in srgb, hsl(var(--border-strong)), hsl(var(--foreground)) 25%);
+    --view-track-label: color-mix(in srgb, hsl(var(--muted-foreground)), hsl(var(--foreground)) 60%);
+    --view-track-sheen: linear-gradient(180deg, rgb(255 255 255 / 0.07), transparent 75%);
+    --view-track-shadow: inset 0 -1px 0 rgb(255 255 255 / 0.12), inset 0 0 0 1px rgb(255 255 255 / 0.09);
+    --selected-view-bg: linear-gradient(hsl(var(--primary-text) / 0.16), hsl(var(--primary-text) / 0.16)), linear-gradient(180deg, rgb(255 255 255 / 0.08), rgb(255 255 255 / 0.07));
+    --selected-view-shadow: 0 0 0 1px hsl(var(--primary-text) / 0.85), inset 0 1px 0 rgb(255 255 255 / 0.26), 0 6px 18px -8px hsl(var(--primary) / 0.6);
+    --nav-selection-fill: linear-gradient(hsl(var(--primary-text) / 0.16), hsl(var(--primary-text) / 0.16)), linear-gradient(rgb(255 255 255 / 0.11), rgb(255 255 255 / 0.11));
+    --nav-selection-edge: hsl(var(--primary-text) / 0.34);
     --shadow-dropdown: 0 10px 30px -10px rgb(0 0 0 / 0.6);
     --field-focus-ring: 0 0 0 3px hsl(var(--primary) / 0.2);
     --scrim: rgb(0 0 0 / 0.5);
@@ -93,6 +104,7 @@
       --card-edge: 0 0 transparent;
       --dialog-border: hsl(var(--border));
       --selected-view-shadow: 0 0 transparent;
+      --selected-view-bg: hsl(var(--card));
     }
   }
 }

@@ -59,6 +59,10 @@ export const glass: StyleDefinition = {
       surfaceBackdrop: glassBackdrop("saturate(180%)"),
       overlayBackdrop: glassBackdrop("saturate(180%)"),
       scrimBackdrop: glassBackdrop("", "var(--glass-scrim-blur)"),
+      viewTrackBackdrop: glassBackdrop("saturate(115%)"),
+      // The current nav row is set into the rail, not lifted off it.
+      navSelectionShadow: "0 0 transparent",
+      navSelectionGlow: "0 0 transparent",
     },
     // The docked rail is solid on the grounds every selection look clears at
     // 1.2:1: the page in light, the card tone in dark.
@@ -71,10 +75,20 @@ export const glass: StyleDefinition = {
       overlayBorder: "rgb(255 255 255 / 0.7)",
       dialogBorder: "rgb(255 255 255 / 0.7)",
       wellFill: "rgb(255 255 255 / 0.35)",
-      selectedViewFill: "rgb(255 255 255 / 0.75)",
-      // The chip's edge clears 3:1 against the frosted well in every look
-      // (glass-selected-chip.test.ts).
-      selectedViewShadow: "0 0 0 1px hsl(var(--border-strong))",
+      viewTrackSheen:
+        "linear-gradient(180deg, rgb(255 255 255 / 0.5), transparent 75%)",
+      viewTrackShadow:
+        "inset 0 -1px 0 rgb(255 255 255 / 0.8), inset 0 0 0 1px hsl(var(--foreground) / 0.08)",
+      selectedViewFill:
+        "linear-gradient(hsl(var(--primary) / 0.12), hsl(var(--primary) / 0.12)), linear-gradient(180deg, rgb(255 255 255 / 0.96), rgb(255 255 255 / 0.62))",
+      // The pane's accent edge, composited at its alpha, clears 3:1 against
+      // the track at the sheen's peak and the plain well in every look
+      // (glass-selected-chip.test.ts, anatomy-contrast.test.ts).
+      selectedViewShadow:
+        "0 0 0 1px hsl(var(--primary) / 0.95), inset 0 1px 0 rgb(255 255 255 / 0.95), 0 6px 16px -8px hsl(var(--primary) / 0.5)",
+      navSelectionFill:
+        "linear-gradient(hsl(var(--primary) / 0.12), hsl(var(--primary) / 0.12)), linear-gradient(rgb(255 255 255 / 0.7), rgb(255 255 255 / 0.7))",
+      navSelectionEdge: "hsl(var(--primary) / 0.3)",
       dropdownShadow: "0 10px 30px -10px rgb(0 0 0 / 0.25)",
     },
     dark: {
@@ -88,12 +102,18 @@ export const glass: StyleDefinition = {
       // The muted ink falls under 4.5:1 on a well only 6% white over a vivid
       // ground, so the inactive tab and segment labels lift toward the text.
       viewTrackLabel:
-        "color-mix(in srgb, hsl(var(--muted-foreground)), hsl(var(--foreground)) 50%)",
-      selectedViewFill: "rgb(255 255 255 / 0.14)",
-      // A quarter of the ink lifts the chip's edge over the light glows a
-      // look's ground can carry.
+        "color-mix(in srgb, hsl(var(--muted-foreground)), hsl(var(--foreground)) 60%)",
+      viewTrackSheen:
+        "linear-gradient(180deg, rgb(255 255 255 / 0.07), transparent 75%)",
+      viewTrackShadow:
+        "inset 0 -1px 0 rgb(255 255 255 / 0.12), inset 0 0 0 1px rgb(255 255 255 / 0.09)",
+      selectedViewFill:
+        "linear-gradient(hsl(var(--primary-text) / 0.16), hsl(var(--primary-text) / 0.16)), linear-gradient(180deg, rgb(255 255 255 / 0.08), rgb(255 255 255 / 0.07))",
       selectedViewShadow:
-        "0 0 0 1px color-mix(in srgb, hsl(var(--border-strong)), hsl(var(--foreground)) 25%)",
+        "0 0 0 1px hsl(var(--primary-text) / 0.85), inset 0 1px 0 rgb(255 255 255 / 0.26), 0 6px 18px -8px hsl(var(--primary) / 0.6)",
+      navSelectionFill:
+        "linear-gradient(hsl(var(--primary-text) / 0.16), hsl(var(--primary-text) / 0.16)), linear-gradient(rgb(255 255 255 / 0.11), rgb(255 255 255 / 0.11))",
+      navSelectionEdge: "hsl(var(--primary-text) / 0.34)",
       dropdownShadow: "0 10px 30px -10px rgb(0 0 0 / 0.6)",
       fieldFocusRing: "0 0 0 3px hsl(var(--primary) / 0.2)",
       scrim: "rgb(0 0 0 / 0.5)",
@@ -142,6 +162,7 @@ export const glass: StyleDefinition = {
       cardEdge: "0 0 transparent",
       dialogBorder: "hsl(var(--border))",
       selectedViewShadow: "0 0 transparent",
+      selectedViewFill: "hsl(var(--card))",
     },
   },
 }

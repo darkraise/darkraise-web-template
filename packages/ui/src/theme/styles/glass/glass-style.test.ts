@@ -204,7 +204,7 @@ describe("glass controls", () => {
 
   it("lifts the inactive view label toward the text in dark only", () => {
     expect(valueOf("style.mode", inMode("dark"), "--view-track-label")).toBe(
-      "color-mix(in srgb, hsl(var(--muted-foreground)), hsl(var(--foreground)) 50%)",
+      "color-mix(in srgb, hsl(var(--muted-foreground)), hsl(var(--foreground)) 60%)",
     )
     expect(declares("style.base", inMode("light"), "--view-track-label")).toBe(
       false,
@@ -214,20 +214,61 @@ describe("glass controls", () => {
     )
   })
 
-  it("lifts the selected chip in white with a 1px edge, inked in dark", () => {
+  it("frosts the view track and lights it from the top", () => {
+    expect(valueOf("style.base", GLASS_ROOT, "--view-track-backdrop")).toBe(
+      "var(--glass-backdrop-off, blur(var(--glass-blur)) saturate(115%))",
+    )
+    expect(valueOf("style.base", inMode("light"), "--view-track-sheen")).toBe(
+      "linear-gradient(180deg, rgb(255 255 255 / 0.5), transparent 75%)",
+    )
+    expect(valueOf("style.mode", inMode("dark"), "--view-track-sheen")).toBe(
+      "linear-gradient(180deg, rgb(255 255 255 / 0.07), transparent 75%)",
+    )
+    expect(valueOf("style.base", inMode("light"), "--view-track-shadow")).toBe(
+      "inset 0 -1px 0 rgb(255 255 255 / 0.8), inset 0 0 0 1px hsl(var(--foreground) / 0.08)",
+    )
+    expect(valueOf("style.mode", inMode("dark"), "--view-track-shadow")).toBe(
+      "inset 0 -1px 0 rgb(255 255 255 / 0.12), inset 0 0 0 1px rgb(255 255 255 / 0.09)",
+    )
+  })
+
+  it("lifts the selected pane: an accent tint over top-lit white, edged and glowing in the accent", () => {
     expect(valueOf("style.base", inMode("light"), "--selected-view-bg")).toBe(
-      "rgb(255 255 255 / 0.75)",
+      "linear-gradient(hsl(var(--primary) / 0.12), hsl(var(--primary) / 0.12)), linear-gradient(180deg, rgb(255 255 255 / 0.96), rgb(255 255 255 / 0.62))",
     )
     expect(valueOf("style.mode", inMode("dark"), "--selected-view-bg")).toBe(
-      "rgb(255 255 255 / 0.14)",
+      "linear-gradient(hsl(var(--primary-text) / 0.16), hsl(var(--primary-text) / 0.16)), linear-gradient(180deg, rgb(255 255 255 / 0.08), rgb(255 255 255 / 0.07))",
     )
     expect(
       valueOf("style.base", inMode("light"), "--selected-view-shadow"),
-    ).toBe("0 0 0 1px hsl(var(--border-strong))")
+    ).toBe(
+      "0 0 0 1px hsl(var(--primary) / 0.95), inset 0 1px 0 rgb(255 255 255 / 0.95), 0 6px 16px -8px hsl(var(--primary) / 0.5)",
+    )
     expect(
       valueOf("style.mode", inMode("dark"), "--selected-view-shadow"),
     ).toBe(
-      "0 0 0 1px color-mix(in srgb, hsl(var(--border-strong)), hsl(var(--foreground)) 25%)",
+      "0 0 0 1px hsl(var(--primary-text) / 0.85), inset 0 1px 0 rgb(255 255 255 / 0.26), 0 6px 18px -8px hsl(var(--primary) / 0.6)",
+    )
+  })
+
+  it("sets the current nav row into the rail: a tint over a pale fill, edged in the accent, with no light line or glow", () => {
+    expect(valueOf("style.base", inMode("light"), "--nav-selection-fill")).toBe(
+      "linear-gradient(hsl(var(--primary) / 0.12), hsl(var(--primary) / 0.12)), linear-gradient(rgb(255 255 255 / 0.7), rgb(255 255 255 / 0.7))",
+    )
+    expect(valueOf("style.mode", inMode("dark"), "--nav-selection-fill")).toBe(
+      "linear-gradient(hsl(var(--primary-text) / 0.16), hsl(var(--primary-text) / 0.16)), linear-gradient(rgb(255 255 255 / 0.11), rgb(255 255 255 / 0.11))",
+    )
+    expect(valueOf("style.base", inMode("light"), "--nav-selection-edge")).toBe(
+      "hsl(var(--primary) / 0.3)",
+    )
+    expect(valueOf("style.mode", inMode("dark"), "--nav-selection-edge")).toBe(
+      "hsl(var(--primary-text) / 0.34)",
+    )
+    expect(valueOf("style.base", GLASS_ROOT, "--nav-selection-shadow")).toBe(
+      "0 0 transparent",
+    )
+    expect(valueOf("style.base", GLASS_ROOT, "--nav-selection-glow")).toBe(
+      "0 0 transparent",
     )
   })
 
@@ -350,6 +391,7 @@ describe("more contrast", () => {
     ["--card-edge", "0 0 transparent"],
     ["--dialog-border", "hsl(var(--border))"],
     ["--selected-view-shadow", "0 0 transparent"],
+    ["--selected-view-bg", "hsl(var(--card))"],
   ])("sets %s to %s", (name, value) => {
     expect(valueOf("style.fallback", GLASS_ROOT, name)).toBe(value)
   })
