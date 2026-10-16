@@ -246,7 +246,7 @@ describe("tabStyle underline", () => {
     [
       "tabs",
       `${UNDERLINE} ${LIST}`,
-      "border-radius: 0; background-color: transparent; box-shadow: inset 0 -1px 0 hsl(var(--border));",
+      "border-radius: 0; background-color: transparent; background-image: none; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: inset 0 -1px 0 hsl(var(--border));",
     ],
     [
       "tabs",
@@ -282,7 +282,7 @@ describe("tabStyle underline", () => {
     [
       "segment",
       `${UNDERLINE} ${GROUP}`,
-      "border-radius: 0; background-color: transparent; box-shadow: inset 0 -1px 0 hsl(var(--border));",
+      "border-radius: 0; background-color: transparent; background-image: none; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: inset 0 -1px 0 hsl(var(--border));",
     ],
     [
       "segment",
@@ -332,7 +332,7 @@ describe("tabStyle pill", () => {
     [
       "tabs",
       `${PILL} ${LIST}`,
-      "background-color: transparent; box-shadow: none;",
+      "background-color: transparent; background-image: none; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none;",
     ],
     ["tabs", `${PILL} ${TRIGGER}`, "border-radius: var(--radius-pill);"],
     [
@@ -348,7 +348,7 @@ describe("tabStyle pill", () => {
     [
       "segment",
       `${PILL} ${GROUP}`,
-      "background-color: transparent; box-shadow: none;",
+      "background-color: transparent; background-image: none; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none;",
     ],
     ["segment", `${PILL} ${ITEM}`, "border-radius: var(--radius-pill);"],
     [
@@ -381,7 +381,7 @@ describe("tabStyle outline", () => {
     [
       "tabs",
       `${OUTLINE} ${LIST}`,
-      "gap: 0; background-color: transparent; box-shadow: none;",
+      "gap: 0; background-color: transparent; background-image: none; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none;",
     ],
     [
       "tabs",
@@ -462,7 +462,7 @@ describe("tabStyle outline", () => {
     [
       "segment",
       `${OUTLINE} ${GROUP}`,
-      "gap: 0; background-color: transparent; box-shadow: none;",
+      "gap: 0; background-color: transparent; background-image: none; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none;",
     ],
     [
       "segment",
@@ -593,5 +593,42 @@ describe("tabStyle under forced colours", () => {
     ],
   ])("%s", (selector, body) => {
     expect(bodyOf("theme", selector, FORCED)).toBe(body)
+  })
+})
+
+// Glass's view track is an image and a backdrop filter over the well (the
+// readers are pinned in style-tokens.test.ts), so every rule that takes the
+// well away takes them too; the outline segment pill paints its face as
+// the default one does, so a gradient face shows; and forced colours,
+// which keep an opted-out element's images, clear them on the tracks and
+// on every chosen row they paint Highlight.
+describe("the view track", () => {
+  it("lets the outline segment pill keep its image", () => {
+    expect(
+      bodyOf(
+        "segment",
+        '.dr-segment-group-indicator[data-variant="outline"]',
+        COMPONENTS,
+      ),
+    ).toBe(
+      "box-shadow: var(--selected-view-shadow), inset 0 0 0 1px hsl(var(--border-strong)), var(--affordance-glow);",
+    )
+  })
+
+  it("clears the track's image and backdrop under forced colours", () => {
+    for (const selector of [
+      '.dr-tabs-list:is([data-variant="default"], [data-variant="outline"])',
+      ".dr-segment-group",
+    ]) {
+      expect(bodyOf("theme", selector, FORCED), selector).toBe(
+        "background-image: none; -webkit-backdrop-filter: none; backdrop-filter: none;",
+      )
+    }
+  })
+
+  it("clears the image of a chosen row painted Highlight", () => {
+    expect(bodyOf("theme", ".dr-sidebar-nav-current", FORCED)).toContain(
+      "background-color: Highlight; background-image: none; color: HighlightText; forced-color-adjust: none; box-shadow: none;",
+    )
   })
 })

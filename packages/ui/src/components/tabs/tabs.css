@@ -513,6 +513,9 @@
   [data-tab-style="underline"] .dr-tabs-list[data-variant="default"] {
     border-radius: 0;
     background-color: transparent;
+    background-image: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
     box-shadow: inset 0 -1px 0 hsl(var(--border));
   }
 
@@ -576,6 +579,9 @@
      so the hover wash is a pill. */
   [data-tab-style="pill"] .dr-tabs-list[data-variant="default"] {
     background-color: transparent;
+    background-image: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
     box-shadow: none;
   }
 
@@ -608,6 +614,9 @@
   [data-tab-style="outline"] .dr-tabs-list[data-variant="default"] {
     gap: 0;
     background-color: transparent;
+    background-image: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
     box-shadow: none;
   }
 

@@ -2664,6 +2664,15 @@
     border-color: Canvas;
   }
 
+  /* The view track's sheen and backdrop say nothing a system colour can,
+     and a filtered track would trap fixed descendants for no paint. */
+  .dr-tabs-list:is([data-variant="default"], [data-variant="outline"]),
+  .dr-segment-group {
+    background-image: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
   /* Tab triggers frame themselves with their reserved 1px border instead of
      a boundary outline, which would draw across the enclosed seam. */
   .dr-tabs-trigger:not([data-variant="underline"]) {
@@ -2769,7 +2778,8 @@
   }
 
   /* Chosen rows and items in menus, pickers and navigation. A menu row is
-     highlighted by focus, which follows the pointer. */
+     highlighted by focus, which follows the pointer. The rows opt out of
+     forcing, which keeps their images, so a gradient face is cleared too. */
   .dr-time-column-item[data-selected="true"],
   .dr-table-row[data-state="selected"],
   .dr-virtualized-timeline-list-item[data-selected="true"],
@@ -2806,6 +2816,7 @@
   .dr-floating-panel-trigger[data-active="true"],
   .dr-field-label:has(> [data-slot="field"]):has([data-state="checked"]) {
     background-color: Highlight;
+    background-image: none;
     color: HighlightText;
     forced-color-adjust: none;
     box-shadow: none;
