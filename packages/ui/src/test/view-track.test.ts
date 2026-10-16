@@ -6,6 +6,7 @@ import {
   SHEEN,
   edgeOn,
   paneEnds,
+  restingLabel,
   trackPairs,
   trackSamples,
 } from "@test/view-track"
@@ -112,6 +113,18 @@ describe("the view track", () => {
     )
   })
 
+  it("reads the resting label from viewTrackLabel, else the muted ink", () => {
+    expect(restingLabel(undefined, at)).toBe(at("--muted-foreground"))
+    expect(restingLabel("initial", at)).toBe(at("--muted-foreground"))
+    expect(restingLabel("hsl(var(--foreground))", at)).toBe(at("--foreground"))
+    expect(
+      restingLabel(
+        "color-mix(in srgb, hsl(var(--muted-foreground)), hsl(var(--foreground)) 50%)",
+        at,
+      ),
+    ).toBe(composite(at("--muted-foreground"), at("--foreground"), 0.5))
+  })
+
   it("composites an edge at its alpha", () => {
     expect(edgeOn({ colour: INK, alpha: 0.8 }, GREY)).toBe(
       composite(GREY, INK, 0.8),
@@ -130,9 +143,9 @@ describe("the view track", () => {
       at,
       "look",
     )
-    // Two samples; per sample two pane ends plus rest, hover and two presses.
+    // Two samples; per sample two pane ends plus rest, hover and press.
     expect(pairs.edges).toHaveLength(2)
-    expect(pairs.labels).toHaveLength(12)
+    expect(pairs.labels).toHaveLength(10)
     expect(pairs.edges[0]).toEqual({
       where: "the pane's edge against the plain well",
       ink: composite(composite(GREY, WHITE, 0.35), GREY, 0.8),

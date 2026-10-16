@@ -15,12 +15,14 @@ import {
 import { groundColours } from "@theme/engine/groundBlobs"
 import { composite, contrastRatio } from "@theme/engine/oklch"
 import { finalTokens } from "@test/contrast-matrix"
-import { FROST, chipEdgeColour, resolvedTokens } from "@test/preset-tokens"
+import { resolvedTokens } from "@test/preset-tokens"
+import { trackPairs, type Pair } from "@test/view-track"
 
-/** WCAG 1.4.11: the selected chip is a state mark, so it reaches 3:1. */
+/** WCAG 1.4.11: the selected pane's edge is a state mark, so it reaches 3:1. */
 const MARK = 3
 
-const WHITE = "0 0% 100%"
+/** WCAG 1.4.3: every label on the strip. */
+const TEXT = 4.5
 
 /** An engine colour a ground layer names, with the alpha it paints at. */
 const LAYER = /hsl\(var\((--[\w-]+)\)(?:\s*\/\s*([\d.]+))?\)/g
@@ -43,15 +45,19 @@ const DEFAULTS = Object.fromEntries(
 ) as AxisValues
 
 /**
- * The lowest contrast between the selected chip's edge and the frosted well
- * it sits in, for a user who chose the look and nothing else. The well is
- * white at the look's alpha over a card, at every Transparency step, or
- * over the bare page; beneath either is the page, the muted plane, every
- * engine colour the look's ground art paints over the page at its alpha,
- * the gradient canvas at its most saturated, and for Soft Glass the blobs
- * and tint its stylesheet paints.
+ * The selected pane's edge and every label of a view-switch strip, for a
+ * user who chose the look and nothing else, against the track it sits in.
+ * The track is the look's frosted well, and its sheen's peak where it sets
+ * one, over a card at every Transparency step or over the bare page;
+ * beneath either is the page, the muted plane, every engine colour the
+ * look's ground art paints over the page at its alpha, the gradient canvas
+ * at its most saturated, and for Soft Glass the blobs and tint its
+ * stylesheet paints.
  */
-function lowestEdge(preset: string, mode: "light" | "dark") {
+function stripPairs(
+  preset: string,
+  mode: "light" | "dark",
+): { edges: Pair[]; labels: Pair[] } {
   const axes = effectiveSettings({ style: "glass", preset }, DEFAULTS, registry)
   const combo = engineInput(registry, axes, mode)
   const tokens = finalTokens(combo)
@@ -64,13 +70,6 @@ function lowestEdge(preset: string, mode: "light" | "dark") {
     registry.styles.glass?.tokens,
     registry.presets[preset]?.tokens,
     mode,
-  )
-  const well = FROST.exec(paint.wellFill ?? "")
-  if (!well) throw new Error(`${preset} ${mode}: well ${paint.wellFill}`)
-  const edgeColour = chipEdgeColour(
-    paint.selectedViewShadow,
-    at,
-    `${preset} ${mode}`,
   )
 
   const page = at("--background")
@@ -123,21 +122,37 @@ function lowestEdge(preset: string, mode: "light" | "dark") {
     ])
   }
 
-  let lowest = { ratio: Infinity, where: "" }
+  const edges: Pair[] = []
+  const labels: Pair[] = []
   for (const [plane, alpha] of planes) {
     for (const [ground, colour] of grounds) {
       const under = composite(colour, at("--card"), alpha)
-      const frosted = composite(under, WHITE, Number(well[1]))
-      const ratio = contrastRatio(edgeColour, frosted)
-      if (ratio < lowest.ratio) {
-        lowest = { ratio, where: `on ${plane} over ${ground}` }
-      }
+      const found = trackPairs(paint, under, at, `${preset} ${mode}`)
+      const placed = (pair: Pair): Pair => ({
+        ...pair,
+        where: `${pair.where} on ${plane} over ${ground}`,
+      })
+      edges.push(...found.edges.map(placed))
+      labels.push(...found.labels.map(placed))
     }
   }
-  return lowest
+  return { edges, labels }
 }
 
-describe("the selected chip on a frosted glass well", () => {
+function lowest(pairs: Pair[]) {
+  let found = { ratio: Infinity, where: "" }
+  for (const { where, ink, ground } of pairs) {
+    const ratio = contrastRatio(ink, ground)
+    if (ratio < found.ratio) found = { ratio, where }
+  }
+  return found
+}
+
+const CASES = LOOKS.flatMap((look) =>
+  (["light", "dark"] as const).map((mode) => [look, mode] as const),
+)
+
+describe("the selected pane on a frosted glass track", () => {
   it("covers base Glass and every built-in Glass preset", () => {
     expect(LOOKS).toEqual([
       "base",
@@ -152,7 +167,7 @@ describe("the selected chip on a frosted glass well", () => {
   })
 
   it.each(["light", "dark"] as const)(
-    "frosts the well and the neutral button and fills the chip in white, in %s",
+    "frosts the well and the neutral button in white, in %s",
     (mode) => {
       for (const look of LOOKS) {
         const paint = resolvedTokens(
@@ -165,11 +180,6 @@ describe("the selected chip on a frosted glass well", () => {
             ? "rgb(255 255 255 / 0.35)"
             : "rgb(255 255 255 / 0.06)",
         )
-        expect(paint.selectedViewFill, look).toBe(
-          mode === "light"
-            ? "rgb(255 255 255 / 0.75)"
-            : "rgb(255 255 255 / 0.14)",
-        )
         // The card at the card plane's alpha, so the kit's more-contrast
         // fallback makes it opaque with the cards.
         expect(paint.buttonNeutralFill, look).toBe(
@@ -179,20 +189,13 @@ describe("the selected chip on a frosted glass well", () => {
     },
   )
 
-  it.each(
-    LOOKS.flatMap((look) =>
-      (["light", "dark"] as const).map((mode) => [look, mode] as const),
-    ),
-  )("edges a %s %s chip at 3:1 against the well", (look, mode) => {
-    const { ratio, where } = lowestEdge(look, mode)
+  it.each(CASES)("edges a %s %s pane at 3:1 against the track", (look, mode) => {
+    const { ratio, where } = lowest(stripPairs(look, mode).edges)
     expect(ratio, `${look} ${mode} ${where}`).toBeGreaterThanOrEqual(MARK)
   })
-})
 
-describe("chipEdgeColour", () => {
-  it("names the look whose shadow has no chip edge", () => {
-    expect(() => chipEdgeColour("none", () => "", "milk-glass light")).toThrow(
-      "milk-glass light: no chip edge in none",
-    )
+  it.each(CASES)("holds a %s %s strip's labels at 4.5:1", (look, mode) => {
+    const { ratio, where } = lowest(stripPairs(look, mode).labels)
+    expect(ratio, `${look} ${mode} ${where}`).toBeGreaterThanOrEqual(TEXT)
   })
 })
