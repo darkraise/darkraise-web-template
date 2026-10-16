@@ -90,15 +90,6 @@ export function chipEdge(
   }
 }
 
-/** The colour of a selected chip's opaque edge; see chipEdge. */
-export function chipEdgeColour(
-  shadow: string | undefined,
-  at: (key: string) => string,
-  where: string,
-): string {
-  return chipEdge(shadow, at, where).colour
-}
-
 /** The blur radius of each layer of a box-shadow value. */
 export function blurs(value: string): number[] {
   return layers(value).map((layer) => {

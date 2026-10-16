@@ -14,7 +14,8 @@ import {
   reachableCombos,
   type ThemeCombo,
 } from "@test/contrast-matrix"
-import { FROST, chipEdgeColour, resolvedTokens } from "@test/preset-tokens"
+import { FROST, resolvedTokens } from "@test/preset-tokens"
+import { trackPairs } from "@test/view-track"
 
 /**
  * The faces and marks the control anatomy signatures draw, over the engine
@@ -26,7 +27,7 @@ import { FROST, chipEdgeColour, resolvedTokens } from "@test/preset-tokens"
  * whose sheens end above the label's line box, as `button-anatomy.test.ts`
  * pins) in `primary-fill.test.ts`; the destructive labels in
  * `status-contrast.test.ts`; `--primary-text` on the page and the card in
- * `primary-text.test.ts`; Glass's chip edge at each look's own accent in
+ * `primary-text.test.ts`; Glass's pane edge and strip labels over each look's own ground art in
  * `glass-selected-chip.test.ts`.
  */
 
@@ -219,21 +220,29 @@ describe("control anatomy contrast over the engine matrix", () => {
     ).toEqual([])
   }, 30_000)
 
-  it("glass tabs: the selected chip's edge clears 3:1 on the frosted well", () => {
+  it("glass tabs and segments: the selected pane's edge clears 3:1 on the track", () => {
     expect(
       failures((combo, at) => {
         if (!combo.frosted) return []
-        const ink = chipEdgeColour(
-          glassPaint(combo).selectedViewShadow,
-          at,
-          comboName(combo),
+        return glassPlanes(combo, at).flatMap(([plane, under]) =>
+          trackPairs(glassPaint(combo), under, at, comboName(combo)).edges.map(
+            (pair) => ({ ...pair, where: `${pair.where} ${plane}` }),
+          ),
         )
-        return glassPlanes(combo, at).map(([plane, under]) => ({
-          where: `on the frosted well ${plane}`,
-          ink,
-          ground: frostedWell(combo, under),
-        }))
       }, MARK),
+    ).toEqual([])
+  }, 30_000)
+
+  it("glass tabs and segments: every label clears 4.5:1 on the track and the pane", () => {
+    expect(
+      failures((combo, at) => {
+        if (!combo.frosted) return []
+        return glassPlanes(combo, at).flatMap(([plane, under]) =>
+          trackPairs(glassPaint(combo), under, at, comboName(combo)).labels.map(
+            (pair) => ({ ...pair, where: `${pair.where} ${plane}` }),
+          ),
+        )
+      }, TEXT),
     ).toEqual([])
   }, 30_000)
 })
