@@ -247,17 +247,21 @@ describe("paint token schema", () => {
     )
   })
 
-  // Opaque and unblurred: the surface and scrim backdrops fall back to
-  // `none` (their defaults live in card.css or read the overlay's); every
-  // other token, the surface fill alpha included, to its light base value
-  // in theme.css.
+  // Opaque and unblurred: the surface, scrim and view-track backdrops fall
+  // back to `none` (their defaults live in card.css, read the overlay's, or
+  // are unset); every other token, the surface fill alpha included, to its
+  // light base value in theme.css.
   it("falls back to each token's opaque, unblurred value", () => {
     const base = declarations(THEME).filter((d) =>
       sameContext(d.context, LIGHT_BASE),
     )
     for (const [token, value] of Object.entries(KIT_FALLBACK)) {
       const name = PAINT_TOKENS[token as keyof typeof PAINT_TOKENS]
-      if (token === "surfaceBackdrop" || token === "scrimBackdrop") {
+      if (
+        token === "surfaceBackdrop" ||
+        token === "scrimBackdrop" ||
+        token === "viewTrackBackdrop"
+      ) {
         expect(value, name).toBe("none")
       } else {
         expect(base.find((d) => d.property === name)?.value, name).toBe(value)
@@ -699,6 +703,13 @@ describe("style files", () => {
     expect(lightBase["--card-sheen"]).toBe("none")
     expect(lightBase["--track-well"]).toBe("0 0 transparent")
     expect(lightBase["--well-fill"]).toBe("initial")
+    for (const name of [
+      "--view-track-sheen",
+      "--view-track-shadow",
+      "--view-track-backdrop",
+    ]) {
+      expect(lightBase[name], name).toBe("initial")
+    }
     const card = readFileSync(
       join("src", "components", "card", "card.css"),
       "utf8",
@@ -716,16 +727,24 @@ describe("style files", () => {
     expect(card).toContain(
       "box-shadow: var(--card-edge), var(--glow-outer), var(--glow-inner);",
     )
+    const TRACK = [
+      "background-color: var(--well-fill, hsl(var(--muted)));",
+      "background-image: var(--view-track-sheen, none);",
+      "box-shadow: var(--view-track-shadow, var(--track-well));",
+      "-webkit-backdrop-filter: var(--view-track-backdrop, none);",
+      "backdrop-filter: var(--view-track-backdrop, none);",
+    ].join(" ")
     const tabs = readFileSync(
       join("src", "components", "tabs", "tabs.css"),
       "utf8",
-    )
-    expect(tabs.match(/box-shadow: var\(--track-well\);/g)).toHaveLength(2)
-    expect(
-      readFileSync(
-        join("src", "components", "segment-group", "segment-group.css"),
-        "utf8",
-      ),
-    ).toContain("box-shadow: var(--track-well);")
+    ).replace(/\s+/g, " ")
+    expect(tabs.split(TRACK)).toHaveLength(3)
+    expect(tabs).not.toContain("box-shadow: var(--track-well);")
+    const segment = readFileSync(
+      join("src", "components", "segment-group", "segment-group.css"),
+      "utf8",
+    ).replace(/\s+/g, " ")
+    expect(segment.split(TRACK)).toHaveLength(2)
+    expect(segment).not.toContain("box-shadow: var(--track-well);")
   })
 })

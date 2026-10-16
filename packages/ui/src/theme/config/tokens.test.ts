@@ -89,6 +89,9 @@ describe("PAINT_TOKENS", () => {
       "dialogTitleTracking",
       "uiWeight",
       "figureWeight",
+      "viewTrackSheen",
+      "viewTrackShadow",
+      "viewTrackBackdrop",
     ])
   })
 
@@ -152,6 +155,9 @@ describe("PAINT_TOKENS", () => {
       "--type-dialog-title-tracking",
       "--type-ui-weight",
       "--figure-weight",
+      "--view-track-sheen",
+      "--view-track-shadow",
+      "--view-track-backdrop",
     ])
   })
 
@@ -176,6 +182,9 @@ describe("KIT_FALLBACK", () => {
       surfaceBackdrop: "none",
       scrimBackdrop: "none",
       wellFill: "initial",
+      viewTrackSheen: "initial",
+      viewTrackShadow: "initial",
+      viewTrackBackdrop: "none",
     })
   })
 })

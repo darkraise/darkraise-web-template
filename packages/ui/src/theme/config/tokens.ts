@@ -85,6 +85,9 @@ export const PAINT_TOKENS = {
   dialogTitleTracking: "--type-dialog-title-tracking",
   uiWeight: "--type-ui-weight",
   figureWeight: "--figure-weight",
+  viewTrackSheen: "--view-track-sheen",
+  viewTrackShadow: "--view-track-shadow",
+  viewTrackBackdrop: "--view-track-backdrop",
 } as const
 
 export type PaintToken = keyof typeof PAINT_TOKENS
@@ -93,8 +96,9 @@ export type PaintToken = keyof typeof PAINT_TOKENS
  * Opaque, unblurred values the kit restores under more contrast, whatever
  * the style or preset set: every backdrop and the canvas `none`, the card
  * plane and the overlays at full alpha, and the overlay fill at its light
- * `@layer base` value in theme.css, and the well fill unset, so every well
- * paints its opaque fallback.
+ * `@layer base` value in theme.css, and the well fill and the view track's
+ * sheen and shadow unset and its backdrop `none`, so every well paints its
+ * opaque fallback.
  */
 export const KIT_FALLBACK: Readonly<Partial<Record<PaintToken, string>>> = {
   chromeBackdrop: "none",
@@ -108,4 +112,7 @@ export const KIT_FALLBACK: Readonly<Partial<Record<PaintToken, string>>> = {
   surfaceBackdrop: "none",
   scrimBackdrop: "none",
   wellFill: "initial",
+  viewTrackSheen: "initial",
+  viewTrackShadow: "initial",
+  viewTrackBackdrop: "none",
 }

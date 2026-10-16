@@ -12,8 +12,11 @@
   .dr-segment-group {
     @apply relative inline-flex p-1;
     background-color: var(--well-fill, hsl(var(--muted)));
+    background-image: var(--view-track-sheen, none);
+    box-shadow: var(--view-track-shadow, var(--track-well));
+    -webkit-backdrop-filter: var(--view-track-backdrop, none);
+    backdrop-filter: var(--view-track-backdrop, none);
     border-radius: var(--segment-radius);
-    box-shadow: var(--track-well);
   }
 
   .dr-segment-group[data-orientation="vertical"] {

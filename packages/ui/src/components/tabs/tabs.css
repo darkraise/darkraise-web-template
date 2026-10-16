@@ -36,13 +36,19 @@
   .dr-tabs-list[data-variant="default"] {
     @apply justify-center gap-1 rounded-[var(--radius)] border border-transparent p-1 transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)];
     background-color: var(--well-fill, hsl(var(--muted)));
-    box-shadow: var(--track-well);
+    background-image: var(--view-track-sheen, none);
+    box-shadow: var(--view-track-shadow, var(--track-well));
+    -webkit-backdrop-filter: var(--view-track-backdrop, none);
+    backdrop-filter: var(--view-track-backdrop, none);
   }
 
   .dr-tabs-list[data-variant="outline"] {
     @apply justify-center gap-1 rounded-[var(--radius)] border border-transparent p-1 transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)];
     background-color: var(--well-fill, hsl(var(--muted)));
-    box-shadow: var(--track-well);
+    background-image: var(--view-track-sheen, none);
+    box-shadow: var(--view-track-shadow, var(--track-well));
+    -webkit-backdrop-filter: var(--view-track-backdrop, none);
+    backdrop-filter: var(--view-track-backdrop, none);
   }
 
   .dr-tabs-list[data-variant="underline"] {

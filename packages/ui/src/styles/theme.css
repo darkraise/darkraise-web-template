@@ -160,6 +160,9 @@
       --surface-backdrop: none;
       --scrim-backdrop: none;
       --well-fill: initial;
+      --view-track-sheen: initial;
+      --view-track-shadow: initial;
+      --view-track-backdrop: none;
     }
   }
 }
@@ -1008,6 +1011,11 @@
     /* Unset: each well (tab list, segment group, slider and progress
        track, unchecked switch) paints its own opaque fill. */
     --well-fill: initial;
+    /* Unset: the tab and segment tracks paint no sheen, the track well's
+       shadow and no backdrop filter. */
+    --view-track-sheen: initial;
+    --view-track-shadow: initial;
+    --view-track-backdrop: initial;
 
     /* Style-driven affordance tokens. Each style binds these once in
      its own CSS file; components consume them as a single source of

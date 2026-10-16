@@ -413,10 +413,24 @@ describe("overlay backdrop", () => {
     ["src/components/file-upload/file-upload.css", ".dr-file-upload-dropzone"],
     ["src/components/file-upload/file-upload.css", ".dr-file-upload-item"],
     ["src/components/menubar/menubar.css", ".dr-menubar"],
-    ["src/components/segment-group/segment-group.css", ".dr-segment-group"],
     ["src/components/toolbar/toolbar.css", ".dr-toolbar"],
   ])("%s %s draws no backdrop", (path, selector) => {
     expect(bodyOf(path, selector)).not.toContain("backdrop-filter")
+  })
+
+  // The segment group frosts only through the --view-track-backdrop style
+  // token; its default is none.
+  it("src/components/segment-group/segment-group.css .dr-segment-group frosts only through the view-track backdrop", () => {
+    const backdrops = [
+      ...bodyOf(
+        "src/components/segment-group/segment-group.css",
+        ".dr-segment-group",
+      ).matchAll(/backdrop-filter:\s*([^;]+);/g),
+    ].map((m) => m[1])
+    expect(backdrops).toEqual([
+      "var(--view-track-backdrop, none)",
+      "var(--view-track-backdrop, none)",
+    ])
   })
 })
 
