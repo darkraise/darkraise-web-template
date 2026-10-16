@@ -54,29 +54,49 @@ export function layers(value: string | undefined): string[] {
 export const FROST = /^rgb\(255 255 255 \/ ([\d.]+)\)$/
 
 /**
- * A 1px chip edge drawn in one engine colour, or in one mixed in sRGB with a
- * share of another: `color-mix(in srgb, hsl(var(--a)), hsl(var(--b)) n%)`.
+ * A 1px chip edge drawn in one engine colour, at full or a given alpha, or
+ * in one mixed in sRGB with a share of another:
+ * `color-mix(in srgb, hsl(var(--a)), hsl(var(--b)) n%)`.
  */
 export const CHIP_EDGE =
-  /^0 0 0 1px (?:hsl\(var\((--[\w-]+)\)\)|color-mix\(in srgb, hsl\(var\((--[\w-]+)\)\), hsl\(var\((--[\w-]+)\)\) ([\d.]+)%\))$/
+  /^0 0 0 1px (?:hsl\(var\((--[\w-]+)\)(?: \/ ([\d.]+))?\)|color-mix\(in srgb, hsl\(var\((--[\w-]+)\)\), hsl\(var\((--[\w-]+)\)\) ([\d.]+)%\))$/
+
+/** A chip edge's colour and the alpha it paints at. */
+export interface ChipEdge {
+  colour: string
+  alpha: number
+}
 
 /**
- * The colour of a selected chip's 1px edge, from the first layer of its
- * shadow, with `at` resolving each engine colour the edge names. `where`
- * names the look in the error.
+ * A selected chip's 1px edge, from the first layer of its shadow, with `at`
+ * resolving each engine colour the edge names. `where` names the look in
+ * the error.
  */
+export function chipEdge(
+  shadow: string | undefined,
+  at: (key: string) => string,
+  where: string,
+): ChipEdge {
+  const [first] = layers(shadow)
+  const edge = CHIP_EDGE.exec(first ?? "")
+  if (!edge) throw new Error(`${where}: no chip edge in ${shadow}`)
+  const [, single, alpha, base, mixed, share] = edge
+  if (single) {
+    return { colour: at(single), alpha: alpha ? Number(alpha) : 1 }
+  }
+  return {
+    colour: composite(at(base as string), at(mixed as string), Number(share) / 100),
+    alpha: 1,
+  }
+}
+
+/** The colour of a selected chip's opaque edge; see chipEdge. */
 export function chipEdgeColour(
   shadow: string | undefined,
   at: (key: string) => string,
   where: string,
 ): string {
-  const [first] = layers(shadow)
-  const edge = CHIP_EDGE.exec(first ?? "")
-  if (!edge) throw new Error(`${where}: no chip edge in ${shadow}`)
-  const [, single, base, mixed, share] = edge
-  return single
-    ? at(single)
-    : composite(at(base as string), at(mixed as string), Number(share) / 100)
+  return chipEdge(shadow, at, where).colour
 }
 
 /** The blur radius of each layer of a box-shadow value. */
