@@ -34,6 +34,11 @@ export const coralSpace: PresetDefinition = {
   },
   tokens: {
     shared: {
+      // Glass's frosted track and lifted pane are Glass's own; the outline
+      // variants this look's tab style leaves alone keep today's.
+      viewTrackSheen: "initial",
+      viewTrackShadow: "initial",
+      viewTrackBackdrop: "initial",
       // Twice the card alpha's distance from opaque, as Mica Desk's slab, so
       // the pane turns opaque with the cards under the kit's fallback.
       shellContentFill:
@@ -50,6 +55,7 @@ export const coralSpace: PresetDefinition = {
       dialogTitleTracking: "-0.011em",
     },
     light: {
+      selectedViewFill: "rgb(255 255 255 / 0.75)",
       surfaceFillAlpha: "0.56",
       // Opaque paint from the accent ramp's tint steps, no lower than the
       // step the rail's muted ink still clears 4.5:1 on, under grain drawn
@@ -71,6 +77,9 @@ export const coralSpace: PresetDefinition = {
       modalShadow: "0 28px 64px -14px hsl(var(--foreground) / 0.45)",
     },
     dark: {
+      selectedViewFill: "rgb(255 255 255 / 0.14)",
+      selectedViewShadow:
+        "0 0 0 1px color-mix(in srgb, hsl(var(--border-strong)), hsl(var(--foreground)) 25%)",
       surfaceFillAlpha: "0.6",
       shellGroundGradient:
         "radial-gradient(circle at 1px 1px, rgb(0 0 0 / 0.1) 0.7px, transparent 1.1px) 0 0 / 3px 3px, radial-gradient(circle at 3px 2px, rgb(0 0 0 / 0.14) 0.7px, transparent 1.1px) 0 0 / 5px 5px, radial-gradient(circle at 2px 5px, rgb(0 0 0 / 0.1) 0.8px, transparent 1.2px) 0 0 / 7px 7px, radial-gradient(circle at 8px 4px, rgb(0 0 0 / 0.14) 0.8px, transparent 1.2px) 0 0 / 11px 11px, linear-gradient(155deg, hsl(var(--primary-6) / 0.22), transparent 55%), linear-gradient(155deg, hsl(var(--primary-2)), hsl(var(--primary-1)))",

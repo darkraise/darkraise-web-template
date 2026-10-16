@@ -113,6 +113,7 @@ describe("Dusk Haze", () => {
     expect([...new Set(translucency)].sort()).toEqual([
       "surfaceBackdrop",
       "surfaceFillAlpha",
+      "viewTrackBackdrop",
     ])
     for (const token of translucency) {
       expect(KIT_FALLBACK[token], token).toBeDefined()

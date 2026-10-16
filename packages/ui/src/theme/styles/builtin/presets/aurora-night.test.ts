@@ -114,6 +114,7 @@ describe("Aurora Night", () => {
       "overlayFillAlpha",
       "surfaceBackdrop",
       "surfaceFillAlpha",
+      "viewTrackBackdrop",
     ])
     for (const token of translucency) {
       expect(KIT_FALLBACK[token], token).toBeDefined()

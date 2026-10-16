@@ -33,6 +33,11 @@ export const auroraNight: PresetDefinition = {
   },
   tokens: {
     shared: {
+      // Glass's frosted track and lifted pane are Glass's own; the outline
+      // variants this look's tab style leaves alone keep today's.
+      viewTrackSheen: "initial",
+      viewTrackShadow: "initial",
+      viewTrackBackdrop: "initial",
       overlayFillAlpha: "0.55",
       // The rail's glass is thinner than a card's and follows the card
       // alpha, so it turns opaque with the cards when the kit's fallback
@@ -55,6 +60,7 @@ export const auroraNight: PresetDefinition = {
       figureWeight: "500",
     },
     light: {
+      selectedViewFill: "rgb(255 255 255 / 0.75)",
       // No base layer under the light: the shell ground stays clear, so the
       // page canvas shows around it.
       shellGroundGradient:
@@ -77,6 +83,7 @@ export const auroraNight: PresetDefinition = {
       scrim: "hsl(var(--foreground) / 0.16)",
     },
     dark: {
+      selectedViewFill: "rgb(255 255 255 / 0.14)",
       shellGroundGradient:
         "radial-gradient(38% 30% at 72% 4%, hsl(var(--primary-text) / 0.3), transparent 70%), radial-gradient(32% 28% at 92% 18%, hsl(var(--primary-text) / 0.18), transparent 70%), radial-gradient(30% 24% at 52% 12%, hsl(var(--primary-text) / 0.14), transparent 70%)",
       surfaceFillAlpha: "0.58",

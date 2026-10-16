@@ -11,7 +11,7 @@ import {
 import { effectiveSettings } from "@theme/axes/resolve"
 import { resolveRegistry } from "@theme/config/registry"
 import { finalTokens, presetCombos } from "@test/contrast-matrix"
-import { resolvedTokens } from "@test/preset-tokens"
+import { layers, resolvedTokens } from "@test/preset-tokens"
 import { stripCssComments } from "@test/strip-css-comments"
 import { vi as viLocale } from "../../../../locales/vi"
 import { BUILTIN_PRESETS, PRESET_NAMES } from "."
@@ -470,5 +470,40 @@ describe("built-in presets", () => {
       if (!token.endsWith("Radius")) continue
       expect(value, where).toMatch(/var\(--radius(-control)?\)/)
     }
+  })
+})
+
+// Glass's frosted track and lifted pane stop at Glass, Soft Glass and
+// Smoked Obsidian. The other Glass presets keep the track, pane and edge
+// they had, on the outline variants their tab style leaves alone too.
+describe("Glass presets that keep today's view switch", () => {
+  const registry = resolveRegistry()
+  const KEPT = {
+    light: {
+      fill: "rgb(255 255 255 / 0.75)",
+      edge: "0 0 0 1px hsl(var(--border-strong))",
+    },
+    dark: {
+      fill: "rgb(255 255 255 / 0.14)",
+      edge: "0 0 0 1px color-mix(in srgb, hsl(var(--border-strong)), hsl(var(--foreground)) 25%)",
+    },
+  } as const
+
+  it.each(
+    ["milk-glass", "aurora-night", "dusk-haze", "mica-desk", "coral-space"].flatMap(
+      (name) => (["light", "dark"] as const).map((mode) => [name, mode] as const),
+    ),
+  )("%s keeps it in %s", (name, mode) => {
+    const paint = resolvedTokens(
+      registry.styles.glass?.tokens,
+      registry.presets[name]?.tokens,
+      mode,
+    )
+    expect(paint.viewTrackSheen).toBe("initial")
+    expect(paint.viewTrackShadow).toBe("initial")
+    expect(paint.viewTrackBackdrop).toBe("initial")
+    expect(paint.selectedViewFill).toBe(KEPT[mode].fill)
+    expect(layers(paint.selectedViewShadow)[0]).toBe(KEPT[mode].edge)
+    expect(paint.selectedViewShadow).not.toContain("--primary")
   })
 })

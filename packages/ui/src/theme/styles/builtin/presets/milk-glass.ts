@@ -33,6 +33,11 @@ export const milkGlass: PresetDefinition = {
   },
   tokens: {
     shared: {
+      // Glass's frosted track and lifted pane are Glass's own; the outline
+      // variants this look's tab style leaves alone keep today's.
+      viewTrackSheen: "initial",
+      viewTrackShadow: "initial",
+      viewTrackBackdrop: "initial",
       overlayFillAlpha: "0.7",
       surfaceBackdrop: glassBackdrop("saturate(180%)"),
       cardRadius: "calc(var(--radius) * 2.75)",
@@ -59,6 +64,7 @@ export const milkGlass: PresetDefinition = {
       figureWeight: "700",
     },
     light: {
+      selectedViewFill: "rgb(255 255 255 / 0.75)",
       // No base layer under the halos: the shell ground stays clear, so the
       // page canvas shows between them.
       shellGroundGradient:
@@ -88,6 +94,9 @@ export const milkGlass: PresetDefinition = {
       scrim: "hsl(var(--background) / 0.45)",
     },
     dark: {
+      selectedViewFill: "rgb(255 255 255 / 0.14)",
+      selectedViewShadow:
+        "0 0 0 1px color-mix(in srgb, hsl(var(--border-strong)), hsl(var(--foreground)) 25%)",
       shellGroundGradient:
         "radial-gradient(45% 40% at 12% 18%, hsl(var(--primary) / 0.2), transparent 70%), radial-gradient(40% 40% at 88% 12%, hsl(var(--primary) / 0.1), transparent 70%), radial-gradient(50% 45% at 70% 92%, hsl(var(--primary) / 0.32), transparent 70%)",
       surfaceFillAlpha: "0.64",

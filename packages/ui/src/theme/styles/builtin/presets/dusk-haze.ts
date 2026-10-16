@@ -36,6 +36,11 @@ export const duskHaze: PresetDefinition = {
   },
   tokens: {
     shared: {
+      // Glass's frosted track and lifted pane are Glass's own; the outline
+      // variants this look's tab style leaves alone keep today's.
+      viewTrackSheen: "initial",
+      viewTrackShadow: "initial",
+      viewTrackBackdrop: "initial",
       cardRadius: "calc(var(--radius) * 0.75)",
       overlayRadius: "calc(var(--radius) * 0.75)",
       dialogRadius: "var(--radius)",
@@ -61,6 +66,7 @@ export const duskHaze: PresetDefinition = {
       figureWeight: "360",
     },
     light: {
+      selectedViewFill: "rgb(255 255 255 / 0.75)",
       // No base layer: the haze thins towards the top, where the page
       // canvas shows. Text stands on this ground, so the ridges stay above
       // the tone the muted ink clears 4.5:1 on.
@@ -86,6 +92,9 @@ export const duskHaze: PresetDefinition = {
       scrim: "hsl(var(--foreground) / 0.24)",
     },
     dark: {
+      selectedViewFill: "rgb(255 255 255 / 0.14)",
+      selectedViewShadow:
+        "0 0 0 1px color-mix(in srgb, hsl(var(--border-strong)), hsl(var(--foreground)) 25%)",
       shellGroundGradient:
         "radial-gradient(38% 20% at 45% 22%, hsl(var(--primary-text) / 0.14), transparent 70%), radial-gradient(60% 30% at 82% 8%, hsl(var(--neutral-7) / 0.4), transparent 70%), linear-gradient(180deg, hsl(var(--neutral-3) / 0.7), transparent 70%)",
       surfaceFillAlpha: "0.6",

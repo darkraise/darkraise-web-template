@@ -101,6 +101,7 @@ describe("Coral Space", () => {
     expect([...new Set(translucency)].sort()).toEqual([
       "overlayFillAlpha",
       "surfaceFillAlpha",
+      "viewTrackBackdrop",
     ])
     for (const token of translucency) {
       expect(KIT_FALLBACK[token], token).toBeDefined()

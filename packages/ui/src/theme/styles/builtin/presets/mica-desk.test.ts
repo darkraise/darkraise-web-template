@@ -121,10 +121,11 @@ describe("Mica Desk", () => {
   })
 
   // Glass's own backdrop frosts the cards and menus, sized by the Blur
-  // setting; the preset writes none of its own.
+  // setting; the preset writes none of its own and unsets the view track's.
   it("frosts with Glass's backdrops", () => {
     expect(
       written(micaDesk.tokens).filter((token) => token.endsWith("Backdrop")),
-    ).toEqual([])
+    ).toEqual(["viewTrackBackdrop"])
+    expect(micaDesk.tokens?.shared?.viewTrackBackdrop).toBe("initial")
   })
 })

@@ -40,7 +40,8 @@ describe("glass backdrops", () => {
         for (const [token, value] of Object.entries(map ?? {})) {
           if (!(token as PaintToken).endsWith("Backdrop")) continue
           backdrops.push(`${name}.${mode}.${token}`)
-          if (value === "none") continue
+          // `initial` unsets a backdrop Glass sets; the reader falls back to none.
+          if (value === "none" || value === "initial") continue
           expect(value, `${name}.${mode}.${token}`).toMatch(SIZED)
           expect(value, `${name}.${mode}.${token}`).not.toMatch(/\d+px/)
         }

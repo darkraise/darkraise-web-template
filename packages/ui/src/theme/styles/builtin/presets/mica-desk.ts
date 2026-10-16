@@ -37,6 +37,11 @@ export const micaDesk: PresetDefinition = {
   },
   tokens: {
     shared: {
+      // Glass's frosted track and lifted pane are Glass's own; the outline
+      // variants this look's tab style leaves alone keep today's.
+      viewTrackSheen: "initial",
+      viewTrackShadow: "initial",
+      viewTrackBackdrop: "initial",
       // Twice the card alpha's distance from opaque, so the slab is the
       // fainter layer and turns opaque with the cards when the kit's
       // fallback sets the alpha to 1.
@@ -59,6 +64,8 @@ export const micaDesk: PresetDefinition = {
       pageTitleTracking: "0",
     },
     light: {
+      selectedViewFill: "rgb(255 255 255 / 0.75)",
+      selectedViewShadow: "0 0 0 1px hsl(var(--border-strong))",
       surfaceFillAlpha: "0.6",
       // No base layer under the bloom: the shell ground stays clear, so the
       // page canvas shows through the chrome.
@@ -75,6 +82,9 @@ export const micaDesk: PresetDefinition = {
       modalShadow: "0 0 8px rgb(0 0 0 / 0.12), 0 32px 64px rgb(0 0 0 / 0.14)",
     },
     dark: {
+      selectedViewFill: "rgb(255 255 255 / 0.14)",
+      selectedViewShadow:
+        "0 0 0 1px color-mix(in srgb, hsl(var(--border-strong)), hsl(var(--foreground)) 25%)",
       surfaceFillAlpha: "0.62",
       shellGroundGradient:
         "radial-gradient(80% 70% at 10% 0%, hsl(var(--primary) / 0.28), transparent 60%)",
