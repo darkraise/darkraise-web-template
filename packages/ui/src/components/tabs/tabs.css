@@ -40,6 +40,7 @@
     box-shadow: var(--view-track-shadow, var(--track-well));
     -webkit-backdrop-filter: var(--view-track-backdrop, none);
     backdrop-filter: var(--view-track-backdrop, none);
+    color: var(--view-track-label, hsl(var(--muted-foreground)));
   }
 
   .dr-tabs-list[data-variant="outline"] {
@@ -49,6 +50,7 @@
     box-shadow: var(--view-track-shadow, var(--track-well));
     -webkit-backdrop-filter: var(--view-track-backdrop, none);
     backdrop-filter: var(--view-track-backdrop, none);
+    color: var(--view-track-label, hsl(var(--muted-foreground)));
   }
 
   .dr-tabs-list[data-variant="underline"] {

@@ -1016,6 +1016,8 @@
     --view-track-sheen: initial;
     --view-track-shadow: initial;
     --view-track-backdrop: initial;
+    /* Unset: inactive tab and segment labels read --muted-foreground. */
+    --view-track-label: initial;
 
     /* Style-driven affordance tokens. Each style binds these once in
      its own CSS file; components consume them as a single source of

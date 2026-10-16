@@ -85,6 +85,10 @@ export const glass: StyleDefinition = {
       overlayBorder: "rgb(255 255 255 / 0.14)",
       dialogBorder: "rgb(255 255 255 / 0.14)",
       wellFill: "rgb(255 255 255 / 0.06)",
+      // The muted ink falls under 4.5:1 on a well only 6% white over a vivid
+      // ground, so the inactive tab and segment labels lift toward the text.
+      viewTrackLabel:
+        "color-mix(in srgb, hsl(var(--muted-foreground)), hsl(var(--foreground)) 50%)",
       selectedViewFill: "rgb(255 255 255 / 0.14)",
       // A quarter of the ink lifts the chip's edge over the light glows a
       // look's ground can carry.

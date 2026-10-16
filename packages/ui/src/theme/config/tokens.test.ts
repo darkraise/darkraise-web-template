@@ -92,6 +92,7 @@ describe("PAINT_TOKENS", () => {
       "viewTrackSheen",
       "viewTrackShadow",
       "viewTrackBackdrop",
+      "viewTrackLabel",
     ])
   })
 
@@ -158,6 +159,7 @@ describe("PAINT_TOKENS", () => {
       "--view-track-sheen",
       "--view-track-shadow",
       "--view-track-backdrop",
+      "--view-track-label",
     ])
   })
 

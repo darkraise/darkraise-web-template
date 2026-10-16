@@ -41,6 +41,7 @@
     --overlay-border: rgb(255 255 255 / 0.14);
     --dialog-border: rgb(255 255 255 / 0.14);
     --well-fill: rgb(255 255 255 / 0.06);
+    --view-track-label: color-mix(in srgb, hsl(var(--muted-foreground)), hsl(var(--foreground)) 50%);
     --selected-view-bg: rgb(255 255 255 / 0.14);
     --selected-view-shadow: 0 0 0 1px color-mix(in srgb, hsl(var(--border-strong)), hsl(var(--foreground)) 25%);
     --shadow-dropdown: 0 10px 30px -10px rgb(0 0 0 / 0.6);

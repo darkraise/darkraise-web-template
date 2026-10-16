@@ -34,7 +34,8 @@
      exceed that specificity — chaining `.dr-segment-group` parent class
      brings us to (0,2,0) and the later source order wins. */
   .dr-segment-group .dr-segment-group-item {
-    @apply focus-ring-inset text-muted-foreground relative z-10 inline-flex cursor-pointer items-center justify-center border-0 bg-transparent px-3 text-sm font-medium transition-colors;
+    @apply focus-ring-inset relative z-10 inline-flex cursor-pointer items-center justify-center border-0 bg-transparent px-3 text-sm font-medium transition-colors;
+    color: var(--view-track-label, hsl(var(--muted-foreground)));
     /* Inside the track's 0.25rem padding, concentric with it. */
     border-radius: calc(var(--segment-radius) - 2px);
     height: var(--btn-height);

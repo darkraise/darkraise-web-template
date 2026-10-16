@@ -202,6 +202,18 @@ describe("glass controls", () => {
     )
   })
 
+  it("lifts the inactive view label toward the text in dark only", () => {
+    expect(valueOf("style.mode", inMode("dark"), "--view-track-label")).toBe(
+      "color-mix(in srgb, hsl(var(--muted-foreground)), hsl(var(--foreground)) 50%)",
+    )
+    expect(declares("style.base", inMode("light"), "--view-track-label")).toBe(
+      false,
+    )
+    expect(declares("style.base", GLASS_ROOT, "--view-track-label")).toBe(
+      false,
+    )
+  })
+
   it("lifts the selected chip in white with a 1px edge, inked in dark", () => {
     expect(valueOf("style.base", inMode("light"), "--selected-view-bg")).toBe(
       "rgb(255 255 255 / 0.75)",

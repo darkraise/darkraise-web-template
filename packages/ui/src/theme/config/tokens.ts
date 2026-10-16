@@ -88,6 +88,7 @@ export const PAINT_TOKENS = {
   viewTrackSheen: "--view-track-sheen",
   viewTrackShadow: "--view-track-shadow",
   viewTrackBackdrop: "--view-track-backdrop",
+  viewTrackLabel: "--view-track-label",
 } as const
 
 export type PaintToken = keyof typeof PAINT_TOKENS
