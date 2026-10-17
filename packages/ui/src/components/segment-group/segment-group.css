@@ -70,6 +70,12 @@
       @apply text-foreground;
     }
   }
+  /* A touch press is no hover, and the press wash paints in the label's
+     own colour, so a resting label under it falls below 4.5:1. */
+  .dr-segment-group
+    .dr-segment-group-item:not([data-state="checked"]):not(:disabled):active {
+    @apply text-foreground;
+  }
 
   /* ::after, because the item's radio-group rule gives ::before to its
      24px hit area (hit-area-24). `relative z-10` already makes the item a

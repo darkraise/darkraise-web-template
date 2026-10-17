@@ -466,6 +466,11 @@
       @apply text-foreground;
     }
   }
+  /* A touch press is no hover, and the press wash paints in the label's
+     own colour, so a resting label under it falls below 4.5:1. */
+  .dr-tabs-trigger:where(:not([data-state="active"]):not(:disabled)):active {
+    @apply text-foreground;
+  }
 
   /* `relative z-10` already makes each trigger a stacking context, so the
      wash paints above the sliding indicator and below the label. */

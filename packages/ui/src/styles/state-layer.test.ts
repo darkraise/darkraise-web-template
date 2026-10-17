@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
+import { cssRules } from "../test/css-rules"
 import { stripCssComments } from "../test/strip-css-comments"
 
 // jsdom never parses CSS, so the rules themselves are what this asserts.
@@ -17,11 +18,16 @@ import { stripCssComments } from "../test/strip-css-comments"
 //
 // Timing is deliberately asymmetric: instant in, short fade out.
 function flat(path: string): string {
-  // Prettier wraps long selectors inside :not( … ); undo that too.
-  return stripCssComments(readFileSync(path, "utf8"))
+  return flatText(stripCssComments(readFileSync(path, "utf8")))
+}
+
+// Prettier wraps long selectors inside :not( … ); undo that too.
+function flatText(css: string): string {
+  return css
     .replace(/\s+/g, " ")
     .replace(/\(\s+/g, "(")
     .replace(/\s+\)/g, ")")
+    .trim()
 }
 
 const THEME = "src/styles/theme.css"
@@ -252,6 +258,27 @@ describe("interaction state layer", () => {
     expect(flat("src/components/pagination/pagination.css")).toMatch(
       /\.dr-pagination-link\[data-active="true"\]\[data-variant="ghost"\] \{[^}]*--state-layer-color: hsl\(var\(--primary-fill-wash\)\); --btn-hover-layer: 0\.16; --state-layer-press: 0\.28;/,
     )
+  })
+
+  // A touch press is no hover, and the press wash paints in the label's own
+  // colour, so a resting label under it falls below 4.5:1.
+  it.each([
+    [
+      "src/components/tabs/tabs.css",
+      '.dr-tabs-trigger:where(:not([data-state="active"]):not(:disabled)):active',
+    ],
+    [
+      SEGMENT,
+      '.dr-segment-group .dr-segment-group-item:not([data-state="checked"]):not(:disabled):active',
+    ],
+  ])("%s lifts the pressed label outside the hover query", (path, selector) => {
+    const lifts = cssRules(stripCssComments(readFileSync(path, "utf8"))).filter(
+      (rule) =>
+        flatText(rule.selector) === selector &&
+        flatText(rule.body) === "@apply text-foreground;",
+    )
+    expect(lifts).toHaveLength(1)
+    expect(lifts[0]?.wrappers).not.toContain("@media (hover: hover)")
   })
 
   for (const { path, selector, pseudo = "::before" } of HAND_ROLLED) {
