@@ -15,6 +15,12 @@ import {
 } from "./helpers/measure"
 
 /**
+ * The app's entry module. A dev server that has reloaded it serves it with a
+ * `?t=` timestamp, which a plain glob does not match.
+ */
+const ENTRY = /\/src\/main\.tsx(?:\?|$)/
+
+/**
  * A locator whose text sits on a background image, so textContrast takes
  * the pixel path. Every evaluate argument is recorded; the evaluate that
  * restores the text throws when `restoreFails` is set, as it does when the
@@ -332,7 +338,7 @@ test.describe("e2e helpers", () => {
   }, testInfo) => {
     const consoleWatch = watchConsole(page)
     let entryRequests = 0
-    await page.route("**/src/main.tsx", async (route) => {
+    await page.route(ENTRY, async (route) => {
       entryRequests += 1
       if (entryRequests === 1) await route.abort("connectionreset")
       else await route.continue()
@@ -350,9 +356,7 @@ test.describe("e2e helpers", () => {
   test("gotoApp reports the first failure when the retry fails too", async ({
     page,
   }) => {
-    await page.route("**/src/main.tsx", (route) =>
-      route.abort("connectionreset"),
-    )
+    await page.route(ENTRY, (route) => route.abort("connectionreset"))
     await seedApp(page)
     await expect(gotoApp(page, "/")).rejects.toThrow(
       /net::ERR_CONNECTION_RESET .*\/src\/main\.tsx/,
@@ -363,7 +367,7 @@ test.describe("e2e helpers", () => {
     page,
   }) => {
     let entryRequests = 0
-    await page.route("**/src/main.tsx", (route) => {
+    await page.route(ENTRY, (route) => {
       entryRequests += 1
       return route.fulfill({ status: 500, body: "" })
     })
