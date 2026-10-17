@@ -5,6 +5,123 @@ and layout variants, styled with Tailwind CSS 4. Primitives are implemented
 in-house, with Floating UI for positioning and TanStack Table for table behavior.
 The package does not depend on Radix UI.
 
+## Getting started
+
+`npm create darkraise-ui my-app` scaffolds a Vite app with everything below
+already wired. To add the kit to an existing React 19 + Vite app:
+
+```bash
+npm install darkraise-ui
+npm install -D tailwindcss @tailwindcss/vite
+```
+
+`darkraise-ui/styles.css` is Tailwind 4 source, not compiled CSS, so import it
+from a stylesheet Tailwind processes:
+
+```css
+/* src/styles/globals.css */
+@import "darkraise-ui/styles.css";
+```
+
+Add the Tailwind plugin and the kit's pre-render plugin, which writes the
+stored theme onto `<html>` before the first paint so a reload does not flash
+the default theme:
+
+```ts
+// vite.config.ts
+import { defineConfig } from "vite"
+import react from "@vitejs/plugin-react"
+import tailwindcss from "@tailwindcss/vite"
+import { darkraisePrerender } from "darkraise-ui/vite"
+import { themeConfig } from "./src/theme.config"
+
+export default defineConfig({
+  plugins: [
+    darkraisePrerender({ config: themeConfig }),
+    react(),
+    tailwindcss(),
+  ],
+})
+```
+
+Keep `theme.config.ts` free of value imports from `darkraise-ui` (an
+`import type` is fine): `vite.config.ts` loads it in Node. Then mount the
+providers and a layout. The layouts need a router adapter, described below:
+
+```tsx
+import { ThemeProvider } from "darkraise-ui/theme"
+import { RouterAdapterProvider } from "darkraise-ui/router"
+import { SidebarLayout } from "darkraise-ui/layout"
+import { Button } from "darkraise-ui"
+import { themeConfig } from "./theme.config"
+import { routerAdapter } from "./router-adapter"
+
+export function App() {
+  return (
+    <ThemeProvider config={themeConfig}>
+      <RouterAdapterProvider value={routerAdapter}>
+        <SidebarLayout nav={[]} showThemeSwitcher>
+          <Button>Hello</Button>
+        </SidebarLayout>
+      </RouterAdapterProvider>
+    </ThemeProvider>
+  )
+}
+```
+
+The fonts ship inside the package, so no font link is needed. `recharts`
+(for `darkraise-ui/components/chart`) and `i18next` with `react-i18next` (for
+`darkraise-ui/i18n/react-i18next`) are optional peers: install them only when
+you import those entries.
+
+### Entry points
+
+| Import                            | Contents                                                                     |
+| --------------------------------- | ---------------------------------------------------------------------------- |
+| `darkraise-ui`                    | every component except Chart                                                 |
+| `darkraise-ui/components/<name>`  | one component, e.g. `components/chart`, `components/locale-switcher`         |
+| `darkraise-ui/hooks`              | the hooks, e.g. `useDisclosure`, `useMediaQuery`, `useReducedMotion`         |
+| `darkraise-ui/theme`              | `ThemeProvider`, `ThemeSwitcher`, `useTheme`, `ThemeConfig` and theme types  |
+| `darkraise-ui/layout`             | the four app shells, `PageHeader`, and `Stack`, `Inline`, `Grid` and friends |
+| `darkraise-ui/forms`              | form field wrappers, `FormSection`, `FormActions`, `FormErrorSummary`        |
+| `darkraise-ui/data-table`         | `DataTable` on TanStack Table                                                |
+| `darkraise-ui/errors`             | full-page error states (`NotFoundPage`, `ErrorPage`, ...)                    |
+| `darkraise-ui/router`             | `RouterAdapterProvider` and the `RouterAdapter` type                         |
+| `darkraise-ui/labels`             | `UiLabelsProvider` for overriding component text                             |
+| `darkraise-ui/i18n`, `/locales/*` | `UiI18nProvider` and the maintained message packs                            |
+| `darkraise-ui/i18n/react-i18next` | the optional i18next adapter                                                 |
+| `darkraise-ui/lib`                | `cn` and small utilities                                                     |
+| `darkraise-ui/vite`               | `darkraisePrerender` (Node only, for `vite.config`)                          |
+| `darkraise-ui/theme-config`       | theme definition helpers for build tooling                                   |
+| `darkraise-ui/theme.schema.json`  | JSON Schema for a theme config written as JSON                               |
+
+Exact props live in the installed type definitions under
+`node_modules/darkraise-ui/dist`.
+
+### Connecting a router
+
+The kit does not depend on a router. Its links and navigation go through a
+`RouterAdapter` you provide with `RouterAdapterProvider`. The four layouts,
+`PageHeader`, `SidebarNav` and `SearchCommand` throw without one. The error
+pages do not: outside a provider they render plain anchors and navigate with
+full page loads, so they still work as a router's own error component.
+
+```tsx
+import { RouterAdapterProvider, type RouterAdapter } from "darkraise-ui/router"
+
+const adapter: RouterAdapter = {
+  Link: MyLink, // forwards `aria-current` and the remaining props to the anchor
+  useNavigate: () => { const navigate = useMyNavigate(); return (to) => navigate(to) },
+  usePathname: () => useMyLocation().pathname,
+  useBack: () => () => history.back(),
+  useInvalidate: () => () => {},
+}
+
+<RouterAdapterProvider value={adapter}>
+  <App />
+</RouterAdapterProvider>
+```
+
 ## Accessibility
 
 The kit does the parts a component library can do on its own, and names the
@@ -257,6 +374,13 @@ export const themeConfig: ThemeConfig = {
   },
 }
 ```
+
+`ThemeProvider` stores the user's choices in `localStorage`. To keep them on
+a backend as well, pass `onChange` (called on each change with the values the
+user has set) or a `persistence` adapter with `load()` and `save(settings, { signal })`;
+saves are debounced by `persistenceDebounce` (500 ms by default) and aborted
+after 15 seconds. `nonce` sets the CSP nonce on the stylesheet the provider
+adds for a config's own styles and presets.
 
 A default outside its axis's values falls back to the kit default. In
 development the provider warns once about such a value and about each removed
