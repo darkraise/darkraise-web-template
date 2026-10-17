@@ -419,7 +419,7 @@ describe("overlay backdrop", () => {
   })
 
   // The segment group frosts only through the --view-track-backdrop style
-  // token; its default is none.
+  // token; unset, it falls back to none.
   it("src/components/segment-group/segment-group.css .dr-segment-group frosts only through the view-track backdrop", () => {
     const backdrops = [
       ...bodyOf(

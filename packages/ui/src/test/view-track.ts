@@ -108,7 +108,7 @@ export function edgeOn(edge: ChipEdge, ground: string): string {
  * rest, under the hover wash and under the press wash, which paint in the
  * label's own colour (`currentColor`). A press keeps the hover label, as
  * a pointer press does. A touch press keeps the resting label under the
- * press wash, below 4.5:1 in today's kit; it is a known gap, not paired.
+ * press wash, below 4.5:1; it is not paired.
  */
 export function trackPairs(
   paint: TrackPaint,

@@ -35,7 +35,7 @@ export const coralSpace: PresetDefinition = {
   tokens: {
     shared: {
       // Glass's frosted track and lifted pane are Glass's own; the outline
-      // variants this look's tab style leaves alone keep today's.
+      // variants this look's tab style leaves alone keep the plain track.
       viewTrackSheen: "initial",
       viewTrackShadow: "initial",
       viewTrackBackdrop: "initial",

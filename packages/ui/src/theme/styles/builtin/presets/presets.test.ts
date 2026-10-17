@@ -476,7 +476,7 @@ describe("built-in presets", () => {
 // Glass's frosted track and lifted pane stop at Glass, Soft Glass and
 // Smoked Obsidian. The other Glass presets keep the track, pane and edge
 // they had, on the outline variants their tab style leaves alone too.
-describe("Glass presets that keep today's view switch", () => {
+describe("Glass presets that keep the plain view switch", () => {
   const registry = resolveRegistry()
   const KEPT = {
     light: {
