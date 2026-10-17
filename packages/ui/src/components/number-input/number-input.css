@@ -91,7 +91,6 @@
    * horizontal divider against the decrement below it. */
   .dr-number-input-trigger-group .dr-number-input-stepper {
     @apply flex-1;
-    position: static;
     width: 100%;
     height: auto;
     /* A flex item's min-height is its content: an icon taller than half

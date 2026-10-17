@@ -299,6 +299,19 @@ describe("shared state-layer utility", () => {
     expect(flat(path)).toContain(`${selectors} { @apply state-layer; }`)
   })
 
+  // A static host hands the wash's `inset: 0` to the nearest positioned
+  // ancestor, which then lights up whole on hover.
+  it.each(LAYER_HOSTS)("%s never makes %s static", (path, selectors) => {
+    const hosts = selectors.split(", ").map((s) => s.split(":")[0] as string)
+    const statics = cssRules(stripCssComments(readFileSync(path, "utf8")))
+      .filter((rule) => hosts.some((host) => rule.selector.includes(host)))
+      .filter((rule) =>
+        /position:\s*static|@apply[^;]*\bstatic\b/.test(rule.body),
+      )
+      .map((rule) => flatText(rule.selector))
+    expect(statics).toEqual([])
+  })
+
   it("leaves no hand-copied ::before wash in component CSS", () => {
     const copies = stylesheets("src/components").filter((path) =>
       /::before \{[^}]*background: (?:var\(--state-layer-color, currentColor\)|currentColor);/.test(
