@@ -52,7 +52,13 @@ services:
       kit:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://localhost:5176/').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://localhost:5176/').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))",
+        ]
       interval: 30s
       start_period: 60s
       start_interval: 5s
