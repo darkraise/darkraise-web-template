@@ -319,10 +319,9 @@ The scaffold asks only for the brand axes and the style, every theme axis except
 | `--accent-intensity`                    | `--dark-accent-chroma`                                                                     |
 | `--shell-style`                         | the layout's `defaultShellStyle` prop                                                      |
 | `--control-depth`, `--button-elevation` | removed, no replacement                                                                    |
+| `--sidebar-active-bar`                  | `--sidebar-selection`                                                                      |
 
-`--sidebar-active-bar` is not on that list: 7.0 ignores it without an error. Use `--sidebar-selection`.
-
-Inside `--theme-axes` the camelCase names `preset`, `surfaceIntensity`, `accentIntensity`, `shellStyle`, `controlDepth`, `buttonElevation` and `presetAxes` exit with an error naming the replacement (`presetAxes` names `glassTransparency` and `glassBlur`), and `sidebarActiveBar` exits as an invalid axis.
+Inside `--theme-axes` the camelCase names `preset`, `surfaceIntensity`, `accentIntensity`, `shellStyle`, `controlDepth`, `buttonElevation`, `sidebarActiveBar` and `presetAxes` exit with an error naming the replacement (`presetAxes` names `glassTransparency` and `glassBlur`).
 
 Some flags kept their name but lost 6.x values:
 

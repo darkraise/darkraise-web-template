@@ -58,7 +58,7 @@ npm create darkraise-ui my-app \
 | `-y`                                       | skip all prompts, use defaults                 |             |
 | `-h`, `--help`                             | print every flag with its values and defaults  |             |
 
-An axis flag is the axis key in kebab case (`--surface-color`, `--font-size`, `--dark-accent-chroma`), except `--accent` for `accentColor` and `--background` for `backgroundStyle`. The generated `src/theme.config.ts` lists only the axes you chose, by prompt or by flag. A style's own defaults still win over a flag for users with nothing stored: under `--style glass` the background stays a gradient even with `--background solid`. The 6.x flags `--preset`, `--surface-intensity`, `--accent-intensity`, `--shell-style`, `--control-depth` and `--button-elevation` exit with an error naming their replacement.
+An axis flag is the axis key in kebab case (`--surface-color`, `--font-size`, `--dark-accent-chroma`), except `--accent` for `accentColor` and `--background` for `backgroundStyle`. The generated `src/theme.config.ts` lists only the axes you chose, by prompt or by flag. A style's own defaults still win over a flag for users with nothing stored: under `--style glass` the background stays a gradient even with `--background solid`. The 6.x flags `--preset`, `--surface-intensity`, `--accent-intensity`, `--shell-style`, `--control-depth`, `--button-elevation` and `--sidebar-active-bar` exit with an error naming their replacement.
 
 ## What's Included
 

@@ -55,6 +55,7 @@ const RETIRED_FLAGS = {
   "shell-style": "set the layout's defaultShellStyle prop instead",
   "control-depth": "it has no replacement",
   "button-elevation": "it has no replacement",
+  "sidebar-active-bar": "use --sidebar-selection",
 }
 const RETIRED_AXES = {
   preset: "use style",
@@ -64,6 +65,7 @@ const RETIRED_AXES = {
   shellStyle: "set the layout's defaultShellStyle prop instead",
   controlDepth: "it has no replacement",
   buttonElevation: "it has no replacement",
+  sidebarActiveBar: "use sidebarSelection",
   presetAxes: "use glassTransparency and glassBlur",
 }
 

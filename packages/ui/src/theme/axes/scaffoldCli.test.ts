@@ -156,6 +156,7 @@ describe("rejected input", () => {
     ["--shell-style", "island", "defaultShellStyle"],
     ["--control-depth", "raised", "no replacement"],
     ["--button-elevation", "high", "no replacement"],
+    ["--sidebar-active-bar", "both", "--sidebar-selection"],
   ])(
     "%s %s exits 1 naming its replacement",
     async (flag, value, replacement) => {
@@ -180,13 +181,16 @@ describe("rejected input", () => {
     TIMEOUT,
   )
 
-  it(
-    "names the replacement for a retired --theme-axes name",
-    async () => {
-      const { code, stderr } = await scaffold("--theme-axes", "mode,preset")
+  it.each([
+    ["preset", "use style"],
+    ["sidebarActiveBar", "use sidebarSelection"],
+  ])(
+    "names the replacement for the retired --theme-axes name %s",
+    async (axis, replacement) => {
+      const { code, stderr } = await scaffold("--theme-axes", `mode,${axis}`)
       expect(code).toBe(1)
-      expect(stderr).toContain('theme axis "preset" was removed')
-      expect(stderr).toContain("use style")
+      expect(stderr).toContain(`theme axis "${axis}" was removed`)
+      expect(stderr).toContain(replacement)
       expect(readdirSync(cwd)).toEqual([])
     },
     TIMEOUT,
