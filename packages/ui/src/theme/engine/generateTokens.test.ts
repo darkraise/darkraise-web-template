@@ -207,7 +207,10 @@ describe("generateTokens", () => {
           FROSTED_WELL_TINT,
         )
         const where = `${accentColor} ${backgroundIntensity}`
-        expect(contrastRatio(ring, well), `${where} well`).toBeGreaterThanOrEqual(3)
+        expect(
+          contrastRatio(ring, well),
+          `${where} well`,
+        ).toBeGreaterThanOrEqual(3)
         expect(
           contrastRatio(ring, t["--surface-sidebar"] as string),
           `${where} dark rail`,
@@ -259,7 +262,9 @@ describe("generateTokens", () => {
       ).toBeGreaterThanOrEqual(3)
       for (const other of [{ frosted: false }, { mode: "dark" }] as const) {
         expect(
-          generateTokens({ ...input, ...other, groundArt: art })["--focus-ring"],
+          generateTokens({ ...input, ...other, groundArt: art })[
+            "--focus-ring"
+          ],
           `${accentColor} ${JSON.stringify(other)}`,
         ).toBe(generateTokens({ ...input, ...other })["--focus-ring"])
       }

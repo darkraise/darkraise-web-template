@@ -40,7 +40,11 @@ const SEGMENT_PARTS = {
 }
 
 const STRIPS = [
-  { name: "tabs default", scope: `${TABS} [data-case="default"]`, ...TAB_PARTS },
+  {
+    name: "tabs default",
+    scope: `${TABS} [data-case="default"]`,
+    ...TAB_PARTS,
+  },
   {
     name: "tabs vertical",
     scope: `${TABS} [data-case="default-vertical"]`,
@@ -179,7 +183,10 @@ for (const mode of MODES) {
     await open(page, { style: "glass", mode })
     for (const [name, scope] of [
       ["tabs", `${TABS} [data-case="outline"] ${TAB_PARTS.indicator}`],
-      ["segment", `${SEGMENTS} [data-case="outline"] ${SEGMENT_PARTS.indicator}`],
+      [
+        "segment",
+        `${SEGMENTS} [data-case="outline"] ${SEGMENT_PARTS.indicator}`,
+      ],
     ] as const) {
       const pane = await page.locator(scope).evaluate((el) => {
         const style = getComputedStyle(el)

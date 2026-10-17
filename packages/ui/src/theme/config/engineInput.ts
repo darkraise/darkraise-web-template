@@ -1,5 +1,9 @@
 import type { AxisValues } from "@theme/axes/registry"
-import { NO_GROUND_ART, type GenerateTokensInput, type GroundArt } from "@theme/engine/generateTokens"
+import {
+  NO_GROUND_ART,
+  type GenerateTokensInput,
+  type GroundArt,
+} from "@theme/engine/generateTokens"
 import type { ResolvedMode } from "@theme/types"
 import type { ThemeRegistry } from "./registry"
 

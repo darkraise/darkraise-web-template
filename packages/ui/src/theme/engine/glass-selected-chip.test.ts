@@ -17,12 +17,7 @@ import { groundColours } from "@theme/engine/groundBlobs"
 import { composite, contrastRatio } from "@theme/engine/oklch"
 import { finalTokens } from "@test/contrast-matrix"
 import { resolvedTokens } from "@test/preset-tokens"
-import {
-  paneEnds,
-  trackPairs,
-  trackSamples,
-  type Pair,
-} from "@test/view-track"
+import { paneEnds, trackPairs, trackSamples, type Pair } from "@test/view-track"
 
 /** WCAG 1.4.11: the selected pane's edge is a state mark, so it reaches 3:1. */
 const MARK = 3
@@ -144,9 +139,21 @@ function stripPairs(
       for (const [track, sample] of trackSamples(paint, under)) {
         const ring = at("--focus-ring")
         const on = `on ${plane} over ${ground}`
-        rings.push({ where: `the focus ring on ${track} ${on}`, ink: ring, ground: sample })
-        for (const [end, pane] of paneEnds(paint.selectedViewFill, sample, at)) {
-          rings.push({ where: `the focus ring on ${end} over ${track} ${on}`, ink: ring, ground: pane })
+        rings.push({
+          where: `the focus ring on ${track} ${on}`,
+          ink: ring,
+          ground: sample,
+        })
+        for (const [end, pane] of paneEnds(
+          paint.selectedViewFill,
+          sample,
+          at,
+        )) {
+          rings.push({
+            where: `the focus ring on ${end} over ${track} ${on}`,
+            ink: ring,
+            ground: pane,
+          })
         }
       }
     }
@@ -204,10 +211,13 @@ describe("the selected pane on a frosted glass track", () => {
     },
   )
 
-  it.each(CASES)("edges a %s %s pane at 3:1 against the track", (look, mode) => {
-    const { ratio, where } = lowest(stripPairs(look, mode).edges)
-    expect(ratio, `${look} ${mode} ${where}`).toBeGreaterThanOrEqual(MARK)
-  })
+  it.each(CASES)(
+    "edges a %s %s pane at 3:1 against the track",
+    (look, mode) => {
+      const { ratio, where } = lowest(stripPairs(look, mode).edges)
+      expect(ratio, `${look} ${mode} ${where}`).toBeGreaterThanOrEqual(MARK)
+    },
+  )
 
   it.each(CASES)("holds a %s %s strip's labels at 4.5:1", (look, mode) => {
     const { ratio, where } = lowest(stripPairs(look, mode).labels)

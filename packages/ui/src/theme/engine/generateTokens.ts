@@ -11,7 +11,11 @@ import type {
 import { accentColors } from "@theme/palettes/accentColors"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { composite, contrastRatio } from "@theme/engine/oklch"
-import { CANVAS_SATURATION_CAP, contentStripGround, gradientCanvasPeak } from "./canvas"
+import {
+  CANVAS_SATURATION_CAP,
+  contentStripGround,
+  gradientCanvasPeak,
+} from "./canvas"
 import { groundColours } from "./groundBlobs"
 import { STATUS_NAMES, WHITE, solveSteps } from "./steps"
 
