@@ -707,6 +707,7 @@ describe("style files", () => {
       "--view-track-sheen",
       "--view-track-shadow",
       "--view-track-backdrop",
+      "--view-track-label",
     ]) {
       expect(lightBase[name], name).toBe("initial")
     }

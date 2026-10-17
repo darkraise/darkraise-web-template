@@ -231,4 +231,25 @@ describe("the selected pane on a frosted glass track", () => {
       expect(ratio, `${look} light ${where}`).toBeGreaterThanOrEqual(MARK)
     },
   )
+
+  it.each(CASES)(
+    "rings a %s %s sidebar row at 3:1 on the rail",
+    (look, mode) => {
+      const axes = effectiveSettings(
+        { style: "glass", preset: look },
+        DEFAULTS,
+        registry,
+      )
+      const tokens = finalTokens(engineInput(registry, axes, mode))
+      const ring = tokens["--focus-ring"]
+      const rail = tokens["--surface-sidebar"]
+      if (ring === undefined || rail === undefined) {
+        throw new Error(`no ring or rail for ${look} ${mode}`)
+      }
+      expect(
+        contrastRatio(ring, rail),
+        `${look} ${mode} the focus ring on the rail`,
+      ).toBeGreaterThanOrEqual(MARK)
+    },
+  )
 })
