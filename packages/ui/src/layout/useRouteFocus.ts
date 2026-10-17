@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
 
-import { useRouterAdapter } from "@router"
+import { useOptionalRouterAdapter } from "@router"
 
 export interface UseRouteFocusOptions {
   /** Element to focus after a navigation. Defaults to the layout's `<main>`. */
@@ -24,7 +24,7 @@ export function useRouteFocus({
   targetId = "main-content",
   enabled = true,
 }: UseRouteFocusOptions = {}): void {
-  const { usePathname } = useRouterAdapter()
+  const { usePathname } = useOptionalRouterAdapter()
   const pathname = usePathname()
   const previous = useRef<string | null>(null)
 

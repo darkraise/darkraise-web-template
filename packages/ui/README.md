@@ -46,24 +46,20 @@ export default defineConfig({
 
 Keep `theme.config.ts` free of value imports from `darkraise-ui` (an
 `import type` is fine): `vite.config.ts` loads it in Node. Then mount the
-providers and a layout. The layouts need a router adapter, described below:
+provider and a layout:
 
 ```tsx
 import { ThemeProvider } from "darkraise-ui/theme"
-import { RouterAdapterProvider } from "darkraise-ui/router"
 import { SidebarLayout } from "darkraise-ui/layout"
 import { Button } from "darkraise-ui"
 import { themeConfig } from "./theme.config"
-import { routerAdapter } from "./router-adapter"
 
 export function App() {
   return (
     <ThemeProvider config={themeConfig}>
-      <RouterAdapterProvider value={routerAdapter}>
-        <SidebarLayout nav={[]} showThemeSwitcher>
-          <Button>Hello</Button>
-        </SidebarLayout>
-      </RouterAdapterProvider>
+      <SidebarLayout nav={[]} showThemeSwitcher>
+        <Button>Hello</Button>
+      </SidebarLayout>
     </ThemeProvider>
   )
 }
@@ -101,10 +97,10 @@ Exact props live in the installed type definitions under
 ### Connecting a router
 
 The kit does not depend on a router. Its links and navigation go through a
-`RouterAdapter` you provide with `RouterAdapterProvider`. The four layouts,
-`PageHeader`, `SidebarNav` and `SearchCommand` throw without one. The error
-pages do not: outside a provider they render plain anchors and navigate with
-full page loads, so they still work as a router's own error component.
+`RouterAdapter` you provide with `RouterAdapterProvider`. Without one, the
+layouts, `PageHeader`, the search command and the error pages render plain
+anchors and navigate with full page loads. Provide one for client-side
+routing:
 
 ```tsx
 import { RouterAdapterProvider, type RouterAdapter } from "darkraise-ui/router"

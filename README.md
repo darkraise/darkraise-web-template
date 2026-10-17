@@ -132,7 +132,7 @@ See [`packages/ui/README.md`](./packages/ui/README.md) for translating component
 
 ### Layouts
 
-4 layout variants exported from `darkraise-ui/layout`. The CLI wires the chosen one into the generated `src/app.tsx`. Layouts read the current route through a router adapter (`RouterAdapterProvider` from `darkraise-ui/router`); the [kit README](packages/ui/README.md#connecting-a-router) shows one, and the demo app's TanStack Router adapter is in `apps/template/src/lib/router-adapter.tsx`.
+4 layout variants exported from `darkraise-ui/layout`. The CLI wires the chosen one into the generated `src/app.tsx`. Without a router the layouts navigate with full page loads; for client-side routing, pass a router adapter (`RouterAdapterProvider` from `darkraise-ui/router`). The [kit README](packages/ui/README.md#connecting-a-router) shows one, and the demo app's TanStack Router adapter is in `apps/template/src/lib/router-adapter.tsx`.
 
 - **Sidebar** -- collapsible sidebar with nav groups
 - **Stacked** -- full-width header with stacked content

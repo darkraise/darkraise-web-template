@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react"
-import { useRouterAdapter } from "@router"
+import { useOptionalRouterAdapter } from "@router"
 import { cn } from "@lib/utils"
 import { ChevronRight } from "lucide-react"
 import "./sidebar-nav.css"
@@ -41,7 +41,7 @@ function SidebarNav({
 }: SidebarNavProps) {
   const ctx = useSidebar()
   const collapsed = collapsedProp ?? ctx.collapsed
-  const { usePathname } = useRouterAdapter()
+  const { usePathname } = useOptionalRouterAdapter()
   const pathname = usePathname()
   const activeItem = findActiveItem(
     nav.flatMap((group) => group.items),
@@ -121,7 +121,7 @@ interface SidebarItemProps {
 }
 
 function SidebarItem({ item, depth = 0 }: SidebarItemProps) {
-  const { Link } = useRouterAdapter()
+  const { Link } = useOptionalRouterAdapter()
   const { collapsed } = useSidebar()
   const hasChildren = item.children && item.children.length > 0
   const current = useActiveNavItem() === item
@@ -183,7 +183,7 @@ function SidebarItem({ item, depth = 0 }: SidebarItemProps) {
 }
 
 function CollapsedParentItem({ item }: { item: NavItem }) {
-  const { Link } = useRouterAdapter()
+  const { Link } = useOptionalRouterAdapter()
   const activeItem = useActiveNavItem()
   // Collapsed, one icon stands in for the whole group, so it has to carry the
   // active state on its children's behalf — nothing else on the rail can.
@@ -261,7 +261,7 @@ function CollapsibleSidebarItem({
   item: NavItem
   depth: number
 }) {
-  const { Link } = useRouterAdapter()
+  const { Link } = useOptionalRouterAdapter()
   const activeItem = useActiveNavItem()
   const current = activeItem === item
   const covered = containsItem(item, activeItem)

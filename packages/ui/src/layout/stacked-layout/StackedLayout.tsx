@@ -1,6 +1,6 @@
 import { useRef } from "react"
 import { useUiText } from "../../i18n/useUiText"
-import { useRouterAdapter } from "@router"
+import { useOptionalRouterAdapter } from "@router"
 import { cn } from "@lib/utils"
 import { SidebarItem, SidebarProvider } from "@layout/sidebar"
 import {
@@ -64,7 +64,7 @@ export function StackedLayout({
   // work, and the new name wins when a caller passes each.
   const resolvedNavHeader = navHeader ?? sidebarHeader
   const resolvedNavFooter = navFooter ?? sidebarFooter
-  const { Link, usePathname } = useRouterAdapter()
+  const { Link, usePathname } = useOptionalRouterAdapter()
   useRouteFocus()
   const currentPath = usePathname()
 

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useRouterAdapter } from "@router"
+import { useOptionalRouterAdapter } from "@router"
 import { Search } from "lucide-react"
 import { useKeyboardEvent } from "@hooks"
 import { useUiLabels } from "@labels"
@@ -51,7 +51,7 @@ export function SearchCommand({
 }: SearchCommandProps) {
   const labels = useUiLabels()
   const [open, setOpen] = useState(false)
-  const navigate = useRouterAdapter().useNavigate()
+  const navigate = useOptionalRouterAdapter().useNavigate()
 
   useKeyboardEvent(
     "k",

@@ -1,6 +1,6 @@
 import { useUiText } from "../../i18n/useUiText"
 import { Fragment } from "react"
-import { useRouterAdapter } from "@router"
+import { useOptionalRouterAdapter } from "@router"
 import type { PageHeaderProps } from "@layout/types"
 import {
   Breadcrumb,
@@ -20,7 +20,7 @@ export function PageHeader({
 }: PageHeaderProps) {
   const uiText = useUiText()
 
-  const { Link } = useRouterAdapter()
+  const { Link } = useOptionalRouterAdapter()
   return (
     <div className="dr-page-header">
       {breadcrumbs && breadcrumbs.length > 0 && (

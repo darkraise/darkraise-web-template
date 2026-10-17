@@ -1,6 +1,6 @@
 import { useUiText } from "../../i18n/useUiText"
 import { ChevronDown } from "lucide-react"
-import { useRouterAdapter } from "@router"
+import { useOptionalRouterAdapter } from "@router"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -73,7 +73,7 @@ export function TopNavLayout({
   const resolvedNavFooter = navFooter ?? sidebarFooter
   const flatNavItems = flattenNavItems(nav)
 
-  const { Link } = useRouterAdapter()
+  const { Link } = useOptionalRouterAdapter()
   useRouteFocus()
 
   return (
