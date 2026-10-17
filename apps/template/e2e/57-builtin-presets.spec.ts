@@ -90,6 +90,32 @@ function navLook(preset: ResolvedPreset): string {
 
 type TokenInput = Parameters<typeof generateTokens>[0]
 
+const GROUND_LAYER = /hsl\(var\((--[\w-]+)\)(?:\s*\/\s*([\d.]+))?\)/g
+
+/** The engine colours the look's shellGround paint lays over the page, read as the provider reads them. */
+function groundArt(attrs: Attrs): NonNullable<TokenInput["groundArt"]> {
+  const mode = attrs["data-mode"] as Mode
+  const style = registry.styles[attrs["data-style"] ?? ""]?.tokens
+  const preset = registry.presets[attrs["data-preset"] ?? ""]?.tokens
+  const art = Object.entries({
+    ...style?.shared,
+    ...style?.[mode],
+    ...preset?.shared,
+    ...preset?.[mode],
+  })
+    .filter(([token]) => token.startsWith("shellGround"))
+    .map(([, value]) => value ?? "")
+    .join(", ")
+  if (art.includes("var(--ground-blob")) return { layers: [], blobs: true }
+  return {
+    layers: [...art.matchAll(GROUND_LAYER)].map(([, token, alpha]) => ({
+      token: token as string,
+      alpha: alpha === undefined ? 1 : Number(alpha),
+    })),
+    blobs: false,
+  }
+}
+
 /** The token set the kit's engine gives the axes stamped on <html>. */
 function engineTokens(attrs: Attrs): Record<string, string> {
   const style = registry.styles[attrs["data-style"] ?? ""]
@@ -113,6 +139,7 @@ function engineTokens(attrs: Attrs): Record<string, string> {
     signalColor: attrs["data-signal-color"] as TokenInput["signalColor"],
     railTone: attrs["data-rail-tone"] as TokenInput["railTone"],
     barTone: attrs["data-bar-tone"] as TokenInput["barTone"],
+    groundArt: groundArt(attrs),
   })
 }
 
