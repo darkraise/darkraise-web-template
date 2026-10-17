@@ -62,9 +62,18 @@ export async function settle(page: Page) {
 }
 
 export function rgbOf(value: string): Rgb {
-  const match = /^rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)/.exec(value)
-  if (!match) throw new Error(`expected an rgb() colour, got "${value}"`)
-  return [Number(match[1]), Number(match[2]), Number(match[3])]
+  const rgb = /^rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)/.exec(value)
+  if (rgb) return [Number(rgb[1]), Number(rgb[2]), Number(rgb[3])]
+  // Chromium serialises a color-mix() in srgb as color(srgb r g b), channels 0 to 1.
+  const srgb =
+    /^color\(srgb ([\d.e+-]+) ([\d.e+-]+) ([\d.e+-]+)(?: \/ [\d.]+)?\)$/.exec(
+      value,
+    )
+  const channels = srgb?.slice(1, 4).map(Number)
+  if (!channels || channels.some((c) => !(c >= 0 && c <= 1))) {
+    throw new Error(`expected an rgb() or color(srgb) colour, got "${value}"`)
+  }
+  return channels.map((c) => Math.round(c * 255)) as Rgb
 }
 
 export function luminance([r, g, b]: Rgb): number {
