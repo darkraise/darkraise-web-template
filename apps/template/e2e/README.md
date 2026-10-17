@@ -828,6 +828,12 @@ here. Each preset test is titled `<preset name> <mode>: …`, so
 - Every built-in look (the four styles and the sixteen presets, read from the registry), in light and dark, on the kitchen sink at 1440×1000: the six control anatomy attributes on `<html>` are the look's picks; every button, tab, segment and form label clears 4.5:1 against the face behind its line of text (`labelContrast`); and stamping the six anatomy signatures back to their kit defaults changes the size of no control (buttons, switches, checkboxes, radios, sliders, tab lists and their tabs, segment groups and their items). A tab list or segment group is measured without the space between its items, which `outline` closes so its cells meet.
 - Runs in `chromium` only.
 
+### 68 · Glass view track (`68-glass-view-track.spec.ts`)
+
+- On the control fixture's default, vertical and outline Tabs lists and SegmentGroups, in light and dark: Glass paints a sheen (`background-image`) and a backdrop filter on every track; Flat and Milk Glass paint neither; under more contrast both are gone and the selected pane is the opaque card colour; under forced colours no track and no current entry in a collapsed rail's popover carries a background image.
+- Outline tabs and outline segments show the pane inside their inset ring.
+- At Blur None and High, the pane covers the current item (within 1px) and the focus ring reaches 3:1 against what it crosses, on the default, vertical and right-to-left tabs and the default and vertical segments.
+
 ## Regression tests for fixed defects
 
 `11-review-regressions.spec.ts` holds tests for defects fixed in review (see
