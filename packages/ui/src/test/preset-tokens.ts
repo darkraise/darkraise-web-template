@@ -85,7 +85,11 @@ export function chipEdge(
     return { colour: at(single), alpha: alpha ? Number(alpha) : 1 }
   }
   return {
-    colour: composite(at(base as string), at(mixed as string), Number(share) / 100),
+    colour: composite(
+      at(base as string),
+      at(mixed as string),
+      Number(share) / 100,
+    ),
     alpha: 1,
   }
 }

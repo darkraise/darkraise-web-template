@@ -23,9 +23,9 @@ const LIGHT_PANE =
 
 describe("chipEdge", () => {
   it("reads an opaque edge at alpha 1", () => {
-    expect(
-      chipEdge("0 0 0 1px hsl(var(--border-strong))", at, "look"),
-    ).toEqual({ colour: GREY, alpha: 1 })
+    expect(chipEdge("0 0 0 1px hsl(var(--border-strong))", at, "look")).toEqual(
+      { colour: GREY, alpha: 1 },
+    )
   })
 
   it("reads an edge's alpha", () => {
@@ -68,9 +68,9 @@ describe("the view track", () => {
 
   it("samples the plain well, and the sheen's peak where a look sets one", () => {
     const plain = composite(GREY, WHITE, 0.35)
-    expect(
-      trackSamples({ wellFill: "rgb(255 255 255 / 0.35)" }, GREY),
-    ).toEqual([["the plain well", plain]])
+    expect(trackSamples({ wellFill: "rgb(255 255 255 / 0.35)" }, GREY)).toEqual(
+      [["the plain well", plain]],
+    )
     expect(
       trackSamples(
         { wellFill: "rgb(255 255 255 / 0.35)", viewTrackSheen: "initial" },
@@ -86,9 +86,9 @@ describe("the view track", () => {
       ["the plain well", plain],
       ["the sheen's peak", composite(plain, WHITE, 0.5)],
     ])
-    expect(() =>
-      trackSamples({ wellFill: "hsl(var(--muted))" }, GREY),
-    ).toThrow("well hsl(var(--muted))")
+    expect(() => trackSamples({ wellFill: "hsl(var(--muted))" }, GREY)).toThrow(
+      "well hsl(var(--muted))",
+    )
     expect(() =>
       trackSamples(
         { wellFill: "rgb(255 255 255 / 0.35)", viewTrackSheen: "none" },

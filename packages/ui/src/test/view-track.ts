@@ -40,7 +40,8 @@ export const LABEL =
 
 /** The inactive label's colour: the look's viewTrackLabel, else the muted ink. */
 export function restingLabel(value: string | undefined, at: Read): string {
-  if (value === undefined || value === "initial") return at("--muted-foreground")
+  if (value === undefined || value === "initial")
+    return at("--muted-foreground")
   const label = LABEL.exec(value)
   if (!label) throw new Error(`label ${value}`)
   const [, single, base = "", mixed = "", share = ""] = label

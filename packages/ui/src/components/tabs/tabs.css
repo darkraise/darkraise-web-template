@@ -634,7 +634,8 @@
   /* The border prop recolours the ruled row rather than framing the strip
      a second time. The tier reaches the frame and the dividers through
      --tab-rule, so no trigger rule outranks the current cell's edge. */
-  [data-tab-style="outline"] .dr-tabs-list[data-variant="default"][data-border] {
+  [data-tab-style="outline"]
+    .dr-tabs-list[data-variant="default"][data-border] {
     border-color: transparent;
     --tab-rule: hsl(var(--border));
   }

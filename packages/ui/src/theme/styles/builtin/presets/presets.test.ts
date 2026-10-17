@@ -490,8 +490,14 @@ describe("Glass presets that keep the plain view switch", () => {
   } as const
 
   it.each(
-    ["milk-glass", "aurora-night", "dusk-haze", "mica-desk", "coral-space"].flatMap(
-      (name) => (["light", "dark"] as const).map((mode) => [name, mode] as const),
+    [
+      "milk-glass",
+      "aurora-night",
+      "dusk-haze",
+      "mica-desk",
+      "coral-space",
+    ].flatMap((name) =>
+      (["light", "dark"] as const).map((mode) => [name, mode] as const),
     ),
   )("%s keeps it in %s", (name, mode) => {
     const paint = resolvedTokens(

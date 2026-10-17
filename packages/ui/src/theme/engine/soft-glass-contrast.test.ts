@@ -157,7 +157,10 @@ describe("Soft Glass over its blobs", () => {
         Number(tintAlpha),
       )
       const edge = composite(face, at(edgeInk), Number(edgeAlpha))
-      const apart = Math.max(contrastRatio(row, face), contrastRatio(edge, face))
+      const apart = Math.max(
+        contrastRatio(row, face),
+        contrastRatio(edge, face),
+      )
       if (apart < 1.2) {
         failures.push(`nav row over the rail at ${face}: ${apart.toFixed(2)}`)
       }

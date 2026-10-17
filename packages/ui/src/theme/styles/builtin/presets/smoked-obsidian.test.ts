@@ -130,8 +130,14 @@ describe("Smoked Obsidian", () => {
       "hsl(var(--primary) / 0.34)",
     )
     for (const mode of ["shared", "dark"] as const) {
-      expect(smokedObsidian.tokens?.[mode]?.navSelectionFill, mode).toBeUndefined()
-      expect(smokedObsidian.tokens?.[mode]?.navSelectionEdge, mode).toBeUndefined()
+      expect(
+        smokedObsidian.tokens?.[mode]?.navSelectionFill,
+        mode,
+      ).toBeUndefined()
+      expect(
+        smokedObsidian.tokens?.[mode]?.navSelectionEdge,
+        mode,
+      ).toBeUndefined()
     }
   })
 })

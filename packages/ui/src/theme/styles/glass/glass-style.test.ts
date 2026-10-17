@@ -209,9 +209,7 @@ describe("glass controls", () => {
     expect(declares("style.base", inMode("light"), "--view-track-label")).toBe(
       false,
     )
-    expect(declares("style.base", GLASS_ROOT, "--view-track-label")).toBe(
-      false,
-    )
+    expect(declares("style.base", GLASS_ROOT, "--view-track-label")).toBe(false)
   })
 
   it("frosts the view track and lights it from the top", () => {
