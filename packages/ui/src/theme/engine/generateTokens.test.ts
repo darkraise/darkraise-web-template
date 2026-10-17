@@ -1,11 +1,19 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
-import { generateTokens, capCanvasSaturation } from "./generateTokens"
+import {
+  generateTokens,
+  capCanvasSaturation,
+  canvasHueScale,
+  gradientCanvasPeak,
+  FROSTED_WELL_TINT,
+  type GroundArt,
+} from "./generateTokens"
+import { groundColours } from "./groundBlobs"
 import { parseRules } from "../../styles/interactive-classes"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { accentColors } from "@theme/palettes/accentColors"
-import { contrastRatio } from "@theme/engine/oklch"
-import { STATUS_NAMES, type StatusName } from "./steps"
+import { composite, contrastRatio } from "@theme/engine/oklch"
+import { STATUS_NAMES, WHITE, type StatusName } from "./steps"
 import { ACCENT_COLORS, BACKGROUND_INTENSITIES } from "@theme/types"
 import type {
   ColorScale,
@@ -170,6 +178,92 @@ describe("generateTokens", () => {
     ).toBeGreaterThanOrEqual(3)
     expect(lightTokens["--focus-ring"]).not.toEqual(lightTokens["--ring"])
     expect(darkTokens["--focus-ring"]).not.toEqual(darkTokens["--ring"])
+  })
+
+  it("solves a frosted light ring against the well over the canvas and a dark rail", () => {
+    for (const accentColor of ACCENT_COLORS) {
+      for (const backgroundIntensity of BACKGROUND_INTENSITIES) {
+        const t = generateTokens({
+          accentColor,
+          surfaceColor: "slate",
+          frosted: true,
+          backgroundStyle: "gradient",
+          mode: "light",
+          contrast: "standard",
+          darkAccentChroma: "standard",
+          tintWithAccent: false,
+          backgroundIntensity,
+          railTone: "inverse",
+        })
+        const ring = t["--focus-ring"] as string
+        const well = composite(
+          gradientCanvasPeak(
+            t["--background"] as string,
+            canvasHueScale(accentColor, "slate", true)[500] as string,
+            "light",
+            backgroundIntensity,
+          ),
+          WHITE,
+          FROSTED_WELL_TINT,
+        )
+        const where = `${accentColor} ${backgroundIntensity}`
+        expect(contrastRatio(ring, well), `${where} well`).toBeGreaterThanOrEqual(3)
+        expect(
+          contrastRatio(ring, t["--surface-sidebar"] as string),
+          `${where} dark rail`,
+        ).toBeGreaterThanOrEqual(3)
+      }
+    }
+  })
+
+  it("solves a frosted light ring against the well over the ground art, and only there", () => {
+    const art: GroundArt = {
+      layers: [
+        { token: "--primary", alpha: 0.38 },
+        { token: "--neutral-7", alpha: 0.38 },
+      ],
+      blobs: true,
+    }
+    for (const accentColor of ACCENT_COLORS) {
+      const input = {
+        accentColor,
+        surfaceColor: "slate",
+        frosted: true,
+        backgroundStyle: "solid",
+        mode: "light",
+        contrast: "standard",
+        darkAccentChroma: "standard",
+        tintWithAccent: false,
+        railTone: "inverse",
+      } as const
+      const t = generateTokens({ ...input, groundArt: art })
+      const ring = t["--focus-ring"] as string
+      const page = t["--background"] as string
+      const { blobs, tint } = groundColours(t["--primary"] as string, "light")
+      const grounds = [
+        ...art.layers.map(({ token, alpha }) =>
+          composite(page, t[token] as string, alpha),
+        ),
+        ...blobs,
+        tint,
+      ]
+      for (const [i, ground] of grounds.entries()) {
+        expect(
+          contrastRatio(ring, composite(ground, WHITE, FROSTED_WELL_TINT)),
+          `${accentColor} art ${i}`,
+        ).toBeGreaterThanOrEqual(3)
+      }
+      expect(
+        contrastRatio(ring, t["--surface-sidebar"] as string),
+        `${accentColor} dark rail`,
+      ).toBeGreaterThanOrEqual(3)
+      for (const other of [{ frosted: false }, { mode: "dark" }] as const) {
+        expect(
+          generateTokens({ ...input, ...other, groundArt: art })["--focus-ring"],
+          `${accentColor} ${JSON.stringify(other)}`,
+        ).toBe(generateTokens({ ...input, ...other })["--focus-ring"])
+      }
+    }
   })
 
   it("picks the primary foreground by contrast, not by assumption", () => {

@@ -30,6 +30,7 @@ describe("engineInput", () => {
       signalColor: "none",
       railTone: "inverse",
       barTone: "page",
+      groundArt: { layers: [], blobs: false },
     })
   })
 
@@ -44,6 +45,21 @@ describe("engineInput", () => {
       tintWithAccent: true,
       mode: "light",
     })
+  })
+
+  it("reads the engine colours a look's ground art paints", () => {
+    const registry = resolveRegistry()
+    const art = (preset: string) =>
+      engineInput(
+        registry,
+        effectiveSettings({ style: "glass", preset }, DEFAULTS, registry),
+        "light",
+      ).groundArt
+    expect(art("mica-desk")).toEqual({
+      layers: [{ token: "--primary", alpha: 0.34 }],
+      blobs: false,
+    })
+    expect(art("soft-glass")).toEqual({ layers: [], blobs: true })
   })
 
   it("takes a config style's hairlines", () => {

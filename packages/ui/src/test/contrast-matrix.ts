@@ -2,7 +2,11 @@ import { effectiveSettings } from "@theme/axes/resolve"
 import { AXES, AXIS_KEYS, type AxisValues } from "@theme/axes/registry"
 import { engineInput } from "@theme/config/engineInput"
 import { resolveRegistry } from "@theme/config/registry"
-import { generateTokens, type ChromeTone } from "@theme/engine/generateTokens"
+import {
+  generateTokens,
+  type ChromeTone,
+  type GroundArt,
+} from "@theme/engine/generateTokens"
 import {
   ACCENT_COLORS,
   BACKGROUND_INTENSITIES,
@@ -42,6 +46,8 @@ export interface ThemeCombo {
   signalColor?: SignalColor
   railTone?: ChromeTone
   barTone?: ChromeTone
+  /** The engine colours the look's ground art paints; none unless set. */
+  groundArt?: GroundArt
 }
 
 /**
@@ -119,7 +125,8 @@ const tokenCache = new Map<string, Record<string, string>>()
  * the contrast suites read the same matrix many times over.
  */
 export function finalTokens(combo: ThemeCombo): Record<string, string> {
-  const key = comboName(combo)
+  // Looks with the same axes can paint different ground art.
+  const key = `${comboName(combo)}${combo.groundArt ? ` ${JSON.stringify(combo.groundArt)}` : ""}`
   const cached = tokenCache.get(key)
   if (cached) return cached
   const tokens = generateTokens({

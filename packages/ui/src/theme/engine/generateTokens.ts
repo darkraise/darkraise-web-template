@@ -11,7 +11,8 @@ import type {
 import { accentColors } from "@theme/palettes/accentColors"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { composite, contrastRatio } from "@theme/engine/oklch"
-import { CANVAS_SATURATION_CAP, contentStripGround } from "./canvas"
+import { CANVAS_SATURATION_CAP, contentStripGround, gradientCanvasPeak } from "./canvas"
+import { groundColours } from "./groundBlobs"
 import { STATUS_NAMES, WHITE, solveSteps } from "./steps"
 
 export {
@@ -41,6 +42,8 @@ export interface GenerateTokensInput {
   railTone?: ChromeTone
   /** The ground the top bar is painted on; `page` is the default chrome. */
   barTone?: ChromeTone
+  /** The look's ground art; a frosted light focus ring is solved over it. */
+  groundArt?: GroundArt
 }
 
 export type ChromeTone = "page" | "raised" | "inverse" | "accent"
@@ -113,6 +116,29 @@ export const LIFTED_FACE_TINT = 0.095
  * white over the card for the sand surface (e2e 16), with headroom here.
  */
 export const FROSTED_LIFTED_FACE_TINT = 0.13
+/**
+ * Glass's light `wellFill`: the white a frosted tab or segment track lays
+ * over what shows through it. glass-selected-chip.test.ts reads it from
+ * glass.ts.
+ */
+export const FROSTED_WELL_TINT = 0.35
+
+/** An engine colour a look's ground art paints over the page, at an alpha. */
+export interface GroundLayer {
+  token: string
+  alpha: number
+}
+
+/**
+ * What a look paints over the page under its chrome besides the canvas:
+ * engine colours at an alpha, and the blobs and tint of groundBlobs.ts.
+ */
+export interface GroundArt {
+  layers: readonly GroundLayer[]
+  blobs: boolean
+}
+
+export const NO_GROUND_ART: GroundArt = { layers: [], blobs: false }
 const BLACK = "0 0% 0%"
 
 const tierCache = new Map<string, string>()
@@ -371,6 +397,7 @@ export function generateTokens(
     signalColor = "none",
     railTone = "page",
     barTone = "page",
+    groundArt = NO_GROUND_ART,
   } = input
 
   const accent = resolveAccentScale(accentColor, surfaceColor)
@@ -462,11 +489,6 @@ export function generateTokens(
     "--signal-text": s(11),
     "--signal-subtle": s(3),
     "--signal-foreground": signal.primaryLabel,
-    "--focus-ring": ensureContrastAll(
-      accent[dark ? 200 : 300],
-      [background, ...stripGrounds],
-      MARK_FLOOR,
-    ),
     "--surface-tint": surfaceTint,
 
     "--background": background,
@@ -524,6 +546,38 @@ export function generateTokens(
 
     ...resolveSfHueTokens(canvasScale, backgroundStyle),
   })
+
+  // A frosted light track is the well over the canvas or the ground art
+  // behind it, darker than the page, and the focus ring crosses it. A layer
+  // naming a colour the engine does not emit opaque is left out.
+  const blobs = groundArt.blobs ? groundColours(p(8), mode) : null
+  const trackGrounds =
+    frosted && !dark
+      ? [
+          ...(gradient
+            ? [
+                gradientCanvasPeak(
+                  background,
+                  canvasScale[500] as string,
+                  mode,
+                  backgroundIntensity,
+                ),
+              ]
+            : []),
+          ...groundArt.layers.flatMap(({ token, alpha }) => {
+            const colour = tokens[token]
+            return colour === undefined || colour.includes("/")
+              ? []
+              : [composite(background, colour, alpha)]
+          }),
+          ...(blobs ? [...blobs.blobs, blobs.tint] : []),
+        ].map((ground) => composite(ground, WHITE, FROSTED_WELL_TINT))
+      : []
+  tokens["--focus-ring"] = ensureContrastAll(
+    accent[dark ? 200 : 300],
+    [background, ...stripGrounds, ...trackGrounds],
+    MARK_FLOOR,
+  )
 
   if (railTone === "raised") tokens["--surface-sidebar"] = card
   if (barTone === "raised") tokens["--surface-header"] = card

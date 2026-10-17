@@ -9,6 +9,7 @@ import {
   effectiveAlpha,
 } from "@theme/config/transparency"
 import {
+  FROSTED_WELL_TINT,
   canvasHueScale,
   gradientCanvasPeak,
 } from "@theme/engine/generateTokens"
@@ -16,7 +17,12 @@ import { groundColours } from "@theme/engine/groundBlobs"
 import { composite, contrastRatio } from "@theme/engine/oklch"
 import { finalTokens } from "@test/contrast-matrix"
 import { resolvedTokens } from "@test/preset-tokens"
-import { trackPairs, type Pair } from "@test/view-track"
+import {
+  paneEnds,
+  trackPairs,
+  trackSamples,
+  type Pair,
+} from "@test/view-track"
 
 /** WCAG 1.4.11: the selected pane's edge is a state mark, so it reaches 3:1. */
 const MARK = 3
@@ -57,7 +63,7 @@ const DEFAULTS = Object.fromEntries(
 function stripPairs(
   preset: string,
   mode: "light" | "dark",
-): { edges: Pair[]; labels: Pair[] } {
+): { edges: Pair[]; labels: Pair[]; rings: Pair[] } {
   const axes = effectiveSettings({ style: "glass", preset }, DEFAULTS, registry)
   const combo = engineInput(registry, axes, mode)
   const tokens = finalTokens(combo)
@@ -124,6 +130,7 @@ function stripPairs(
 
   const edges: Pair[] = []
   const labels: Pair[] = []
+  const rings: Pair[] = []
   for (const [plane, alpha] of planes) {
     for (const [ground, colour] of grounds) {
       const under = composite(colour, at("--card"), alpha)
@@ -134,9 +141,17 @@ function stripPairs(
       })
       edges.push(...found.edges.map(placed))
       labels.push(...found.labels.map(placed))
+      for (const [track, sample] of trackSamples(paint, under)) {
+        const ring = at("--focus-ring")
+        const on = `on ${plane} over ${ground}`
+        rings.push({ where: `the focus ring on ${track} ${on}`, ink: ring, ground: sample })
+        for (const [end, pane] of paneEnds(paint.selectedViewFill, sample, at)) {
+          rings.push({ where: `the focus ring on ${end} over ${track} ${on}`, ink: ring, ground: pane })
+        }
+      }
     }
   }
-  return { edges, labels }
+  return { edges, labels, rings }
 }
 
 function lowest(pairs: Pair[]) {
@@ -177,7 +192,7 @@ describe("the selected pane on a frosted glass track", () => {
         )
         expect(paint.wellFill, look).toBe(
           mode === "light"
-            ? "rgb(255 255 255 / 0.35)"
+            ? `rgb(255 255 255 / ${FROSTED_WELL_TINT})`
             : "rgb(255 255 255 / 0.06)",
         )
         // The card at the card plane's alpha, so the kit's more-contrast
@@ -198,4 +213,12 @@ describe("the selected pane on a frosted glass track", () => {
     const { ratio, where } = lowest(stripPairs(look, mode).labels)
     expect(ratio, `${look} ${mode} ${where}`).toBeGreaterThanOrEqual(TEXT)
   })
+
+  it.each(LOOKS)(
+    "rings a %s light strip at 3:1 on the track and the pane",
+    (look) => {
+      const { ratio, where } = lowest(stripPairs(look, "light").rings)
+      expect(ratio, `${look} light ${where}`).toBeGreaterThanOrEqual(MARK)
+    },
+  )
 })

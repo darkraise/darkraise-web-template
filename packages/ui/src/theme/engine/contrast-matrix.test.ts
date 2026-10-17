@@ -201,7 +201,9 @@ describe("built-in preset matrix", () => {
         style.name,
         preset.name,
       )
-      expect(combo).toEqual({
+      const { groundArt, ...inputs } = combo
+      expect(groundArt, comboName(combo)).toBeDefined()
+      expect(inputs).toEqual({
         preset: preset.name,
         mode: combo.mode,
         accentColor: axis("accentColor"),
@@ -218,6 +220,16 @@ describe("built-in preset matrix", () => {
         barTone,
       })
     }
+    // The art is engineInput's parse (engineInput.test.ts); here, that the
+    // preset combos carry it.
+    const art = (name: string) =>
+      combos.find((combo) => combo.preset === name && combo.mode === "light")
+        ?.groundArt
+    expect(art("mica-desk")).toEqual({
+      layers: [{ token: "--primary", alpha: 0.34 }],
+      blobs: false,
+    })
+    expect(art("soft-glass")).toEqual({ layers: [], blobs: true })
   })
 
   it.each(combos.map((combo) => [comboName(combo), combo] as const))(
