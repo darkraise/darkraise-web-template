@@ -8,10 +8,19 @@
  *   node scripts/init.mjs <project-name> [config-json]
  */
 
-import { mkdirSync, writeFileSync } from "fs"
+import { existsSync, mkdirSync, writeFileSync } from "fs"
 import { basename, resolve } from "path"
 
 const projectDir = resolve(import.meta.dirname, "..")
+
+// Run from this monorepo, the directory above the script is the workspace
+// root, which the generated src/ and vite.config.ts would overwrite.
+if (existsSync(resolve(projectDir, "pnpm-workspace.yaml"))) {
+  console.error(
+    "Error: init.mjs initializes a project that copied it into its scripts/ folder; it does not run in a workspace root. Use create-darkraise-ui for a new app.",
+  )
+  process.exit(1)
+}
 const args = process.argv.slice(2)
 const projectName = args[0] || basename(projectDir)
 
@@ -247,9 +256,9 @@ Done! Next steps:
   npm run dev
 
 The project uses darkraise-ui which includes:
-  - 47 UI components (import from "darkraise-ui/components/*")
-  - 38 hooks (import from "darkraise-ui/hooks")
-  - 6-axis theming system (import from "darkraise-ui/theme")
+  - 90+ UI components (import from "darkraise-ui")
+  - 60+ hooks (import from "darkraise-ui/hooks")
+  - 23-axis theming system (import from "darkraise-ui/theme")
   - 4 layout variants (import from "darkraise-ui/layout")
   - Error pages (import from "darkraise-ui/errors")
   - Form helpers (import from "darkraise-ui/forms")

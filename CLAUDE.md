@@ -45,9 +45,10 @@ The browser suite and its rules are in `apps/template/e2e/README.md`.
   (`pnpm --filter darkraise-ui write:scaffold-axes`); a kit test fails when it
   drifts. `apps/template/src/routeTree.gen.ts` is gitignored TanStack Router
   output (`pnpm --filter darkraise-web-template generate:routes`).
-- **`scripts/init.mjs` writes `src/` and `vite.config.ts` at the repository
-  root.** It initialises a copy of this template, so never run it in the
-  monorepo itself.
+- `scripts/init.mjs` initialises a project that copied it into its own
+  `scripts/` folder, writing `src/` and `vite.config.ts` one level up. It
+  exits when that directory holds `pnpm-workspace.yaml`, so it never
+  overwrites this repository.
 - CI runs only five Playwright specs. Changes under `packages/` or `apps/`
   need the full suite locally before merge, and changes under
   `packages/ui/src` or `apps/template/src` also need the visual baseline

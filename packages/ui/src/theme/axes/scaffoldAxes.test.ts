@@ -1,5 +1,16 @@
 import { describe, expect, it, vi } from "vitest"
-import { readFileSync } from "node:fs"
+import { execFileSync } from "node:child_process"
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs"
+import { tmpdir } from "node:os"
+import { join } from "node:path"
 import { resolveDefaults, type ThemeConfig } from "@theme/themeConfig"
 import { scaffoldAxes } from "./scaffoldAxes"
 import { AXES, AXIS_KEYS } from "./registry"
@@ -171,5 +182,36 @@ describe("create-app/bin/create.mjs", () => {
   it("groups the axis picker", () => {
     expect(script).toContain("p.groupMultiselect(")
     expect(script).not.toContain("p.multiselect(")
+  })
+})
+
+// A copy runs in a scratch directory, so a missing guard writes there and not
+// into this repository.
+describe("scripts/init.mjs in a workspace root", () => {
+  it("exits without writing", () => {
+    const root = mkdtempSync(join(tmpdir(), "init-guard-"))
+    try {
+      writeFileSync(join(root, "pnpm-workspace.yaml"), "packages: []\n")
+      mkdirSync(join(root, "scripts"))
+      copyFileSync("../../scripts/init.mjs", join(root, "scripts/init.mjs"))
+      let status = 0
+      try {
+        execFileSync(
+          process.execPath,
+          [join(root, "scripts/init.mjs"), "app"],
+          {
+            stdio: "pipe",
+            timeout: 30_000,
+          },
+        )
+      } catch (error) {
+        status = (error as { status: number }).status
+      }
+      expect(status).toBe(1)
+      expect(existsSync(join(root, "src"))).toBe(false)
+      expect(existsSync(join(root, "vite.config.ts"))).toBe(false)
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
   })
 })
