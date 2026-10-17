@@ -323,6 +323,10 @@ horizontal overflow and a clean console.
   both modes × the blue and neutral accents, read from pixels: the row's
   surface or its edge reaches 1.2:1 against the rail, and its cue (icon, tile
   or pill) 3:1 against the surface.
+- Glass (chip), Soft Glass (chip, translucent rail) and Smoked Obsidian
+  (accent, a rail dark in both modes), in light and dark, with and without more
+  contrast: the set-in current row's surface or edge reaches 1.2:1 against the
+  rail, its cue 3:1 and its label 4.5:1 against the surface.
 - In the collapsed rail's group popover, under quiet light and glass dark, the
   current entry's label uses neither nav label colour and reaches 3:1 against
   its surface.

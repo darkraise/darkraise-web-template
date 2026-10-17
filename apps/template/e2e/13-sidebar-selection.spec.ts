@@ -122,6 +122,67 @@ for (const style of STYLES) {
   }
 }
 
+/** The row's label against its surface. */
+const LABEL_FLOOR = 4.5
+
+/**
+ * The glass looks whose current row is set into the rail, each with the
+ * selection look it picks: on a translucent rail (Soft Glass) and on a
+ * rail dark in both modes (Smoked Obsidian), with and without more
+ * contrast, which keeps the row's tint.
+ */
+const SET_IN = [
+  { name: "Glass", seed: { style: "glass" }, look: "chip" },
+  {
+    name: "Soft Glass",
+    seed: { style: "glass", preset: "soft-glass" },
+    look: "chip",
+  },
+  {
+    name: "Smoked Obsidian",
+    seed: { style: "glass", preset: "smoked-obsidian" },
+    look: "accent",
+  },
+] as const
+
+for (const { name, seed, look } of SET_IN) {
+  for (const mode of MODES) {
+    for (const contrastPreference of ["no-preference", "more"] as const) {
+      test(`${name}'s set-in row reads on its ${mode} rail · contrast ${contrastPreference}`, async ({
+        page,
+      }) => {
+        await page.emulateMedia({ contrast: contrastPreference })
+        await seedApp(page, { ...seed, mode })
+        await gotoApp(page, "/orders")
+        await expect(nav(page)).toHaveAttribute("data-indicator", "ready")
+        await settle(page)
+        const row = await box(current(page))
+        const x = Math.round(row.x + row.width - 8)
+        const surface = await pixel(page, x, Math.round(row.y + row.height / 2))
+        const edge = await pixel(page, x, Math.floor(row.y) - 1)
+        const rail = await pixel(page, x, Math.round(row.y) - 14)
+        expect(
+          Math.max(contrast(surface, rail), contrast(edge, rail)),
+          "surface or edge against the rail",
+        ).toBeGreaterThanOrEqual(SURFACE_FLOOR)
+        const label = rgbOf(
+          await current(page)
+            .locator(".dr-sidebar-nav-label")
+            .evaluate((el) => getComputedStyle(el).color),
+        )
+        expect(
+          contrast(label, surface),
+          "label against the surface",
+        ).toBeGreaterThanOrEqual(LABEL_FLOOR)
+        expect(
+          contrast(await cue(page, look), surface),
+          "cue against the surface",
+        ).toBeGreaterThanOrEqual(CUE_FLOOR)
+      })
+    }
+  }
+}
+
 for (const [style, mode] of [
   ["quiet", "light"],
   ["glass", "dark"],
