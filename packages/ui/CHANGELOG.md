@@ -296,6 +296,7 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 ### Fixed
 
 - The four layouts, `PageHeader`, `SidebarNav` and `SearchCommand` mount without a `RouterAdapterProvider`, rendering plain anchors and navigating with full page loads, as the error pages already did. They threw, so the app `create-darkraise-ui` generates, which has no router, crashed on its first render.
+- `create-darkraise-ui` pins TypeScript `~6.0.3` for every app, the version the kit is built with; an app without `--multilingual` got `~5.7.0`.
 - A touch press on an inactive tab or segment lifts its label to `--foreground`, as a mouse press already did. The resting label stayed under the press wash, which paints in its own colour, and fell below 4.5:1 in every Flat, Quiet and Tactile look in dark mode and in most Glass looks (lowest 3.5:1, Smoked Obsidian dark).
 - Glass no longer restyles content controls, so the defects of those rules are gone: under Glass a mouse press never showed the pressed state, a hovered disabled button regained its halo, focused fields lost the primary focus ring, buttons and modals dropped the inner glow, ten components and the sidebar dropped the affordance glow, the outline tabs indicator lost its ring, the vertical underline tab glowed off the wrong edge, and the segment group grew 2px.
 - Synced theme payloads are validated: unknown axes, invalid values and preset axes of removed presets (such as `scifi`) are dropped instead of being applied and saved again.

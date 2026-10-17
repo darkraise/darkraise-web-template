@@ -275,6 +275,23 @@ describe("generated project", () => {
   )
 
   it(
+    "pins one TypeScript with and without --multilingual",
+    async () => {
+      expect((await scaffold()).code).toBe(0)
+      const flags = ["-y", "--no-install", "--no-git", "--multilingual"]
+      expect((await run("intl", ...flags)).code).toBe(0)
+      const typescriptOf = (dir: string) =>
+        (
+          JSON.parse(readFileSync(join(cwd, dir, "package.json"), "utf8")) as {
+            devDependencies: Record<string, string>
+          }
+        ).devDependencies.typescript
+      expect(typescriptOf("app")).toBe(typescriptOf("intl"))
+    },
+    TIMEOUT,
+  )
+
+  it(
     "writes every axis given by flag",
     async () => {
       const last = (key: (typeof AXIS_KEYS)[number]) => {

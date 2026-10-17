@@ -430,7 +430,7 @@ async function main() {
       "eslint-plugin-react-refresh": "^0.5.2",
       globals: "^17.4.0",
       tailwindcss: "^4.0.0",
-      typescript: "~5.7.0",
+      typescript: "~6.0.3",
       "typescript-eslint": "^8.58.0",
       vite: "^6.0.0",
     },
@@ -438,7 +438,6 @@ async function main() {
   if (multilingual) {
     pkg.dependencies.i18next = "^26.4.2"
     pkg.dependencies["react-i18next"] = "^17.0.13"
-    pkg.devDependencies.typescript = "~6.0.3"
     writeProjectFile(
       targetDir,
       "src/i18n.ts",
