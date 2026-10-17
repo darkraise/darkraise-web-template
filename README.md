@@ -66,23 +66,25 @@ An axis flag is the axis key in kebab case (`--surface-color`, `--font-size`, `-
 
 90+ components exported from the `darkraise-ui` package and styled with Tailwind CSS 4. The library implements its own primitives, with Floating UI for positioning and TanStack Table for table behavior; it does not use Radix UI. The live demo app browses every component with copyable code snippets:
 
-Accordion, Alert, Alert Dialog, Angle Slider, Aspect Ratio, Avatar, Background Page, Badge, Banner, Breadcrumb, Button, Button Group, Calendar, Card, Carousel, Cascade Select, Chart, Checkbox, Clipboard, Collapsible, Color Picker, Combobox, Command, Context Menu, Date Input, Date Picker, Dialog, Download Trigger, Drawer, Dropdown Menu, Editable, Empty State, Field, Fieldset, File Upload, Floating Panel, Frame, Highlight, Hover Card, Image Cropper, Image Editor, Input, Input OTP, JSON Tree View, Kbd, Label, Listbox, Marquee, Menubar, Multi Select, Navigation Menu, Number Input, Pagination, Password Input, Popover, Progress, QR Code, Radio Group, Rating Group, Resizable, Scroll Area, Segment Group, Select, Separator, Sheet, Signature Pad, Skeleton, Slider, Sonner (toast), Spinner, Stat, Steps, Swap, Switch, Table, Tabs, Tags Input, Textarea, Time Picker, Timer, Toggle, Toggle Group, Toolbar, Tooltip, Tour, Tree View, Virtualized Dropdown Menu.
+Accordion, Alert, Alert Dialog, Angle Slider, Aspect Ratio, Avatar, Background Page, Badge, Banner, Breadcrumb, Button, Button Group, Calendar, Card, Carousel, Cascade Select, Chart, Checkbox, Clipboard, Collapsible, Color Picker, Combobox, Command, Context Menu, Contribution Graph, Date Input, Date Picker, Dialog, Download Trigger, Drawer, Dropdown Menu, Editable, Empty State, Field, Fieldset, File Upload, Floating Panel, Frame, Highlight, Hover Card, Image Cropper, Image Editor, Input, Input OTP, JSON Tree View, Kbd, Label, Listbox, Locale Switcher, Marquee, Menubar, Multi Select, Navigation Menu, Number Input, Pagination, Password Input, Popover, Progress, QR Code, Radio Group, Rating Group, Resizable, Scroll Area, Segment Group, Select, Separator, Sheet, Signature Pad, Skeleton, Slider, Sonner (toast), Spinner, Stat, Steps, Swap, Switch, Table, Tabs, Tags Input, Textarea, Time Picker, Timeline, Timer, Toggle, Toggle Group, Toolbar, Tooltip, Tour, Tree View, Virtualized Dropdown Menu, Virtualized Timeline.
+
+Chart is the one component not re-exported from the package root: `recharts` is an optional peer dependency, so import it from `darkraise-ui/components/chart`.
 
 ### Hooks
 
 60+ hooks exported from `darkraise-ui/hooks` covering common UI and application patterns:
 
-| Category     | Hooks                                                                                                                                                                                                                                                                                                                                  |
-| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Lifecycle    | `useMountEffect`, `useUnmountEffect`, `useUpdateEffect`, `useIntervalEffect`, `useTimeoutEffect`, `useFirstMountState`, `useIsMounted`, `useIsomorphicLayoutEffect`                                                                                                                                                                    |
-| Callback     | `useDebouncedCallback`, `useThrottledCallback`, `useRafCallback`                                                                                                                                                                                                                                                                       |
-| State        | `useToggle`, `useCounter`, `useList`, `useMap`, `useSet`, `useQueue`, `useMediatedState`, `useRafState`, `usePrevious`, `usePreviousDistinct`, `useDebouncedState`, `useThrottledState`, `useRerender`, `useDisclosure`                                                                                                                |
-| Effect       | `useCustomCompareEffect`, `useDeepCompareEffect`, `useConditionalEffect`, `useDebouncedEffect`, `useThrottledEffect`, `useRafEffect`, `useValidator`                                                                                                                                                                                   |
-| Memo         | `useDeepCompareMemo`, `useCustomCompareMemo`                                                                                                                                                                                                                                                                                           |
-| DOM / Sensor | `useEventListener`, `useClickOutside`, `useKeyboardEvent`, `useHotkey`, `useMediaQuery`, `useBreakpoint`, `useWindowSize`, `useDocumentVisibility`, `useNetworkState`, `useResizeObserver`, `useMeasure`, `useIntersectionObserver`, `useIdle`, `useScreenOrientation`, `usePermission`, `useVibrate`, `useFocusTrap`, `useScrollLock` |
-| Async        | `useAsync`, `useAsyncAbortable`                                                                                                                                                                                                                                                                                                        |
-| Storage      | `useLocalStorageValue`, `useSessionStorageValue`, `useCookieValue`, `useClipboard`                                                                                                                                                                                                                                                     |
-| Ref          | `useSyncedRef`, `useHookableRef`                                                                                                                                                                                                                                                                                                       |
+| Category     | Hooks                                                                                                                                                                                                                                                                                                                                                                          |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Lifecycle    | `useMountEffect`, `useUnmountEffect`, `useUpdateEffect`, `useIntervalEffect`, `useTimeoutEffect`, `useFirstMountState`, `useIsMounted`, `useIsomorphicLayoutEffect`                                                                                                                                                                                                            |
+| Callback     | `useDebouncedCallback`, `useThrottledCallback`, `useRafCallback`                                                                                                                                                                                                                                                                                                               |
+| State        | `useToggle`, `useCounter`, `useList`, `useMap`, `useSet`, `useQueue`, `useMediatedState`, `useRafState`, `usePrevious`, `usePreviousDistinct`, `useDebouncedState`, `useThrottledState`, `useRerender`, `useDisclosure`                                                                                                                                                        |
+| Effect       | `useCustomCompareEffect`, `useDeepCompareEffect`, `useConditionalEffect`, `useDebouncedEffect`, `useThrottledEffect`, `useRafEffect`, `useValidator`                                                                                                                                                                                                                           |
+| Memo         | `useDeepCompareMemo`, `useCustomCompareMemo`                                                                                                                                                                                                                                                                                                                                   |
+| DOM / Sensor | `useEventListener`, `useClickOutside`, `useKeyboardEvent`, `useHotkey`, `useMediaQuery`, `useBreakpoint`, `useWindowSize`, `useDocumentVisibility`, `useNetworkState`, `useResizeObserver`, `useMeasure`, `useIntersectionObserver`, `useIdle`, `useScreenOrientation`, `usePermission`, `useVibrate`, `useFocusTrap`, `useScrollLock`, `useReducedMotion`, `useSeparatorA11y` |
+| Async        | `useAsync`, `useAsyncAbortable`                                                                                                                                                                                                                                                                                                                                                |
+| Storage      | `useStorageValue`, `useLocalStorageValue`, `useSessionStorageValue`, `useCookieValue`, `useClipboard`                                                                                                                                                                                                                                                                          |
+| Ref          | `useSyncedRef`, `useHookableRef`                                                                                                                                                                                                                                                                                                                                               |
 
 Several hooks are adapted from [react-hookz/web](https://github.com/react-hookz/web) for React 19, alongside additional in-house hooks. No external hook dependency is required.
 
@@ -122,7 +124,7 @@ Advanced:
 
 An axis left out of `theme.config.ts` keeps the kit's default, and a style's own defaults (Glass's gradient background, for example) and the active preset's values win over the config's for users with nothing stored. An axis left out of `switcher.axes` is shown, and `switcher.advanced: false` removes the Advanced part of the panel.
 
-Monospace text always uses JetBrains Mono. Font size is adjustable via the axis above. The five font families ship as woff2 files with `darkraise-ui/styles.css`, so no font request leaves the app's origin and no font link is needed in `index.html`.
+Monospace text always uses JetBrains Mono. Font size is adjustable via the axis above. All six faces, JetBrains Mono included, ship as woff2 files with `darkraise-ui/styles.css`, so no font request leaves the app's origin and no font link is needed in `index.html`.
 
 The `ThemeSwitcher` component renders controls for whichever axes are enabled in the config. The `ThemeProvider` accepts an optional `onChange` callback for persisting theme settings to a backend. Theme defaults and axis visibility are set at scaffold time and can be changed later by editing `theme.config.ts`.
 
@@ -130,7 +132,7 @@ See [`packages/ui/README.md`](./packages/ui/README.md) for translating component
 
 ### Layouts
 
-4 layout variants exported from `darkraise-ui/layout`. The CLI wires the chosen one into the generated `src/app.tsx`:
+4 layout variants exported from `darkraise-ui/layout`. The CLI wires the chosen one into the generated `src/app.tsx`. Layouts read the current route through a router adapter (`RouterAdapterProvider` from `darkraise-ui/router`); the [kit README](packages/ui/README.md#connecting-a-router) shows one, and the demo app's TanStack Router adapter is in `apps/template/src/lib/router-adapter.tsx`.
 
 - **Sidebar** -- collapsible sidebar with nav groups
 - **Stacked** -- full-width header with stacked content
@@ -139,14 +141,14 @@ See [`packages/ui/README.md`](./packages/ui/README.md) for translating component
 
 ### Error Pages
 
-Full-screen error states exported from `darkraise-ui/errors`:
+Full-screen error states exported from `darkraise-ui/errors`. The demo app wires the first two into its TanStack Router; a scaffolded project has no router, so wire them into yours:
 
-- **404 Not Found** -- wired as `defaultNotFoundComponent` on the TanStack Router
-- **Error Boundary** -- wired as `defaultErrorComponent`, displays the error message with retry
-- **500 Server Error** -- exported for use in data loaders or API error handling
-- **Maintenance** -- exported for use with feature flags
+- **404 Not Found** (`NotFoundPage`) -- for the router's not-found route (`defaultNotFoundComponent` in TanStack Router)
+- **Error Boundary** (`ErrorPage`) -- for the router's error component (`defaultErrorComponent`), displays the error message with retry
+- **500 Server Error** (`ServerErrorPage`) -- exported for use in data loaders or API error handling
+- **Maintenance** (`MaintenancePage`) -- exported for use with feature flags
 
-All error pages share an `ErrorLayout` component and support light/dark themes.
+All error pages share an `ErrorLayout` component and follow the active theme. Their navigation goes through the router adapter (`RouterAdapterProvider` from `darkraise-ui/router`); without one they fall back to plain browser navigation.
 
 ### Auth
 
@@ -158,17 +160,34 @@ A scaffolded project ships with these scripts:
 
 ```bash
 npm run dev          # Start dev server (Vite)
-npm run build        # Type-check then production build
+npm run build        # Production build, then type-check
 npm run preview      # Preview the production build
 npm run typecheck    # TypeScript check (tsc --noEmit)
 npm run lint         # ESLint
 ```
 
-This monorepo additionally provides `pnpm storybook` (browse the component library), `pnpm test` (Vitest), and `pnpm typecheck`/`pnpm lint`/`pnpm format` across the workspace.
+### Working in this monorepo
+
+The workspace uses pnpm (`packageManager` pins 10.28.2) and Node 25 (`.nvmrc`). It holds three packages: `packages/ui` (the `darkraise-ui` kit), `apps/template` (the demo app, also the e2e test bed) and `create-app` (the `create-darkraise-ui` CLI).
+
+```bash
+pnpm install
+pnpm build           # build the kit into packages/ui/dist
+pnpm dev:template    # build the kit, then start the demo app on port 5176
+pnpm storybook       # browse the component library on port 6006
+pnpm test            # Vitest across the kit and the demo app
+pnpm typecheck       # tsc in every package
+pnpm lint            # ESLint
+pnpm format          # Prettier
+```
 
 ### Developing against the kit
 
 The demo app imports `darkraise-ui` from `packages/ui/dist`, not from source. Build the kit once (`pnpm build`), then run `pnpm dev` (the kit in watch mode) beside `pnpm --filter darkraise-web-template dev`. The watch rebuilds the JavaScript and `dist/styles.css` on any change under `packages/ui/src`, including CSS that only `theme.css` imports. It does not regenerate the `.d.ts` files: after changing an exported type, run `pnpm --filter darkraise-ui run build:types`.
+
+`scripts/dev.sh` runs both processes in a tmux session (`start`, `stop`, `restart`, `status`, `logs`), and `deploy/compose.yaml` runs the same pair as containers. Both hold port 5176.
+
+The Playwright suite lives in `apps/template/e2e`; its [README](apps/template/e2e/README.md) covers running it. Rebuild the kit before a run, since the demo app tests whatever is in `dist/`.
 
 ## Releasing
 
@@ -201,17 +220,11 @@ git tag v7.0.0 && git push origin v7.0.0
 To rehearse without touching npm, run the _Release_ workflow manually — its
 `dry_run` input defaults to true.
 
-### First-time setup
+### Trusted publisher settings
 
-**1. Both packages must exist on npm.** A trusted publisher is configured in
-a package's settings, so the package has to be there first — OIDC cannot make
-a package's very first publish. `darkraise-ui` already exists;
-`create-darkraise-ui` does not, so publish it once by hand from `create-app/`
-before wiring anything up.
-
-**2. Configure the trusted publisher** for each package at
-npmjs.com → the package → Settings → Trusted publishing, or with `npm trust`.
-Both get the same values:
+Each package's trusted publisher is configured at npmjs.com → the package →
+Settings → Trusted publishing, or with `npm trust`. Both packages use the
+same values:
 
 | Field    | Value                    |
 | -------- | ------------------------ |
@@ -224,19 +237,14 @@ _calling_ workflow's filename. That is why both triggers live in the single
 `release.yml` rather than a caller plus a reusable workflow — a split would
 need one npm configuration per caller, and only one is allowed.
 
-**3. Cut a one-time baseline tag.** The master flow derives its version from
-the range since the last `v*` tag, so until one exists there is no range.
-Runs before that point end green with a notice naming the command rather
-than failing, so master stays clean while the setup above is pending.
-Cutting the tag is itself the first release:
-
-```bash
-git tag v6.0.0 && git push origin v6.0.0
-```
+OIDC cannot make a package's first publish, so a new package is published
+once by hand before its trusted publisher can be set. The master flow also
+needs at least one `v*` tag to compute its range; without one, a run ends
+green with a notice naming the tag command.
 
 ## Tech Stack
 
-React 19, TypeScript 6, Vite 8, Tailwind CSS 4, TanStack Router, TanStack React Query, TanStack React Form, Zustand, Zod, Recharts. The `darkraise-ui` component library uses Floating UI and TanStack Table alongside its own primitives. Monorepo tooling includes Storybook, Vitest, Playwright, ESLint, Prettier, Husky, and commitlint.
+The monorepo uses React 19, TypeScript 6, Vite 8, Tailwind CSS 4, TanStack Router, TanStack React Query, TanStack React Form, Zustand, Zod, Recharts. The `darkraise-ui` component library uses Floating UI and TanStack Table alongside its own primitives. Scaffolded projects depend only on `darkraise-ui`, React and the Vite/Tailwind toolchain. Monorepo tooling includes Storybook, Vitest, Playwright, ESLint, Prettier, Husky, and commitlint.
 
 ## License
 
