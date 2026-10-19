@@ -1,5 +1,11 @@
 import * as React from "react"
-import { fireEvent, render, screen } from "@testing-library/react"
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+} from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -19,6 +25,7 @@ import {
   type FileUploadFileChangeDetails,
   type FileUploadFileRejectDetails,
 } from "./FileUpload"
+import { useFileUpload } from "./useFileUpload"
 
 beforeEach(() => {
   // jsdom does not implement createObjectURL.
@@ -174,6 +181,54 @@ describe("FileUpload", () => {
     expect(detail.files).toHaveLength(1)
     expect(detail.files[0]?.reason).toBe("TOO_MANY_FILES")
     expect(detail.files[0]?.file.name).toBe("c.txt")
+  })
+
+  it("single mode keeps the accepted file when the next is rejected", () => {
+    const onFileChange = vi.fn()
+    const onFileReject = vi.fn()
+    render(
+      <Basic
+        multiple={false}
+        maxFileSize={50}
+        onFileChange={onFileChange}
+        onFileReject={onFileReject}
+      />,
+    )
+    const dropzone = screen.getByTestId("dropzone")
+    fireEvent.drop(dropzone, {
+      dataTransfer: { files: [makeFile("a.txt", 10)], types: ["Files"] },
+    })
+    fireEvent.drop(dropzone, {
+      dataTransfer: { files: [makeFile("big.txt", 100)], types: ["Files"] },
+    })
+    expect(onFileReject).toHaveBeenCalledTimes(1)
+    for (const [details] of onFileChange.mock.calls) {
+      expect(
+        (details as FileUploadFileChangeDetails).acceptedFiles,
+      ).not.toHaveLength(0)
+    }
+    expect(screen.getByText("a.txt")).toBeInTheDocument()
+  })
+
+  it("single mode keeps the uncontrolled file when the next is rejected", () => {
+    const onFileAccept = vi.fn()
+    const kept = makeFile("a.txt", 10)
+    const { result } = renderHook(() =>
+      useFileUpload({ multiple: false, maxFileSize: 50, onFileAccept }),
+    )
+    act(() => result.current.addFiles([kept]))
+    act(() => result.current.addFiles([makeFile("big.txt", 100)]))
+    expect(result.current.acceptedFiles).toEqual([kept])
+    expect(result.current.rejectedFiles[0]?.reason).toBe("TOO_LARGE")
+    expect(onFileAccept).toHaveBeenCalledTimes(1)
+  })
+
+  it("single mode replaces the accepted file with a valid one", () => {
+    const next = makeFile("b.txt", 10)
+    const { result } = renderHook(() => useFileUpload({ multiple: false }))
+    act(() => result.current.addFiles([makeFile("a.txt", 10)]))
+    act(() => result.current.addFiles([next]))
+    expect(result.current.acceptedFiles).toEqual([next])
   })
 
   it("item delete trigger removes the file", async () => {
