@@ -28,19 +28,22 @@ function DateInput({
   value,
   defaultValue,
   onValueChange,
+  onInvalidChange,
   format,
   disabled,
   "aria-label": ariaLabel,
+  "aria-invalid": ariaInvalid,
   ...rest
 }: DateInputProps) {
   const uiText = useUiText()
   const labels = useUiLabels()
 
   const groupId = useId()
-  const { parts, setSegment, adjustSegment, order } = useDateInput({
+  const { parts, typeSegment, adjustSegment, order, invalid } = useDateInput({
     value,
     defaultValue,
     onValueChange,
+    onInvalidChange,
     format,
   })
   const inputsRef = React.useRef<Record<string, HTMLInputElement | null>>({})
@@ -51,6 +54,8 @@ function DateInput({
       aria-labelledby={groupId}
       className={cn("dr-date-input", className)}
       data-disabled={disabled || undefined}
+      data-invalid={invalid || undefined}
+      aria-invalid={invalid || ariaInvalid}
       {...rest}
     >
       <span id={groupId} className="sr-only">
@@ -88,14 +93,15 @@ function DateInput({
                 const next = event.target.value
                   .replace(/\D/g, "")
                   .slice(0, limits.len)
-                setSegment(key, next)
-                // A full segment hands the next digit to the next segment,
-                // selected so typing replaces what it holds.
-                const following = order[idx + 1]
-                const target = following && inputsRef.current[following]
-                if (next.length === limits.len && target) {
+                const { focus, caret } = typeSegment(key, next)
+                // A completed segment hands focus to the segment after it,
+                // selected so typing replaces what it holds. A digit carried
+                // into that segment keeps the caret after it instead.
+                const target = focus && inputsRef.current[focus]
+                if (target) {
                   target.focus()
-                  target.select()
+                  if (caret === null) target.select()
+                  else target.setSelectionRange(caret, caret)
                 }
               }}
               onKeyDown={(event) => {
