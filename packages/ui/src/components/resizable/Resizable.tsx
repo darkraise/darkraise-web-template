@@ -248,8 +248,6 @@ function ResizablePanelGroup({
         style={{
           display: "flex",
           flexDirection: orientation === "horizontal" ? "row" : "column",
-          height: "100%",
-          width: "100%",
         }}
         {...props}
       >
