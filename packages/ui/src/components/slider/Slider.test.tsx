@@ -139,6 +139,31 @@ describe("Slider", () => {
     expect(onChange).not.toHaveBeenCalled()
   })
 
+  it("commits the new value after each key that changes it", async () => {
+    const user = userEvent.setup()
+    const onCommit = vi.fn()
+    render(<Slider defaultValue={[50]} onValueCommit={onCommit} />)
+    screen.getByRole("slider").focus()
+    await user.keyboard("{ArrowRight}{End}{End}{PageDown}{Home}{ArrowLeft}")
+    expect(onCommit.mock.calls).toEqual([[[51]], [[100]], [[90]], [[0]]])
+  })
+
+  it("does not commit from the keyboard when disabled", async () => {
+    const user = userEvent.setup()
+    const onCommit = vi.fn()
+    render(<Slider defaultValue={[50]} disabled onValueCommit={onCommit} />)
+    screen.getByRole("slider").focus()
+    await user.keyboard("{ArrowRight}")
+    expect(onCommit).not.toHaveBeenCalled()
+  })
+
+  it("marks the thumb aria-disabled only when disabled", () => {
+    const { rerender } = render(<Slider defaultValue={[50]} disabled />)
+    expect(screen.getByRole("slider")).toHaveAttribute("aria-disabled", "true")
+    rerender(<Slider defaultValue={[50]} />)
+    expect(screen.getByRole("slider")).not.toHaveAttribute("aria-disabled")
+  })
+
   it("vertical orientation uses ArrowUp to increment", async () => {
     const user = userEvent.setup()
     const onChange = vi.fn()

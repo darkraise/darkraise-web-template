@@ -73,8 +73,8 @@ export function useSlider(options: UseSliderOptions): UseSliderReturn {
 
   const [activeThumbIndex, setActiveThumbIndex] = React.useState(0)
 
-  const setValueAtIndex = useEvent((idx: number, next: number) => {
-    if (disabled) return
+  const updateValues = (idx: number, next: number): number[] | null => {
+    if (disabled) return null
     const clamped = clamp(snap(next, step, min), min, max)
     const list = [...values]
     list[idx] = clamped
@@ -83,9 +83,14 @@ export function useSlider(options: UseSliderOptions): UseSliderReturn {
       list.length === values.length &&
       list.every((v, i) => v === values[i])
     ) {
-      return
+      return null
     }
     setValues(list)
+    return list
+  }
+
+  const setValueAtIndex = useEvent((idx: number, next: number) => {
+    updateValues(idx, next)
   })
 
   const commit = useEvent(() => {
@@ -124,7 +129,8 @@ export function useSlider(options: UseSliderOptions): UseSliderReturn {
 
       if (next === null) return
       event.preventDefault()
-      setValueAtIndex(thumbIndex, next)
+      const committed = updateValues(thumbIndex, next)
+      if (committed) onValueCommit?.(committed)
     },
   )
 

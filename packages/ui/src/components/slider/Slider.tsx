@@ -263,6 +263,7 @@ function Slider({
             aria-valuemin={slider.min}
             aria-valuemax={slider.max}
             aria-valuenow={value}
+            aria-disabled={slider.disabled || undefined}
             data-orientation={slider.orientation}
             data-disabled={slider.disabled ? "" : undefined}
             className="dr-slider-thumb"
