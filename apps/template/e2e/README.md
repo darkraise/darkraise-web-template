@@ -221,7 +221,8 @@ Text input, textarea, password toggle, number input stepper, OTP, editable
 radio group, toggle, toggle group, segment group, rating group, swap; select,
 combobox, multi select, cascade select, listbox; calendar, date picker (the
 picked day lands in the input), date input, time picker; slider and angle
-slider by keyboard, color picker; validation on the form-fields showcase and on
+slider by keyboard, color picker (its swatch a named preview, not a second
+opener); validation on the form-fields showcase and on
 `/products/new`; the Field example's description and error reaching the input's
 accessible description, with `aria-invalid` only while the value is invalid;
 file upload, signature pad (verified by reading canvas pixels), clipboard copy.
@@ -838,6 +839,15 @@ here. Each preset test is titled `<preset name> <mode>: …`, so
 - Outline tabs and outline segments show the pane inside their inset ring.
 - At Blur None and High, the pane covers the current item (within 1px) and the focus ring reaches 3:1 against what it crosses, on the default, vertical and right-to-left tabs and the default and vertical segments.
 
+### 69 · Data table layout (`69-audit-data-table.spec.ts`)
+
+- On `/products` under Quiet light, the rows-per-page trigger shows its whole value (`10`, no overflow of its value span) at the extra-large font size and at comfortable and spacious density.
+- At 390px, a search that matches no product shows its empty message inside the visible part of the table's scroll container, which overflows sideways and has not scrolled, clear of the edge fades on both sides.
+
+### 70 · Resizable sized by classes (`70-audit-resizable.spec.ts`)
+
+- On `/components/resizable`, the vertical group sized by an `h-72` class keeps its 288px height, and its first panel grows by more than 15% of it after four ArrowDown presses on the handle and shrinks by more than 40px after a 60px upward drag, with the group still 288px tall.
+
 ## Regression tests for fixed defects
 
 `11-review-regressions.spec.ts` holds tests for defects fixed in review (see
@@ -853,7 +863,7 @@ These three earlier tests also guard fixed defects:
 | Test                                                  | Guards                                                                                                                                                       |
 | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `02-routes` → `/components/data-table`                | The expandable-table example must key its rows via `<Fragment key>`; a bare `<>` makes React log a missing-`key` error on every render.                      |
-| `02-routes` → `/components/image-editor`              | `ImageEditorAnnotationColor` must not nest `ColorPickerSwatch` (a button) inside `ColorPickerTrigger` (also a button) — that is invalid HTML and ~58 errors. |
+| `02-routes` → `/components/image-editor`              | `ImageEditorAnnotationColor` must not nest a button inside `ColorPickerTrigger` (also a button) — that is invalid HTML and ~58 errors.                       |
 | `08-data-display` → `dashboard charts size correctly` | `ChartContainer` must seed `ResponsiveContainer` with a positive `initialDimension`; the recharts default of `-1 × -1` warns once per chart on first render. |
 
 **Known defects.** When a test fails because the app or kit is wrong, not the

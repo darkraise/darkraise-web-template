@@ -365,9 +365,10 @@ test.describe("range controls", () => {
     await content.getByRole("button", { name: "Select color #ef4444" }).click()
     await expect(input).toHaveValue("#ef4444")
     await expect(swatch).toHaveCSS("background-color", "rgb(239, 68, 68)")
-    await expect(swatch).toHaveAccessibleName(
-      "Open color picker, current color #ef4444",
-    )
+    await expect(swatch).toHaveRole("img")
+    await expect(swatch).toHaveAccessibleName("Current color #ef4444")
+    await expect(swatch).not.toHaveAttribute("aria-haspopup")
+    await expect(picker.locator("[aria-haspopup]")).toHaveCount(1)
   })
 })
 
