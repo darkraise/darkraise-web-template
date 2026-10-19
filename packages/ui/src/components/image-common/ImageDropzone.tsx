@@ -5,6 +5,28 @@ import { readFileAsDataURL } from "./readFileAsDataURL"
 import type { FileAcceptDetails, FileRejectDetails } from "./types"
 import "./image-common.css"
 
+async function decodesAsImage(file: File, dataUrl: string): Promise<boolean> {
+  if (typeof createImageBitmap === "function") {
+    try {
+      const bitmap = await createImageBitmap(file)
+      bitmap.close()
+      return true
+    } catch {
+      // Some engines refuse formats here that <img> renders (SVG in
+      // Chromium), so a failure falls through to the element decoder.
+    }
+  }
+  const img = new Image()
+  if (typeof img.decode !== "function") return true
+  img.src = dataUrl
+  try {
+    await img.decode()
+    return true
+  } catch {
+    return false
+  }
+}
+
 export interface ImageDropzoneProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
   "onDrop"
@@ -84,7 +106,17 @@ function ImageDropzone({
         onFileReject?.({ file, reason: "size" })
         return
       }
-      const dataUrl = await readFileAsDataURL(file)
+      let dataUrl: string
+      try {
+        dataUrl = await readFileAsDataURL(file)
+      } catch {
+        onFileReject?.({ file, reason: "read" })
+        return
+      }
+      if (!(await decodesAsImage(file, dataUrl))) {
+        onFileReject?.({ file, reason: "decode" })
+        return
+      }
       onFileAccept?.({ file, dataUrl })
     },
     [matchesAccept, maxSize, onFileAccept, onFileReject],
