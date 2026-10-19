@@ -34,10 +34,10 @@ interface CommandContextValue {
   /** Adds an item, or replaces the registered item with the same id in place. */
   registerItem: (item: CommandItemRecord) => void
   unregisterItem: (id: string) => void
+  /** Every registered item, in registration order. */
+  items: CommandItemRecord[]
   /** Registered items that match the search, in registration order. */
   visibleItems: CommandItemRecord[]
-  /** Total registered items, used to gate first-render group hiding. */
-  allItemsCount: number
   /** Filter predicate. Defaults to substring on textValue. */
   filter?: (value: string, search: string, keywords?: string[]) => number
   shouldFilter: boolean
@@ -138,8 +138,6 @@ function Command({
     })
   }, [items, shouldFilter, search, filterFn])
 
-  const allItemsCount = items.length
-
   const [activeId, setActiveId] = React.useState<string | null>(null)
 
   // Keep the active item visible and enabled as items change.
@@ -165,8 +163,8 @@ function Command({
       setActiveId,
       registerItem,
       unregisterItem,
+      items,
       visibleItems,
-      allItemsCount,
       filter,
       shouldFilter,
       loop,
@@ -180,8 +178,8 @@ function Command({
       activeId,
       registerItem,
       unregisterItem,
+      items,
       visibleItems,
-      allItemsCount,
       filter,
       shouldFilter,
       loop,
@@ -206,7 +204,8 @@ function Command({
   )
 }
 
-interface CommandDialogProps extends DialogProps {
+interface CommandDialogProps
+  extends DialogProps, Pick<CommandProps, "filter" | "shouldFilter" | "loop"> {
   title?: string
   description?: string
 }
@@ -215,6 +214,9 @@ const CommandDialog = ({
   children,
   title,
   description,
+  filter,
+  shouldFilter,
+  loop,
   ...props
 }: CommandDialogProps) => {
   const uiText = useUiText()
@@ -227,7 +229,14 @@ const CommandDialog = ({
         <DialogDescription className="sr-only">
           {description ?? uiText("Search for a command to run.")}
         </DialogDescription>
-        <Command className="dr-command-dialog">{children}</Command>
+        <Command
+          className="dr-command-dialog"
+          filter={filter}
+          shouldFilter={shouldFilter}
+          loop={loop}
+        >
+          {children}
+        </Command>
       </DialogContent>
     </Dialog>
   )
@@ -373,7 +382,7 @@ function CommandEmpty({ className, ref, ...rest }: CommandEmptyProps) {
 
 interface CommandGroupProps extends React.HTMLAttributes<HTMLDivElement> {
   heading?: React.ReactNode
-  /** Logical group key — usually equal to heading text. */
+  /** Group identifier, rendered as `data-value`. */
   value?: string
   ref?: React.Ref<HTMLDivElement>
 }
@@ -389,25 +398,20 @@ function CommandGroup({
   ...rest
 }: CommandGroupProps) {
   const ctx = useCommandContext("CommandGroup")
-  const groupValue =
-    value ?? (typeof heading === "string" ? heading : undefined)
-  // Hide the group entirely once we know no descendant items are visible.
-  // On the first render no item has registered yet, but children must mount
-  // so they can register; we fall back to rendering when no items have
-  // been registered yet so the first frame doesn't drop them.
-  const list = ctx.visibleItems
-  const someWithGroup = list.some((it) => it.group === groupValue)
-  const itemsKnown = list.length > 0 || ctx.search === ""
-  // Don't hide on the very first render (items not yet registered).
-  const allRegistered = ctx.allItemsCount > 0
-  const shouldHide =
-    allRegistered && !someWithGroup && groupValue !== undefined && itemsKnown
-  if (shouldHide) return null
+  const groupId = useId()
+  // Hidden rather than unmounted: unmounting would unregister the group's
+  // items, so it could never show again when the search changes.
+  const hidden =
+    ctx.search !== "" &&
+    ctx.items.some((it) => it.group === groupId) &&
+    !ctx.visibleItems.some((it) => it.group === groupId)
   return (
     <div
       ref={ref}
       role="group"
       cmdk-group=""
+      data-value={value}
+      hidden={hidden || undefined}
       className={cn("dr-command-group", className)}
       {...rest}
     >
@@ -416,7 +420,7 @@ function CommandGroup({
           {heading}
         </div>
       ) : null}
-      <CommandGroupContext.Provider value={groupValue}>
+      <CommandGroupContext.Provider value={groupId}>
         {children}
       </CommandGroupContext.Provider>
     </div>
@@ -468,10 +472,12 @@ function CommandItem({
   const textRef = React.useRef("")
   const id = useId()
 
-  // Render until registration completes; afterwards, hide if filtered out.
+  // Render until the text has been measured once, so an item without `value`
+  // that mounts during a search registers its real text; afterwards, hide if
+  // filtered out.
+  const [measured, setMeasured] = React.useState(false)
   const visible =
-    ctx.allItemsCount === 0 ||
-    ctx.visibleItems.find((it) => it.id === id) !== undefined
+    !measured || ctx.visibleItems.find((it) => it.id === id) !== undefined
   const selected = ctx.activeId === id
 
   // Unregistering is its own effect so a field change replaces the record in
@@ -491,6 +497,7 @@ function CommandItem({
       disabled: !!disabled,
       group,
     })
+    setMeasured(true)
   }, [registerItem, id, value, disabled, group, children, visible])
 
   if (!visible) return null
