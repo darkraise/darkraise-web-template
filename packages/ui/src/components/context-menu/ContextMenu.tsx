@@ -544,7 +544,7 @@ function ContextMenuItem({
         if (event.defaultPrevented) return
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault()
-          triggerSelect(event)
+          if (!disabled) event.currentTarget.click()
         }
       }}
       className={cn("dr-menu-item", inset && "ps-8", className)}

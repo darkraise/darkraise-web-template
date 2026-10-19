@@ -19,6 +19,8 @@ import {
   ContextMenuSubContent,
   ContextMenuSubTrigger,
   ContextMenuPortal,
+  ContextMenuRadioGroup,
+  ContextMenuRadioItem,
 } from "@components/context-menu"
 
 function Basic({
@@ -797,4 +799,92 @@ describe("ContextMenu reopened while still mounted", () => {
     await waitFor(() => expect(menu).not.toHaveStyle({ visibility: "hidden" }))
     expect(menu).toHaveStyle({ left: "200px", top: "120px" })
   })
+})
+
+describe("ContextMenu item keys", () => {
+  it.each(["Enter", " "])(
+    "%j runs an item wired only through onClick and closes the menu",
+    async (key) => {
+      const onClick = vi.fn()
+      const onOpenChange = vi.fn()
+      render(
+        <ContextMenu defaultOpen onOpenChange={onOpenChange}>
+          <ContextMenuTrigger>Right-click here</ContextMenuTrigger>
+          <ContextMenuContent>
+            <ContextMenuItem onClick={onClick}>Rename</ContextMenuItem>
+          </ContextMenuContent>
+        </ContextMenu>,
+      )
+      fireEvent.keyDown(
+        await screen.findByRole("menuitem", { name: "Rename" }),
+        { key },
+      )
+      expect(onClick).toHaveBeenCalledTimes(1)
+      expect(onOpenChange).toHaveBeenCalledWith(false)
+    },
+  )
+
+  it.each(["Enter", " "])("%j changes a radio item's value", async (key) => {
+    const onValueChange = vi.fn()
+    render(
+      <ContextMenu defaultOpen>
+        <ContextMenuTrigger>Right-click here</ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuRadioGroup value="a" onValueChange={onValueChange}>
+            <ContextMenuRadioItem value="a">A</ContextMenuRadioItem>
+            <ContextMenuRadioItem value="b">B</ContextMenuRadioItem>
+          </ContextMenuRadioGroup>
+        </ContextMenuContent>
+      </ContextMenu>,
+    )
+    fireEvent.keyDown(await screen.findByRole("menuitemradio", { name: "B" }), {
+      key,
+    })
+    expect(onValueChange).toHaveBeenCalledWith("b")
+  })
+
+  it.each(["Enter", " "])("%j toggles a checkbox item", async (key) => {
+    const onCheckedChange = vi.fn()
+    render(
+      <ContextMenu defaultOpen>
+        <ContextMenuTrigger>Right-click here</ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuCheckboxItem
+            checked={false}
+            onCheckedChange={onCheckedChange}
+          >
+            Wrap
+          </ContextMenuCheckboxItem>
+        </ContextMenuContent>
+      </ContextMenu>,
+    )
+    fireEvent.keyDown(await screen.findByRole("menuitemcheckbox"), { key })
+    expect(onCheckedChange).toHaveBeenCalledTimes(1)
+    expect(onCheckedChange).toHaveBeenCalledWith(true)
+  })
+
+  it.each(["Enter", " "])(
+    "%j leaves a disabled item's onClick and onSelect unrun",
+    async (key) => {
+      const onClick = vi.fn()
+      const onSelect = vi.fn()
+      render(
+        <ContextMenu defaultOpen>
+          <ContextMenuTrigger>Right-click here</ContextMenuTrigger>
+          <ContextMenuContent>
+            <ContextMenuItem disabled onClick={onClick} onSelect={onSelect}>
+              Delete
+            </ContextMenuItem>
+          </ContextMenuContent>
+        </ContextMenu>,
+      )
+      fireEvent.keyDown(
+        await screen.findByRole("menuitem", { name: "Delete" }),
+        { key },
+      )
+      expect(onClick).not.toHaveBeenCalled()
+      expect(onSelect).not.toHaveBeenCalled()
+      expect(screen.getByRole("menu")).toBeInTheDocument()
+    },
+  )
 })
