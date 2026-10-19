@@ -24,7 +24,7 @@ describe("DataTable labels", () => {
     expect(
       screen.getByRole("combobox", { name: "Rows per page" }),
     ).toBeInTheDocument()
-    expect(screen.getByText("Page 0 of 0")).toBeInTheDocument()
+    expect(screen.getByText("Page 1 of 1")).toBeInTheDocument()
   })
   it("renders English chrome with no provider", () => {
     render(<DataTable columns={columns} data={rows} searchKey="name" />)
