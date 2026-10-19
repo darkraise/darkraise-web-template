@@ -142,7 +142,10 @@ export function DataTable<TData, TValue>({
     if (scrollTop !== effectiveScrollTop) setScrollTop(effectiveScrollTop)
   }, [scrollTop, effectiveScrollTop])
 
-  if (isLoading) return <DataTableSkeleton columnCount={columns.length} />
+  if (isLoading)
+    return (
+      <DataTableSkeleton columnCount={table.getVisibleLeafColumns().length} />
+    )
   const overscan = virtualize?.overscan ?? DEFAULT_OVERSCAN
   const first = virtualize
     ? Math.max(
@@ -274,7 +277,10 @@ export function DataTable<TData, TValue>({
                     virtualize ? headerGroups.length + 1 : undefined
                   }
                 >
-                  <TableCell colSpan={columns.length}>
+                  <TableCell
+                    className="dr-data-table-empty-cell"
+                    colSpan={table.getVisibleLeafColumns().length}
+                  >
                     <DataTableEmpty />
                   </TableCell>
                 </TableRow>
