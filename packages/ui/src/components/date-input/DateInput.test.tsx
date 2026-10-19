@@ -198,3 +198,169 @@ describe("DateInput", () => {
     expect(year.value).toBe("2026")
   })
 })
+
+function segments() {
+  const [first, second, third] = screen.getAllByRole(
+    "spinbutton",
+  ) as HTMLInputElement[]
+  if (!first || !second || !third) throw new Error("date segments missing")
+  return [first, second, third] as const
+}
+
+describe("DateInput segment typing", () => {
+  it.each([
+    ["99", "09", "09"],
+    ["13", "01", "3"],
+    ["4", "04", ""],
+    ["00", "0", ""],
+    ["007", "07", ""],
+    ["12", "12", ""],
+  ])(
+    "typing %s into an empty month leaves month %j and day %j",
+    async (typed, month, day) => {
+      const user = userEvent.setup()
+      render(<DateInput aria-label="dob" />)
+      const [, monthInput, dayInput] = segments()
+      monthInput.focus()
+      await user.keyboard(typed)
+      expect(monthInput.value).toBe(month)
+      expect(dayInput.value).toBe(day)
+    },
+  )
+
+  it("moves focus to the day once the month completes", async () => {
+    const user = userEvent.setup()
+    render(<DateInput aria-label="dob" />)
+    const [, month, day] = segments()
+    month.focus()
+    await user.keyboard("0")
+    expect(month).toHaveFocus()
+    await user.keyboard("0")
+    expect(month).toHaveFocus()
+    await user.keyboard("4")
+    expect(day).toHaveFocus()
+  })
+
+  it.each([
+    ["5", "05", ""],
+    ["32", "03", "02"],
+    ["31", "31", ""],
+  ])(
+    "typing %s into an empty day leaves day %j and month %j",
+    async (typed, day, month) => {
+      const user = userEvent.setup()
+      render(<DateInput format="dmy" aria-label="dob" />)
+      const [dayInput, monthInput] = segments()
+      dayInput.focus()
+      await user.keyboard(typed)
+      expect(dayInput.value).toBe(day)
+      expect(monthInput.value).toBe(month)
+    },
+  )
+
+  it("types 99 as month 09 and day 09 in a full entry", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(<DateInput aria-label="dob" onValueChange={onValueChange} />)
+    const [year] = segments()
+    year.focus()
+    await user.keyboard("202699")
+    expect(onValueChange).toHaveBeenLastCalledWith(new Date(2026, 8, 9))
+  })
+})
+
+describe("DateInput impossible dates", () => {
+  it.each([
+    ["20260229", "29 February in a non-leap year"],
+    ["20260431", "31 April"],
+  ])("keeps %s as typed and flags it (%s)", async (typed) => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    const onInvalidChange = vi.fn()
+    render(
+      <DateInput
+        aria-label="dob"
+        onValueChange={onValueChange}
+        onInvalidChange={onInvalidChange}
+      />,
+    )
+    const [year, month, day] = segments()
+    year.focus()
+    await user.keyboard(typed)
+    expect([year.value, month.value, day.value]).toEqual([
+      typed.slice(0, 4),
+      typed.slice(4, 6),
+      typed.slice(6),
+    ])
+    const group = screen.getByRole("group")
+    expect(group).toHaveAttribute("aria-invalid", "true")
+    expect(group).toHaveAttribute("data-invalid")
+    expect(onValueChange).toHaveBeenLastCalledWith(null)
+    expect(onInvalidChange.mock.calls).toEqual([[true]])
+  })
+
+  it("clears the flag and commits once the date exists", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    const onInvalidChange = vi.fn()
+    render(
+      <DateInput
+        aria-label="dob"
+        defaultValue={new Date(2026, 1, 20)}
+        onValueChange={onValueChange}
+        onInvalidChange={onInvalidChange}
+      />,
+    )
+    const [, , day] = segments()
+    day.focus()
+    await user.keyboard("{Backspace}{Backspace}29")
+    expect(onValueChange).toHaveBeenLastCalledWith(null)
+    await user.keyboard("{Backspace}{Backspace}28")
+    expect(onValueChange).toHaveBeenLastCalledWith(new Date(2026, 1, 28))
+    expect(onInvalidChange.mock.calls).toEqual([[true], [false]])
+    const group = screen.getByRole("group")
+    expect(group).not.toHaveAttribute("aria-invalid")
+    expect(group).not.toHaveAttribute("data-invalid")
+  })
+
+  it("keeps a consumer's aria-invalid on a valid date", () => {
+    render(
+      <DateInput
+        aria-label="dob"
+        aria-invalid="true"
+        defaultValue={new Date(2026, 1, 20)}
+      />,
+    )
+    const group = screen.getByRole("group")
+    expect(group).toHaveAttribute("aria-invalid", "true")
+    expect(group).not.toHaveAttribute("data-invalid")
+  })
+})
+
+describe("DateInput carried digit", () => {
+  it("leaves the caret after a digit carried into the next segment", async () => {
+    const user = userEvent.setup()
+    render(<DateInput aria-label="dob" />)
+    const [, month, day] = segments()
+    month.focus()
+    await user.keyboard("13")
+    expect(day).toHaveFocus()
+    expect([day.selectionStart, day.selectionEnd]).toEqual([1, 1])
+    await user.keyboard("1")
+    expect([month.value, day.value]).toEqual(["01", "31"])
+  })
+
+  it("keeps the caret after a carried digit the day already held", async () => {
+    const user = userEvent.setup()
+    render(<DateInput aria-label="dob" />)
+    const [, month, day] = segments()
+    day.focus()
+    await user.keyboard("3")
+    month.focus()
+    await user.keyboard("13")
+    expect(day).toHaveFocus()
+    expect([day.selectionStart, day.selectionEnd]).toEqual([1, 1])
+    await user.keyboard("1")
+    expect([month.value, day.value]).toEqual(["01", "31"])
+  })
+})

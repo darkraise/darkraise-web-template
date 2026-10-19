@@ -8,6 +8,8 @@ export interface UseDateInputOptions {
   value?: Date | null
   defaultValue?: Date | null
   onValueChange?: (date: Date | null) => void
+  /** Called when the typed date becomes, or stops being, one that does not exist. */
+  onInvalidChange?: (invalid: boolean) => void
   format?: DateInputFormat
 }
 
@@ -16,6 +18,8 @@ interface Parts {
   month: string
   day: string
 }
+
+const SEGMENT_MAX = { month: 12, day: 31 } as const
 
 function partsFromDate(d: Date | null | undefined): Parts {
   if (!d) return { year: "", month: "", day: "" }
@@ -43,6 +47,48 @@ function partsToDate(p: Parts): Date | null {
     return null
   }
   return date
+}
+
+function isImpossible(p: Parts): boolean {
+  const complete =
+    p.year.length === 4 && p.month.length === 2 && p.day.length === 2
+  return complete && partsToDate(p) === null
+}
+
+/**
+ * Applies the digits a segment now holds. A month or day that cannot grow
+ * any further completes with what was typed, and a digit that would push it
+ * past its maximum starts the next segment instead.
+ */
+function typeDigits(
+  parts: Parts,
+  order: Array<keyof Parts>,
+  key: keyof Parts,
+  digits: string,
+): { parts: Parts; focus: keyof Parts | null; carried?: boolean } {
+  const following = order[order.indexOf(key) + 1] ?? null
+  if (key === "year") {
+    return {
+      parts: { ...parts, year: digits },
+      focus: digits.length === 4 ? following : null,
+    }
+  }
+  const max = SEGMENT_MAX[key]
+  const [first = "", second] = digits
+  if (second === undefined) {
+    if (Number(first) * 10 > max) {
+      return { parts: { ...parts, [key]: `0${first}` }, focus: following }
+    }
+    return { parts: { ...parts, [key]: first }, focus: null }
+  }
+  const n = Number(digits)
+  if (n === 0) return { parts, focus: null }
+  if (n <= max) return { parts: { ...parts, [key]: digits }, focus: following }
+  const completed = { ...parts, [key]: `0${first}` }
+  if (!following) return { parts: completed, focus: null }
+  const carried = typeDigits(completed, order, following, second)
+  if (carried.focus) return carried
+  return { parts: carried.parts, focus: following, carried: true }
 }
 
 function datesEqual(
@@ -110,6 +156,26 @@ export function useDateInput(options: UseDateInputOptions) {
     commitParts({ ...parts, [key]: raw })
   }
 
+  const typeSegment = (
+    key: keyof Parts,
+    digits: string,
+  ): { focus: keyof Parts | null; caret: number | null } => {
+    const typed = typeDigits(parts, order, key, digits)
+    if (typed.parts !== parts) commitParts(typed.parts)
+    const caret =
+      typed.carried && typed.focus ? typed.parts[typed.focus].length : null
+    return { focus: typed.focus, caret }
+  }
+
+  const invalid = isImpossible(parts)
+  const reportedInvalidRef = React.useRef(invalid)
+  const onInvalidChange = options.onInvalidChange
+  React.useEffect(() => {
+    if (reportedInvalidRef.current === invalid) return
+    reportedInvalidRef.current = invalid
+    onInvalidChange?.(invalid)
+  }, [invalid, onInvalidChange])
+
   const adjustSegment = (key: keyof Parts, delta: number) => {
     const date = value ?? new Date()
     const y = date.getFullYear() + (key === "year" ? delta : 0)
@@ -139,5 +205,5 @@ export function useDateInput(options: UseDateInputOptions) {
     return ["year", "month", "day"]
   })()
 
-  return { parts, setSegment, adjustSegment, order }
+  return { parts, setSegment, typeSegment, adjustSegment, order, invalid }
 }
