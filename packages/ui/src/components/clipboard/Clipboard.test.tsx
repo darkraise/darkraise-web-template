@@ -3,6 +3,9 @@ import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
 import { StrictMode } from "react"
 
+import { UiI18nProvider } from "../../i18n"
+import { vi as vietnamese } from "../../locales/vi"
+
 const toastSuccessMock = vi.fn()
 const toastErrorMock = vi.fn()
 
@@ -286,5 +289,86 @@ describe("Clipboard", () => {
     await waitFor(() =>
       expect(toastSuccessMock).toHaveBeenCalledWith("Copied to clipboard"),
     )
+  })
+})
+
+describe("Clipboard naming", () => {
+  beforeEach(() => {
+    installClipboardMock()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it("associates the label with the input", () => {
+    render(
+      <Clipboard value="https://example.com">
+        <ClipboardLabel>Share link</ClipboardLabel>
+        <ClipboardInput />
+      </Clipboard>,
+    )
+    expect(screen.getByRole("textbox", { name: "Share link" })).toHaveValue(
+      "https://example.com",
+    )
+  })
+
+  it("names an icon-only trigger Copy, then Copied while copied", async () => {
+    const user = userEvent.setup()
+    installClipboardMock()
+    render(
+      <Clipboard value="hi">
+        <ClipboardTrigger>
+          <svg aria-hidden="true" />
+        </ClipboardTrigger>
+      </Clipboard>,
+    )
+    await user.click(screen.getByRole("button", { name: "Copy" }))
+    expect(
+      await screen.findByRole("button", { name: "Copied" }),
+    ).toBeInTheDocument()
+  })
+
+  it("translates the default trigger name", () => {
+    render(
+      <UiI18nProvider locale="vi" locales={[vietnamese]}>
+        <Clipboard value="hi">
+          <ClipboardTrigger>
+            <svg aria-hidden="true" />
+          </ClipboardTrigger>
+        </Clipboard>
+      </UiI18nProvider>,
+    )
+    expect(screen.getByRole("button", { name: "Sao chép" })).toBeInTheDocument()
+  })
+
+  it("keeps the consumer's aria-label", () => {
+    render(
+      <Clipboard value="hi">
+        <ClipboardTrigger aria-label="Copy token">
+          <svg aria-hidden="true" />
+        </ClipboardTrigger>
+      </Clipboard>,
+    )
+    expect(screen.getByRole("button")).toHaveAttribute(
+      "aria-label",
+      "Copy token",
+    )
+  })
+
+  it.each([
+    ["text", <>Copy link</>],
+    [
+      "an indicator with text",
+      <ClipboardIndicator copied="Done" fallback="Copy link" />,
+    ],
+  ])("lets visible %s children name the trigger", (_, children) => {
+    render(
+      <Clipboard value="hi">
+        <ClipboardTrigger>{children}</ClipboardTrigger>
+      </Clipboard>,
+    )
+    const trigger = screen.getByRole("button", { name: "Copy link" })
+    expect(trigger).not.toHaveAttribute("aria-label")
   })
 })
