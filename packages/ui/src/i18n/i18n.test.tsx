@@ -1,7 +1,12 @@
-import { render, screen } from "@testing-library/react"
+import { render, renderHook, screen } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 import { UiLabelsProvider, useUiLabels } from "../labels"
-import { UiI18nProvider, useUiLocale, useUiFormatters } from "./index"
+import {
+  UiI18nProvider,
+  useUiLocale,
+  useUiFormatters,
+  useUiText,
+} from "./index"
 import { vi as vietnamese } from "../locales/vi"
 
 function Probe() {
@@ -111,6 +116,39 @@ describe("UI locale boundaries", () => {
     expect(result()).toMatchObject({
       empty: "Không tìm thấy kết quả",
       reset: "Inner",
+    })
+  })
+  it("reads Vietnamese text for the corner, copy, colour and crop controls", () => {
+    const hook = renderHook(() => useUiText(), {
+      wrapper: ({ children }) => (
+        <UiI18nProvider locale="vi" locales={[vietnamese]}>
+          {children}
+        </UiI18nProvider>
+      ),
+    })
+    const keys = [
+      "Top-left corner",
+      "Top-right corner",
+      "Bottom-right corner",
+      "Bottom-left corner",
+      "Copy",
+      "Copied",
+      "Current color",
+      "2D slider",
+      "Crop size",
+    ]
+    expect(
+      Object.fromEntries(keys.map((key) => [key, hook.result.current(key)])),
+    ).toEqual({
+      "Top-left corner": "Góc trên trái",
+      "Top-right corner": "Góc trên phải",
+      "Bottom-right corner": "Góc dưới phải",
+      "Bottom-left corner": "Góc dưới trái",
+      Copy: "Sao chép",
+      Copied: "Đã sao chép",
+      "Current color": "Màu hiện tại",
+      "2D slider": "Thanh trượt 2D",
+      "Crop size": "Kích thước vùng cắt",
     })
   })
   it.each([
