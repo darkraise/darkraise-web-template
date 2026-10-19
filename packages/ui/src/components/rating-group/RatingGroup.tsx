@@ -1,5 +1,6 @@
 import * as React from "react"
 
+import { useUiLabels } from "@labels"
 import { getDirection, inlineArrow } from "@lib/direction"
 import { cn } from "@lib/utils"
 import "./rating-group.css"
@@ -311,9 +312,11 @@ function RatingGroupItem({
   onPointerEnter,
   onPointerMove,
   onKeyDown,
+  "aria-label": ariaLabel,
   ...props
 }: RatingGroupItemProps) {
   const ctx = useRatingGroupContext("RatingGroupItem")
+  const labels = useUiLabels()
   const {
     value,
     hoverValue,
@@ -338,13 +341,20 @@ function RatingGroupItem({
   )
 
   const state = getItemState(index, value, hoverValue, hoverHalf, allowHalf)
-  const ariaCheckedTarget = Math.ceil(value)
-  const isChecked = ariaCheckedTarget === index
+  // A half value has no item of its own: the item it half-fills stands for
+  // it, so that item is the checked one and is named with the half value.
+  const itemValue = allowHalf && value === index - 0.5 ? value : index
+  const isChecked = value === itemValue
   const tabIndex = (() => {
     if (disabled) return -1
     if (value === 0) return index === 1 ? 0 : -1
-    return ariaCheckedTarget === index ? 0 : -1
+    return isChecked ? 0 : -1
   })()
+  const name =
+    ariaLabel ??
+    (props["aria-labelledby"]
+      ? undefined
+      : labels.announcements.rating(itemValue))
 
   const handlePointerMove = (event: React.PointerEvent<HTMLSpanElement>) => {
     onPointerMove?.(event)
@@ -447,6 +457,7 @@ function RatingGroupItem({
         role="radio"
         tabIndex={tabIndex}
         aria-checked={isChecked}
+        aria-label={name}
         aria-posinset={index}
         aria-setsize={max}
         aria-disabled={disabled || undefined}

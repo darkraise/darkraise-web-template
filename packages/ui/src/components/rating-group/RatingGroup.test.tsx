@@ -2,6 +2,7 @@ import * as React from "react"
 import { render, screen, fireEvent } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
+import { UiLabelsProvider } from "@labels"
 import {
   RatingGroup,
   RatingGroupControl,
@@ -275,5 +276,71 @@ describe("RatingGroup disabled", () => {
     fireEvent.keyDown(items[0] as HTMLElement, { key: "ArrowRight" })
     fireEvent.keyDown(items[0] as HTMLElement, { key: "Enter" })
     expect(onValueChange).not.toHaveBeenCalled()
+  })
+})
+
+describe("RatingGroup item names", () => {
+  it("names each item with the rating announcement", () => {
+    render(<Basic max={5} />)
+    expect(
+      screen
+        .getAllByRole("radio")
+        .map((item) => item.getAttribute("aria-label")),
+    ).toEqual(["1 star", "2 stars", "3 stars", "4 stars", "5 stars"])
+  })
+
+  it("reads the announcement through the labels provider", () => {
+    render(
+      <UiLabelsProvider
+        value={{ announcements: { rating: (value) => `${value} of 3` } }}
+      >
+        <Basic max={3} />
+      </UiLabelsProvider>,
+    )
+    expect(screen.getByRole("radio", { name: "2 of 3" })).toBeInTheDocument()
+  })
+
+  it("keeps a name the consumer gives the item", () => {
+    render(
+      <RatingGroup max={2}>
+        <span id="awful">Awful</span>
+        <RatingGroupControl>
+          <RatingGroupItem index={1} aria-labelledby="awful" />
+          <RatingGroupItem index={2} aria-label="Great" />
+        </RatingGroupControl>
+      </RatingGroup>,
+    )
+    const [first, second] = screen.getAllByRole("radio")
+    expect(first).toHaveAccessibleName("Awful")
+    expect(first).not.toHaveAttribute("aria-label")
+    expect(second).toHaveAccessibleName("Great")
+  })
+
+  it.each([
+    [3.5, 4, "3.5 stars"],
+    [4, 4, "4 stars"],
+    [0.5, 1, "0.5 stars"],
+  ])("checks only the item holding %s in half mode", (value, index, name) => {
+    render(<Basic max={5} allowHalf defaultValue={value} />)
+    const checked = screen.getAllByRole("radio", { checked: true })
+    expect(checked).toHaveLength(1)
+    expect(checked[0]).toHaveAccessibleName(name)
+    expect(checked[0]).toHaveAttribute("aria-posinset", String(index))
+    expect(checked[0]).toHaveAttribute("tabindex", "0")
+  })
+
+  it("renames the half item as arrow keys step through half values", async () => {
+    const user = userEvent.setup()
+    render(<Basic max={5} allowHalf defaultValue={3} />)
+    await user.tab()
+    await user.keyboard("{ArrowRight}")
+    expect(screen.getByRole("radio", { checked: true })).toHaveAccessibleName(
+      "3.5 stars",
+    )
+    expect(screen.getByRole("radio", { name: "3.5 stars" })).toHaveFocus()
+    await user.keyboard("{ArrowRight}")
+    expect(screen.getByRole("radio", { checked: true })).toHaveAccessibleName(
+      "4 stars",
+    )
   })
 })
