@@ -49,6 +49,16 @@ function partsToDate(p: Parts): Date | null {
   return date
 }
 
+function daysInMonth(year: number, month: number): number {
+  return new Date(year, month, 0).getDate()
+}
+
+function wrap(n: number, max: number): number {
+  if (n > max) return 1
+  if (n < 1) return max
+  return n
+}
+
 function isImpossible(p: Parts): boolean {
   const complete =
     p.year.length === 4 && p.month.length === 2 && p.day.length === 2
@@ -177,11 +187,23 @@ export function useDateInput(options: UseDateInputOptions) {
   }, [invalid, onInvalidChange])
 
   const adjustSegment = (key: keyof Parts, delta: number) => {
-    const date = value ?? new Date()
-    const y = date.getFullYear() + (key === "year" ? delta : 0)
-    const m = date.getMonth() + (key === "month" ? delta : 0)
-    const d = date.getDate() + (key === "day" ? delta : 0)
-    commitParts(partsFromDate(new Date(y, m, d)))
+    const today = new Date()
+    const typed = (part: string, max: number, fallback: number) => {
+      const n = Number.parseInt(part, 10)
+      return n >= 1 && n <= max ? n : fallback
+    }
+    let y = typed(parts.year, 9999, today.getFullYear())
+    let m = typed(parts.month, 12, today.getMonth() + 1)
+    let d = typed(parts.day, 31, today.getDate())
+    if (key === "year") y = Math.min(Math.max(y + delta, 1), 9999)
+    if (key === "month") m = wrap(m + delta, 12)
+    const monthLength = daysInMonth(y, m)
+    d = key === "day" ? wrap(d + delta, monthLength) : Math.min(d, monthLength)
+    commitParts({
+      year: String(y).padStart(4, "0"),
+      month: String(m).padStart(2, "0"),
+      day: String(d).padStart(2, "0"),
+    })
   }
 
   const order: Array<keyof Parts> = (() => {
