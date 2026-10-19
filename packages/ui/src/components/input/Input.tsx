@@ -9,22 +9,36 @@ export interface InputProps extends Omit<
 > {
   /** Static content rendered to the left of the input. Renders in a
    *  muted slot with a divider against the input — use for units,
-   *  currency symbols, protocols. Pass a string or any ReactNode. */
+   *  currency symbols, protocols. Pass a string or any ReactNode.
+   *
+   *  Any slot (`prefix`, `suffix`, `leadingAction`, `trailingAction`) set
+   *  to a value other than `undefined` renders the wrapping group; `null`
+   *  and `false` keep the group with that slot empty. When a slot is
+   *  conditional, pass `null`, not `undefined`, so the input keeps its
+   *  node, focus and selection when the slot content appears or
+   *  disappears. */
   prefix?: React.ReactNode
-  /** Static content rendered to the right of the input. */
+  /** Static content rendered to the right of the input. Pass `null`,
+   *  not `undefined`, when it is conditional (see `prefix`). */
   suffix?: React.ReactNode
   /** Action button rendered on the leading edge inside the input's
    *  border. Transparent slot with no divider — pass a clickable
    *  element (e.g. `<Button variant="ghost" size="icon">`). Use this
    *  instead of `prefix` for interactive elements so the visual
-   *  treatment matches (ghost button vs muted addon). */
+   *  treatment matches (ghost button vs muted addon). Pass `null`, not
+   *  `undefined`, when it is conditional (see `prefix`). */
   leadingAction?: React.ReactNode
   /** Action button rendered on the trailing edge inside the input's
-   *  border. Common uses: clear, password toggle, copy. */
+   *  border. Common uses: clear, password toggle, copy. Pass `null`, not
+   *  `undefined`, when it is conditional (see `prefix`). */
   trailingAction?: React.ReactNode
   /** Class applied to the wrapping group when any of `prefix`, `suffix`,
-   *  `leadingAction`, or `trailingAction` is set. */
+   *  `leadingAction`, or `trailingAction` is not `undefined`. */
   groupClassName?: string
+}
+
+function hasContent(slot: React.ReactNode) {
+  return slot != null && slot !== false
 }
 
 function Input({
@@ -38,11 +52,9 @@ function Input({
   ref,
   ...props
 }: InputProps) {
-  const hasAddon =
-    prefix != null ||
-    suffix != null ||
-    leadingAction != null ||
-    trailingAction != null
+  const hasAddon = [prefix, suffix, leadingAction, trailingAction].some(
+    (slot) => slot !== undefined,
+  )
 
   // Bare input — preserves the original element shape for consumers who
   // don't use any addon slot, including those that target the input
@@ -62,12 +74,12 @@ function Input({
   // prefix → leadingAction → input → trailingAction → suffix.
   return (
     <div className={cn("dr-input-group", groupClassName)}>
-      {prefix != null && (
+      {hasContent(prefix) && (
         <span className="dr-input-addon" data-side="prefix">
           {prefix}
         </span>
       )}
-      {leadingAction != null && (
+      {hasContent(leadingAction) && (
         <span className="dr-input-action" data-side="leading">
           {leadingAction}
         </span>
@@ -78,12 +90,12 @@ function Input({
         ref={ref}
         {...props}
       />
-      {trailingAction != null && (
+      {hasContent(trailingAction) && (
         <span className="dr-input-action" data-side="trailing">
           {trailingAction}
         </span>
       )}
-      {suffix != null && (
+      {hasContent(suffix) && (
         <span className="dr-input-addon" data-side="suffix">
           {suffix}
         </span>
