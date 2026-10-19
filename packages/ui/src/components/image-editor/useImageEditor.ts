@@ -1,5 +1,6 @@
 import * as React from "react"
 import { useControllableState } from "@primitives/state"
+import { useIsomorphicLayoutEffect } from "@hooks/useIsomorphicLayoutEffect"
 import {
   useImageCropper,
   type GetCroppedImageOptions,
@@ -397,7 +398,7 @@ export function useImageEditor(
     perspective,
     cropper,
   })
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     stateRef.current = {
       filters,
       annotations,
@@ -455,7 +456,21 @@ export function useImageEditor(
     ],
   )
 
+  // Callers push in the same handler as the change, before it has
+  // rendered, so the snapshot waits for the commit: pushHistory marks a
+  // pending push and forces a render, and the layout effect below captures
+  // the committed state once stateRef has been refreshed.
+  const pendingPushRef = React.useRef(false)
+  const [pushRequest, requestPush] = React.useReducer((n: number) => n + 1, 0)
+
   const pushHistory = React.useCallback(() => {
+    pendingPushRef.current = true
+    requestPush()
+  }, [])
+
+  useIsomorphicLayoutEffect(() => {
+    if (!pendingPushRef.current) return
+    pendingPushRef.current = false
     const snapshot = captureSnapshot()
     const cursor = cursorRef.current
     // Discard any redoable future when a new branch is forked.
@@ -467,7 +482,7 @@ export function useImageEditor(
     }
     cursorRef.current = historyRef.current.length - 1
     setHistoryTick((t) => t + 1)
-  }, [captureSnapshot, historyLimit])
+  }, [pushRequest, captureSnapshot, historyLimit])
 
   const undo = React.useCallback(() => {
     if (cursorRef.current <= 0) return
