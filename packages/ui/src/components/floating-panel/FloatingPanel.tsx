@@ -365,11 +365,13 @@ function FloatingPanelHeader({
         // Skip drag init when the press lands on an interactive descendant
         // (minimize / maximize / close trigger). Capturing on the header
         // would redirect the resulting click to the header per the pointer-
-        // events spec — same gotcha as the toast close button.
+        // events spec — same gotcha as the toast close button. The drag
+        // handle is a role=button for its keyboard path, but a press on it
+        // is a drag.
         if (
           event.target instanceof Element &&
           event.target.closest(
-            "button, a, input, textarea, select, [role=button]",
+            "button, a, input, textarea, select, [role=button]:not(.dr-floating-panel-drag-handle)",
           )
         ) {
           return
