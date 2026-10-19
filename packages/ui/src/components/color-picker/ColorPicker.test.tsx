@@ -1,5 +1,5 @@
 import * as React from "react"
-import { render, screen } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
 
@@ -198,10 +198,108 @@ describe("ColorPicker disabled area", () => {
   it("shows the not-allowed cursor on both planes", () => {
     render(<Harness disabled open />)
     expect(
-      screen.getByRole("application", { name: "Saturation and brightness" }),
+      screen.getByRole("slider", { name: "Saturation and brightness" }),
     ).toHaveStyle({ cursor: "not-allowed" })
     expect(screen.getByRole("slider", { name: "Hue" })).toHaveStyle({
       cursor: "not-allowed",
     })
+  })
+})
+
+// The open popover focuses its content in a microtask; wait for that before
+// moving focus to a control inside it.
+async function focusInPicker(element: HTMLElement) {
+  await waitFor(() => expect(screen.getByRole("dialog")).toHaveFocus())
+  element.focus()
+}
+
+describe("ColorPicker hue slider", () => {
+  it("runs 0 to 359 with Home, End and page steps and no wrapping", async () => {
+    const user = userEvent.setup()
+    render(<Harness initial="#ff0000" defaultOpen />)
+    const hue = screen.getByRole("slider", { name: "Hue" })
+    expect(hue).toHaveAttribute("aria-valuemin", "0")
+    expect(hue).toHaveAttribute("aria-valuemax", "359")
+    await focusInPicker(hue)
+    await user.keyboard("{ArrowLeft}")
+    expect(hue).toHaveAttribute("aria-valuenow", "0")
+    await user.keyboard("{PageUp}")
+    expect(hue).toHaveAttribute("aria-valuenow", "36")
+    await user.keyboard("{Shift>}{ArrowRight}{/Shift}")
+    expect(hue).toHaveAttribute("aria-valuenow", "46")
+    await user.keyboard("{PageDown}{ArrowDown}")
+    expect(hue).toHaveAttribute("aria-valuenow", "9")
+    await user.keyboard("{End}")
+    expect(hue).toHaveAttribute("aria-valuenow", "359")
+    await user.keyboard("{ArrowRight}")
+    expect(hue).toHaveAttribute("aria-valuenow", "359")
+    await user.keyboard("{Home}")
+    expect(hue).toHaveAttribute("aria-valuenow", "0")
+  })
+
+  it("moves on a grey and keeps its hue when the value turns grey", async () => {
+    const user = userEvent.setup()
+    render(<Harness initial="#808080" open />)
+    const hue = () => screen.getByRole("slider", { name: "Hue" })
+    await focusInPicker(hue())
+    await user.keyboard("{PageUp}{ArrowRight}")
+    expect(hue()).toHaveAttribute("aria-valuenow", "37")
+    const input = screen.getByLabelText("Brand color")
+    await user.clear(input)
+    await user.type(input, "#ffffff{Enter}")
+    expect(hue()).toHaveAttribute("aria-valuenow", "37")
+    await user.clear(input)
+    await user.type(input, "#0000ff{Enter}")
+    expect(hue()).toHaveAttribute("aria-valuenow", "240")
+  })
+
+  it("keeps a grey's hue when the popover closes and reopens", async () => {
+    const user = userEvent.setup()
+    render(<Harness initial="#808080" defaultOpen />)
+    await focusInPicker(screen.getByRole("slider", { name: "Hue" }))
+    await user.keyboard("{End}")
+    const trigger = screen.getByRole("button", { name: "Open color picker" })
+    await user.click(trigger)
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull())
+    await user.click(trigger)
+    expect(screen.getByRole("slider", { name: "Hue" })).toHaveAttribute(
+      "aria-valuenow",
+      "359",
+    )
+  })
+})
+
+describe("ColorPicker saturation area", () => {
+  it("is a 2D slider that reports saturation and brightness", async () => {
+    const user = userEvent.setup()
+    render(<Harness initial="#ff0000" defaultOpen />)
+    const area = screen.getByRole("slider", {
+      name: "Saturation and brightness",
+    })
+    expect(area).toHaveAttribute("aria-roledescription", "2D slider")
+    expect(area).toHaveAttribute(
+      "aria-valuetext",
+      "Saturation 100%, Brightness 100%",
+    )
+    await focusInPicker(area)
+    await user.keyboard("{Shift>}{ArrowLeft}{/Shift}{ArrowDown}")
+    expect(area).toHaveAttribute(
+      "aria-valuetext",
+      "Saturation 90%, Brightness 99%",
+    )
+  })
+
+  it("marks every picker control aria-disabled when disabled", () => {
+    render(<Harness disabled open />)
+    const controls = [
+      screen.getByLabelText("Brand color"),
+      screen.getByRole("button", { name: "Open color picker" }),
+      screen.getByRole("slider", { name: "Saturation and brightness" }),
+      screen.getByRole("slider", { name: "Hue" }),
+      ...screen.getAllByRole("button", { name: /select color/i }),
+    ]
+    for (const control of controls) {
+      expect(control).toHaveAttribute("aria-disabled", "true")
+    }
   })
 })

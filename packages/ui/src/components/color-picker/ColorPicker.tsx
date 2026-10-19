@@ -58,6 +58,8 @@ interface ColorPickerContextValue {
   closeOnSelect: boolean
   inputId: string
   labelId: string
+  hsv: HSV
+  setHsv: (next: HSV) => void
   triggerRef: React.RefObject<HTMLButtonElement | null>
 }
 
@@ -111,6 +113,36 @@ function ColorPicker({
     [valueProp],
   )
 
+  const parsed = React.useMemo<HSV>(
+    () => hexToHsv(value) ?? { h: 0, s: 0, v: 0 },
+    [value],
+  )
+
+  // A grey carries no hue, so the hue lives in state and follows the value
+  // only when the value has saturation. `hueSource` is the value the hue was
+  // last reconciled with; the picker's own changes record their hex there so
+  // the exact hue is not re-derived from the rounded hex.
+  const [hue, setHue] = React.useState(parsed.h)
+  const [hueSource, setHueSource] = React.useState(value)
+  if (value !== hueSource) {
+    setHueSource(value)
+    if (parsed.s > 0) setHue(parsed.h)
+  }
+  const hsv = React.useMemo<HSV>(
+    () => ({ h: hue, s: parsed.s, v: parsed.v }),
+    [hue, parsed],
+  )
+
+  const setHsv = React.useCallback(
+    (next: HSV) => {
+      const hex = hsvToHex(next)
+      setHue(next.h)
+      setHueSource(hex)
+      setValue(hex)
+    },
+    [setValue],
+  )
+
   const [internalOpen, setInternalOpen] = React.useState(defaultOpen)
   const open = openProp ?? internalOpen
   const onOpenChangeRef = React.useRef(onOpenChange)
@@ -143,6 +175,8 @@ function ColorPicker({
       closeOnSelect,
       inputId,
       labelId,
+      hsv,
+      setHsv,
       triggerRef,
     }),
     [
@@ -155,6 +189,8 @@ function ColorPicker({
       closeOnSelect,
       inputId,
       labelId,
+      hsv,
+      setHsv,
     ],
   )
 
@@ -292,6 +328,7 @@ function ColorPickerInput({
       autoComplete="off"
       value={display}
       disabled={disabled}
+      aria-disabled={disabled || undefined}
       aria-labelledby={ariaLabelProp ? undefined : labelId}
       aria-label={ariaLabelProp}
       data-disabled={disabled ? "true" : undefined}
@@ -341,6 +378,7 @@ function ColorPickerTrigger({
         aria-expanded={open}
         aria-label={ariaLabelProp ?? uiText("Open color picker")}
         disabled={disabled}
+        aria-disabled={disabled || undefined}
         data-state={open ? "open" : "closed"}
         data-disabled={disabled ? "true" : undefined}
         className={cn("dr-color-picker-trigger", className)}
@@ -383,6 +421,34 @@ function ColorPickerContent({
   )
 }
 
+const HUE_MAX = 359
+const HUE_PAGE_STEP = 36
+
+function nextHue(
+  current: number,
+  event: React.KeyboardEvent<HTMLDivElement>,
+): number | null {
+  const step = event.shiftKey ? 10 : 1
+  switch (event.key) {
+    case "ArrowLeft":
+    case "ArrowDown":
+      return current - step
+    case "ArrowRight":
+    case "ArrowUp":
+      return current + step
+    case "PageDown":
+      return current - HUE_PAGE_STEP
+    case "PageUp":
+      return current + HUE_PAGE_STEP
+    case "Home":
+      return 0
+    case "End":
+      return HUE_MAX
+    default:
+      return null
+  }
+}
+
 export type ColorPickerAreaProps = Omit<
   React.HTMLAttributes<HTMLDivElement>,
   "onChange"
@@ -391,20 +457,16 @@ export type ColorPickerAreaProps = Omit<
 function ColorPickerArea({ className, style, ...props }: ColorPickerAreaProps) {
   const uiText = useUiText()
 
-  const { value, setValue, disabled } = useColorPickerContext("ColorPickerArea")
-  const hsv = React.useMemo<HSV>(
-    () => hexToHsv(value) ?? { h: 0, s: 0, v: 0 },
-    [value],
-  )
+  const {
+    hsv,
+    setHsv: commitHsv,
+    disabled,
+  } = useColorPickerContext("ColorPickerArea")
 
-  const setHsv = React.useCallback(
-    (partial: Partial<HSV>) => {
-      if (disabled) return
-      const next: HSV = { ...hsv, ...partial }
-      setValue(hsvToHex(next))
-    },
-    [hsv, setValue, disabled],
-  )
+  const setHsv = (partial: Partial<HSV>) => {
+    if (disabled) return
+    commitHsv({ ...hsv, ...partial })
+  }
 
   // Hue strip + saturation/value square. We avoid react-colorful entirely.
   const svRef = React.useRef<HTMLDivElement | null>(null)
@@ -446,7 +508,7 @@ function ColorPickerArea({ className, style, ...props }: ColorPickerAreaProps) {
     const update = (clientX: number) => {
       const rect = target.getBoundingClientRect()
       const x = Math.max(0, Math.min(rect.width, clientX - rect.left))
-      setHsv({ h: (x / rect.width) * 360 })
+      setHsv({ h: Math.min(HUE_MAX, (x / rect.width) * 360) })
     }
     update(event.clientX)
     const move = (e: PointerEvent) => update(e.clientX)
@@ -476,8 +538,14 @@ function ColorPickerArea({ className, style, ...props }: ColorPickerAreaProps) {
     >
       <div
         ref={svRef}
-        role="application"
+        role="slider"
+        aria-roledescription={uiText("2D slider")}
         aria-label={uiText("Saturation and brightness")}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(hsv.s)}
+        aria-valuetext={`${uiText("Saturation")} ${Math.round(hsv.s)}%, ${uiText("Brightness")} ${Math.round(hsv.v)}%`}
+        aria-disabled={disabled || undefined}
         tabIndex={disabled ? -1 : 0}
         className="dr-color-picker-sv"
         onPointerDown={onSvPointerDown}
@@ -532,21 +600,18 @@ function ColorPickerArea({ className, style, ...props }: ColorPickerAreaProps) {
         role="slider"
         aria-label={uiText("Hue")}
         aria-valuemin={0}
-        aria-valuemax={360}
+        aria-valuemax={HUE_MAX}
         aria-valuenow={Math.round(hsv.h)}
+        aria-disabled={disabled || undefined}
         tabIndex={disabled ? -1 : 0}
         className="dr-color-picker-hue"
         onPointerDown={onHuePointerDown}
         onKeyDown={(event) => {
           if (disabled) return
-          const step = event.shiftKey ? 10 : 1
-          if (event.key === "ArrowLeft" || event.key === "ArrowDown") {
-            event.preventDefault()
-            setHsv({ h: (hsv.h - step + 360) % 360 })
-          } else if (event.key === "ArrowRight" || event.key === "ArrowUp") {
-            event.preventDefault()
-            setHsv({ h: (hsv.h + step) % 360 })
-          }
+          const next = nextHue(Math.round(hsv.h), event)
+          if (next === null) return
+          event.preventDefault()
+          setHsv({ h: Math.max(0, Math.min(HUE_MAX, next)) })
         }}
         style={{
           position: "relative",
@@ -636,6 +701,7 @@ function ColorPickerSwatchItem({
       ref={ref}
       type={type}
       disabled={disabled}
+      aria-disabled={disabled || undefined}
       aria-label={ariaLabelProp ?? `Select color ${normalized}`}
       data-active={active ? "true" : "false"}
       data-disabled={disabled ? "true" : undefined}
@@ -697,6 +763,7 @@ function ColorPickerEyeDropperTrigger({
       ref={ref}
       type={type}
       disabled={disabled}
+      aria-disabled={disabled || undefined}
       aria-label={ariaLabelProp ?? uiText("Pick color from screen")}
       data-disabled={disabled ? "true" : undefined}
       className={cn("dr-color-picker-eye-dropper-trigger", className)}
