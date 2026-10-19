@@ -349,3 +349,39 @@ describe("useImageEditor", () => {
     expect(result.current.filters.hueRotate).toBe(90)
   })
 })
+
+describe("useImageEditor history capture", () => {
+  it("records the state committed by the change pushed with it", () => {
+    const { result } = renderHook(() => useImageEditor())
+    act(() => {
+      result.current.setFilter("brightness", 1.5)
+      result.current.pushHistory()
+    })
+    act(() => result.current.undo())
+    expect(result.current.filters.brightness).toBe(1)
+    act(() => result.current.redo())
+    expect(result.current.filters.brightness).toBe(1.5)
+  })
+
+  it("records the mask a run extension applies", async () => {
+    const mask = {
+      points: [
+        { x: 0, y: 0 },
+        { x: 50, y: 0 },
+        { x: 50, y: 50 },
+      ],
+    }
+    const { result } = renderHook(() => useImageEditor())
+    act(() =>
+      result.current.registerExtension("magic-wand", async () => ({ mask })),
+    )
+    result.current.cropper.imageRef.current = document.createElement("img")
+    await act(async () => {
+      await result.current.runExtension("magic-wand")
+    })
+    act(() => result.current.undo())
+    expect(result.current.freeformPath).toBeNull()
+    act(() => result.current.redo())
+    expect(result.current.freeformPath).toEqual(mask)
+  })
+})
