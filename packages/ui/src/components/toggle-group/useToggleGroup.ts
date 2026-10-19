@@ -105,7 +105,8 @@ export function useToggleGroup(
   const toggleItem = useEvent((itemValue: string) => {
     if (disabled) return
     if (isSingle) {
-      setSingleState(singleState === itemValue ? "" : itemValue)
+      // Items are radios: activating the checked one leaves it checked.
+      if (singleState !== itemValue) setSingleState(itemValue)
     } else {
       const next = multiState.includes(itemValue)
         ? multiState.filter((v) => v !== itemValue)
@@ -192,7 +193,10 @@ export function useToggleGroup(
       }
 
       event.preventDefault()
-      list[nextIdx]?.el.focus()
+      const target = list[nextIdx]
+      if (!target) return
+      target.el.focus()
+      if (isSingle) toggleItem(target.value)
     },
   )
 
