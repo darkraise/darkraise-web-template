@@ -4,6 +4,7 @@ import * as React from "react"
 import { Check, ChevronDown, X } from "lucide-react"
 
 import { cn } from "@lib/utils"
+import { useUiLabels } from "@labels"
 import {
   Combobox,
   ComboboxClearTrigger,
@@ -33,6 +34,9 @@ export interface MultiSelectProps {
   name?: string
   className?: string
   emptyMessage?: React.ReactNode
+  id?: string
+  "aria-label"?: string
+  "aria-labelledby"?: string
 }
 
 function MultiSelect({
@@ -45,8 +49,12 @@ function MultiSelect({
   name,
   className,
   emptyMessage: emptyMessageLocaleProp,
+  id,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
 }: MultiSelectProps) {
   const uiText = useUiText()
+  const labels = useUiLabels()
   const placeholder = placeholderLocaleProp ?? uiText("Select…")
   const emptyMessage = emptyMessageLocaleProp ?? uiText("No matches.")
 
@@ -112,7 +120,7 @@ function MultiSelect({
                 <span className="dr-multi-select-chip-label">{label}</span>
                 <button
                   type="button"
-                  aria-label={`Remove ${label}`}
+                  aria-label={labels.announcements.remove(label)}
                   tabIndex={-1}
                   className="dr-multi-select-chip-remove"
                   onClick={(event) => {
@@ -133,7 +141,12 @@ function MultiSelect({
               </span>
             )
           })}
+          {/* MultiSelect renders no ComboboxLabel, so the combobox's own
+              aria-labelledby would point at nothing; these override it. */}
           <ComboboxInput
+            id={id}
+            aria-label={ariaLabel}
+            aria-labelledby={ariaLabelledBy}
             placeholder={hasChips ? "" : placeholder}
             className="dr-multi-select-input"
           />
@@ -151,7 +164,7 @@ function MultiSelect({
         </div>
       </ComboboxControl>
       <ComboboxContent>
-        <ComboboxList>
+        <ComboboxList aria-label={ariaLabel} aria-labelledby={ariaLabelledBy}>
           {filteredItems.map((item) => (
             <ComboboxItem key={item.value} item={item}>
               <ComboboxItemText>{item.label}</ComboboxItemText>
