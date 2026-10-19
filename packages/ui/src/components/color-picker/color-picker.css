@@ -16,7 +16,7 @@
   }
 
   .dr-color-picker-swatch {
-    @apply focus-ring-inset inline-block cursor-pointer rounded-md border transition-shadow;
+    @apply inline-block rounded-md border;
     border-color: var(--field-edge);
     height: var(--field-height);
     width: var(--field-height);

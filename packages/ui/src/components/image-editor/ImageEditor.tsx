@@ -24,6 +24,7 @@ import {
   ColorPickerSwatch,
   ColorPickerSwatchGroup,
   ColorPickerSwatchItem,
+  ColorPickerTrigger,
 } from "@components/color-picker"
 import { Slider } from "@components/slider"
 import {
@@ -1125,9 +1126,9 @@ function ImageEditorAnnotationColor({
       className={cn("dr-image-editor-annotation-color", className)}
     >
       <ColorPickerControl>
-        {/* The swatch is itself the popover trigger; wrapping it in
-            ColorPickerTrigger would nest a button inside a button. */}
-        <ColorPickerSwatch aria-label={uiText("Annotation color")} />
+        <ColorPickerTrigger aria-label={uiText("Annotation color")}>
+          <ColorPickerSwatch aria-hidden="true" />
+        </ColorPickerTrigger>
       </ColorPickerControl>
       <ColorPickerContent>
         <ColorPickerArea />
