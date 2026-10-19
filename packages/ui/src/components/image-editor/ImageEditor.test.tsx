@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import { fireEvent, render, screen } from "@testing-library/react"
+import { act, fireEvent, render, screen } from "@testing-library/react"
 import * as React from "react"
 import {
   ImageEditor,
@@ -227,4 +227,108 @@ describe("ImageEditor history round trips", () => {
       expectRoundTrip(before)
     },
   )
+})
+
+describe("ImageEditor under StrictMode", () => {
+  beforeEach(() => {
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(null)
+    Element.prototype.setPointerCapture ??= () => {}
+  })
+  afterEach(() => vi.restoreAllMocks())
+
+  function Counts() {
+    return (
+      <ImageEditorContext>
+        {(editor) => (
+          <output data-testid="counts">
+            {`${editor.annotations.length} ${editor.freeformPath?.points.length ?? 0}`}
+          </output>
+        )}
+      </ImageEditorContext>
+    )
+  }
+
+  function renderStrict(
+    children: React.ReactNode,
+    props: Partial<ImageEditorProps>,
+  ) {
+    return render(
+      <React.StrictMode>
+        <ImageEditor {...props}>
+          <ImageEditorViewport>{children}</ImageEditorViewport>
+          <ImageEditorUndo />
+          <Counts />
+        </ImageEditor>
+      </React.StrictMode>,
+    )
+  }
+
+  function expectOneEntry(counts: string) {
+    expect(screen.getByTestId("counts")).toHaveTextContent(counts)
+    fireEvent.click(screen.getByRole("button", { name: "Undo" }))
+    expect(screen.getByTestId("counts")).toHaveTextContent("0 0")
+    expect(screen.getByRole("button", { name: "Undo" })).toBeDisabled()
+  }
+
+  const pointer = { pointerId: 1, pointerType: "mouse", button: 0 }
+
+  // The last move and the release share one act so the move's draft update
+  // is still pending at release, as with a continuous pointermove in a
+  // browser; React then runs the release's draft updater during render.
+  it("adds one stroke and one history entry per drawn stroke", () => {
+    const onAnnotationsChange = vi.fn()
+    renderStrict(<ImageEditorAnnotationLayer data-testid="layer" />, {
+      defaultTool: "annotate",
+      onAnnotationsChange,
+    })
+    const layer = screen.getByTestId("layer")
+    fireEvent.pointerDown(layer, { ...pointer, clientX: 10, clientY: 10 })
+    act(() => {
+      fireEvent.pointerMove(layer, { ...pointer, clientX: 40, clientY: 30 })
+      fireEvent.pointerUp(layer, { ...pointer, clientX: 40, clientY: 30 })
+    })
+    expect(onAnnotationsChange).toHaveBeenCalledTimes(1)
+    expectOneEntry("1 0")
+  })
+
+  it("adds one text annotation and one history entry per commit", () => {
+    const onAnnotationsChange = vi.fn()
+    renderStrict(
+      <>
+        <ImageEditorAnnotationKind kind="text" />
+        <ImageEditorAnnotationLayer data-testid="layer" />
+      </>,
+      { defaultTool: "annotate", onAnnotationsChange },
+    )
+    fireEvent.click(screen.getByRole("radio", { name: "Text" }))
+    fireEvent.pointerDown(screen.getByTestId("layer"), {
+      ...pointer,
+      clientX: 12,
+      clientY: 14,
+    })
+    const input = screen.getByPlaceholderText("Type, then Enter")
+    act(() => {
+      fireEvent.change(input, { target: { value: "Label" } })
+      fireEvent.keyDown(input, { key: "Enter" })
+    })
+    expect(onAnnotationsChange).toHaveBeenCalledTimes(1)
+    expectOneEntry("1 0")
+  })
+
+  it("sets the freeform path once with one history entry", () => {
+    const onFreeformPathChange = vi.fn()
+    renderStrict(<ImageEditorFreeform data-testid="freeform" />, {
+      defaultTool: "freeform",
+      onFreeformPathChange,
+    })
+    const svg = screen.getByTestId("freeform")
+    fireEvent.pointerDown(svg, { ...pointer, clientX: 0, clientY: 0 })
+    fireEvent.pointerMove(svg, { ...pointer, clientX: 30, clientY: 0 })
+    act(() => {
+      fireEvent.pointerMove(svg, { ...pointer, clientX: 30, clientY: 30 })
+      fireEvent.pointerUp(svg, { ...pointer, clientX: 30, clientY: 30 })
+    })
+    expect(onFreeformPathChange).toHaveBeenCalledTimes(1)
+    expectOneEntry("0 3")
+  })
 })

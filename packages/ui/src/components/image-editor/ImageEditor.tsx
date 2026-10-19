@@ -780,6 +780,11 @@ function ImageEditorRedo({
 // cropper selection / handles. Strokes are rendered live (committed +
 // in-flight draft) and committed to history on pointerup.
 
+interface TextDraft {
+  point: Point
+  value: string
+}
+
 function makeStrokeId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
     return crypto.randomUUID()
@@ -810,15 +815,22 @@ function ImageEditorAnnotationLayer({
   // Track the in-flight draft separately from the committed list so we can
   // render the user's pull without triggering a state push per pointermove
   // (and without polluting the history stack until the gesture ends).
-  const [draft, setDraft] = React.useState<AnnotationStroke | null>(null)
+  const [draft, setDraftState] = React.useState<AnnotationStroke | null>(null)
+  const draftRef = React.useRef<AnnotationStroke | null>(null)
+  const setDraft = React.useCallback((next: AnnotationStroke | null) => {
+    draftRef.current = next
+    setDraftState(next)
+  }, [])
   const dragRef = React.useRef<{ pointerId: number } | null>(null)
 
   // Text annotation: a click in text mode opens an inline text input
   // anchored at the click point. Enter or blur commits; Escape cancels.
-  const [textDraft, setTextDraft] = React.useState<{
-    point: Point
-    value: string
-  } | null>(null)
+  const [textDraft, setTextDraftState] = React.useState<TextDraft | null>(null)
+  const textDraftRef = React.useRef<TextDraft | null>(null)
+  const setTextDraft = React.useCallback((next: TextDraft | null) => {
+    textDraftRef.current = next
+    setTextDraftState(next)
+  }, [])
   const textInputRef = React.useRef<HTMLInputElement | null>(null)
 
   // Resize the backing canvas to match the viewport. ResizeObserver mirrors
@@ -848,7 +860,7 @@ function ImageEditorAnnotationLayer({
       setDraft(null)
       setTextDraft(null)
     }
-  }, [editor.tool])
+  }, [editor.tool, setDraft, setTextDraft])
 
   // Auto-focus the text input when it appears.
   React.useEffect(() => {
@@ -878,22 +890,20 @@ function ImageEditorAnnotationLayer({
     kind === "rectangle" || kind === "circle" || kind === "arrow"
 
   const commitText = React.useCallback(() => {
-    setTextDraft((prev) => {
-      if (prev && prev.value.trim().length > 0) {
-        editor.addAnnotation({
-          id: makeStrokeId(),
-          kind: "text",
-          color: editor.activeAnnotationColor,
-          width: editor.activeAnnotationWidth,
-          opacity: editor.activeAnnotationOpacity,
-          points: [prev.point],
-          text: prev.value,
-        })
-        editor.pushHistory()
-      }
-      return null
+    const prev = textDraftRef.current
+    setTextDraft(null)
+    if (!prev || prev.value.trim().length === 0) return
+    editor.addAnnotation({
+      id: makeStrokeId(),
+      kind: "text",
+      color: editor.activeAnnotationColor,
+      width: editor.activeAnnotationWidth,
+      opacity: editor.activeAnnotationOpacity,
+      points: [prev.point],
+      text: prev.value,
     })
-  }, [editor])
+    editor.pushHistory()
+  }, [editor, setTextDraft])
 
   const handlePointerDown = (event: React.PointerEvent<HTMLCanvasElement>) => {
     if (editor.tool !== "annotate") return
@@ -924,18 +934,18 @@ function ImageEditorAnnotationLayer({
     const drag = dragRef.current
     if (!drag || drag.pointerId !== event.pointerId) return
     const point = pointForEvent(event)
-    setDraft((prev) => {
-      if (!prev) return prev
-      // Two-point primitives only need a start and end; replacing the
-      // last point keeps the rectangle / circle / arrow snappy as the
-      // user drags and avoids storing a noisy point cloud in history.
-      if (isTwoPointKind(prev.kind)) {
-        const start = prev.points[0]
-        if (!start) return prev
-        return { ...prev, points: [start, point] }
-      }
-      return { ...prev, points: [...prev.points, point] }
-    })
+    const prev = draftRef.current
+    if (!prev) return
+    // Two-point primitives only need a start and end; replacing the
+    // last point keeps the rectangle / circle / arrow snappy as the
+    // user drags and avoids storing a noisy point cloud in history.
+    if (isTwoPointKind(prev.kind)) {
+      const start = prev.points[0]
+      if (!start) return
+      setDraft({ ...prev, points: [start, point] })
+      return
+    }
+    setDraft({ ...prev, points: [...prev.points, point] })
   }
 
   const finishStroke = (
@@ -945,21 +955,20 @@ function ImageEditorAnnotationLayer({
     const drag = dragRef.current
     if (!drag || drag.pointerId !== event.pointerId) return
     dragRef.current = null
-    setDraft((prev) => {
-      if (!commit || !prev) return null
-      // Reject zero-area rect/circle (a click without drag) so accidental
-      // taps don't pollute the canvas with invisible strokes.
-      if (isTwoPointKind(prev.kind) && prev.points.length >= 2) {
-        const a = prev.points[0]
-        const b = prev.points[prev.points.length - 1]
-        if (a && b && Math.abs(a.x - b.x) < 1 && Math.abs(a.y - b.y) < 1) {
-          return null
-        }
+    const prev = draftRef.current
+    setDraft(null)
+    if (!commit || !prev) return
+    // Reject zero-area rect/circle (a click without drag) so accidental
+    // taps don't pollute the canvas with invisible strokes.
+    if (isTwoPointKind(prev.kind) && prev.points.length >= 2) {
+      const a = prev.points[0]
+      const b = prev.points[prev.points.length - 1]
+      if (a && b && Math.abs(a.x - b.x) < 1 && Math.abs(a.y - b.y) < 1) {
+        return
       }
-      editor.addAnnotation(prev)
-      editor.pushHistory()
-      return null
-    })
+    }
+    editor.addAnnotation(prev)
+    editor.pushHistory()
   }
 
   return (
@@ -986,11 +995,10 @@ function ImageEditorAnnotationLayer({
             fontSize: Math.max(editor.activeAnnotationWidth * 4, 12),
           }}
           value={textDraft.value}
-          onChange={(event) =>
-            setTextDraft((prev) =>
-              prev ? { ...prev, value: event.target.value } : prev,
-            )
-          }
+          onChange={(event) => {
+            const prev = textDraftRef.current
+            if (prev) setTextDraft({ ...prev, value: event.target.value })
+          }}
           onKeyDown={(event) => {
             if (event.key === "Enter") {
               event.preventDefault()
@@ -1285,7 +1293,12 @@ function ImageEditorFreeform({
     },
     [ref],
   )
-  const [draft, setDraft] = React.useState<FreeformPath | null>(null)
+  const [draft, setDraftState] = React.useState<FreeformPath | null>(null)
+  const draftRef = React.useRef<FreeformPath | null>(null)
+  const setDraft = React.useCallback((next: FreeformPath | null) => {
+    draftRef.current = next
+    setDraftState(next)
+  }, [])
   const dragRef = React.useRef<{ pointerId: number } | null>(null)
   const [size, setSize] = React.useState({ width: 0, height: 0 })
 
@@ -1309,7 +1322,7 @@ function ImageEditorFreeform({
       dragRef.current = null
       setDraft(null)
     }
-  }, [editor.tool])
+  }, [editor.tool, setDraft])
 
   const pointFor = (event: React.PointerEvent<SVGSVGElement>) => {
     const rect = event.currentTarget.getBoundingClientRect()
@@ -1331,25 +1344,20 @@ function ImageEditorFreeform({
   const handlePointerMove = (event: React.PointerEvent<SVGSVGElement>) => {
     const drag = dragRef.current
     if (!drag || drag.pointerId !== event.pointerId) return
-    // Extract the point synchronously: React clears event.currentTarget
-    // after the handler returns, and the setDraft updater below may run
-    // asynchronously, so calling pointFor inside the updater would
-    // dereference null.
-    const point = pointFor(event)
-    setDraft((prev) => (prev ? { points: [...prev.points, point] } : prev))
+    const prev = draftRef.current
+    if (prev) setDraft({ points: [...prev.points, pointFor(event)] })
   }
 
   const handlePointerUp = (event: React.PointerEvent<SVGSVGElement>) => {
     const drag = dragRef.current
     if (!drag || drag.pointerId !== event.pointerId) return
     dragRef.current = null
-    setDraft((prev) => {
-      if (prev && prev.points.length >= 3) {
-        editor.setFreeformPath(prev)
-        editor.pushHistory()
-      }
-      return null
-    })
+    const prev = draftRef.current
+    setDraft(null)
+    if (prev && prev.points.length >= 3) {
+      editor.setFreeformPath(prev)
+      editor.pushHistory()
+    }
   }
 
   const visible = draft ?? editor.freeformPath
