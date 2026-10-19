@@ -160,6 +160,12 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value))
 }
 
+function sameRect(a: CropRect, b: CropRect): boolean {
+  return (
+    a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height
+  )
+}
+
 function applyAspectRatio(
   rect: CropRect,
   aspectRatio: number | undefined,
@@ -438,15 +444,22 @@ export function useImageCropper(
 
   // Smart-default crop: once the viewport size is known and the crop is still
   // the empty default, seed it to a centred 80% rectangle honouring
-  // aspectRatio. This runs only when the consumer hasn't supplied one.
+  // aspectRatio. A crop the consumer supplied is clamped instead, which has
+  // to wait for the viewport too: clampCrop pins x and y to 0 without one.
   const seededRef = React.useRef(false)
   React.useEffect(() => {
     if (seededRef.current) return
     if (options.crop) return
-    if (options.defaultCrop || options.initialCrop) return
     if (viewport.width === 0 || viewport.height === 0) return
-    if (crop.width !== 0 || crop.height !== 0) {
+    if (
+      options.defaultCrop ||
+      options.initialCrop ||
+      crop.width !== 0 ||
+      crop.height !== 0
+    ) {
       seededRef.current = true
+      const clamped = clampCrop(crop)
+      if (!sameRect(clamped, crop)) setCropState(clamped)
       return
     }
     const ratio = aspectRatio ?? viewport.width / viewport.height
@@ -460,16 +473,18 @@ export function useImageCropper(
     const y = (viewport.height - h) / 2
     seededRef.current = true
     setCropState(
-      applyAspectRatio({ x, y, width: w, height: h }, aspectRatio, viewport),
+      clampCrop(
+        applyAspectRatio({ x, y, width: w, height: h }, aspectRatio, viewport),
+      ),
     )
   }, [
     viewport,
     aspectRatio,
-    crop.width,
-    crop.height,
+    crop,
     options.crop,
     options.defaultCrop,
     options.initialCrop,
+    clampCrop,
     setCropState,
   ])
 
@@ -499,13 +514,22 @@ export function useImageCropper(
       w = viewport.width
       h = w / ratio
     }
-    setCropState({
-      x: cx - w / 2,
-      y: cy - h / 2,
-      width: w,
-      height: h,
-    })
-  }, [aspectRatio, viewport, crop, options.fixedCropArea, setCropState])
+    setCropState(
+      clampCrop({
+        x: cx - w / 2,
+        y: cy - h / 2,
+        width: w,
+        height: h,
+      }),
+    )
+  }, [
+    aspectRatio,
+    viewport,
+    crop,
+    options.fixedCropArea,
+    clampCrop,
+    setCropState,
+  ])
 
   const ids = React.useMemo(
     () => ({
