@@ -23,6 +23,7 @@ function CustomersPage() {
   const columns: ColumnDef<Customer>[] = [
     {
       accessorKey: "name",
+      meta: { label: t("Customer") },
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Customer")} />
       ),
@@ -42,6 +43,7 @@ function CustomersPage() {
     },
     {
       accessorKey: "email",
+      meta: { label: t("Email") },
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Email")} />
       ),
@@ -51,14 +53,14 @@ function CustomersPage() {
     },
     {
       accessorKey: "totalOrders",
-      meta: { align: "end" },
+      meta: { align: "end", label: t("Orders") },
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Orders")} />
       ),
     },
     {
       accessorKey: "totalSpent",
-      meta: { align: "end" },
+      meta: { align: "end", label: t("Total spent") },
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Total spent")} />
       ),
@@ -67,6 +69,7 @@ function CustomersPage() {
     },
     {
       accessorKey: "createdAt",
+      meta: { label: t("Joined") },
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Joined")} />
       ),
@@ -79,6 +82,7 @@ function CustomersPage() {
     },
     {
       id: "actions",
+      enableHiding: false,
       cell: ({ row }) => (
         <RowActions
           actions={[

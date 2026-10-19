@@ -18,7 +18,9 @@ interface DataTableFacetProps<TData> {
 export function DataTableFacet<TData>({ column }: DataTableFacetProps<TData>) {
   const labels = useUiLabels()
   const header = column.columnDef.header
-  const title = typeof header === "string" ? header : column.id
+  const title =
+    column.columnDef.meta?.label ??
+    (typeof header === "string" ? header : column.id)
   const selected = new Set((column.getFilterValue() as unknown[]) ?? [])
   // Sorted so the option list does not reorder itself as counts change under a
   // filter applied to a different column.

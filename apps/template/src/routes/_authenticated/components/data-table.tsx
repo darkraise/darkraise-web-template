@@ -107,21 +107,23 @@ const products: Product[] = [
 const basicColumns: ColumnDef<Product, unknown>[] = [
   {
     accessorKey: "name",
+    meta: { label: "Name" },
     header: ({ column }) => <ColumnHeader column={column} title="Name" />,
   },
   {
     accessorKey: "category",
+    meta: { label: "Category" },
     header: ({ column }) => <ColumnHeader column={column} title="Category" />,
   },
   {
     accessorKey: "price",
-    meta: { align: "end" },
+    meta: { align: "end", label: "Price" },
     header: ({ column }) => <ColumnHeader column={column} title="Price" />,
     cell: ({ row }) => `$${(row.getValue("price") as number).toFixed(2)}`,
   },
   {
     accessorKey: "stock",
-    meta: { align: "end" },
+    meta: { align: "end", label: "Stock" },
     header: ({ column }) => <ColumnHeader column={column} title="Stock" />,
   },
 ]
@@ -129,25 +131,28 @@ const basicColumns: ColumnDef<Product, unknown>[] = [
 const statusColumns: ColumnDef<Product, unknown>[] = [
   {
     accessorKey: "name",
+    meta: { label: "Name" },
     header: ({ column }) => <ColumnHeader column={column} title="Name" />,
   },
   {
     accessorKey: "category",
+    meta: { label: "Category" },
     header: ({ column }) => <ColumnHeader column={column} title="Category" />,
   },
   {
     accessorKey: "price",
-    meta: { align: "end" },
+    meta: { align: "end", label: "Price" },
     header: ({ column }) => <ColumnHeader column={column} title="Price" />,
     cell: ({ row }) => `$${(row.getValue("price") as number).toFixed(2)}`,
   },
   {
     accessorKey: "stock",
-    meta: { align: "end" },
+    meta: { align: "end", label: "Stock" },
     header: ({ column }) => <ColumnHeader column={column} title="Stock" />,
   },
   {
     accessorKey: "status",
+    meta: { label: "Status" },
     header: ({ column }) => <ColumnHeader column={column} title="Status" />,
     cell: ({ row }) => {
       const status = row.getValue("status") as Product["status"]
@@ -399,11 +404,12 @@ function DataTablePage() {
         code={`const columns: ColumnDef<Product>[] = [
   {
     accessorKey: "name",
+    meta: { label: "Name" },
     header: ({ column }) => <ColumnHeader column={column} title="Name" />,
   },
   {
     accessorKey: "price",
-    meta: { align: "end" },
+    meta: { align: "end", label: "Price" },
     header: ({ column }) => <ColumnHeader column={column} title="Price" />,
     cell: ({ row }) => \`$\${(row.getValue("price") as number).toFixed(2)}\`,
   },
@@ -428,6 +434,7 @@ function DataTablePage() {
         title="With custom cell renderer (status badge)"
         code={`{
   accessorKey: "status",
+  meta: { label: "Status" },
   header: ({ column }) => <ColumnHeader column={column} title="Status" />,
   cell: ({ row }) => {
     const status = row.getValue("status") as "active" | "low" | "out"
