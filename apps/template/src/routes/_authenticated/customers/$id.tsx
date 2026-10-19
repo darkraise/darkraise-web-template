@@ -59,6 +59,7 @@ function CustomerDetailPage() {
   const orderColumns: ColumnDef<Order>[] = [
     {
       accessorKey: "orderNumber",
+      meta: { label: t("Order") },
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Order")} />
       ),
@@ -68,6 +69,7 @@ function CustomerDetailPage() {
     },
     {
       accessorKey: "createdAt",
+      meta: { label: t("Date") },
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Date")} />
       ),
@@ -80,6 +82,7 @@ function CustomerDetailPage() {
     },
     {
       accessorKey: "status",
+      meta: { label: t("Status") },
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Status")} />
       ),
@@ -87,7 +90,7 @@ function CustomerDetailPage() {
     },
     {
       accessorKey: "total",
-      meta: { align: "end" },
+      meta: { align: "end", label: t("Total") },
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Total")} />
       ),

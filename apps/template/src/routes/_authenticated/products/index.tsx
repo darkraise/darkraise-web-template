@@ -63,12 +63,14 @@ function ProductsPage() {
     },
     {
       accessorKey: "name",
+      meta: { label: t("Name") },
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Name")} />
       ),
     },
     {
       accessorKey: "category",
+      meta: { label: t("Category") },
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Category")} />
       ),
@@ -78,7 +80,7 @@ function ProductsPage() {
     },
     {
       accessorKey: "price",
-      meta: { align: "end" },
+      meta: { align: "end", label: t("Price") },
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Price")} />
       ),
@@ -87,13 +89,14 @@ function ProductsPage() {
     },
     {
       accessorKey: "stock",
-      meta: { align: "end" },
+      meta: { align: "end", label: t("Stock") },
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Stock")} />
       ),
     },
     {
       accessorKey: "status",
+      meta: { label: t("Status") },
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Status")} />
       ),
@@ -101,6 +104,7 @@ function ProductsPage() {
     },
     {
       id: "actions",
+      enableHiding: false,
       cell: ({ row }) => (
         <RowActions
           actions={[

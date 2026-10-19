@@ -192,7 +192,7 @@
   }
 
   .dr-data-table-facet-value {
-    @apply flex-1 capitalize;
+    @apply flex-1;
   }
 
   .dr-data-table-facet-tally {

@@ -74,12 +74,14 @@ function CategoriesPage() {
   const columns: ColumnDef<Category>[] = [
     {
       accessorKey: "name",
+      meta: { label: t("Name") },
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Name")} />
       ),
     },
     {
       accessorKey: "slug",
+      meta: { label: t("Slug") },
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Slug")} />
       ),
@@ -91,13 +93,14 @@ function CategoriesPage() {
     },
     {
       accessorKey: "productCount",
-      meta: { align: "end" },
+      meta: { align: "end", label: t("Products") },
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Products")} />
       ),
     },
     {
       accessorKey: "status",
+      meta: { label: t("Status") },
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Status")} />
       ),
@@ -105,6 +108,7 @@ function CategoriesPage() {
     },
     {
       id: "actions",
+      enableHiding: false,
       cell: ({ row }) => (
         <RowActions
           actions={[

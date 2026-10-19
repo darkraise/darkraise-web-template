@@ -5,6 +5,11 @@ import type { TableCellAlign } from "@components/table"
 export interface DataTableColumnMeta {
   /** Aligns the column's header and cells; "end" suits numbers. */
   align?: TableCellAlign
+  /**
+   * The column's name in the column visibility menu and on its facet
+   * filter. Defaults to the header when it is a string, else the column id.
+   */
+  label?: string
 }
 
 declare module "@tanstack/react-table" {
