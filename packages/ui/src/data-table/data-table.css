@@ -49,7 +49,9 @@
   }
 
   .dr-data-table-pagination-page-size-trigger {
-    @apply w-[70px];
+    inline-size: auto;
+    min-inline-size: 70px;
+    flex-shrink: 0;
   }
 
   .dr-data-table-pagination-page-info {
@@ -63,6 +65,25 @@
   /* Empty state */
   .dr-data-table-empty {
     @apply text-muted-foreground flex flex-col items-center justify-center py-12 whitespace-normal;
+  }
+
+  /* The empty row spans the whole table, which on a narrow screen is wider
+     than the scroll container. The wrapper is the size container, so the
+     message sticks to the visible part at any scroll position; its inline
+     padding keeps the text out of the 2rem edge fade in table.css. */
+  .dr-data-table-frame .dr-table-wrapper {
+    container-type: inline-size;
+  }
+
+  .dr-data-table-empty-cell {
+    padding: 0;
+  }
+
+  .dr-data-table-empty-cell > .dr-data-table-empty {
+    @apply px-8;
+    position: sticky;
+    inset-inline-start: 0;
+    inline-size: 100cqi;
   }
 
   .dr-data-table-empty-icon {
