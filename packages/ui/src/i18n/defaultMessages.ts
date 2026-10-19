@@ -19,6 +19,7 @@ export const defaultMessages: UiMessages = {
     slide: (index) => `Go to slide ${index}`,
     contributions: (count, date) =>
       `${count} ${count === 1 ? "contribution" : "contributions"} on ${date}`,
+    rating: (value) => `${value} ${value === 1 ? "star" : "stars"}`,
   },
   common: {
     language: "Language",
