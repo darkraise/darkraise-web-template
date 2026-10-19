@@ -39,6 +39,11 @@ function Basic({ onSelect }: { onSelect?: (v: string) => void } = {}) {
   )
 }
 
+function headingShown(text: string): boolean {
+  const heading = screen.queryByText(text)
+  return heading !== null && heading.closest("[hidden]") === null
+}
+
 describe("Command", () => {
   it("renders the input as combobox and the list as listbox", () => {
     render(<Basic />)
@@ -85,8 +90,26 @@ describe("Command", () => {
     const user = userEvent.setup()
     render(<Basic />)
     await user.type(screen.getByRole("combobox"), "carrot")
-    expect(screen.queryByText("Fruits")).toBeNull()
-    expect(screen.getByText("Veggies")).toBeInTheDocument()
+    expect(headingShown("Fruits")).toBe(false)
+    expect(headingShown("Veggies")).toBe(true)
+  })
+
+  it("hides every group heading when the search matches nothing", async () => {
+    const user = userEvent.setup()
+    render(<Basic />)
+    await user.type(screen.getByRole("combobox"), "zzz")
+    expect(headingShown("Fruits")).toBe(false)
+    expect(headingShown("Veggies")).toBe(false)
+  })
+
+  it("shows a hidden group again when the search is cleared", async () => {
+    const user = userEvent.setup()
+    render(<Basic />)
+    const input = screen.getByRole("combobox")
+    await user.type(input, "carrot")
+    await user.clear(input)
+    expect(headingShown("Fruits")).toBe(true)
+    expect(screen.getAllByRole("option")).toHaveLength(3)
   })
 
   it("forwards surface to the root surface", () => {
@@ -437,6 +460,85 @@ describe("Command item registration", () => {
     await user.type(input, "xyl")
     expect(screen.getAllByRole("option")).toHaveLength(1)
     expect(screen.getByRole("option")).toHaveTextContent("Xylophone")
+  })
+})
+
+describe("Command items that mount during a search", () => {
+  function Late({ label }: { label: string | null }) {
+    return (
+      <Command>
+        <CommandInput aria-label="Search" />
+        <CommandList>
+          <CommandItem value="apple">Apple</CommandItem>
+          <CommandGroup heading="Late">
+            {label === null ? null : <CommandItem>{label}</CommandItem>}
+          </CommandGroup>
+        </CommandList>
+      </Command>
+    )
+  }
+
+  it("matches an item without a value by its text", async () => {
+    const user = userEvent.setup()
+    const { rerender } = render(<Late label={null} />)
+    await user.type(screen.getByRole("combobox"), "xyl")
+    rerender(<Late label="Xylophone" />)
+    expect(screen.getAllByRole("option")).toHaveLength(1)
+    expect(screen.getByRole("option")).toHaveTextContent("Xylophone")
+    expect(headingShown("Late")).toBe(true)
+  })
+
+  it("hides the group of an item that mounts without matching", async () => {
+    const user = userEvent.setup()
+    const { rerender } = render(<Late label={null} />)
+    await user.type(screen.getByRole("combobox"), "app")
+    rerender(<Late label="Xylophone" />)
+    expect(screen.getAllByRole("option")).toHaveLength(1)
+    expect(screen.getByRole("option")).toHaveTextContent("Apple")
+    expect(headingShown("Late")).toBe(false)
+  })
+})
+
+describe("CommandDialog filtering options", () => {
+  function Dialog(props: {
+    shouldFilter?: boolean
+    filter?: (value: string, search: string) => number
+    loop?: boolean
+  }) {
+    return (
+      <CommandDialog open {...props}>
+        <CommandInput aria-label="Search" />
+        <CommandList>
+          <CommandItem value="apple">Apple</CommandItem>
+          <CommandItem value="banana">Banana</CommandItem>
+        </CommandList>
+      </CommandDialog>
+    )
+  }
+
+  it("forwards shouldFilter", async () => {
+    const user = userEvent.setup()
+    render(<Dialog shouldFilter={false} />)
+    await user.type(screen.getByRole("combobox"), "zzz")
+    expect(screen.getAllByRole("option")).toHaveLength(2)
+  })
+
+  it("forwards filter", async () => {
+    const user = userEvent.setup()
+    render(<Dialog filter={(value, search) => (value[0] === search ? 1 : 0)} />)
+    await user.type(screen.getByRole("combobox"), "a")
+    expect(screen.getAllByRole("option")).toHaveLength(1)
+    expect(screen.getByRole("option")).toHaveTextContent("Apple")
+  })
+
+  it("forwards loop", async () => {
+    const user = userEvent.setup()
+    render(<Dialog loop={false} />)
+    const input = screen.getByRole("combobox")
+    await user.click(input)
+    await user.keyboard("{ArrowUp}")
+    const active = input.getAttribute("aria-activedescendant")
+    expect(active && document.getElementById(active)).toHaveTextContent("Apple")
   })
 })
 
