@@ -18,12 +18,15 @@ import {
   type DateRange,
   addDays,
   addMonths,
+  addMonthsClamped,
   buildMonthMatrix,
+  endOfWeek,
   getISOWeek,
   isSameDay,
   matchesAny,
   startOfDay,
   startOfMonth,
+  startOfWeek,
 } from "./dateUtils"
 import "./calendar.css"
 
@@ -79,6 +82,7 @@ interface RangeProps extends BaseProps {
 export type CalendarProps = SingleProps | MultiProps | RangeProps
 
 const DEFAULT_WEEK_STARTS_ON = 0
+const MAX_DISABLED_SKIP = 366
 
 function getWeekdayNames(
   weekStartsOn: number,
@@ -296,6 +300,16 @@ function isDateSelectedInValue(
   return false
 }
 
+function selectedDates(
+  mode: CalendarMode,
+  props: CalendarProps,
+): (Date | undefined)[] {
+  if (mode === "single") return [(props as SingleProps).selected]
+  if (mode === "multi") return (props as MultiProps).selected ?? []
+  const range = (props as RangeProps).selected
+  return [range?.from, range?.to]
+}
+
 function getRangeRole(
   date: Date,
   range: DateRange | undefined,
@@ -338,37 +352,13 @@ function DayView({
   locale,
   onOpenYearView,
 }: DayViewProps) {
-  // Manage focused date — keyboard navigation cursor.
-  const initialFocus = React.useMemo(() => {
-    if (mode === "single") {
-      const single = (props as SingleProps).selected
-      return single ?? month
-    }
-    if (mode === "multi") {
-      const multi = (props as MultiProps).selected
-      return multi?.[0] ?? month
-    }
-    const range = (props as RangeProps).selected
-    return range?.from ?? month
-  }, [mode, props, month])
-
-  const [focusedDate, setFocusedDate] = React.useState<Date>(initialFocus)
+  const [focusedDate, setFocusedDate] = React.useState<Date | null>(null)
   const [hasUserFocus, setHasUserFocus] = React.useState(false)
   const [hoveredDate, setHoveredDate] = React.useState<Date | null>(null)
   const tableRef = React.useRef<HTMLDivElement | null>(null)
-
-  // Keep focused date in view: if selected month moves, snap focused date.
-  React.useEffect(() => {
-    if (
-      focusedDate.getMonth() !== month.getMonth() ||
-      focusedDate.getFullYear() !== month.getFullYear()
-    ) {
-      // only snap if user navigated by month controls and focus is far away
-      if (!hasUserFocus) {
-        setFocusedDate(startOfMonth(month))
-      }
-    }
-  }, [month, focusedDate, hasUserFocus])
+  const pendingFocusRef = React.useRef<FocusOptions | null>(
+    autoFocus ? { preventScroll: true } : null,
+  )
 
   React.useEffect(() => {
     if (!autoFocus) return
@@ -381,6 +371,45 @@ function DayView({
   )
 
   const today = React.useMemo(() => startOfDay(new Date()), [])
+
+  const monthsToShow = React.useMemo(() => {
+    const list: Date[] = []
+    for (let i = 0; i < numberOfMonths; i++) {
+      list.push(addMonths(month, i))
+    }
+    return list
+  }, [month, numberOfMonths])
+
+  const tabStop = React.useMemo(() => {
+    const inView = (date: Date) =>
+      monthsToShow.some(
+        (m) =>
+          m.getMonth() === date.getMonth() &&
+          m.getFullYear() === date.getFullYear(),
+      )
+    const candidates = [
+      focusedDate,
+      ...selectedDates(mode, props),
+      today,
+    ].filter((date): date is Date => date instanceof Date)
+    const found = candidates.find((date) => inView(date) && !isDisabled(date))
+    if (found) return startOfDay(found)
+    for (const m of monthsToShow) {
+      for (let d = m; d.getMonth() === m.getMonth(); d = addDays(d, 1)) {
+        if (!isDisabled(d)) return d
+      }
+    }
+    return null
+  }, [focusedDate, mode, props, today, monthsToShow, isDisabled])
+
+  React.useEffect(() => {
+    const options = pendingFocusRef.current
+    if (!options) return
+    pendingFocusRef.current = null
+    tableRef.current
+      ?.querySelector<HTMLButtonElement>('.dr-calendar-day-btn[tabindex="0"]')
+      ?.focus(options)
+  })
 
   const commit = (date: Date) => {
     if (isDisabled(date)) return
@@ -435,85 +464,68 @@ function DayView({
   }
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    const step = inlineArrow(event.key, event.currentTarget)
-    let next: Date | null
+    const target = event.target
+    // Keys from the nav and caption buttons, and from the caption dropdowns'
+    // portaled lists (React bubbles those here too), keep their own behaviour.
+    if (
+      !tabStop ||
+      !(target instanceof HTMLElement) ||
+      !event.currentTarget.contains(target) ||
+      !target.closest("[data-day]")
+    )
+      return
+    const dir = inlineArrow(event.key, event.currentTarget)
+    let next: Date
+    let step = 0
     switch (event.key) {
       case "ArrowLeft":
       case "ArrowRight":
-        next = addDays(focusedDate, step === "next" ? 1 : -1)
+        step = dir === "next" ? 1 : -1
+        next = addDays(tabStop, step)
         break
       case "ArrowUp":
-        next = addDays(focusedDate, -7)
+        step = -7
+        next = addDays(tabStop, step)
         break
       case "ArrowDown":
-        next = addDays(focusedDate, 7)
+        step = 7
+        next = addDays(tabStop, step)
         break
       case "Home":
-        next = addDays(focusedDate, -focusedDate.getDay() + weekStartsOn)
+        next = startOfWeek(tabStop, weekStartsOn)
         break
       case "End":
-        next = addDays(focusedDate, 6 - focusedDate.getDay() + weekStartsOn)
+        next = endOfWeek(tabStop, weekStartsOn)
         break
       case "PageUp":
-        if (event.shiftKey) {
-          next = new Date(
-            focusedDate.getFullYear() - 1,
-            focusedDate.getMonth(),
-            focusedDate.getDate(),
-          )
-        } else {
-          next = new Date(
-            focusedDate.getFullYear(),
-            focusedDate.getMonth() - 1,
-            focusedDate.getDate(),
-          )
-        }
-        break
       case "PageDown":
-        if (event.shiftKey) {
-          next = new Date(
-            focusedDate.getFullYear() + 1,
-            focusedDate.getMonth(),
-            focusedDate.getDate(),
-          )
-        } else {
-          next = new Date(
-            focusedDate.getFullYear(),
-            focusedDate.getMonth() + 1,
-            focusedDate.getDate(),
-          )
-        }
+        next = addMonthsClamped(
+          tabStop,
+          (event.key === "PageUp" ? -1 : 1) * (event.shiftKey ? 12 : 1),
+        )
         break
-      case "Enter":
-      case " ": {
-        event.preventDefault()
-        commit(focusedDate)
-        return
-      }
       default:
         return
     }
-    if (next) {
-      event.preventDefault()
-      setFocusedDate(next)
-      setHasUserFocus(true)
-      // ensure the focused month is in view
-      if (
-        next.getMonth() !== month.getMonth() ||
-        next.getFullYear() !== month.getFullYear()
-      ) {
-        setMonth(startOfMonth(next))
-      }
+    event.preventDefault()
+    // A disabled day cannot take focus, so arrows step over it; other keys
+    // leave focus where it is rather than strand the tab stop on it.
+    for (let i = 0; step !== 0 && i < MAX_DISABLED_SKIP; i++) {
+      if (!isDisabled(next)) break
+      next = addDays(next, step)
+    }
+    if (isDisabled(next)) return
+    setFocusedDate(next)
+    setHasUserFocus(true)
+    pendingFocusRef.current = {}
+    // ensure the focused month is in view
+    if (
+      next.getMonth() !== month.getMonth() ||
+      next.getFullYear() !== month.getFullYear()
+    ) {
+      setMonth(startOfMonth(next))
     }
   }
-
-  const monthsToShow = React.useMemo(() => {
-    const list: Date[] = []
-    for (let i = 0; i < numberOfMonths; i++) {
-      list.push(addMonths(month, i))
-    }
-    return list
-  }, [month, numberOfMonths])
 
   const cls = (key: string, fallback: string) => classNames?.[key] ?? fallback
 
@@ -527,6 +539,10 @@ function DayView({
     setFocusedDate(date)
     setHasUserFocus(true)
     commit(date)
+  }
+
+  const handleDayFocus = (date: Date) => {
+    if (!tabStop || !isSameDay(date, tabStop)) setFocusedDate(date)
   }
 
   return (
@@ -557,11 +573,12 @@ function DayView({
             props={props}
             disabled={disabled}
             today={today}
-            focusedDate={focusedDate}
+            tabStop={tabStop}
             hasUserFocus={hasUserFocus}
             hoveredDate={hoveredDate}
             onDayHover={setHoveredDate}
             onDayClick={handleDayClick}
+            onDayFocus={handleDayFocus}
             onPrev={() => setMonth(addMonths(month, -1))}
             onNext={() => setMonth(addMonths(month, 1))}
             onOpenYearView={onOpenYearView}
@@ -595,11 +612,12 @@ interface MonthBlockProps {
   props: CalendarProps
   disabled?: CalendarMatcher | CalendarMatcher[]
   today: Date
-  focusedDate: Date
+  tabStop: Date | null
   hasUserFocus: boolean
   hoveredDate: Date | null
   onDayHover: (date: Date | null) => void
   onDayClick: (date: Date) => void
+  onDayFocus: (date: Date) => void
   onPrev: () => void
   onNext: () => void
   onOpenYearView: () => void
@@ -626,11 +644,12 @@ function MonthBlock({
   props,
   disabled,
   today,
-  focusedDate,
+  tabStop,
   hasUserFocus,
   hoveredDate,
   onDayHover,
   onDayClick,
+  onDayFocus,
   onPrev,
   onNext,
   onOpenYearView,
@@ -795,7 +814,9 @@ function MonthBlock({
                 date.getFullYear() === month.getFullYear()
               const dayDisabled = matchesAny(date, disabled)
               const isToday = isSameDay(date, today)
-              const focused = hasUserFocus && isSameDay(date, focusedDate)
+              const isTabStop =
+                inMonth && tabStop !== null && isSameDay(date, tabStop)
+              const focused = hasUserFocus && isTabStop
               const selected = isDateSelectedInValue(date, mode, value)
               const rangeRole = getRangeRole(date, previewRange)
               if (!inMonth && !showOutsideDays) {
@@ -853,7 +874,9 @@ function MonthBlock({
                       isPreviewing && rangeRole !== null ? "true" : undefined
                     }
                     data-focused={focused ? "true" : undefined}
+                    tabIndex={isTabStop ? 0 : -1}
                     onClick={() => onDayClick(date)}
+                    onFocus={() => onDayFocus(date)}
                     onMouseEnter={
                       mode === "range" ? () => onDayHover(date) : undefined
                     }

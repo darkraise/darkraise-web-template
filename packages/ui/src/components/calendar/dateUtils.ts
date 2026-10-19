@@ -39,6 +39,20 @@ export function addMonths(d: Date, months: number): Date {
   return next
 }
 
+export function addMonthsClamped(d: Date, months: number): Date {
+  const first = new Date(d.getFullYear(), d.getMonth() + months, 1)
+  const lastDay = new Date(
+    first.getFullYear(),
+    first.getMonth() + 1,
+    0,
+  ).getDate()
+  return new Date(
+    first.getFullYear(),
+    first.getMonth(),
+    Math.min(d.getDate(), lastDay),
+  )
+}
+
 function dayOfWeekIndex(d: Date, weekStartsOn: number): number {
   return (d.getDay() - weekStartsOn + 7) % 7
 }

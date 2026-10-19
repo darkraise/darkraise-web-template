@@ -3,6 +3,8 @@ import { useUiLocale } from "../../i18n/context"
 import { useUiFormatters } from "../../i18n/useUiFormatters"
 
 import { cn } from "@lib/utils"
+import { useComposedRefs } from "@primitives/slot"
+import { focusProgrammatically } from "@primitives/focus-trap"
 import { useUiLabels } from "@labels"
 import { format as fmt, isValid as dateIsValid } from "@lib/date"
 import { Calendar, type DateRange, type Matcher } from "@components/calendar"
@@ -482,20 +484,49 @@ function DatePickerContent({
   className,
   align = "start",
   sideOffset = 4,
+  onOpenAutoFocus,
+  onCloseAutoFocus,
   ref,
   children,
   ...props
 }: DatePickerContentProps) {
-  const { contentId } = useDatePickerContext("DatePickerContent")
+  const { contentId, open } = useDatePickerContext("DatePickerContent")
+  const contentRef = React.useRef<HTMLDivElement | null>(null)
+  const composedRef = useComposedRefs(contentRef, ref)
+  const openerRef = React.useRef<HTMLElement | null>(null)
+  // A layout effect runs before the calendar's autoFocus effect, so it still
+  // sees the element that opened the popover rather than the focused day.
+  React.useLayoutEffect(() => {
+    if (open) openerRef.current = document.activeElement as HTMLElement | null
+  }, [open])
   return (
     <PopoverPrimitivePortal>
       <PopoverPrimitiveContent
-        ref={ref}
+        ref={composedRef}
         id={contentId}
         align={align}
         sideOffset={sideOffset}
         role="dialog"
         className={cn("dr-date-picker-content", className)}
+        onOpenAutoFocus={(event) => {
+          onOpenAutoFocus?.(event)
+          // The calendar's autoFocus has already moved focus to its day by
+          // now; the popover would otherwise pull it back to the container.
+          if (contentRef.current?.contains(document.activeElement)) {
+            event.preventDefault()
+          }
+        }}
+        onCloseAutoFocus={(event) => {
+          onCloseAutoFocus?.(event)
+          if (event.defaultPrevented) return
+          const active = document.activeElement
+          if (active && active !== document.body) return
+          const opener = openerRef.current
+          if (opener && document.contains(opener)) {
+            event.preventDefault()
+            focusProgrammatically(opener, { preventScroll: true })
+          }
+        }}
         {...props}
       >
         {children}
