@@ -241,6 +241,15 @@ const DRAG_SURFACES = new Map<string, [string, string, string, string]>([
     ],
   ],
   [
+    "dr-image-cropper-handle",
+    [
+      "src/components/image-cropper/image-cropper.css",
+      ".dr-image-cropper-viewport",
+      "touch-action: none",
+      "sits in the cropper viewport, which sets touch-action: none for the resize drag",
+    ],
+  ],
+  [
     "dr-image-cropper-selection",
     [
       "src/components/image-cropper/image-cropper.css",

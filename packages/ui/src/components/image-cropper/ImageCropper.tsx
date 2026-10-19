@@ -1,5 +1,6 @@
 import * as React from "react"
 import { cn } from "@lib/utils"
+import { useUiText } from "../../i18n/useUiText"
 import {
   ImageDropzone,
   type ImageDropzoneProps,
@@ -50,6 +51,7 @@ const CORNER_HANDLES = new Set<HandlePosition>([
 ])
 const HORIZONTAL_EDGE_HANDLES = new Set<HandlePosition>(["top", "bottom"])
 const VERTICAL_EDGE_HANDLES = new Set<HandlePosition>(["left", "right"])
+const ARROW_KEYS = new Set(["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"])
 
 function resizeCrop(
   start: CropRect,
@@ -161,6 +163,10 @@ function ignorePointer(event: React.PointerEvent): boolean {
   return event.pointerType === "mouse" && event.button !== 0
 }
 
+const CropSizeAnnouncerContext = React.createContext<
+  ((text: string) => void) | null
+>(null)
+
 // ── Components ──────────────────────────────────────────────────────────────
 
 export interface ImageCropperProps
@@ -228,18 +234,14 @@ function ImageCropper({
   const [hookOptions, rest] = splitHookOptions(props as Record<string, unknown>)
   const api = useImageCropper(hookOptions)
   return (
-    <ImageCropperContext.Provider value={api}>
-      <div
-        ref={ref}
-        id={api.ids.root}
-        className={cn("dr-image-cropper", className)}
-        data-shape={api.cropShape}
-        data-fixed={api.fixedCropArea ? "true" : undefined}
-        {...rest}
-      >
-        {children}
-      </div>
-    </ImageCropperContext.Provider>
+    <ImageCropperRootProvider
+      value={api}
+      ref={ref}
+      className={className}
+      {...rest}
+    >
+      {children}
+    </ImageCropperRootProvider>
   )
 }
 
@@ -259,18 +261,24 @@ function ImageCropperRootProvider({
   ref,
   ...rest
 }: ImageCropperRootProviderProps) {
+  const [sizeAnnouncement, setSizeAnnouncement] = React.useState("")
   return (
     <ImageCropperContext.Provider value={value}>
-      <div
-        ref={ref}
-        id={value.ids.root}
-        className={cn("dr-image-cropper", className)}
-        data-shape={value.cropShape}
-        data-fixed={value.fixedCropArea ? "true" : undefined}
-        {...rest}
-      >
-        {children}
-      </div>
+      <CropSizeAnnouncerContext.Provider value={setSizeAnnouncement}>
+        <div
+          ref={ref}
+          id={value.ids.root}
+          className={cn("dr-image-cropper", className)}
+          data-shape={value.cropShape}
+          data-fixed={value.fixedCropArea ? "true" : undefined}
+          {...rest}
+        >
+          {children}
+          <span className="sr-only" role="status" aria-live="polite">
+            {sizeAnnouncement}
+          </span>
+        </div>
+      </CropSizeAnnouncerContext.Provider>
     </ImageCropperContext.Provider>
   )
 }
@@ -708,11 +716,26 @@ function ImageCropperHandle({
   onPointerMove,
   onPointerUp,
   onPointerCancel,
+  onKeyDown,
+  onKeyUp,
+  onBlur,
   ref,
   ...rest
 }: ImageCropperHandleProps) {
   const api = useImageCropperContext("ImageCropperHandle")
+  const uiText = useUiText()
+  const announceSize = React.useContext(CropSizeAnnouncerContext)
   const dragRef = React.useRef<DragState<{ startCrop: CropRect }> | null>(null)
+  const keyResizingRef = React.useRef(false)
+
+  const resizeOptions = (): ResizeOptions => ({
+    aspectRatio: api.aspectRatio,
+    minWidth: api.minWidth,
+    maxWidth: api.maxWidth,
+    minHeight: api.minHeight,
+    maxHeight: api.maxHeight,
+    viewport: api.viewport,
+  })
 
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     onPointerDown?.(event)
@@ -737,14 +760,7 @@ function ImageCropperHandle({
     const dx = event.clientX - drag.start.x
     const dy = event.clientY - drag.start.y
     api.setCrop(
-      resizeCrop(drag.data.startCrop, position, dx, dy, {
-        aspectRatio: api.aspectRatio,
-        minWidth: api.minWidth,
-        maxWidth: api.maxWidth,
-        minHeight: api.minHeight,
-        maxHeight: api.maxHeight,
-        viewport: api.viewport,
-      }),
+      resizeCrop(drag.data.startCrop, position, dx, dy, resizeOptions()),
     )
   }
 
@@ -765,11 +781,52 @@ function ImageCropperHandle({
     finishDrag(event)
   }
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    onKeyDown?.(event)
+    if (event.defaultPrevented) return
+    if (api.fixedCropArea) return
+    const step = event.shiftKey ? api.nudgeStepShift : api.nudgeStep
+    let dx = 0
+    let dy = 0
+    if (event.key === "ArrowLeft") dx = -step
+    else if (event.key === "ArrowRight") dx = step
+    else if (event.key === "ArrowUp") dy = -step
+    else if (event.key === "ArrowDown") dy = step
+    else return
+    // Also stops the enclosing selection from moving the crop on this key.
+    event.preventDefault()
+    if (dx !== 0 && HORIZONTAL_EDGE_HANDLES.has(position)) return
+    if (dy !== 0 && VERTICAL_EDGE_HANDLES.has(position)) return
+    keyResizingRef.current = true
+    api.setDragging(true)
+    api.setCrop(resizeCrop(api.crop, position, dx, dy, resizeOptions()))
+  }
+
+  const finishKeyResize = () => {
+    if (!keyResizingRef.current) return
+    keyResizingRef.current = false
+    api.setDragging(false)
+    announceSize?.(
+      `${uiText("Crop size")}: ${Math.round(api.crop.width)} × ${Math.round(api.crop.height)}`,
+    )
+  }
+
+  const handleKeyUp = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    onKeyUp?.(event)
+    if (ARROW_KEYS.has(event.key)) finishKeyResize()
+  }
+
+  const handleBlur = (event: React.FocusEvent<HTMLDivElement>) => {
+    onBlur?.(event)
+    finishKeyResize()
+  }
+
   return (
     <div
       ref={ref}
       id={api.ids.handle(position)}
-      role="slider"
+      role="button"
+      tabIndex={api.fixedCropArea ? -1 : 0}
       aria-label={api.translations.handleLabel(position)}
       className={cn("dr-image-cropper-handle", className)}
       data-position={position}
@@ -778,6 +835,9 @@ function ImageCropperHandle({
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerCancel}
+      onKeyDown={handleKeyDown}
+      onKeyUp={handleKeyUp}
+      onBlur={handleBlur}
       {...rest}
     />
   )
