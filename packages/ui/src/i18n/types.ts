@@ -15,6 +15,7 @@ export interface UiMessages extends UiLabels {
     collapse: (name: string) => string
     slide: (index: number) => string
     contributions: (count: number, date: string) => string
+    rating: (value: number) => string
   }
   dateInput: { year: string; month: string; day: string }
   dateInputPlaceholder: { year: string; month: string; day: string }

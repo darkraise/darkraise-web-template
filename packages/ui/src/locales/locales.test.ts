@@ -17,3 +17,12 @@ it("ships Vietnamese for every English message with matching message types", () 
     "2 lượt đóng góp vào 8/9/2026",
   )
 })
+
+it("announces star ratings in English and Vietnamese", () => {
+  expect(
+    [1, 3, 3.5].map((value) => en.messages.announcements.rating(value)),
+  ).toEqual(["1 star", "3 stars", "3.5 stars"])
+  expect(
+    [1, 3.5].map((value) => vi.messages.announcements.rating(value)),
+  ).toEqual(["1 sao", "3.5 sao"])
+})

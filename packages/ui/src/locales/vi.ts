@@ -14,6 +14,7 @@ const messages: UiMessages = {
     collapse: (name) => `Thu gọn ${name}`,
     slide: (index) => `Đến trang chiếu ${index}`,
     contributions: (count, date) => `${count} lượt đóng góp vào ${date}`,
+    rating: (value) => `${value} sao`,
   },
   imageCropper: {
     selectionLabel: "Vùng cắt ảnh",
