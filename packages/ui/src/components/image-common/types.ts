@@ -12,5 +12,5 @@ export interface FileAcceptDetails {
 
 export interface FileRejectDetails {
   file: File
-  reason: "type" | "size"
+  reason: "type" | "size" | "decode" | "read"
 }
