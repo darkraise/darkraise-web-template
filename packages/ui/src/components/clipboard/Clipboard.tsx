@@ -5,6 +5,8 @@ import { Button } from "@components/button"
 import { toast } from "@components/sonner"
 import { cn } from "@lib/utils"
 import { writeClipboardText } from "@lib/clipboard"
+import { useIsomorphicLayoutEffect } from "@hooks/useIsomorphicLayoutEffect"
+import { useComposedRefs } from "@primitives/slot"
 import "./clipboard.css"
 
 export interface ClipboardCopyDetails {
@@ -48,6 +50,7 @@ interface ClipboardContextValue {
   copied: boolean
   copy: () => void
   timeout: number
+  inputId: string
 }
 
 const ClipboardContext = React.createContext<ClipboardContextValue | null>(null)
@@ -146,9 +149,11 @@ function Clipboard({
     })()
   }, [value, timeout, uiText])
 
+  const inputId = `${React.useId()}-input`
+
   const ctx = React.useMemo<ClipboardContextValue>(
-    () => ({ value, copied, copy, timeout }),
-    [value, copied, copy, timeout],
+    () => ({ value, copied, copy, timeout, inputId }),
+    [value, copied, copy, timeout, inputId],
   )
 
   return (
@@ -168,7 +173,14 @@ function ClipboardLabel({
   className,
   ...props
 }: React.LabelHTMLAttributes<HTMLLabelElement>) {
-  return <label className={cn("dr-clipboard-label", className)} {...props} />
+  const { inputId } = useClipboardContext("ClipboardLabel")
+  return (
+    <label
+      htmlFor={inputId}
+      className={cn("dr-clipboard-label", className)}
+      {...props}
+    />
+  )
 }
 
 function ClipboardControl({
@@ -185,10 +197,11 @@ function ClipboardInput({
 }: Omit<React.InputHTMLAttributes<HTMLInputElement>, "value" | "readOnly"> & {
   ref?: React.Ref<HTMLInputElement>
 }) {
-  const { value } = useClipboardContext("ClipboardInput")
+  const { value, inputId } = useClipboardContext("ClipboardInput")
   return (
     <input
       ref={ref}
+      id={inputId}
       type="text"
       readOnly
       value={value}
@@ -203,6 +216,7 @@ function ClipboardTrigger({
   onClick,
   children,
   ref,
+  "aria-label": ariaLabelProp,
   ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
   ref?: React.Ref<HTMLButtonElement>
@@ -210,14 +224,38 @@ function ClipboardTrigger({
   const uiText = useUiText()
 
   const { copy, copied } = useClipboardContext("ClipboardTrigger")
+  const buttonRef = React.useRef<HTMLButtonElement | null>(null)
+  const statusRef = React.useRef<HTMLSpanElement | null>(null)
+  const composedRef = useComposedRefs(buttonRef, ref)
+
+  // Children can render their text indirectly (ClipboardIndicator's slots),
+  // so whether the trigger already has a visible name is read from the DOM.
+  const [hasText, setHasText] = React.useState(false)
+  useIsomorphicLayoutEffect(() => {
+    const button = buttonRef.current
+    if (!button) return
+    const text = Array.from(button.childNodes)
+      .filter((node) => node !== statusRef.current)
+      .map((node) => node.textContent ?? "")
+      .join("")
+      .trim()
+    setHasText(text !== "")
+  })
+
+  const defaultLabel =
+    hasText || props["aria-labelledby"]
+      ? undefined
+      : uiText(copied ? "Copied" : "Copy")
+
   return (
     <Button
-      ref={ref}
+      ref={composedRef}
       type="button"
       variant="outline"
       size="sm"
       className={cn("dr-clipboard-trigger", className)}
       data-copied={copied ? "true" : "false"}
+      aria-label={ariaLabelProp ?? defaultLabel}
       onClick={(event) => {
         onClick?.(event)
         if (event.defaultPrevented) return
@@ -226,7 +264,12 @@ function ClipboardTrigger({
       {...props}
     >
       {children}
-      <span className="sr-only" role="status" aria-live="polite">
+      <span
+        ref={statusRef}
+        className="sr-only"
+        role="status"
+        aria-live="polite"
+      >
         {copied ? uiText("Copied") : ""}
       </span>
     </Button>
