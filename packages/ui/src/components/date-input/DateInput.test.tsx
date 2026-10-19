@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 import { act, fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import * as React from "react"
@@ -362,5 +362,86 @@ describe("DateInput carried digit", () => {
     expect([day.selectionStart, day.selectionEnd]).toEqual([1, 1])
     await user.keyboard("1")
     expect([month.value, day.value]).toEqual(["01", "31"])
+  })
+})
+
+describe("DateInput arrow keys", () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  function Controlled({
+    initial,
+    onValueChange,
+  }: {
+    initial: Date
+    onValueChange: (date: Date | null) => void
+  }) {
+    const [d, setD] = React.useState<Date | null>(initial)
+    return (
+      <DateInput
+        value={d}
+        onValueChange={(next) => {
+          setD(next)
+          onValueChange(next)
+        }}
+        aria-label="dob"
+      />
+    )
+  }
+
+  it.each([
+    ["month", "{ArrowUp}", "2024-01-31", new Date(2024, 0, 31), [2024, 1, 29]],
+    ["month", "{ArrowUp}", "2026-01-31", new Date(2026, 0, 31), [2026, 1, 28]],
+    [
+      "month",
+      "{ArrowDown}",
+      "2026-03-31",
+      new Date(2026, 2, 31),
+      [2026, 1, 28],
+    ],
+    ["year", "{ArrowUp}", "2024-02-29", new Date(2024, 1, 29), [2025, 1, 28]],
+    ["month", "{ArrowUp}", "2024-12-15", new Date(2024, 11, 15), [2024, 0, 15]],
+    ["day", "{ArrowUp}", "2024-02-29", new Date(2024, 1, 29), [2024, 1, 1]],
+    ["day", "{ArrowDown}", "2024-02-01", new Date(2024, 1, 1), [2024, 1, 29]],
+  ] as const)(
+    "%s %s from %s clamps the day and leaves other segments",
+    async (segment, key, _label, from, [y, m, d]) => {
+      const user = userEvent.setup()
+      const onValueChange = vi.fn()
+      render(<Controlled initial={from} onValueChange={onValueChange} />)
+      screen.getByRole("spinbutton", { name: new RegExp(segment, "i") }).focus()
+      await user.keyboard(key)
+      expect(onValueChange).toHaveBeenLastCalledWith(new Date(y, m, d))
+    },
+  )
+
+  it("starts from the typed segments and fills only missing ones from today", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] })
+    vi.setSystemTime(new Date(2026, 9, 19, 9))
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(<DateInput aria-label="dob" onValueChange={onValueChange} />)
+    const [year, month, day] = segments()
+    year.focus()
+    await user.keyboard("202403")
+    expect(day).toHaveFocus()
+    month.focus()
+    await user.keyboard("{ArrowUp}")
+    expect([year.value, month.value, day.value]).toEqual(["2024", "04", "19"])
+    expect(onValueChange).toHaveBeenLastCalledWith(new Date(2024, 3, 19))
+  })
+
+  it("steps a typed impossible day into the month", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(<DateInput aria-label="dob" onValueChange={onValueChange} />)
+    const [year, month, day] = segments()
+    year.focus()
+    await user.keyboard("20260229")
+    await user.keyboard("{ArrowDown}")
+    expect([year.value, month.value, day.value]).toEqual(["2026", "02", "28"])
+    expect(onValueChange).toHaveBeenLastCalledWith(new Date(2026, 1, 28))
+    expect(screen.getByRole("group")).not.toHaveAttribute("aria-invalid")
   })
 })
