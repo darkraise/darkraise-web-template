@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect } from "vitest"
-import { createRef } from "react"
-import { Input } from "@components/input"
+import { createRef, useState } from "react"
+import { Input, type InputProps } from "@components/input"
 
 describe("Input", () => {
   it("renders with placeholder text", () => {
@@ -48,5 +48,96 @@ describe("Input", () => {
       "type",
       "password",
     )
+  })
+
+  describe("slots", () => {
+    const SLOTS = [
+      "prefix",
+      "suffix",
+      "leadingAction",
+      "trailingAction",
+    ] as const
+
+    function ClearableInput() {
+      const [value, setValue] = useState("")
+      return (
+        <Input
+          aria-label="Search"
+          value={value}
+          onChange={(event) => setValue(event.target.value)}
+          trailingAction={
+            value ? (
+              <button type="button" onClick={() => setValue("")}>
+                Clear
+              </button>
+            ) : null
+          }
+        />
+      )
+    }
+
+    it("keeps focus while typing toggles trailingAction", async () => {
+      const user = userEvent.setup()
+      render(<ClearableInput />)
+      const input = screen.getByRole("textbox", { name: "Search" })
+      await user.type(input, "hello")
+      expect(screen.getByRole("textbox", { name: "Search" })).toBe(input)
+      expect(input).toHaveFocus()
+      expect(input).toHaveValue("hello")
+      expect(screen.getByRole("button", { name: "Clear" })).toBeInTheDocument()
+    })
+
+    it.each(SLOTS)(
+      "keeps the input node, focus and selection when %s toggles",
+      (slot) => {
+        const props = (content: InputProps[typeof slot]): InputProps => ({
+          "aria-label": "Amount",
+          defaultValue: "hello",
+          [slot]: content,
+        })
+        const { rerender } = render(<Input {...props(null)} />)
+        const input = screen.getByRole<HTMLInputElement>("textbox", {
+          name: "Amount",
+        })
+        input.focus()
+        input.setSelectionRange(1, 3)
+
+        rerender(<Input {...props(<span>slot</span>)} />)
+        expect(screen.getByRole("textbox", { name: "Amount" })).toBe(input)
+        expect(input).toHaveFocus()
+        expect([input.selectionStart, input.selectionEnd]).toEqual([1, 3])
+
+        rerender(<Input {...props(null)} />)
+        expect(screen.getByRole("textbox", { name: "Amount" })).toBe(input)
+        expect(input).toHaveFocus()
+      },
+    )
+
+    it.each([null, false])(
+      "renders the group without a slot span for %s",
+      (content) => {
+        const { container } = render(
+          <Input aria-label="Amount" trailingAction={content} />,
+        )
+        expect(container.querySelector(".dr-input-group")).not.toBeNull()
+        expect(container.querySelector(".dr-input-action")).toBeNull()
+      },
+    )
+
+    it("renders a bare input when no slot attribute is passed", () => {
+      const { container } = render(<Input aria-label="Amount" />)
+      expect(container.firstElementChild).toBe(
+        screen.getByRole("textbox", { name: "Amount" }),
+      )
+    })
+
+    it.each(SLOTS)("renders a bare input when %s is undefined", (slot) => {
+      const { container } = render(
+        <Input aria-label="Amount" {...{ [slot]: undefined }} />,
+      )
+      const input = screen.getByRole("textbox", { name: "Amount" })
+      expect(container.firstElementChild).toBe(input)
+      expect(input).not.toHaveClass("dr-input-grouped")
+    })
   })
 })
