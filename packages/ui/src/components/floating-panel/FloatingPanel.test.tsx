@@ -946,6 +946,39 @@ describe("FloatingPanel keyboard drag alternative", () => {
     expect(surface.style.left).toBe("110px")
   })
 
+  it("moves the panel when the grip is dragged with a pointer", () => {
+    render(panel())
+    const handle = screen.getByRole("button", { name: /move panel/i })
+    const grip = handle.querySelector("svg") as SVGElement
+    grip.dispatchEvent(
+      new PointerEvent("pointerdown", {
+        clientX: 0,
+        clientY: 0,
+        pointerId: 1,
+        bubbles: true,
+      }),
+    )
+    window.dispatchEvent(
+      new PointerEvent("pointermove", {
+        clientX: 30,
+        clientY: 40,
+        pointerId: 1,
+        bubbles: true,
+      }),
+    )
+    window.dispatchEvent(
+      new PointerEvent("pointerup", {
+        clientX: 30,
+        clientY: 40,
+        pointerId: 1,
+        bubbles: true,
+      }),
+    )
+    const surface = handle.closest(".dr-floating-panel") as HTMLElement
+    expect(surface.style.left).toBe("130px")
+    expect(surface.style.top).toBe("140px")
+  })
+
   it("resizes with shift and arrow keys", async () => {
     const user = userEvent.setup()
     render(panel())
