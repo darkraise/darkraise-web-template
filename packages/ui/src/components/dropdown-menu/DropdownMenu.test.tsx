@@ -723,3 +723,118 @@ describe("DropdownMenu portal forceMount", () => {
     expect(menus[0]).toHaveAttribute("aria-label", "Outer")
   })
 })
+
+describe("DropdownMenu item keys", () => {
+  it.each(["Enter", " "])(
+    "%j runs an item wired only through onClick and closes the menu",
+    async (key) => {
+      const onClick = vi.fn()
+      const onOpenChange = vi.fn()
+      render(
+        <DropdownMenu defaultOpen onOpenChange={onOpenChange}>
+          <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={onClick}>Rename</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>,
+      )
+      fireEvent.keyDown(
+        await screen.findByRole("menuitem", { name: "Rename" }),
+        { key },
+      )
+      expect(onClick).toHaveBeenCalledTimes(1)
+      expect(onOpenChange).toHaveBeenCalledWith(false)
+    },
+  )
+
+  it.each(["Enter", " "])("%j changes a radio item's value", async (key) => {
+    const onValueChange = vi.fn()
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuRadioGroup value="a" onValueChange={onValueChange}>
+            <DropdownMenuRadioItem value="a">A</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="b">B</DropdownMenuRadioItem>
+          </DropdownMenuRadioGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    )
+    fireEvent.keyDown(await screen.findByRole("menuitemradio", { name: "B" }), {
+      key,
+    })
+    expect(onValueChange).toHaveBeenCalledWith("b")
+  })
+
+  it.each(["Enter", " "])("%j toggles a checkbox item", async (key) => {
+    const onCheckedChange = vi.fn()
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuCheckboxItem
+            checked={false}
+            onCheckedChange={onCheckedChange}
+          >
+            Wrap
+          </DropdownMenuCheckboxItem>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    )
+    fireEvent.keyDown(await screen.findByRole("menuitemcheckbox"), { key })
+    expect(onCheckedChange).toHaveBeenCalledTimes(1)
+    expect(onCheckedChange).toHaveBeenCalledWith(true)
+  })
+
+  it.each(["Enter", " "])(
+    "%j on a sub-trigger opens its submenu and keeps the menu open",
+    async (key) => {
+      const onOpenChange = vi.fn()
+      render(
+        <DropdownMenu defaultOpen onOpenChange={onOpenChange}>
+          <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>Share</DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem>Email</DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+          </DropdownMenuContent>
+        </DropdownMenu>,
+      )
+      const share = await screen.findByRole("menuitem", { name: "Share" })
+      fireEvent.keyDown(share, { key })
+      expect(share).toHaveAttribute("aria-expanded", "true")
+      expect(
+        await screen.findByRole("menuitem", { name: "Email" }),
+      ).toBeInTheDocument()
+      expect(onOpenChange).not.toHaveBeenCalled()
+    },
+  )
+
+  it.each(["Enter", " "])(
+    "%j leaves a disabled item's onClick and onSelect unrun",
+    async (key) => {
+      const onClick = vi.fn()
+      const onSelect = vi.fn()
+      render(
+        <DropdownMenu defaultOpen>
+          <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem disabled onClick={onClick} onSelect={onSelect}>
+              Cherry
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>,
+      )
+      fireEvent.keyDown(
+        await screen.findByRole("menuitem", { name: "Cherry" }),
+        { key },
+      )
+      expect(onClick).not.toHaveBeenCalled()
+      expect(onSelect).not.toHaveBeenCalled()
+      expect(screen.getByRole("menu")).toBeInTheDocument()
+    },
+  )
+})

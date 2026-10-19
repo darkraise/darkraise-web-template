@@ -18,6 +18,8 @@ import {
   MenubarSubContent,
   MenubarSubTrigger,
   MenubarPortal,
+  MenubarRadioGroup,
+  MenubarRadioItem,
 } from "@components/menubar"
 
 function Basic({
@@ -608,4 +610,100 @@ describe("Menubar portal forceMount", () => {
     render(<Bar />)
     expect(screen.queryByRole("menu", { hidden: true })).toBeNull()
   })
+})
+
+describe("Menubar item keys", () => {
+  it.each(["Enter", " "])(
+    "%j runs an item wired only through onClick and closes the menu",
+    async (key) => {
+      const onClick = vi.fn()
+      const onValueChange = vi.fn()
+      render(
+        <Menubar defaultValue="file" onValueChange={onValueChange}>
+          <MenubarMenu value="file">
+            <MenubarTrigger>File</MenubarTrigger>
+            <MenubarContent>
+              <MenubarItem onClick={onClick}>Rename</MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
+        </Menubar>,
+      )
+      fireEvent.keyDown(
+        await screen.findByRole("menuitem", { name: "Rename" }),
+        { key },
+      )
+      expect(onClick).toHaveBeenCalledTimes(1)
+      expect(onValueChange).toHaveBeenCalledWith("")
+    },
+  )
+
+  it.each(["Enter", " "])("%j changes a radio item's value", async (key) => {
+    const onValueChange = vi.fn()
+    render(
+      <Menubar defaultValue="view">
+        <MenubarMenu value="view">
+          <MenubarTrigger>View</MenubarTrigger>
+          <MenubarContent>
+            <MenubarRadioGroup value="a" onValueChange={onValueChange}>
+              <MenubarRadioItem value="a">A</MenubarRadioItem>
+              <MenubarRadioItem value="b">B</MenubarRadioItem>
+            </MenubarRadioGroup>
+          </MenubarContent>
+        </MenubarMenu>
+      </Menubar>,
+    )
+    fireEvent.keyDown(await screen.findByRole("menuitemradio", { name: "B" }), {
+      key,
+    })
+    expect(onValueChange).toHaveBeenCalledWith("b")
+  })
+
+  it.each(["Enter", " "])("%j toggles a checkbox item", async (key) => {
+    const onCheckedChange = vi.fn()
+    render(
+      <Menubar defaultValue="view">
+        <MenubarMenu value="view">
+          <MenubarTrigger>View</MenubarTrigger>
+          <MenubarContent>
+            <MenubarCheckboxItem
+              checked={false}
+              onCheckedChange={onCheckedChange}
+            >
+              Wrap
+            </MenubarCheckboxItem>
+          </MenubarContent>
+        </MenubarMenu>
+      </Menubar>,
+    )
+    fireEvent.keyDown(await screen.findByRole("menuitemcheckbox"), { key })
+    expect(onCheckedChange).toHaveBeenCalledTimes(1)
+    expect(onCheckedChange).toHaveBeenCalledWith(true)
+  })
+
+  it.each(["Enter", " "])(
+    "%j leaves a disabled item's onClick and onSelect unrun",
+    async (key) => {
+      const onClick = vi.fn()
+      const onSelect = vi.fn()
+      render(
+        <Menubar defaultValue="file">
+          <MenubarMenu value="file">
+            <MenubarTrigger>File</MenubarTrigger>
+            <MenubarContent>
+              <MenubarItem disabled onClick={onClick} onSelect={onSelect}>
+                Close
+              </MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
+        </Menubar>,
+      )
+      fireEvent.keyDown(
+        await screen.findByRole("menuitem", { name: "Close" }),
+        { key },
+      )
+      expect(onClick).not.toHaveBeenCalled()
+      expect(onSelect).not.toHaveBeenCalled()
+      expect(screen.getByRole("menu")).toBeInTheDocument()
+    },
+  )
 })
