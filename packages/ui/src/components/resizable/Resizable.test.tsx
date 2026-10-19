@@ -32,6 +32,15 @@ describe("Resizable", () => {
     expect(group).toHaveAttribute("data-panel-group-direction", "horizontal")
   })
 
+  it("leaves the group's size to its classes", () => {
+    render(<Basic />)
+    const group = screen
+      .getByText("Left")
+      .closest(".dr-resizable-panel-group") as HTMLElement
+    expect(group.style.height).toBe("")
+    expect(group.style.width).toBe("")
+  })
+
   it("renders panels with data-panel attribute", () => {
     render(<Basic />)
     const panels = document.querySelectorAll("[data-panel]")
