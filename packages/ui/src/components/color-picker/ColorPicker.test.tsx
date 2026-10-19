@@ -3,6 +3,9 @@ import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
 
+import { UiI18nProvider } from "../../i18n"
+import { vi as vietnamese } from "../../locales/vi"
+
 import {
   ColorPicker,
   ColorPickerArea,
@@ -70,13 +73,35 @@ function Harness({
 }
 
 describe("ColorPicker", () => {
-  it("renders swatch with current color", () => {
+  it("renders the swatch as a named colour preview, not a button", () => {
     render(<Harness initial="#3b82f6" />)
-    const swatch = screen.getByRole("button", {
-      name: /current color #3b82f6/i,
-    })
-    expect(swatch).toBeInTheDocument()
+    const swatch = screen.getByRole("img", { name: "Current color #3b82f6" })
     expect(swatch.style.backgroundColor).toBe("rgb(59, 130, 246)")
+    expect(swatch).not.toHaveAttribute("aria-haspopup")
+    expect(swatch).not.toHaveAttribute("tabindex")
+    expect(screen.getAllByRole("button")).toEqual([
+      screen.getByRole("button", { name: "Open color picker" }),
+    ])
+  })
+
+  it("opens only from the trigger, and the swatch shares no trigger id", async () => {
+    const user = userEvent.setup()
+    const { container } = render(<Harness />)
+    const ids = Array.from(container.querySelectorAll("[id]"), (el) => el.id)
+    expect(new Set(ids).size).toBe(ids.length)
+    await user.click(screen.getByRole("img", { name: /current color/i }))
+    expect(screen.queryByRole("dialog")).toBeNull()
+  })
+
+  it("names the swatch in the active locale", () => {
+    render(
+      <UiI18nProvider locale="vi" locales={[vietnamese]}>
+        <Harness initial="#3b82f6" />
+      </UiI18nProvider>,
+    )
+    expect(
+      screen.getByRole("img", { name: "Màu hiện tại #3b82f6" }),
+    ).toBeInTheDocument()
   })
 
   it("trigger click opens the popover", async () => {

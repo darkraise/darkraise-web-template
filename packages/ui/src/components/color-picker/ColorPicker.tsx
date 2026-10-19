@@ -202,39 +202,29 @@ function ColorPickerControl({ className, ...props }: ColorPickerControlProps) {
   )
 }
 
-export interface ColorPickerSwatchProps extends Omit<
-  React.ButtonHTMLAttributes<HTMLButtonElement>,
-  "value"
-> {
-  ref?: React.Ref<HTMLButtonElement>
+export interface ColorPickerSwatchProps extends React.HTMLAttributes<HTMLSpanElement> {
+  ref?: React.Ref<HTMLSpanElement>
 }
 
 function ColorPickerSwatch({
   className,
-  type = "button",
-  onClick,
   style,
   ref,
   "aria-label": ariaLabelProp,
   ...props
 }: ColorPickerSwatchProps) {
+  const uiText = useUiText()
   const { value, disabled } = useColorPickerContext("ColorPickerSwatch")
   return (
-    <PopoverPrimitiveTrigger asChild>
-      <button
-        ref={ref}
-        type={type}
-        disabled={disabled}
-        aria-label={
-          ariaLabelProp ?? `Open color picker, current color ${value}`
-        }
-        data-disabled={disabled ? "true" : undefined}
-        className={cn("dr-color-picker-swatch", className)}
-        style={{ backgroundColor: value, ...style }}
-        onClick={onClick}
-        {...props}
-      />
-    </PopoverPrimitiveTrigger>
+    <span
+      ref={ref}
+      role="img"
+      aria-label={ariaLabelProp ?? `${uiText("Current color")} ${value}`}
+      data-disabled={disabled ? "true" : undefined}
+      className={cn("dr-color-picker-swatch", className)}
+      style={{ backgroundColor: value, ...style }}
+      {...props}
+    />
   )
 }
 
