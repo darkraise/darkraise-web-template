@@ -281,3 +281,60 @@ describe("DatePicker", () => {
     expect(inputs[0]).toHaveAttribute("readonly")
   })
 })
+
+describe("DatePicker calendar focus", () => {
+  it("focuses the calendar's tab stop when the popover opens", async () => {
+    const user = userEvent.setup()
+    render(<SingleHarness min={new Date(2024, 5, 10)} />)
+    await openTrigger(user)
+    const dialog = await screen.findByRole("dialog")
+    const day = within(dialog).getByRole("button", { name: "June 10th, 2024" })
+    await waitFor(() => expect(day).toHaveFocus())
+    await user.keyboard("{ArrowRight}")
+    expect(
+      within(dialog).getByRole("button", { name: "June 11th, 2024" }),
+    ).toHaveFocus()
+  })
+})
+
+describe("DatePicker focus return", () => {
+  it("returns focus to the trigger on Escape", async () => {
+    const user = userEvent.setup()
+    render(<SingleHarness />)
+    const trigger = screen.getByRole("button", { name: /open date picker/i })
+    await openTrigger(user)
+    await screen.findByRole("dialog")
+    await user.keyboard("{Escape}")
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull())
+    expect(trigger).toHaveFocus()
+  })
+
+  it("returns focus to the trigger after a day is clicked", async () => {
+    const user = userEvent.setup()
+    render(<SingleHarness />)
+    const trigger = screen.getByRole("button", { name: /open date picker/i })
+    await openTrigger(user)
+    const dialog = await screen.findByRole("dialog")
+    await user.click(
+      within(dialog).getByRole("button", { name: "June 15th, 2024" }),
+    )
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull())
+    expect(trigger).toHaveFocus()
+  })
+
+  it("returns focus to the trigger after a day is chosen with Enter", async () => {
+    const user = userEvent.setup()
+    render(<SingleHarness />)
+    const trigger = screen.getByRole("button", { name: /open date picker/i })
+    await openTrigger(user)
+    const dialog = await screen.findByRole("dialog")
+    await waitFor(() =>
+      expect(
+        within(dialog).getByRole("button", { name: "June 1st, 2024" }),
+      ).toHaveFocus(),
+    )
+    await user.keyboard("{Enter}")
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull())
+    expect(trigger).toHaveFocus()
+  })
+})
