@@ -128,6 +128,69 @@ describe("useImageCropper", () => {
     expect(result.current.crop).toEqual(initial)
   })
 
+  it.each([
+    [
+      "the automatic crop",
+      { maxWidth: 200, maxHeight: 100 },
+      { x: 40, y: 30, width: 200, height: 100 },
+    ],
+    [
+      "the automatic crop with an aspect ratio",
+      { aspectRatio: 1, maxWidth: 100 },
+      { x: 80, y: 30, width: 100, height: 100 },
+    ],
+    [
+      "defaultCrop",
+      {
+        maxWidth: 200,
+        maxHeight: 200,
+        defaultCrop: { x: 0, y: 0, width: 300, height: 300 },
+      },
+      { x: 0, y: 0, width: 200, height: 200 },
+    ],
+    [
+      "initialCrop",
+      { initialCrop: { x: 5, y: 5, width: 10, height: 10 } },
+      { x: 5, y: 5, width: 40, height: 40 },
+    ],
+  ])("clamps %s to the size limits", (_name, options, expected) => {
+    const onCropChange = vi.fn()
+    const { result } = renderHook(() =>
+      useImageCropper({ ...options, onCropChange }),
+    )
+    act(() => result.current.registerViewport({ width: 400, height: 300 }))
+    expect(result.current.crop).toEqual(expected)
+    expect(onCropChange).toHaveBeenLastCalledWith({ crop: expected })
+  })
+
+  it("leaves a supplied crop that fits without a change event", () => {
+    const onCropChange = vi.fn()
+    const { result } = renderHook(() =>
+      useImageCropper({
+        defaultCrop: { x: 5, y: 5, width: 50, height: 50 },
+        onCropChange,
+      }),
+    )
+    act(() => result.current.registerViewport({ width: 400, height: 300 }))
+    expect(result.current.crop).toEqual({ x: 5, y: 5, width: 50, height: 50 })
+    expect(onCropChange).not.toHaveBeenCalled()
+  })
+
+  it("clamps the aspect-ratio refit to the size limits", () => {
+    const { result, rerender } = renderHook(
+      ({ aspectRatio }: { aspectRatio?: number }) =>
+        useImageCropper({
+          aspectRatio,
+          minWidth: 80,
+          defaultCrop: { x: 0, y: 0, width: 200, height: 100 },
+        }),
+      { initialProps: {} },
+    )
+    act(() => result.current.registerViewport({ width: 400, height: 300 }))
+    rerender({ aspectRatio: 0.5 })
+    expect(result.current.crop).toEqual({ x: 75, y: 0, width: 80, height: 160 })
+  })
+
   it("controlled zoom is honored and onZoomChange fires with clamped value", () => {
     const onZoomChange = vi.fn()
     const { result, rerender } = renderHook(
