@@ -11,12 +11,15 @@ import {
   ImageEditorContext,
   ImageEditorFreeform,
   ImageEditorFreeformClear,
+  ImageEditorPerspectiveOverlay,
   ImageEditorPerspectiveReset,
   ImageEditorPreset,
   ImageEditorRedo,
   ImageEditorRotationSlider,
+  ImageEditorTools,
   ImageEditorUndo,
   ImageEditorViewport,
+  useImageEditorContext,
   type ImageEditorProps,
 } from "./index"
 import {
@@ -330,5 +333,187 @@ describe("ImageEditor under StrictMode", () => {
     })
     expect(onFreeformPathChange).toHaveBeenCalledTimes(1)
     expectOneEntry("0 3")
+  })
+})
+
+describe("ImageEditor perspective corners", () => {
+  beforeEach(() => {
+    Element.prototype.setPointerCapture ??= () => {}
+  })
+
+  // A 400 × 400 viewport letterboxes an 800 × 600 image to x 0–400,
+  // y 50–350, so 1% of the image is 4px across and 3px down.
+  function Measured() {
+    const { registerViewport, registerImage } =
+      useImageEditorContext("Measured").cropper
+    React.useEffect(() => {
+      registerViewport({ width: 400, height: 400 })
+      registerImage({ naturalWidth: 800, naturalHeight: 600 })
+    }, [registerViewport, registerImage])
+    return null
+  }
+
+  function renderPerspective(props: Partial<ImageEditorProps> = {}) {
+    return render(
+      <ImageEditor defaultTool="perspective" {...props}>
+        <Measured />
+        <ImageEditorTools tools={["crop", "perspective"]} />
+        <ImageEditorPerspectiveOverlay />
+        <ImageEditorPerspectiveReset />
+        <ImageEditorUndo />
+        <ImageEditorRedo />
+      </ImageEditor>,
+    )
+  }
+
+  function corner(name: string) {
+    return screen.getByRole("button", { name })
+  }
+
+  function position(name: string) {
+    const handle = corner(name)
+    return [
+      Number(handle.getAttribute("cx")),
+      Number(handle.getAttribute("cy")),
+    ]
+  }
+
+  function cornerCount() {
+    return document.querySelectorAll("[data-corner]").length
+  }
+
+  function topLeft() {
+    const handle = document.querySelector('[data-corner="topLeft"]')
+    return [
+      Number(handle?.getAttribute("cx")),
+      Number(handle?.getAttribute("cy")),
+    ]
+  }
+
+  it("names each corner handle and puts it in the tab order", () => {
+    renderPerspective()
+    for (const name of [
+      "Top-left corner",
+      "Top-right corner",
+      "Bottom-right corner",
+      "Bottom-left corner",
+    ]) {
+      expect(corner(name)).toHaveAttribute("tabindex", "0")
+    }
+    expect(position("Bottom-right corner")).toEqual([400, 350])
+  })
+
+  it("moves a corner by 1% of the image per arrow, 10% with Shift, clamped to the image", () => {
+    renderPerspective()
+    const handle = corner("Top-left corner")
+    expect(position("Top-left corner")).toEqual([0, 50])
+    fireEvent.keyDown(handle, { key: "ArrowRight" })
+    expect(position("Top-left corner")).toEqual([4, 50])
+    fireEvent.keyDown(handle, { key: "ArrowDown" })
+    expect(position("Top-left corner")).toEqual([4, 53])
+    fireEvent.keyDown(handle, { key: "ArrowRight", shiftKey: true })
+    expect(position("Top-left corner")).toEqual([44, 53])
+    fireEvent.keyDown(handle, { key: "ArrowLeft", shiftKey: true })
+    fireEvent.keyDown(handle, { key: "ArrowLeft", shiftKey: true })
+    fireEvent.keyDown(handle, { key: "ArrowUp", shiftKey: true })
+    expect(position("Top-left corner")).toEqual([0, 50])
+  })
+
+  it("pushes one history entry when the arrow key is released", () => {
+    renderPerspective()
+    const handle = corner("Top-left corner")
+    fireEvent.keyDown(handle, { key: "ArrowRight" })
+    fireEvent.keyDown(handle, { key: "ArrowRight" })
+    expect(screen.getByRole("button", { name: "Undo" })).toBeDisabled()
+    fireEvent.keyUp(handle, { key: "ArrowRight" })
+    fireEvent.click(screen.getByRole("button", { name: "Undo" }))
+    expect(cornerCount()).toBe(0)
+    fireEvent.click(screen.getByRole("button", { name: "Redo" }))
+    expect(position("Top-left corner")).toEqual([8, 50])
+  })
+
+  it("resets the corners to the image rect and keeps them while the tool is open", () => {
+    renderPerspective()
+    const handle = corner("Top-left corner")
+    fireEvent.keyDown(handle, { key: "ArrowRight" })
+    fireEvent.keyUp(handle, { key: "ArrowRight" })
+    fireEvent.click(screen.getByRole("button", { name: "Reset perspective" }))
+    expect(position("Top-left corner")).toEqual([0, 50])
+    expect(position("Top-right corner")).toEqual([400, 50])
+    expect(position("Bottom-right corner")).toEqual([400, 350])
+    expect(position("Bottom-left corner")).toEqual([0, 350])
+    fireEvent.click(screen.getByRole("button", { name: "Undo" }))
+    expect(position("Top-left corner")).toEqual([4, 50])
+  })
+
+  it("seeds the corners on entering the tool, not after an undo to none", () => {
+    renderPerspective({ defaultTool: "crop" })
+    expect(cornerCount()).toBe(0)
+    fireEvent.click(screen.getByRole("radio", { name: "Perspective" }))
+    expect(topLeft()).toEqual([0, 50])
+    const handle = document.querySelector('[data-corner="topLeft"]')
+    const svg = (handle as SVGCircleElement).ownerSVGElement as SVGSVGElement
+    const pointer = { pointerId: 1, pointerType: "mouse", button: 0 }
+    fireEvent.pointerDown(handle as SVGCircleElement, pointer)
+    fireEvent.pointerMove(svg, { ...pointer, clientX: 20, clientY: 70 })
+    fireEvent.pointerUp(svg, pointer)
+    expect(topLeft()).toEqual([20, 70])
+    fireEvent.click(screen.getByRole("button", { name: "Undo" }))
+    expect(cornerCount()).toBe(0)
+    fireEvent.click(screen.getByRole("radio", { name: "Crop" }))
+    fireEvent.click(screen.getByRole("radio", { name: "Perspective" }))
+    expect(topLeft()).toEqual([0, 50])
+  })
+})
+
+describe("ImageEditor annotation defaults", () => {
+  it("applies the default annotation kind, colour and width props", () => {
+    render(
+      <ImageEditor
+        data-testid="editor"
+        defaultAnnotationKind="arrow"
+        defaultAnnotationColor="#00ff00"
+        defaultAnnotationWidth={9}
+      >
+        <ImageEditorAnnotationKind kind="arrow" />
+        <ImageEditorContext>
+          {(editor) => (
+            <output data-testid="annotation-style">
+              {`${editor.activeAnnotationColor} ${editor.activeAnnotationWidth}`}
+            </output>
+          )}
+        </ImageEditorContext>
+      </ImageEditor>,
+    )
+    expect(screen.getByRole("radio", { name: "Arrow" })).toHaveAttribute(
+      "aria-checked",
+      "true",
+    )
+    expect(screen.getByTestId("annotation-style")).toHaveTextContent(
+      "#00ff00 9",
+    )
+    expect(
+      screen
+        .getByTestId("editor")
+        .getAttributeNames()
+        .filter((name) => name.includes("annotation")),
+    ).toEqual([])
+  })
+})
+
+describe("ImageEditor slider names", () => {
+  it("names the adjust and rotation sliders by their visible labels", () => {
+    render(
+      <ImageEditor>
+        <ImageEditorAdjust channel="contrast" />
+        <ImageEditorAdjust channel="sepia" label="Tone" />
+        <ImageEditorRotationSlider />
+      </ImageEditor>,
+    )
+    for (const name of ["Contrast", "Tone", "Rotation"]) {
+      const slider = screen.getByRole("slider", { name })
+      const labelId = slider.getAttribute("aria-labelledby") ?? ""
+      expect(document.getElementById(labelId)).toHaveTextContent(name)
+    }
   })
 })

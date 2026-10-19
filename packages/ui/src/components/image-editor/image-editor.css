@@ -272,10 +272,12 @@
     pointer-events: none;
   }
   .dr-image-editor-perspective-handle {
+    @apply focus-ring;
     fill: hsl(var(--primary));
     stroke: white;
     stroke-width: 2;
     cursor: grab;
+    touch-action: none;
   }
   .dr-image-editor-perspective-handle:active {
     cursor: grabbing;

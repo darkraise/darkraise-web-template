@@ -94,6 +94,9 @@ const EDITOR_OPTION_KEYS = new Set<string>([
   "additionalPresets",
   "historyLimit",
   "extensions",
+  "defaultAnnotationKind",
+  "defaultAnnotationColor",
+  "defaultAnnotationWidth",
   // Inherited cropper options (still routed into useImageEditor which
   // forwards them to the inner cropper)
   "zoom",
@@ -343,12 +346,14 @@ function ImageEditorAdjust({
   const editor = useImageEditorContext("ImageEditorAdjust")
   const range = FILTER_RANGES[channel]
   const value = editor.filters[channel]
+  const labelId = React.useId()
   return (
     <div className={cn("dr-image-editor-adjust", className)}>
-      <span className="dr-image-editor-adjust-label">
+      <span id={labelId} className="dr-image-editor-adjust-label">
         {label ?? uiText(ADJUST_LABELS[channel])}
       </span>
       <Slider
+        aria-labelledby={labelId}
         value={[value]}
         onValueChange={(arr) => {
           const next = arr[0]
@@ -675,12 +680,14 @@ function ImageEditorRotationSlider({
   const uiText = useUiText()
 
   const editor = useImageEditorContext("ImageEditorRotationSlider")
+  const labelId = React.useId()
   return (
     <div className={cn("dr-image-editor-rotation", className)}>
-      <span className="dr-image-editor-rotation-label">
+      <span id={labelId} className="dr-image-editor-rotation-label">
         {uiText("Rotation")}
       </span>
       <Slider
+        aria-labelledby={labelId}
         value={[editor.cropper.rotation]}
         onValueChange={(arr) => {
           const next = arr[0]
@@ -1442,10 +1449,17 @@ function ImageEditorFreeformClear({
 
 // ── Perspective overlay ─────────────────────────────────────────────────────
 
-function defaultCornersFromImage(
+interface DisplayedImageRect {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
+function displayedImageRect(
   viewport: { width: number; height: number },
   image: { naturalWidth: number; naturalHeight: number },
-): PerspectiveCorners | null {
+): DisplayedImageRect | null {
   if (
     viewport.width === 0 ||
     viewport.height === 0 ||
@@ -1456,22 +1470,35 @@ function defaultCornersFromImage(
   }
   const naturalRatio = image.naturalWidth / image.naturalHeight
   const viewportRatio = viewport.width / viewport.height
-  let dw: number
-  let dh: number
+  let width: number
+  let height: number
   if (naturalRatio > viewportRatio) {
-    dw = viewport.width
-    dh = viewport.width / naturalRatio
+    width = viewport.width
+    height = viewport.width / naturalRatio
   } else {
-    dh = viewport.height
-    dw = viewport.height * naturalRatio
+    height = viewport.height
+    width = viewport.height * naturalRatio
   }
-  const x = (viewport.width - dw) / 2
-  const y = (viewport.height - dh) / 2
+  return {
+    x: (viewport.width - width) / 2,
+    y: (viewport.height - height) / 2,
+    width,
+    height,
+  }
+}
+
+function defaultCornersFromImage(
+  viewport: { width: number; height: number },
+  image: { naturalWidth: number; naturalHeight: number },
+): PerspectiveCorners | null {
+  const rect = displayedImageRect(viewport, image)
+  if (!rect) return null
+  const { x, y, width, height } = rect
   return {
     topLeft: { x, y },
-    topRight: { x: x + dw, y },
-    bottomRight: { x: x + dw, y: y + dh },
-    bottomLeft: { x, y: y + dh },
+    topRight: { x: x + width, y },
+    bottomRight: { x: x + width, y: y + height },
+    bottomLeft: { x, y: y + height },
   }
 }
 
@@ -1484,6 +1511,24 @@ const PERSPECTIVE_CORNERS = [
 
 type PerspectiveCornerKey = (typeof PERSPECTIVE_CORNERS)[number]
 
+const PERSPECTIVE_CORNER_LABELS: Record<PerspectiveCornerKey, string> = {
+  topLeft: "Top-left corner",
+  topRight: "Top-right corner",
+  bottomRight: "Bottom-right corner",
+  bottomLeft: "Bottom-left corner",
+}
+
+const CORNER_ARROW_STEPS: Record<string, { x: number; y: number }> = {
+  ArrowLeft: { x: -1, y: 0 },
+  ArrowRight: { x: 1, y: 0 },
+  ArrowUp: { x: 0, y: -1 },
+  ArrowDown: { x: 0, y: 1 },
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max)
+}
+
 export interface ImageEditorPerspectiveOverlayProps extends React.HTMLAttributes<SVGSVGElement> {
   ref?: React.Ref<SVGSVGElement>
 }
@@ -1493,12 +1538,14 @@ function ImageEditorPerspectiveOverlay({
   ref,
   ...rest
 }: ImageEditorPerspectiveOverlayProps) {
+  const uiText = useUiText()
   const editor = useImageEditorContext("ImageEditorPerspectiveOverlay")
   const [size, setSize] = React.useState({ width: 0, height: 0 })
   const dragRef = React.useRef<{
     pointerId: number
     corner: PerspectiveCornerKey
   } | null>(null)
+  const keyMovedRef = React.useRef(false)
 
   React.useEffect(() => {
     const viewport = editor.cropper.viewportRef.current
@@ -1514,20 +1561,29 @@ function ImageEditorPerspectiveOverlay({
     return () => observer.disconnect()
   }, [editor.cropper.viewportRef])
 
-  // When the user enters perspective mode for the first time, seed corners
-  // from the displayed-image rect so the overlay has something to drag.
+  // Entering perspective mode seeds the corners from the displayed-image
+  // rect so the overlay has something to drag. The seed is spent once used,
+  // so undoing back to no perspective does not re-seed outside history.
   // Narrowed deps prevent the effect from running on every render (the
-  // editor object identity changes per render); this version only fires
-  // when the relevant inputs change.
+  // editor object identity changes per render).
+  const seedPendingRef = React.useRef(false)
+  React.useEffect(() => {
+    seedPendingRef.current = editor.tool === "perspective"
+  }, [editor.tool])
   const setPerspective = editor.setPerspective
   React.useEffect(() => {
-    if (editor.tool !== "perspective") return
-    if (editor.perspective) return
+    if (!seedPendingRef.current) return
+    if (editor.perspective) {
+      seedPendingRef.current = false
+      return
+    }
     const initial = defaultCornersFromImage(
       editor.cropper.viewport,
       editor.cropper.image,
     )
-    if (initial) setPerspective(initial)
+    if (!initial) return
+    seedPendingRef.current = false
+    setPerspective(initial)
   }, [
     editor.tool,
     editor.perspective,
@@ -1562,6 +1618,41 @@ function ImageEditorPerspectiveOverlay({
     dragRef.current = null
     editor.pushHistory()
   }
+  const onCornerKeyDown =
+    (key: PerspectiveCornerKey) =>
+    (event: React.KeyboardEvent<SVGCircleElement>) => {
+      const direction = CORNER_ARROW_STEPS[event.key]
+      if (!direction || !corners || editor.tool !== "perspective") return
+      const rect = displayedImageRect(
+        editor.cropper.viewport,
+        editor.cropper.image,
+      )
+      if (!rect) return
+      event.preventDefault()
+      const fraction = event.shiftKey ? 0.1 : 0.01
+      const current = corners[key]
+      const next = {
+        x: clamp(
+          current.x + direction.x * rect.width * fraction,
+          rect.x,
+          rect.x + rect.width,
+        ),
+        y: clamp(
+          current.y + direction.y * rect.height * fraction,
+          rect.y,
+          rect.y + rect.height,
+        ),
+      }
+      if (next.x === current.x && next.y === current.y) return
+      keyMovedRef.current = true
+      editor.setPerspective({ ...corners, [key]: next })
+    }
+  const onCornerKeyUp = (event: React.KeyboardEvent<SVGCircleElement>) => {
+    if (!(event.key in CORNER_ARROW_STEPS) || !keyMovedRef.current) return
+    keyMovedRef.current = false
+    editor.pushHistory()
+  }
+  const active = editor.tool === "perspective"
 
   const polyD = corners
     ? pathToD(
@@ -1605,9 +1696,17 @@ function ImageEditorPerspectiveOverlay({
                 cx={p.x}
                 cy={p.y}
                 r={8}
+                role={active ? "button" : undefined}
+                tabIndex={active ? 0 : undefined}
+                aria-label={
+                  active ? uiText(PERSPECTIVE_CORNER_LABELS[key]) : undefined
+                }
+                aria-hidden={active ? undefined : true}
                 className="dr-image-editor-perspective-handle"
                 data-corner={key}
                 onPointerDown={onCornerPointerDown(key)}
+                onKeyDown={onCornerKeyDown(key)}
+                onKeyUp={onCornerKeyUp}
               />
             )
           })}
@@ -1642,7 +1741,12 @@ function ImageEditorPerspectiveReset({
       onClick={(event) => {
         onClick?.(event)
         if (event.defaultPrevented) return
-        editor.resetPerspective()
+        const seeded = defaultCornersFromImage(
+          editor.cropper.viewport,
+          editor.cropper.image,
+        )
+        if (seeded) editor.setPerspective(seeded)
+        else editor.resetPerspective()
         editor.pushHistory()
       }}
       {...rest}

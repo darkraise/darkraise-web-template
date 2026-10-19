@@ -75,6 +75,10 @@ const FORCED_COLORS_EXEMPT = new Map<string, string>([
     "dr-floating-panel-drag-handle",
     "an icon-only grip inside the panel header",
   ],
+  [
+    "dr-image-editor-perspective-handle",
+    "an SVG circle with no box; forced colours repaint its fill and stroke",
+  ],
   ["dr-json-chevron", "an icon-only disclosure inside a tree row"],
   [
     "dr-json-row",
@@ -256,6 +260,15 @@ const DRAG_SURFACES = new Map<string, [string, string, string, string]>([
       ".dr-image-cropper-viewport",
       "touch-action: none",
       "sits in the cropper viewport, which sets touch-action: none for the drag",
+    ],
+  ],
+  [
+    "dr-image-editor-perspective-handle",
+    [
+      "src/components/image-editor/image-editor.css",
+      ".dr-image-editor-perspective-handle",
+      "touch-action: none",
+      "a corner drag must not pan the page",
     ],
   ],
   [
