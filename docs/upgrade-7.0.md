@@ -179,6 +179,7 @@ Three things can need a change in your code:
   - `labels.layout.back`, `labels.qrCode.label` and `labels.userMenu.trigger` are new, and `UiMessages` gains `dateInputPlaceholder`.
   - `themeOptions` gains `inter`, `geist`, `ibm-plex-sans`, `hanken-grotesk`, `newsreader`, `body`, `dots`, `grain`, `off`, `on`, `standard`, `strong`, `neutralAccent` and `neutralAccentDark`, and loses `bar`, `ring` and `both`.
   - `controls` loses the sidebar indicator and Glass strings (`Sidebar active-item indicator`, `Each preset's own indicator`, `Default`, `Left rail only`, `Bar`, `Uniform ring only`, `Ring`, `Ring and left rail`, `Both`, `Opacity`, `Backdrop Blur`) and gains `Layout` and `Shell style`.
+  - `announcements` gains `rating(value)` (`announcements.rating`), and `controls` gains `Top-left corner`, `Top-right corner`, `Bottom-right corner`, `Bottom-left corner`, `Copy`, `Current color`, `2D slider` and `Crop size`.
 - `ThemeContextValue` is built from the axis registry: every axis with its setter, plus `setAxis`, `registry`, `canResetToPreset` and `resetToPreset`. The `useLayoutStore` state gains `shellStyle`, `setShellStyle` and `clearShellStyle`. A test that mocks `useTheme` with a whole context value, or replaces the layout store's whole state, must build the new shape.
 
 The [custom styles and presets guide](custom-styles.md) describes how to define your own styles, presets and fonts.
@@ -242,6 +243,20 @@ The cleanup that `useListbox`'s `registerItem` returns now removes the item at o
 `TagsInputClearTrigger` carries `.dr-tags-input-clear-trigger` instead of `.dr-tags-input-item-delete-trigger`. Move any rule that styled the clear trigger through the delete trigger's class to the new class; rules on `.dr-tags-input-item-delete-trigger` now reach only the delete buttons inside tags.
 
 `ToggleGroup` sizes to its items and starts at the inline-start edge instead of filling its row with the items centred. Add `className="w-full justify-center"` to a group that should keep the old full-width, centred row.
+
+A single-selection `ToggleGroup` no longer clears its value when the checked item is clicked again, and arrow keys check the item they move to. Guards such as `if (value)` against an empty value can stay; they no longer fire. If you need a clearable choice, use `type="multiple"` with at most one value, or a separate Clear action.
+
+`ColorPickerSwatch` no longer opens the picker. Where it was the opener, wrap it: `<ColorPickerTrigger aria-label="…"><ColorPickerSwatch aria-hidden="true" /></ColorPickerTrigger>`. A selector or test that found the swatch as a button must look for `role="img"` named "Current color" and the value.
+
+`Calendar` has a single tab stop. Tests that pressed Tab to move between days must use the arrow keys, and tests that sent Enter to the calendar must focus a day first.
+
+`Slider`'s `onValueCommit` now also runs after keyboard changes. If you used it to detect the end of a pointer drag only, compare against the last committed value or listen to pointer events.
+
+`DateInput` no longer accepts out-of-range month or day digits while typing, and a complete impossible date sets `aria-invalid`. Show your error message from `onInvalidChange(true)` instead of inferring it from `onValueChange(null)`, which also means an empty field.
+
+`FileRejectDetails.reason` can be `"decode"` or `"read"` as well as `"type"` and `"size"`. Map both in your rejection messages.
+
+`Input` and `Textarea` render their group wrapper for a slot set to `null` or `false`. A stylesheet that relied on `null` producing the bare element must target `.dr-input-group` / `.dr-textarea-group`, or pass `undefined`.
 
 ## Overlays
 

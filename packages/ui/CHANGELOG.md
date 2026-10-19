@@ -108,6 +108,22 @@ Breaking: under `dir="rtl"`, horizontal arrow keys follow the reading order. `Ar
 
 Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex` without `justify-content: center`, so its items start at the inline-start edge instead of sitting centred in a full-width row. Add `className="w-full justify-center"` to restore the old row. The theme switcher's groups keep their own grid and do not change.
 
+Breaking: a single-selection `ToggleGroup` keeps its checked item. Clicking it, or pressing Space or Enter on it, no longer clears the value, and the arrow keys, Home and End move focus and check the item they reach, as a radio group does. Multiple selection is unchanged.
+
+Breaking: `ColorPickerSwatch` is a colour preview, a `<span role="img">` named after the current colour, and no longer opens the picker; `ColorPickerTrigger` is the only opener. Its props extend `React.HTMLAttributes<HTMLSpanElement>`, so button-only props such as `type` and `disabled` no longer type-check. Wrap a swatch that should open the picker in `ColorPickerTrigger`.
+
+Breaking: `FileRejectDetails.reason` adds `"decode"` (the file is not a decodable image) and `"read"` (the browser could not read the file). `ImageDropzone`, and the cropper and editor dropzones built on it, reject such files through `onFileReject` instead of accepting an empty image or failing silently; a `switch` over `reason` must handle both values.
+
+Breaking: `Calendar` has one tab stop, the focused day. Arrow, PageUp, PageDown, Home and End move focus to the day itself, and Home and End respect `weekStartsOn`. Enter and Space select the focused day through the day button's own activation, and the month and caption buttons keep their native keys. A test that tabbed through every day, or pressed Enter on the calendar root, must focus a day first.
+
+Breaking: `Slider` calls `onValueCommit` after each keyboard change that moves the value, not only when a pointer is released.
+
+Breaking: `DateInput` constrains typing. A digit that would push the month past 12 or the day past 31 completes the segment and starts the next one, so `99` cannot be typed as a month, and a second `0` that would make `00` is ignored. A complete date that does not exist, such as 29 February 2026, stays visible, sets `aria-invalid` and `data-invalid` on the group and calls the new `onInvalidChange(true)`; `onValueChange` still receives `null`. ArrowUp and ArrowDown change only their own segment and clamp the day to the month's length.
+
+Breaking: `Input` and `Textarea` render their group wrapper whenever a slot prop is set, including to `null` or `false`; only `undefined` or an omitted prop gives the bare element. Pass `null`, not `undefined`, for an action that comes and goes, so the field keeps focus while it changes.
+
+Breaking: `UiMessages.announcements` gains a required `rating(value)` and the controls dictionary gains `"Top-left corner"`, `"Top-right corner"`, `"Bottom-right corner"`, `"Bottom-left corner"`, `"Copy"`, `"Current color"`, `"2D slider"` and `"Crop size"`. Code that declares a complete set of messages by hand must add them; spreading the shipped English or Vietnamese messages is unaffected.
+
 ### Added
 
 - Four styles, chosen with the `style` axis: `flat` (no control shadows; cards default to elevation `flat`), `quiet` (the default: tint steps and 1px rules, no shadow on buttons), `tactile` (a four-line bevel on raised surfaces and keys lit from below, with the sheen on filled buttons starting at 75% of their height or at the foot of the label's line box, whichever is lower; inset wells on checkboxes, radios and switch tracks; and shadows on thumbs and the selected tab or segment pill) and `glass` (a veiled top bar and frosted menus over a blob canvas, which it defaults to and paints in the accent's hues). A style sets only token values, so every component follows it without rules of its own.
@@ -189,6 +205,11 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - `Switch` renders an empty `aria-hidden` span, `.dr-switch-marks`, after its thumb, for `switchStyle` values that draw marks on the track. It takes no space by default.
 - Three paint tokens for the tab and segment track: `viewTrackSheen` (`--view-track-sheen`), an image over `wellFill`; `viewTrackShadow` (`--view-track-shadow`), which takes `trackWell`'s place on the track; and `viewTrackBackdrop` (`--view-track-backdrop`), a backdrop filter. They paint the default and outline Tabs lists and the SegmentGroup; the underline, pill and outline tab styles clear them, the kit unsets them under more contrast, and forced colours clear the track's image and filter.
 - `viewTrackLabel` (`--view-track-label`): the inactive label colour of the default and outline Tabs lists and the SegmentGroup, `--muted-foreground` when unset. Every Glass look sets it in dark mode, so inactive tab and segment labels clear 4.5:1 on the frosted well.
+- `DateInput` and `useDateInput` report a complete date that does not exist: `onInvalidChange(invalid)` fires when the flag changes, and `useDateInput` returns `invalid` and `typeSegment`.
+- `DataTableColumnMeta.label` names a column in the Columns menu and the facet filter buttons when its `header` is a component. Without it the menu falls back to a string `header`, then the column id.
+- `MultiSelect` takes `id`, `aria-label` and `aria-labelledby` and passes them to its input.
+- `CommandDialog` takes `shouldFilter`, `filter` and `loop` and passes them to `Command`.
+- `announcements.rating(value)` names each `RatingGroup` item ("3 stars"; Vietnamese "3 sao").
 
 ### Changed
 
@@ -276,6 +297,10 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - Breaking: the default font is Hanken Grotesk (was Inter). An app or user that never chose a font sees it; set `defaults.font: "inter"` to keep Inter. Presets that name a font keep it.
 - Under Glass, Soft Glass and Smoked Obsidian the tab and segment track is frosted and lit from the top, the selected tab or segment is a lifted accent pane with an accent edge and a glow below, and the sidebar's current row is set into the rail: the accent's tint over a pale fill, edged in the accent, whichever Sidebar Selection look is chosen: the row takes this fill and edge and loses the glow, highlight or shadow of the look's own. Milk Glass, Aurora Night, Dusk Haze, Mica Desk and Coral Space keep their tabs and segments; Aurora Night, Dusk Haze and Mica Desk take the set-in sidebar row. Under more contrast every Glass look's selected tab and segment is the opaque card colour. An outline SegmentGroup's selected pill now paints the style's face, gradients included, and under forced colours every chosen row painted `Highlight` drops its background image.
 - In light mode under Glass and every look built on it, the focus ring is solved against the frosted tab and segment track over the gradient canvas and the ground art as well as the page, so it reaches 3:1 where it crosses the track; it is darker than before. Dark mode and the flat, quiet and tactile looks keep their ring.
+- Crop handles are focusable buttons named after their edge or corner. Arrow keys resize the crop from that handle, Shift for the large step, within the size limits, and a status message reads the new size.
+- Perspective corners in `ImageEditor` are focusable buttons named after their corner while the perspective tool is open. Arrow keys move a corner by 1% of the image, Shift by 10%, and Reset puts the corners back at the image's edges.
+- `CommandGroup` hides with the `hidden` attribute and keeps its items mounted, and items belong to the group that renders them. `CommandGroup`'s `value` only sets `data-value`.
+- `ResizablePanelGroup` no longer sets an inline `height` and `width`, so a size class such as `h-72` applies; the stylesheet still fills the parent by default.
 
 ### Removed
 
@@ -447,6 +472,28 @@ Fixed: the virtualized timeline's sticky header is opaque and follows the page o
 The inset and island shells give the content pane the page colour on a ground recessed 5% toward the text colour; a style or preset that sets `shellContentFill` or `shellGroundFill` keeps its own. `--shell-content-fill` now defaults to `initial`. The pane takes the page colour at `--surface-fill-alpha`, so on a Glass preset that lowers it the canvas still shows through, and Card Stock's borderless pane shows the backdrop in dark mode, under the floating shell too, where it was `hsl(var(--card) / 0.5)`. A veiled bar no longer runs over the content under inset and island: there the bar keeps its shell's paint. Because `--shell-content-fill` no longer holds a colour by default, CSS that reads `var(--shell-content-fill)` outside a `background` needs its own fallback.
 
 The radius axis reaches the small steps: `rounded-sm` and `rounded-md` keep a floor of half and three quarters of `--radius`, so under subtle `rounded-sm` is 2px instead of square and `rounded-md` 3px instead of 2px, and the checkbox, menu item, segment, sidebar item and marker defaults follow. `rounded-xl` and `rounded-2xl` follow the axis (`--radius` plus 4px and 8px). Apps that use them see Tailwind's fixed 12px and 16px only at the rounded step: they are square under sharp, 8px and 12px under subtle, and 20px and 24px under pill. The new `--radius-pill` is a capsule at every step but sharp; the switch, slider, progress, scrollbar thumbs, count badges, carousel controls, empty-state medallion and drawer handle use it, so they square under sharp.
+
+- Enter and Space on a `DropdownMenu`, `ContextMenu` or `Menubar` item run it as a click does: the menu closes, radio items change the value and an action wired to `onClick` runs. The keyboard used to leave the menu open, never change a radio item and skip `onClick` actions, including `RowActions` and `UserMenu`.
+- Undo and Redo in `ImageEditor` restore the exact state after a preset, an adjustment, an annotation, a text, a freeform path, a Clear or a perspective change. History used to record the state from before the change, so Redo restored nothing. Keyboard slider changes are recorded too.
+- `ImageEditor` no longer adds an annotation or freeform path twice under `React.StrictMode`, and `defaultAnnotationKind`, `defaultAnnotationColor` and `defaultAnnotationWidth` take effect instead of landing on the root element.
+- The cropper's first crop, `initialCrop`, `defaultCrop` and the crop after an aspect change obey `minSize` and `maxSize`.
+- A single-file `FileUpload` keeps its accepted file when a new selection is rejected.
+- `RatingGroup` items have accessible names, and a half value checks the item it half fills.
+- A disabled `Slider` thumb is `aria-disabled`.
+- `Input` and `Textarea` keep focus when a slot changes between `null` and an element.
+- The colour picker's hue slider runs from 0 to 359 without wrapping and takes Home, End, PageUp and PageDown; it moves on black, white and greys. The saturation and brightness area is a named slider with a text value, and every picker control is `aria-disabled` when the picker is disabled.
+- `ClipboardLabel` names its input, and `ClipboardTrigger` is named "Copy", then "Copied", unless it has its own label or text.
+- `MultiSelect` chip remove buttons are translated.
+- `FloatingPanel`'s drag grip moves the panel with a pointer.
+- A `Command` item that mounts during a search matches by its text, and a group with no matching item hides.
+- An empty `DataTable` reads "Page 1 of 1" instead of "Page 0 of 0".
+- The rows-per-page value no longer truncates at large font sizes or loose densities.
+- The empty-table message stays in view in a horizontally scrolling table and spans only the visible columns; the loading skeleton also counts only visible columns.
+- Column and facet labels are no longer capitalised by CSS, so "iPhone" stays "iPhone".
+- The `Calendar` caption dropdown no longer selects a date when it is operated by keyboard, and PageUp and PageDown stay inside the target month.
+- `DatePicker` with `autoFocus` focuses the focused day when it opens.
+- `ImageEditor`'s adjust and rotation sliders are named by their visible labels.
+- Undoing back to no perspective leaves the perspective unset instead of re-seeding the corners outside history.
 
 ## [6.9.6] — 2026-09-30
 

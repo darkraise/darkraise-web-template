@@ -159,6 +159,16 @@ scrolling, Carousel autoplay — reads the preference through the exported
   child — but the semantics still apply.
 - Layouts move focus to `<main id="main-content">` after a route change. Use
   `useRouteFocus` directly if you compose your own layout.
+- `MultiSelect` has no visible label of its own: pass `aria-label`, or
+  `aria-labelledby` pointing at your label.
+- `DataTable` columns whose `header` is a component need `meta: { label }`
+  so the Columns menu and facet filters show a readable name.
+- `DateInput` flags a complete date that does not exist; show your error from
+  `onInvalidChange(true)`.
+- For an `Input` or `Textarea` action that appears conditionally, pass `null`
+  rather than `undefined` when it is absent, so the field keeps focus.
+- `RatingGroup` items are named through `announcements.rating(value)`
+  ("3 stars"); a complete translation must supply it.
 
 ## Layout choices and virtual tables
 
