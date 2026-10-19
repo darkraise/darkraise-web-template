@@ -159,35 +159,34 @@ export function useFileUpload(
     (files: File[]) => {
       if (disabled) return
       const incoming = !multiple && files.length > 0 ? files.slice(0, 1) : files
-      const baseAccepted = !multiple ? [] : acceptedFiles.slice()
-      const nextAccepted: File[] = baseAccepted.slice()
+      const baseCount = multiple ? acceptedFiles.length : 0
+      const newlyAccepted: File[] = []
       const nextRejected: FileRejection[] = []
       for (const file of incoming) {
-        const reason = validate(file, nextAccepted.length)
+        const reason = validate(file, baseCount + newlyAccepted.length)
         if (reason) {
           nextRejected.push({ file, reason })
         } else {
-          nextAccepted.push(file)
+          newlyAccepted.push(file)
         }
       }
-      const finalAccepted = nextAccepted
-      const finalRejected = nextRejected
-      if (!controlled) setInternalAccepted(finalAccepted)
-      setRejectedFiles(finalRejected)
-      if (
-        finalAccepted.length !== baseAccepted.length ||
-        (multiple === false && finalAccepted.length > 0)
-      ) {
-        onFileAcceptRef.current?.({
-          files: finalAccepted.slice(baseAccepted.length),
-        })
+      const nextAccepted =
+        newlyAccepted.length === 0
+          ? acceptedFiles
+          : multiple
+            ? [...acceptedFiles, ...newlyAccepted]
+            : newlyAccepted
+      if (!controlled) setInternalAccepted(nextAccepted)
+      setRejectedFiles(nextRejected)
+      if (newlyAccepted.length > 0) {
+        onFileAcceptRef.current?.({ files: newlyAccepted })
       }
-      if (finalRejected.length > 0) {
-        onFileRejectRef.current?.({ files: finalRejected })
+      if (nextRejected.length > 0) {
+        onFileRejectRef.current?.({ files: nextRejected })
       }
       onFileChangeRef.current?.({
-        acceptedFiles: finalAccepted,
-        rejectedFiles: finalRejected,
+        acceptedFiles: nextAccepted,
+        rejectedFiles: nextRejected,
       })
     },
     [disabled, multiple, acceptedFiles, controlled, validate],
