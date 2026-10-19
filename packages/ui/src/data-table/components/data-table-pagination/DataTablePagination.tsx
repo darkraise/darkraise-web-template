@@ -69,10 +69,8 @@ export function DataTablePagination<TData>({
         </div>
         <div className="dr-data-table-pagination-page-info">
           {labels.dataTable.pageInfo(
-            table.getPageCount()
-              ? table.getState().pagination.pageIndex + 1
-              : 0,
-            table.getPageCount(),
+            table.getState().pagination.pageIndex + 1,
+            Math.max(1, table.getPageCount()),
           )}
         </div>
         <Pagination>
