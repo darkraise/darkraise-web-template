@@ -295,6 +295,9 @@ describe("DateInput impossible dates", () => {
     const group = screen.getByRole("group")
     expect(group).toHaveAttribute("aria-invalid", "true")
     expect(group).toHaveAttribute("data-invalid")
+    for (const segment of segments()) {
+      expect(segment).toHaveAttribute("aria-invalid", "true")
+    }
     expect(onValueChange).toHaveBeenLastCalledWith(null)
     expect(onInvalidChange.mock.calls).toEqual([[true]])
   })
@@ -321,6 +324,9 @@ describe("DateInput impossible dates", () => {
     const group = screen.getByRole("group")
     expect(group).not.toHaveAttribute("aria-invalid")
     expect(group).not.toHaveAttribute("data-invalid")
+    for (const segment of segments()) {
+      expect(segment).not.toHaveAttribute("aria-invalid")
+    }
   })
 
   it("keeps a consumer's aria-invalid on a valid date", () => {
