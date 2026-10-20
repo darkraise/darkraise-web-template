@@ -70,8 +70,11 @@
   /* The empty row spans the whole table, which on a narrow screen is wider
      than the scroll container. The wrapper is the size container, so the
      message sticks to the visible part at any scroll position; its inline
-     padding keeps the text out of the 2rem edge fade in table.css. */
-  .dr-data-table-frame .dr-table-wrapper {
+     padding keeps the text out of the 2rem edge fade in table.css. The
+     containment applies only to an empty table: it removes the wrapper's
+     intrinsic width, so a table with rows would collapse in a shrink-to-fit
+     parent. */
+  .dr-data-table-frame:has(.dr-data-table-empty-cell) .dr-table-wrapper {
     container-type: inline-size;
   }
 

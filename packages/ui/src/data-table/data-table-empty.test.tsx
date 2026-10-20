@@ -54,14 +54,20 @@ describe("DataTable empty state", () => {
   })
 
   it("keeps its message in the visible part of a scrolled table", () => {
-    expect(body(".dr-data-table-frame .dr-table-wrapper")).toContain(
-      "container-type: inline-size;",
-    )
+    expect(
+      body(
+        ".dr-data-table-frame:has(.dr-data-table-empty-cell) .dr-table-wrapper",
+      ),
+    ).toContain("container-type: inline-size;")
     const content = body(".dr-data-table-empty-cell > .dr-data-table-empty")
     expect(content).toContain("position: sticky;")
     expect(content).toContain("inset-inline-start: 0;")
     expect(content).toContain("inline-size: 100cqi;")
     expect(body(".dr-data-table-empty-cell")).toContain("padding: 0;")
+  })
+
+  it("lets a table with rows size to its content", () => {
+    expect(() => body(".dr-data-table-frame .dr-table-wrapper")).toThrow()
   })
 
   it("sizes the rows-per-page trigger to its value", () => {
