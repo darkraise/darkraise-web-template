@@ -179,7 +179,7 @@ Three things can need a change in your code:
   - `labels.layout.back`, `labels.qrCode.label` and `labels.userMenu.trigger` are new, and `UiMessages` gains `dateInputPlaceholder`.
   - `themeOptions` gains `inter`, `geist`, `ibm-plex-sans`, `hanken-grotesk`, `newsreader`, `body`, `dots`, `grain`, `off`, `on`, `standard`, `strong`, `neutralAccent` and `neutralAccentDark`, and loses `bar`, `ring` and `both`.
   - `controls` loses the sidebar indicator and Glass strings (`Sidebar active-item indicator`, `Each preset's own indicator`, `Default`, `Left rail only`, `Bar`, `Uniform ring only`, `Ring`, `Ring and left rail`, `Both`, `Opacity`, `Backdrop Blur`) and gains `Layout` and `Shell style`.
-  - `announcements` gains `rating(value)` (`announcements.rating`), and `controls` gains `Top-left corner`, `Top-right corner`, `Bottom-right corner`, `Bottom-left corner`, `Copy`, `Current color`, `2D slider` and `Crop size`.
+  - `announcements` gains `rating(value)`, and `controls` gains `Top-left corner`, `Top-right corner`, `Bottom-right corner`, `Bottom-left corner`, `Copy`, `Current color`, `2D slider` and `Crop size`.
 - `ThemeContextValue` is built from the axis registry: every axis with its setter, plus `setAxis`, `registry`, `canResetToPreset` and `resetToPreset`. The `useLayoutStore` state gains `shellStyle`, `setShellStyle` and `clearShellStyle`. A test that mocks `useTheme` with a whole context value, or replaces the layout store's whole state, must build the new shape.
 
 The [custom styles and presets guide](custom-styles.md) describes how to define your own styles, presets and fonts.
@@ -252,11 +252,17 @@ A single-selection `ToggleGroup` no longer clears its value when the checked ite
 
 `Slider`'s `onValueCommit` now also runs after keyboard changes. If you used it to detect the end of a pointer drag only, compare against the last committed value or listen to pointer events.
 
-`DateInput` no longer accepts out-of-range month or day digits while typing, and a complete impossible date sets `aria-invalid`. Show your error message from `onInvalidChange(true)` instead of inferring it from `onValueChange(null)`, which also means an empty field.
+`DateInput` no longer accepts out-of-range month or day digits while typing, and a complete impossible date sets `aria-invalid` on the group and on each segment. Show your error message from `onInvalidChange(true)` instead of inferring it from `onValueChange(null)`, which also means an empty field.
 
 `FileRejectDetails.reason` can be `"decode"` or `"read"` as well as `"type"` and `"size"`. Map both in your rejection messages.
 
 `Input` and `Textarea` render their group wrapper for a slot set to `null` or `false`. A stylesheet that relied on `null` producing the bare element must target `.dr-input-group` / `.dr-textarea-group`, or pass `undefined`.
+
+`ImageCropperHandle` and `ImageEditorHandle` are `role="button"` with `tabindex="0"` (`-1` under `fixedCropArea`), where they were `role="slider"`. A query such as `getByRole("slider", { name: "Resize right" })` must ask for `button`. The `ColorPicker` saturation and brightness area is `role="slider"` (with `aria-roledescription` "2D slider") instead of `role="application"`, and the hue slider's `aria-valuemax` is 359 instead of 360.
+
+`ClipboardLabel` must be rendered inside `<Clipboard>`: it reads the context to point at its input and throws outside it, as `ClipboardInput` and `ClipboardTrigger` do. Replace a free-standing `ClipboardLabel` with a plain `<label htmlFor>`.
+
+`CommandGroup`'s `value` no longer groups items; it only sets `data-value`. An item belongs to the group that renders it, so two groups with the same `heading` or `value` no longer hide and show together, and a group is hidden only when none of its own items match the search.
 
 ## Overlays
 

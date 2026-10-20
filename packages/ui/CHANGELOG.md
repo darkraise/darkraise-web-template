@@ -118,11 +118,15 @@ Breaking: `Calendar` has one tab stop, the focused day. Arrow, PageUp, PageDown,
 
 Breaking: `Slider` calls `onValueCommit` after each keyboard change that moves the value, not only when a pointer is released.
 
-Breaking: `DateInput` constrains typing. A digit that would push the month past 12 or the day past 31 completes the segment and starts the next one, so `99` cannot be typed as a month, and a second `0` that would make `00` is ignored. A complete date that does not exist, such as 29 February 2026, stays visible, sets `aria-invalid` and `data-invalid` on the group and calls the new `onInvalidChange(true)`; `onValueChange` still receives `null`. ArrowUp and ArrowDown change only their own segment and clamp the day to the month's length.
+Breaking: `DateInput` constrains typing. A digit that would push the month past 12 or the day past 31 completes the segment and starts the next one, so `99` cannot be typed as a month, and a second `0` that would make `00` is ignored. A complete date that does not exist, such as 29 February 2026, stays visible, sets `aria-invalid` and `data-invalid` on the group, `aria-invalid` on each segment, and calls the new `onInvalidChange(true)`; `onValueChange` still receives `null`. ArrowUp and ArrowDown change only their own segment and clamp the day to the month's length.
 
 Breaking: `Input` and `Textarea` render their group wrapper whenever a slot prop is set, including to `null` or `false`; only `undefined` or an omitted prop gives the bare element. Pass `null`, not `undefined`, for an action that comes and goes, so the field keeps focus while it changes.
 
 Breaking: `UiMessages.announcements` gains a required `rating(value)` and the controls dictionary gains `"Top-left corner"`, `"Top-right corner"`, `"Bottom-right corner"`, `"Bottom-left corner"`, `"Copy"`, `"Current color"`, `"2D slider"` and `"Crop size"`. Code that declares a complete set of messages by hand must add them; spreading the shipped English or Vietnamese messages is unaffected.
+
+Breaking: roles and values that tests and selectors may match have changed. `ImageCropperHandle` (and `ImageEditorHandle`) is `role="button"` with `tabindex="0"`, not `role="slider"`. The `ColorPicker` saturation and brightness area is `role="slider"`, not `role="application"`, and the hue slider's `aria-valuemax` is 359, not 360.
+
+Breaking: `ClipboardLabel` reads the `Clipboard` context to point at its input, so it throws outside `<Clipboard>` as the other parts do. `CommandGroup`'s `value` no longer groups items: an item belongs to the group that renders it, and two groups with the same `heading` or `value` no longer share items.
 
 ### Added
 

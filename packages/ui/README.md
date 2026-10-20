@@ -159,8 +159,9 @@ scrolling, Carousel autoplay — reads the preference through the exported
   child — but the semantics still apply.
 - Layouts move focus to `<main id="main-content">` after a route change. Use
   `useRouteFocus` directly if you compose your own layout.
-- `MultiSelect` has no visible label of its own: pass `aria-label`, or
-  `aria-labelledby` pointing at your label.
+- `MultiSelect` has no visible label of its own: pass `aria-label`,
+  `aria-labelledby` pointing at your label, or an `id` for a
+  `<label htmlFor>`.
 - `DataTable` columns whose `header` is a component need `meta: { label }`
   so the Columns menu and facet filters show a readable name.
 - `DateInput` flags a complete date that does not exist; show your error from
