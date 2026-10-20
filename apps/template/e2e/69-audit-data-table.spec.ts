@@ -23,7 +23,7 @@ const ROOMY: [string, ThemeSeed][] = [
 test.describe("rows per page", () => {
   for (const [name, theme] of ROOMY) {
     test(`shows its whole value at ${name}`, async ({ page }) => {
-      const console = watchConsole(page)
+      const consoleLog = watchConsole(page)
       await seedApp(page, { style: "quiet", mode: "light", ...theme })
       await gotoApp(page, "/products")
       const trigger = page.getByRole("combobox", { name: "Rows per page" })
@@ -34,7 +34,7 @@ test.describe("rows per page", () => {
         clientWidth: el.clientWidth,
       }))
       expect(scrollWidth).toBeLessThanOrEqual(clientWidth)
-      console.assertClean()
+      consoleLog.assertClean()
     })
   }
 })
@@ -45,7 +45,7 @@ test.describe("empty state on a phone", () => {
   test("keeps its message inside the visible table, clear of the fade", async ({
     page,
   }) => {
-    const console = watchConsole(page)
+    const consoleLog = watchConsole(page)
     await seedApp(page, { style: "quiet", mode: "light" })
     await gotoApp(page, "/products")
     await page
@@ -82,6 +82,6 @@ test.describe("empty state on a phone", () => {
     )
     expect(text.y).toBeGreaterThanOrEqual(box.y)
     expect(text.y + text.height).toBeLessThanOrEqual(box.y + box.height)
-    console.assertClean()
+    consoleLog.assertClean()
   })
 })

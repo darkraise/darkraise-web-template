@@ -275,9 +275,9 @@ describe("ImageEditor under StrictMode", () => {
 
   const pointer = { pointerId: 1, pointerType: "mouse", button: 0 }
 
-  // The last move and the release share one act so the move's draft update
-  // is still pending at release, as with a continuous pointermove in a
-  // browser; React then runs the release's draft updater during render.
+  // The last move and the release share one act, so the release runs before
+  // the move has rendered, as with a continuous pointermove in a browser. It
+  // must commit the stroke the move drew, which only the draft ref holds.
   it("adds one stroke and one history entry per drawn stroke", () => {
     const onAnnotationsChange = vi.fn()
     renderStrict(<ImageEditorAnnotationLayer data-testid="layer" />, {
