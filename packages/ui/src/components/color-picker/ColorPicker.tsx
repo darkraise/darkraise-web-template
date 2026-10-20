@@ -526,6 +526,7 @@ function ColorPickerArea({ className, style, ...props }: ColorPickerAreaProps) {
   }
 
   const hueColor = hsvToHex({ h: hsv.h, s: 100, v: 100 })
+  const hueNow = Math.min(HUE_MAX, Math.round(hsv.h))
   const rgb = hsvToRgb(hsv)
   const rgbDisplay = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
 
@@ -601,14 +602,14 @@ function ColorPickerArea({ className, style, ...props }: ColorPickerAreaProps) {
         aria-label={uiText("Hue")}
         aria-valuemin={0}
         aria-valuemax={HUE_MAX}
-        aria-valuenow={Math.round(hsv.h)}
+        aria-valuenow={hueNow}
         aria-disabled={disabled || undefined}
         tabIndex={disabled ? -1 : 0}
         className="dr-color-picker-hue"
         onPointerDown={onHuePointerDown}
         onKeyDown={(event) => {
           if (disabled) return
-          const next = nextHue(Math.round(hsv.h), event)
+          const next = nextHue(hueNow, event)
           if (next === null) return
           event.preventDefault()
           setHsv({ h: Math.max(0, Math.min(HUE_MAX, next)) })

@@ -237,6 +237,12 @@ describe("ColorPicker hue slider", () => {
     expect(hue).toHaveAttribute("aria-valuenow", "0")
   })
 
+  it("reports a hue that rounds to 360 as 359", () => {
+    render(<Harness initial="#ff0001" defaultOpen />)
+    const hue = screen.getByRole("slider", { name: "Hue" })
+    expect(hue).toHaveAttribute("aria-valuenow", "359")
+  })
+
   it("moves on a grey and keeps its hue when the value turns grey", async () => {
     const user = userEvent.setup()
     render(<Harness initial="#808080" open />)
