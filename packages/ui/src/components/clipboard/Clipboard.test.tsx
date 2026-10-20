@@ -313,6 +313,18 @@ describe("Clipboard naming", () => {
     )
   })
 
+  it("keeps the label associated when the input has its own id", () => {
+    render(
+      <Clipboard value="https://example.com">
+        <ClipboardLabel>Share link</ClipboardLabel>
+        <ClipboardInput id="share-link" />
+      </Clipboard>,
+    )
+    const input = screen.getByRole("textbox", { name: "Share link" })
+    expect(input).toHaveAttribute("id", "share-link")
+    expect(screen.getByText("Share link")).toHaveAttribute("for", "share-link")
+  })
+
   it("names an icon-only trigger Copy, then Copied while copied", async () => {
     const user = userEvent.setup()
     installClipboardMock()

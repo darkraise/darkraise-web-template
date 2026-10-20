@@ -51,6 +51,7 @@ interface ClipboardContextValue {
   copy: () => void
   timeout: number
   inputId: string
+  setInputId: (id: string | undefined) => void
 }
 
 const ClipboardContext = React.createContext<ClipboardContextValue | null>(null)
@@ -149,10 +150,12 @@ function Clipboard({
     })()
   }, [value, timeout, uiText])
 
-  const inputId = `${React.useId()}-input`
+  const generatedInputId = `${React.useId()}-input`
+  const [customInputId, setInputId] = React.useState<string>()
+  const inputId = customInputId ?? generatedInputId
 
   const ctx = React.useMemo<ClipboardContextValue>(
-    () => ({ value, copied, copy, timeout, inputId }),
+    () => ({ value, copied, copy, timeout, inputId, setInputId }),
     [value, copied, copy, timeout, inputId],
   )
 
@@ -192,16 +195,22 @@ function ClipboardControl({
 
 function ClipboardInput({
   className,
+  id: idProp,
   ref,
   ...props
 }: Omit<React.InputHTMLAttributes<HTMLInputElement>, "value" | "readOnly"> & {
   ref?: React.Ref<HTMLInputElement>
 }) {
-  const { value, inputId } = useClipboardContext("ClipboardInput")
+  const { value, inputId, setInputId } = useClipboardContext("ClipboardInput")
+  useIsomorphicLayoutEffect(() => {
+    if (!idProp) return
+    setInputId(idProp)
+    return () => setInputId(undefined)
+  }, [idProp, setInputId])
   return (
     <input
       ref={ref}
-      id={inputId}
+      id={idProp ?? inputId}
       type="text"
       readOnly
       value={value}
