@@ -279,6 +279,16 @@ describe("field heights", () => {
     expect(rule).not.toMatch(LEGACY_HEIGHT)
   })
 
+  it("fills the colour-picker trigger with a borderless swatch", () => {
+    const rule = body(
+      "src/components/color-picker/color-picker.css",
+      ".dr-color-picker-trigger > .dr-color-picker-swatch",
+    )
+    expect(rule).toContain("border-width: 0;")
+    expect(rule).toContain("height: 100%;")
+    expect(rule).toContain("width: 100%;")
+  })
+
   it("keeps the user-menu avatar inside its icon trigger", () => {
     const rule = body(
       "src/layout/user-menu/user-menu.css",
