@@ -109,9 +109,19 @@ describe("ImageCropperHandle keyboard resize", () => {
     expect(lastCrop()).toEqual({ x: 100, y: 97.5, width: 110, height: 55 })
   })
 
+  it("hides the handles from assistive technology when the crop area is fixed", () => {
+    renderCropper({ fixedCropArea: true })
+    expect(screen.queryAllByRole("button")).toHaveLength(0)
+    const handles = screen.getAllByRole("button", { hidden: true })
+    expect(handles).toHaveLength(8)
+    for (const handle of handles) {
+      expect(handle).toHaveAttribute("aria-hidden", "true")
+    }
+  })
+
   it("does not resize when the crop area is fixed", () => {
     const { onCropChange } = renderCropper({ fixedCropArea: true })
-    const handle = screen.getByRole("button", { name: "Resize right" })
+    const handle = screen.getByLabelText("Resize right")
     expect(handle.tabIndex).toBe(-1)
     fireEvent.keyDown(handle, { key: "ArrowRight" })
     expect(onCropChange).not.toHaveBeenCalled()

@@ -828,6 +828,7 @@ function ImageCropperHandle({
       role="button"
       tabIndex={api.fixedCropArea ? -1 : 0}
       aria-label={api.translations.handleLabel(position)}
+      aria-hidden={api.fixedCropArea || undefined}
       className={cn("dr-image-cropper-handle", className)}
       data-position={position}
       data-fixed={api.fixedCropArea ? "true" : undefined}
