@@ -42,7 +42,7 @@ env:
 jobs:
   resolve:
     name: Resolve version
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # A tag may point at the release commit this workflow itself pushed, so
     # the guard applies to branch pushes only.
     if: >-
@@ -91,7 +91,7 @@ jobs:
     name: Publish
     needs: resolve
     if: needs.resolve.outputs.skip != 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       # Commit the version back, push the tag, and create the Release.
       contents: write
