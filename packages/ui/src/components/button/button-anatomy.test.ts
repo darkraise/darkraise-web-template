@@ -119,7 +119,7 @@ describe("button anatomy signatures", () => {
   it("changes only the radius of icon-size buttons under iconButton, below any compound rule", () => {
     const found = selectorsNaming("data-icon-button")
     expect(found.map(({ selector }) => selector)).toEqual([
-      ':where([data-icon-button="round"]) .dr-btn[data-size="icon"]',
+      ':where([data-icon-button="round"]) .dr-btn[data-size="icon"]:not(:where(.dr-calendar-day-btn))',
     ])
     expect(found[0]?.rule.body).toBe("border-radius: var(--radius-pill);")
   })
@@ -219,21 +219,21 @@ describe("buttonStyle soft", () => {
 })
 
 describe("buttonStyle glass", () => {
-  it("replaces the look's sheen on the filled variants with one in the top 35%", () => {
+  it("draws the filled variants flat inside a light rim and top line", () => {
     for (const variant of ["default", "destructive"]) {
       expect(bodyOf(at("glass", variant))).toBe(
-        "background-image: linear-gradient(rgb(255 255 255 / 0.3), rgb(255 255 255 / 0) min(35%, 50% - 0.5lh)); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.4), 0 6px 16px -6px color-mix(in oklab, var(--hue) 70%, transparent), var(--glow-outer), var(--glow-inner);",
+        "background-image: none; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25), inset 0 0 0 1px rgb(255 255 255 / 0.15), var(--glow-outer), var(--glow-inner);",
       )
     }
   })
 
-  it("frames the neutral capsules in a bright rim and an inset highlight", () => {
+  it("frames the neutral capsules in a bright rim and top highlight, with no sheen or shadow", () => {
     for (const variant of ["secondary", "outline"]) {
       expect(bodyOf(at("glass", variant))).toContain(
-        "border-color: rgb(255 255 255 / 0.7); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6), var(--btn-neutral-shadow), var(--glow-outer), var(--glow-inner);",
+        "background-image: none; border-color: rgb(255 255 255 / 0.7); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6), var(--glow-outer), var(--glow-inner);",
       )
       expect(bodyOf(dark("glass", variant))).toBe(
-        "border-color: rgb(255 255 255 / 0.14); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08), var(--btn-neutral-shadow), var(--glow-outer), var(--glow-inner);",
+        "border-color: rgb(255 255 255 / 0.14); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08), var(--glow-outer), var(--glow-inner);",
       )
     }
   })
@@ -253,7 +253,7 @@ describe("buttonStyle glass", () => {
     expect(bodyOf(at("glass", "secondary"))).toContain(
       "background-color: hsl(var(--card) / var(--surface-alpha));",
     )
-    expect(bodyOf(at("glass", "outline"))).not.toContain("background")
+    expect(bodyOf(at("glass", "outline"))).not.toContain("background-color")
     expect(bodyOf('.dr-btn[data-variant="outline"]')).toContain(
       "background-color: var(--btn-neutral-fill);",
     )

@@ -15,8 +15,8 @@ import {
  * The buttonStyle and iconButton signatures on the control fixture's
  * anatomy probes, stamped over the kit look after the fixture settles.
  * Every value keeps each button's box; key sets the face on a 2px base and
- * presses it 1px through a transform; soft tints the faces; glass adds a
- * sheen above the label band and frosts the neutral capsules; round turns
+ * presses it 1px through a transform; soft tints the faces; glass draws
+ * flat faces lit at the edge and frosts the neutral capsules; round turns
  * icon-size buttons into circles and changes nothing else. Ghost and link
  * ignore buttonStyle.
  */
@@ -314,46 +314,50 @@ for (const mode of MODES) {
       )
     })
 
-    test("glass holds the sheen above the label band and frosts the neutral capsules", async ({
+    test("glass draws flat faces lit at the edge and frosts the neutral capsules", async ({
       page,
     }) => {
       await stamp(page, { buttonStyle: "glass" })
-      for (const variant of ["default", "destructive"]) {
+      const glint = mode === "light" ? 0.6 : 0.08
+      const edges = {
+        filled:
+          "inset 0 1px 0 rgb(255 255 255 / 0.25), inset 0 0 0 1px rgb(255 255 255 / 0.15)",
+        neutral: `inset 0 1px 0 rgb(255 255 255 / ${glint})`,
+      }
+      for (const variant of RESTYLED) {
         const face = button(page, variant, "default")
-        expect(await computed(face, "background-image"), variant).toBe(
-          "linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) min(35%, 50% - 10px))",
-        )
-        expect(await computed(face, "box-shadow"), variant).toMatch(
-          /^rgba\(255, 255, 255, 0\.4\) 0px 1px 0px 0px inset, /,
+        const edge =
+          variant === "default" || variant === "destructive"
+            ? edges.filled
+            : edges.neutral
+        expect(await computed(face, "background-image"), variant).toBe("none")
+        expect(await computed(face, "box-shadow"), variant).toBe(
+          await resolved(
+            page,
+            "box-shadow",
+            `${edge}, var(--glow-outer), var(--glow-inner)`,
+          ),
         )
       }
-      for (const style of ["key", "glass"] as const) {
-        await stamp(page, { buttonStyle: style })
-        for (const variant of ["default", "destructive"]) {
-          // The smallest face has the tallest label band for its height.
-          const face = button(page, variant, "sm")
-          const plain = contrast(
-            rgbOf(await computed(face, "color")),
-            rgbOf(await computed(face, "background-color")),
-          )
-          expect(
-            Math.abs((await labelContrast(page, face)) - plain),
-            `${style} ${variant}: no sheen behind the label`,
-          ).toBeLessThan(0.05)
-        }
+      await stamp(page, { buttonStyle: "key" })
+      for (const variant of ["default", "destructive"]) {
+        // The smallest face has the tallest label band for its height.
+        const face = button(page, variant, "sm")
+        const plain = contrast(
+          rgbOf(await computed(face, "color")),
+          rgbOf(await computed(face, "background-color")),
+        )
+        expect(
+          Math.abs((await labelContrast(page, face)) - plain),
+          `key ${variant}: no sheen behind the label`,
+        ).toBeLessThan(0.05)
       }
       await stamp(page, { buttonStyle: "glass" })
       const rim = mode === "light" ? 0.7 : 0.14
-      const glint = mode === "light" ? 0.6 : 0.08
       for (const variant of ["secondary", "outline"]) {
         const face = button(page, variant, "default")
         expect(await computed(face, "border-top-color"), variant).toBe(
           `rgba(255, 255, 255, ${rim})`,
-        )
-        expect(await computed(face, "box-shadow"), variant).toMatch(
-          new RegExp(
-            `^rgba\\(255, 255, 255, ${glint}\\) 0px 1px 0px 0px inset, `,
-          ),
         )
       }
       const secondary = button(page, "secondary", "default")
@@ -507,6 +511,24 @@ for (const mode of MODES) {
       expect(await read(page, `${BUTTONS}:not([data-size="icon"])`)).toEqual(
         others,
       )
+    })
+
+    test("round leaves calendar days on the Radius step", async ({ page }) => {
+      await stamp(page, { iconButton: "round" })
+      const day = page
+        .locator(
+          '[data-probe="calendar"] .dr-calendar-day-btn:not([data-range-middle="true"])',
+        )
+        .first()
+      const step = await resolved(
+        page,
+        "border-top-left-radius",
+        "var(--btn-radius)",
+      )
+      expect(step).not.toBe(
+        await resolved(page, "border-top-left-radius", "var(--radius-pill)"),
+      )
+      expect(await computed(day, "border-top-left-radius")).toBe(step)
     })
 
     test("round and every buttonStyle value compose on icon buttons", async ({

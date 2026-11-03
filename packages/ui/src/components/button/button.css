@@ -217,7 +217,7 @@
      so a look that sets none draws exactly the rules above. Ghost and link
      follow ghostButton and are left alone.
 
-     The key and glass sheens end at the top 35% of the face or at the top
+     The key sheen ends at the top 35% of the face or at the top
      of the label's line box, whichever comes first: a solved label sits at
      4.5:1 on its fill, and even 4% white across it drops the weakest accent
      to about 4:1. */
@@ -332,29 +332,29 @@
     color: hsl(var(--primary-text));
   }
 
-  /* glass: the filled faces keep their fill under a sheen held above the
-     label band. The neutral capsules are frosted only where the host makes
-     --surface-alpha translucent; secondary cannot read --btn-neutral-fill,
-     which is transparent unless a style sets it. No backdrop filter: the
-     pane behind already blurs. */
+  /* glass: flat faces lit only at the edge, with no sheen or drop shadow.
+     The filled faces keep their plain fill inside a faint light rim and a
+     brighter top line; the light stays on the edge because a solved label
+     sits at 4.5:1 on its fill. The neutral capsules are a light rim around
+     a frost under the cards' top highlight. The capsules are frosted only
+     where the host makes --surface-alpha translucent; secondary cannot read
+     --btn-neutral-fill, which is transparent unless a style sets it. No
+     backdrop filter: the pane behind already blurs. */
   [data-button-style="glass"] .dr-btn[data-variant="default"],
   [data-button-style="glass"] .dr-btn[data-variant="destructive"] {
-    background-image: linear-gradient(
-      rgb(255 255 255 / 0.3),
-      rgb(255 255 255 / 0) min(35%, 50% - 0.5lh)
-    );
+    background-image: none;
     box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.4),
-      0 6px 16px -6px color-mix(in oklab, var(--hue) 70%, transparent),
+      inset 0 1px 0 rgb(255 255 255 / 0.25),
+      inset 0 0 0 1px rgb(255 255 255 / 0.15),
       var(--glow-outer),
       var(--glow-inner);
   }
   [data-button-style="glass"] .dr-btn[data-variant="secondary"],
   [data-button-style="glass"] .dr-btn[data-variant="outline"] {
+    background-image: none;
     border-color: rgb(255 255 255 / 0.7);
     box-shadow:
       inset 0 1px 0 rgb(255 255 255 / 0.6),
-      var(--btn-neutral-shadow),
       var(--glow-outer),
       var(--glow-inner);
   }
@@ -365,7 +365,6 @@
     border-color: rgb(255 255 255 / 0.14);
     box-shadow:
       inset 0 1px 0 rgb(255 255 255 / 0.08),
-      var(--btn-neutral-shadow),
       var(--glow-outer),
       var(--glow-inner);
   }
@@ -388,8 +387,11 @@
 
   /* The iconButton signature. :where() keeps the root attribute out of the
      specificity, so the rule beats only .dr-btn's own radius: a button
-     group's joined corners and a toolbar's own tool radius still win. */
-  :where([data-icon-button="round"]) .dr-btn[data-size="icon"] {
+     group's joined corners and a toolbar's own tool radius still win.
+     Calendar days are icon-size buttons drawn as cells of a grid, and keep
+     the Radius step like the range band and today marker around them. */
+  :where([data-icon-button="round"])
+    .dr-btn[data-size="icon"]:not(:where(.dr-calendar-day-btn)) {
     border-radius: var(--radius-pill);
   }
 }
