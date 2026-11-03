@@ -413,9 +413,9 @@ describe("built-in presets", () => {
     }
   })
 
-  // A pane the look draws without a border has no edge to hold it apart in
-  // dark mode, so it shows the backdrop rather than a fill of its own.
-  it("lets a borderless content pane show the backdrop in dark mode", () => {
+  // A pane the look draws without a border has no edge to hold it apart, so
+  // in dark mode its tone must: a fill of its own, distinct from the ground.
+  it("sets a borderless content pane apart from its ground in dark mode", () => {
     const registry = resolveRegistry()
     const looks = [
       ...Object.entries(registry.styles).map(([name, style]) => ({
@@ -434,7 +434,10 @@ describe("built-in presets", () => {
       const dark = resolvedTokens(look.style, look.preset, "dark")
       if (dark.shellContentEdge !== "transparent") continue
       borderless.push(look.name)
-      expect(dark.shellContentFill, look.name).toBe("transparent")
+      expect(dark.shellContentFill, look.name).toBeDefined()
+      expect(dark.shellContentFill, look.name).not.toBe("transparent")
+      expect(dark.shellGroundFill, look.name).toBeDefined()
+      expect(dark.shellContentFill, look.name).not.toBe(dark.shellGroundFill)
     }
     expect(borderless).toContain("card-stock")
   })

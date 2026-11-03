@@ -64,12 +64,14 @@ describe("Pastel Soft-Flat", () => {
     }
   })
 
-  it("lays a dot grain over the page colour under the whole shell", () => {
+  it("lays a dot grain over the page colour under the content", () => {
     const grain =
       /^radial-gradient\(hsl\(var\(--foreground\) \/ 0\.0\d\) 1px, transparent 1px\) 0 0 \/ 12px 12px, hsl\(var\(--background\)\)$/
     expect(pastelSoft.tokens?.shared?.shellGroundFill).toMatch(grain)
     expect(pastelSoft.tokens?.dark?.shellGroundFill).toMatch(grain)
-    expect(pastelSoft.tokens?.shared?.chromeFlatFill).toBe("transparent")
+    expect(pastelSoft.tokens?.shared?.chromeFlatFill).toBe(
+      "color-mix(in oklab, hsl(var(--foreground)) 3.5%, hsl(var(--background)))",
+    )
   })
 
   it("leaves cards borderless and fills the outline button from the accent", () => {

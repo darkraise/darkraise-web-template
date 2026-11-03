@@ -35,7 +35,7 @@
 @layer style.preset {
   [data-preset="pastel-soft"] {
     --shell-ground-fill: radial-gradient(hsl(var(--foreground) / 0.07) 1px, transparent 1px) 0 0 / 12px 12px, hsl(var(--background));
-    --chrome-flat-fill: transparent;
+    --chrome-flat-fill: color-mix(in oklab, hsl(var(--foreground)) 3.5%, hsl(var(--background)));
     --nav-selection-shadow: 0 0 transparent;
     --nav-item-radius: var(--radius-control);
     --card-border: transparent;

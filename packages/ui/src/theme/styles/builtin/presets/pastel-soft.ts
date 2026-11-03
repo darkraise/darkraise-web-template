@@ -2,10 +2,10 @@ import type { PresetDefinition } from "../../../config/schema"
 
 /**
  * Pastel Soft-Flat: borderless white cards on warm cream paper with a faint
- * dot grain under the whole shell, an indigo accent whose palest tint fills
- * the secondary action, and pill controls. The chrome gives up its fill, so
- * only the white chip of the current nav row marks the rail. Geist stands in
- * for Figtree.
+ * dot grain under the content, an indigo accent whose palest tint fills the
+ * secondary action, and pill controls. The chrome sits a faint ink step off
+ * the paper, so the rail and bar read apart from the content without a rule.
+ * Geist stands in for Figtree.
  */
 export const pastelSoft: PresetDefinition = {
   label: "Pastel Soft-Flat",
@@ -34,7 +34,8 @@ export const pastelSoft: PresetDefinition = {
     shared: {
       shellGroundFill:
         "radial-gradient(hsl(var(--foreground) / 0.07) 1px, transparent 1px) 0 0 / 12px 12px, hsl(var(--background))",
-      chromeFlatFill: "transparent",
+      chromeFlatFill:
+        "color-mix(in oklab, hsl(var(--foreground)) 3.5%, hsl(var(--background)))",
       navSelectionShadow: "0 0 transparent",
       navItemRadius: "var(--radius-control)",
       cardBorder: "transparent",

@@ -40,7 +40,7 @@
 
 @layer style.preset {
   [data-preset="paper-ink"] {
-    --chrome-flat-fill: hsl(var(--background));
+    --chrome-flat-fill: color-mix(in oklab, hsl(var(--foreground)) 3.5%, hsl(var(--background)));
     --btn-edge: inset 0 1px 0 rgb(255 255 255 / 0.1);
     --btn-shadow: 0 1px 1px hsl(var(--foreground) / 0.2);
     --btn-danger-shadow: 0 1px 1px hsl(var(--foreground) / 0.2);

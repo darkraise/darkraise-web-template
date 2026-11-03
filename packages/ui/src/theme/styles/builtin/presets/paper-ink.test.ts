@@ -63,9 +63,9 @@ describe("Paper & Ink", () => {
     })
   })
 
-  it("paints the flat chrome in the page colour", () => {
+  it("tones the flat chrome a step off the page", () => {
     expect(paperInk.tokens?.shared?.chromeFlatFill).toBe(
-      "hsl(var(--background))",
+      "color-mix(in oklab, hsl(var(--foreground)) 3.5%, hsl(var(--background)))",
     )
   })
 

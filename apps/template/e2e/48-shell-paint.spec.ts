@@ -324,12 +324,15 @@ for (const shellStyle of ["island", "inset"]) {
     )
   })
 
-  test(`card stock's borderless dark pane shows the backdrop · ${shellStyle}`, async ({
+  test(`card stock lays a card sheet on the page colour in dark mode · ${shellStyle}`, async ({
     page,
   }) => {
     await openPreset(page, "card-stock", "tactile", shellStyle, "dark")
     expect(await computed(region(page, "content"), "background-color")).toBe(
-      "rgba(0, 0, 0, 0)",
+      await resolved(page, "hsl(var(--card))"),
+    )
+    expect(await computed(shell(page), "background-color")).toBe(
+      await resolved(page, "hsl(var(--background))"),
     )
   })
 }

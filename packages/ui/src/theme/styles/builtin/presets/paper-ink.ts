@@ -5,8 +5,8 @@ import type { PresetDefinition } from "../../../config/schema"
  * carries about half the blue ramp's chroma, which only dark mode can calm.
  * Geist stands in for Instrument Sans.
  *
- * The app reads as a set page: the chrome is the paper itself, the current
- * nav row is ink text beside a 2px rule, and card footers drop back to the
+ * The app reads as a set page: the chrome is the paper a faint ink step
+ * darker, the current nav row is ink text beside a 2px rule, and card footers drop back to the
  * page tone like margin notes. Where Quiet draws no shadow at all, this
  * preset draws short ones in the text colour, so they read as paper rather
  * than grey; dark mode has no paper to tint and uses black.
@@ -44,7 +44,8 @@ export const paperInk: PresetDefinition = {
   },
   tokens: {
     shared: {
-      chromeFlatFill: "hsl(var(--background))",
+      chromeFlatFill:
+        "color-mix(in oklab, hsl(var(--foreground)) 3.5%, hsl(var(--background)))",
       buttonEdge: "inset 0 1px 0 rgb(255 255 255 / 0.1)",
       buttonShadow: "0 1px 1px hsl(var(--foreground) / 0.2)",
       buttonDangerShadow: "0 1px 1px hsl(var(--foreground) / 0.2)",
