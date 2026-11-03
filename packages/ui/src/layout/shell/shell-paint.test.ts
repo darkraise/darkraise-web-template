@@ -324,7 +324,7 @@ describe("bar edge signature", () => {
     const layers = bodyOf("shell", `${VEIL_BAR}::before`)
     expect(layers).toContain("inset: 0 0 -1.625rem 0;")
     expect(layers).toContain(
-      "background: linear-gradient(hsl(var(--surface-header) / 0.85), hsl(var(--surface-header) / 0.55) 55%, hsl(var(--surface-header) / 0));",
+      "background: linear-gradient(color-mix(in oklab, var(--chrome-veil-tint, hsl(var(--surface-header))) 85%, transparent), color-mix(in oklab, var(--chrome-veil-tint, hsl(var(--surface-header))) 55%, transparent) 55%, transparent);",
     )
     // Glass's Blur None writes --glass-backdrop-off: none; unset, the veil
     // keeps its own blur.
@@ -337,6 +337,17 @@ describe("bar edge signature", () => {
       "backdrop-filter: var(--glass-backdrop-off, blur(14px));",
     )
     expect(after).not.toMatch(/backdrop-filter: blur\(/)
+  })
+
+  it("tints the veil from the rail's fill when the bar shares its tone", () => {
+    const sameTone =
+      ':root:is([data-rail-tone="page"][data-bar-tone="page"], [data-rail-tone="raised"][data-bar-tone="raised"]) .dr-shell'
+    expect(bodyOf("shell", sameTone)).toBe(
+      "--chrome-veil-tint: var(--chrome-rail-bg);",
+    )
+    expect(bodyOf("shell", `${sameTone}[data-shell-style="flat"]`)).toBe(
+      "--chrome-veil-tint: var(--chrome-flat-fill);",
+    )
   })
 
   it("falls back to an opaque ruled bar without transparency", () => {

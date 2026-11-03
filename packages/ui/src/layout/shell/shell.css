@@ -209,9 +209,29 @@
     border-bottom-color: transparent;
   }
 
+  /* The veil tints from the rail's fill when the bar shares the rail's tone,
+     so the brand row and the bar beside it read as one band. The flat shell
+     repaints the rail with the flat fill, so its veil follows that. Under
+     differing tones the veil keeps the bar's own surface. */
+  :root:is(
+      [data-rail-tone="page"][data-bar-tone="page"],
+      [data-rail-tone="raised"][data-bar-tone="raised"]
+    )
+    .dr-shell {
+    --chrome-veil-tint: var(--chrome-rail-bg);
+  }
+
+  :root:is(
+      [data-rail-tone="page"][data-bar-tone="page"],
+      [data-rail-tone="raised"][data-bar-tone="raised"]
+    )
+    .dr-shell[data-shell-style="flat"] {
+    --chrome-veil-tint: var(--chrome-flat-fill);
+  }
+
   /* A veiled bar has no rule and no fill of its own: the content runs up
      under it, and the bar dissolves what scrolls beneath through two blur
-     layers masked to fade lower down, under a tint of the bar's surface.
+     layers masked to fade lower down, under the tint set above.
      The content's top padding (every layout's p-6) grows by the bar's
      height, so its first line rests clear of the bar; floating content
      already reserves that room. The bar drops its own backdrop filter: an
@@ -251,9 +271,18 @@
     > [data-region="bar"]::before {
     inset: 0 0 -1.625rem 0;
     background: linear-gradient(
-      hsl(var(--surface-header) / 0.85),
-      hsl(var(--surface-header) / 0.55) 55%,
-      hsl(var(--surface-header) / 0)
+      color-mix(
+        in oklab,
+        var(--chrome-veil-tint, hsl(var(--surface-header))) 85%,
+        transparent
+      ),
+      color-mix(
+          in oklab,
+          var(--chrome-veil-tint, hsl(var(--surface-header))) 55%,
+          transparent
+        )
+        55%,
+      transparent
     );
     /* Glass's Blur None turns the veil's blur off with every other glass
        backdrop; outside Glass the variable is unset and the blur stays. */
