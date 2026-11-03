@@ -21,7 +21,7 @@
   }
 
   .dr-calendar-day-btn {
-    @apply data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground flex aspect-square w-[var(--control-height-default)] flex-col gap-1 leading-none font-normal data-[range-end=true]:rounded-md data-[range-middle=true]:rounded-none data-[range-single=true]:rounded-md data-[range-start=true]:rounded-md;
+    @apply data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground flex aspect-square w-[var(--control-height-default)] flex-col gap-1 leading-none font-normal data-[range-end=true]:rounded-[var(--btn-radius)] data-[range-middle=true]:rounded-none data-[range-single=true]:rounded-[var(--btn-radius)] data-[range-start=true]:rounded-[var(--btn-radius)];
     --btn-height: var(--control-height-default);
     transition:
       background-color var(--duration-fast),
@@ -204,7 +204,7 @@
   }
 
   .dr-calendar-range-start {
-    @apply bg-accent rounded-s-md;
+    @apply bg-accent rounded-s-[var(--btn-radius)];
   }
 
   .dr-calendar-range-middle {
@@ -212,11 +212,11 @@
   }
 
   .dr-calendar-range-end {
-    @apply bg-accent rounded-e-md;
+    @apply bg-accent rounded-e-[var(--btn-radius)];
   }
 
   .dr-calendar-today {
-    @apply bg-accent text-accent-foreground rounded-md data-[selected=true]:rounded-none;
+    @apply bg-accent text-accent-foreground rounded-[var(--btn-radius)] data-[selected=true]:rounded-none;
   }
 
   .dr-calendar-outside {
