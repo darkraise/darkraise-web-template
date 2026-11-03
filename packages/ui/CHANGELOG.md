@@ -324,6 +324,7 @@ Breaking: `ClipboardLabel` reads the `Clipboard` context to point at its input, 
 
 ### Fixed
 
+- The Switch thumb stays centred in its track at a fractional page zoom or display scale (110%, 125%, 175%). It was a fixed 16px square inside a 2px border that the browser rounds to whole device pixels, so it sat a pixel high or low; it now takes the track's inner height and stays square.
 - A checked Switch's thumb in dark mode takes the track's foreground (`--selected-check-fg`), white on most accents, instead of the near-black page tone. `thumbFill` and the `track` and `slide` switch styles still paint their own.
 - Dialog, Sheet, Drawer and every other surface mounted through the presence primitive (popovers, menus, select, tooltip, hover card, accordion, collapsible) play their closing animation. The closed state landed a render after the surface closed, so the check for a running exit animation saw none and unmounted it at once.
 - Calendar days keep the Radius step under `iconButton: "round"`, which turned them into circles, and the today marker and the ends of a range take the day button's radius, so hover, selection, today and the range band share one shape at every step.

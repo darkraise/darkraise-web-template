@@ -31,7 +31,14 @@
      transition list beside transform. translate is physical, so the
      checked offset flips sign in a right-to-left context. */
   .dr-switch-thumb {
-    @apply pointer-events-none block h-4 w-4 ring-0 transition-[transform,translate,background-color];
+    @apply pointer-events-none block ring-0 transition-[transform,translate,background-color];
+    /* The thumb takes the track's inner height instead of a fixed 16px:
+       at a fractional display scale Chromium snaps the 2px border to whole
+       device pixels but not a fixed-size thumb, which then sits a pixel off
+       centre. The square keeps the 16px travel exact, since the track's
+       inner width exceeds its inner height by 16px at every scale. */
+    height: 100%;
+    aspect-ratio: 1;
     background-color: var(--thumb-fill, hsl(var(--background)));
     /* Concentric with the track, inside its 2px border. */
     border-radius: max(0px, calc(var(--switch-radius) - 2px));
