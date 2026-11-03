@@ -24,6 +24,25 @@
     @apply justify-between px-4;
   }
 
+  /* A detached rail carries a top border the bar's height already includes,
+     so its brand row gives that pixel back to keep its rule on the bar's. */
+  :root:not([data-bar-span="full"])
+    .dr-shell:is([data-shell-style="island"], [data-shell-style="floating"])
+    .dr-sidebar-layout-aside-header {
+    height: calc(var(--chrome-bar-height) - 1px);
+  }
+
+  /* Under a full-width bar the rail starts below the bar, so a bar-high,
+     ruled brand row would read as a second header band. It becomes the top
+     row of the rail instead. */
+  @media (width >= 48rem) {
+    [data-bar-span="full"] .dr-sidebar-layout-aside-header {
+      height: auto;
+      padding-block-start: 0.75rem;
+      border-bottom-width: 0;
+    }
+  }
+
   /* Both dimensions must come from --control-height so the toggle stays
      square under every density and font-size step and takes the
      coarse-pointer floor. */

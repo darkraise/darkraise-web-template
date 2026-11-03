@@ -149,6 +149,14 @@
     margin-inline-start: 0.5rem;
   }
 
+  /* Below md the rails are hidden, so nothing stands to the content's start
+     and it takes the same gutter as its end. */
+  @media (width < 48rem) {
+    .dr-shell[data-shell-style="inset"] > [data-region="content"] {
+      margin-inline-start: 0.5rem;
+    }
+  }
+
   /* floating — the content plane runs the full grid and the chrome hovers
      over it. */
   .dr-shell[data-shell-style="floating"] > [data-region="content"] {
