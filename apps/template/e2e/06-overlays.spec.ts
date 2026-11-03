@@ -109,6 +109,38 @@ test.describe("dialogs", () => {
     await page.keyboard.press("Escape")
     await expect(sheet).toBeHidden()
   })
+
+  // jsdom runs no animations, so only a browser sees a surface that is
+  // removed before its exit animation starts.
+  for (const [path, name] of [
+    ["/components/dialogs", "Open dialog"],
+    ["/components/sheet", "Open"],
+    ["/components/drawer", "Open drawer"],
+  ] as const) {
+    test(`${path} plays its exit animation before it unmounts`, async ({
+      page,
+    }) => {
+      const main = await open(page, path)
+      await main.getByRole("button", { name, exact: true }).first().click()
+      const surface = page.getByRole("dialog").first()
+      await expect(surface).toBeVisible()
+      await surface.evaluate((el) => {
+        const seen: string[] = []
+        ;(window as unknown as { exits: string[] }).exits = seen
+        el.addEventListener("animationstart", (event) => {
+          if (el.getAttribute("data-state") === "closed") {
+            seen.push((event as AnimationEvent).animationName)
+          }
+        })
+      })
+      await page.keyboard.press("Escape")
+      await expect(surface).toBeHidden()
+      const exits = await page.evaluate(
+        () => (window as unknown as { exits: string[] }).exits,
+      )
+      expect(exits).toContain("exit")
+    })
+  }
 })
 
 test.describe("floating surfaces", () => {

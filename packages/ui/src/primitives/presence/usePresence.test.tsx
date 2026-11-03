@@ -37,6 +37,39 @@ describe("usePresence", () => {
     expect(result.current.isPresent).toBe(false)
   })
 
+  // The exit animation has to be running by the frame the close check
+  // reads getAnimations(); a closed state that lands a render late loses
+  // that race to the frame, and the element unmounts mid-open.
+  it("reports closed in the same render that present turns false", () => {
+    const states: string[] = []
+    const { rerender } = renderHook(
+      ({ open }: { open: boolean }) => {
+        const ref = React.useRef<HTMLDivElement | null>(null)
+        const presence = usePresence(open, ref)
+        states.push(`${open}:${presence.state}:${presence.isPresent}`)
+        return presence
+      },
+      { initialProps: { open: true } },
+    )
+    rerender({ open: false })
+    expect(states.find((s) => s.startsWith("false:"))).toBe("false:closed:true")
+  })
+
+  it("is present and open in the same render that present turns true again", () => {
+    const states: string[] = []
+    const { rerender } = renderHook(
+      ({ open }: { open: boolean }) => {
+        const ref = React.useRef<HTMLDivElement | null>(null)
+        const presence = usePresence(open, ref)
+        states.push(`${open}:${presence.state}:${presence.isPresent}`)
+        return presence
+      },
+      { initialProps: { open: false } },
+    )
+    rerender({ open: true })
+    expect(states.find((s) => s.startsWith("true:"))).toBe("true:open:true")
+  })
+
   it("waits for running exit animations before unmounting", async () => {
     const node = document.createElement("div")
     document.body.appendChild(node)

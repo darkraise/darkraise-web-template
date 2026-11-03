@@ -11,35 +11,34 @@ export function usePresence(
   present: boolean,
   ref: React.RefObject<HTMLElement | null>,
 ): UsePresenceResult {
-  const [state, setState] = React.useState<PresenceState>(
-    present ? "open" : "closed",
-  )
-  const [isPresent, setIsPresent] = React.useState(present)
+  const [lingering, setLingering] = React.useState(present)
 
+  // The state follows `present` in the same render, so the exit animation
+  // is already running when the frame below reads getAnimations(). Set from
+  // an effect, it landed a render late and lost that race: the check saw
+  // only the finished enter animation and unmounted at once.
   React.useEffect(() => {
     if (present) {
-      setState("open")
-      setIsPresent(true)
+      setLingering(true)
       return
     }
-    setState("closed")
     let cancelled = false
     const raf = requestAnimationFrame(() => {
       if (cancelled) return
       const node = ref.current
       if (!node) {
-        setIsPresent(false)
+        setLingering(false)
         return
       }
       const animations = node.getAnimations?.() ?? []
       if (animations.length === 0) {
-        setIsPresent(false)
+        setLingering(false)
         return
       }
       Promise.all(
         animations.map((a) => a.finished.catch(() => undefined)),
       ).then(() => {
-        if (!cancelled) setIsPresent(false)
+        if (!cancelled) setLingering(false)
       })
     })
     return () => {
@@ -48,5 +47,8 @@ export function usePresence(
     }
   }, [present, ref])
 
-  return { isPresent, state }
+  return {
+    isPresent: present || lingering,
+    state: present ? "open" : "closed",
+  }
 }
