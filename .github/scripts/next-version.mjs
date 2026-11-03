@@ -55,11 +55,17 @@ function commitsSince(tag) {
   // NUL-separated so a multi-line body stays one commit.
   const range = tag ? `${tag}..HEAD` : "HEAD"
   const out = git("log", range, "--format=%B%x00", "--", ...PKG_PATHS)
+  // A tag-push release writes its `chore(release):` commit after the tag,
+  // so without this filter the next master push would release that commit
+  // alone as a patch.
   return out
     .split("\0")
     .map((c) => c.trim())
     .filter(Boolean)
+    .filter((c) => !RELEASE_SUBJECT.test(c))
 }
+
+const RELEASE_SUBJECT = /^chore\(release\):/
 
 const BREAKING_SUBJECT = /^[a-z]+(\([^)]*\))?!:/
 const BREAKING_FOOTER = /^BREAKING[ -]CHANGE:/m
