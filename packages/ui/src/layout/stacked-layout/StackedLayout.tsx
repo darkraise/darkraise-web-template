@@ -20,6 +20,7 @@ import { BrandLogo } from "@layout/brand-logo"
 import {
   useShellStyle,
   useSidebarSelection,
+  useSidebarPaint,
   useSidebarShadow,
 } from "@layout/shell"
 import type { ShellStyle } from "@theme"
@@ -72,6 +73,7 @@ export function StackedLayout({
   // ancestor, so the layout stamps the look and runs the indicators itself.
   const look = useSidebarSelection()
   const shadow = useSidebarShadow()
+  const paint = useSidebarPaint(look)
   const railRef = useRef<HTMLElement>(null)
   const railIndicatorRef = useRef<HTMLSpanElement>(null)
   const asideRef = useRef<HTMLElement>(null)
@@ -118,6 +120,7 @@ export function StackedLayout({
               className="dr-stacked-layout-rail-nav"
               data-sidebar-selection={look}
               data-sidebar-shadow={shadow}
+              data-sidebar-paint={paint}
               data-indicator="pending"
             >
               <span
@@ -180,6 +183,7 @@ export function StackedLayout({
                   className="dr-stacked-layout-aside-nav"
                   data-sidebar-selection={look}
                   data-sidebar-shadow={shadow}
+                  data-sidebar-paint={paint}
                   data-indicator="pending"
                 >
                   <span

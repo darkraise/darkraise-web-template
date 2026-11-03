@@ -39,7 +39,7 @@
      edge for its rule, so the active item keeps the bar's selected fill. */
   .dr-top-nav-layout-nav[data-sidebar-selection="rule"]
     .dr-top-nav-layout-nav-item:is(.active, [data-active="true"]) {
-    background: var(--nav-selection-fill, var(--selected-nav-bg));
+    background: var(--sidebar-style-fill, var(--selected-nav-bg));
   }
 
   /* Neither fill is solved for a toned bar: a style sets the first for the

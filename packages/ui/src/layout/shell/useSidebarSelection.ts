@@ -25,6 +25,23 @@ export function useSidebarSelection(
 }
 
 /**
+ * `"kit"` when the nav draws a look other than the one the style or preset
+ * picks. A style's selection tokens are drawn for its own look, so a nav
+ * stamps this as `data-sidebar-paint` and the picked look paints its own
+ * surface instead.
+ */
+export function useSidebarPaint(look: SidebarSelection): "kit" | undefined {
+  const theme = useContext(ThemeContext)
+  const own = resolveSidebarSelection(
+    "auto",
+    theme?.style ?? AXES.style.default,
+    theme?.preset ?? AXES.preset.default,
+    theme?.registry,
+  )
+  return look === own ? undefined : "kit"
+}
+
+/**
  * `"none"` under Flat and every style that extends it, which draw no shadows
  * whichever look is picked. A nav stamps it as `data-sidebar-shadow`, because
  * only theme/styles may name a style in CSS.

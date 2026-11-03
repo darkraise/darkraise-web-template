@@ -4,7 +4,11 @@ import { describe, expect, it } from "vitest"
 import { ThemeProvider, themeConfig } from "@theme"
 import type { AxisValues } from "@theme"
 import { BUILTIN_STYLES } from "@theme/styles"
-import { useSidebarSelection, useSidebarShadow } from "./useSidebarSelection"
+import {
+  useSidebarPaint,
+  useSidebarSelection,
+  useSidebarShadow,
+} from "./useSidebarSelection"
 
 const withDefaults =
   (defaults: Partial<AxisValues>) =>
@@ -77,6 +81,27 @@ describe("useSidebarSelection", () => {
       wrapper: withDefaults({ sidebarSelection: "pill" }),
     })
     expect(result.current).toBe("tile")
+  })
+})
+
+describe("useSidebarPaint", () => {
+  const paint = (defaults: Partial<AxisValues>, override?: "frosted") =>
+    renderHook(() => useSidebarPaint(useSidebarSelection(override)), {
+      wrapper: withDefaults(defaults),
+    }).result.current
+
+  it("leaves the style's own look to the style's tokens", () => {
+    expect(paint({ style: "tiled", preset: "pillish" })).toBeUndefined()
+    expect(
+      paint({ style: "tiled", preset: "pillish", sidebarSelection: "pill" }),
+    ).toBeUndefined()
+  })
+
+  it("paints the kit's surface for a look the setting or a prop picks over the style's", () => {
+    expect(
+      paint({ style: "tiled", preset: "pillish", sidebarSelection: "tile" }),
+    ).toBe("kit")
+    expect(paint({ style: "tiled", preset: "pillish" }, "frosted")).toBe("kit")
   })
 })
 

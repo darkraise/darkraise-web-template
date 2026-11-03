@@ -31,7 +31,10 @@ describe("Soft Glass", () => {
       headingFont: "newsreader",
       glassBlur: "high",
     })
-    expect(softGlass.signatures).toEqual({ sliderStyle: "round" })
+    expect(softGlass.signatures).toEqual({
+      navSelection: "frosted",
+      sliderStyle: "round",
+    })
   })
 
   it("paints four accent blobs over a page-to-tint ground, each with a flat fallback", () => {
@@ -105,10 +108,25 @@ describe("Soft Glass", () => {
     expect(shared.chromeBarFill).toBeUndefined()
   })
 
-  it("takes Glass's set-in nav row", () => {
-    for (const token of ["navSelectionFill", "navSelectionEdge"] as const) {
-      expect(written(softGlass.tokens), token).not.toContain(token)
-    }
+  it("frosts Glass's set-in nav row under a top highlight and an accent glow", () => {
+    expect(softGlass.signatures?.navSelection).toBe("frosted")
+    expect(written(softGlass.tokens)).not.toContain("navSelectionEdge")
+    expect(light.navSelectionFill).toBe(
+      "linear-gradient(hsl(var(--primary) / 0.12), hsl(var(--primary) / 0.12)), linear-gradient(rgb(255 255 255 / 0.5), rgb(255 255 255 / 0.5))",
+    )
+    expect(dark.navSelectionFill).toBeUndefined()
+    expect(light.navSelectionShadow).toBe(
+      "inset 0 1px 0 rgb(255 255 255 / 0.9)",
+    )
+    expect(dark.navSelectionShadow).toBe(
+      "inset 0 1px 0 rgb(255 255 255 / 0.12)",
+    )
+    expect(light.navSelectionGlow).toBe(
+      "0 8px 20px -10px hsl(var(--primary) / 0.45)",
+    )
+    expect(dark.navSelectionGlow).toBe(
+      "0 8px 20px -10px hsl(var(--primary) / 0.6)",
+    )
   })
 
   // Glass's white rim and top highlight, over the preset's one soft drop.

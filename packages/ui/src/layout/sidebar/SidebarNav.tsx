@@ -14,7 +14,11 @@ import { SidebarProvider } from "./SidebarContext"
 import { useSidebar } from "./sidebar-context"
 import { containsItem, findActiveItem } from "@layout/navTree"
 import { ActiveNavItemContext, useActiveNavItem } from "./active-nav-context"
-import { useSidebarSelection, useSidebarShadow } from "@layout/shell"
+import {
+  useSidebarPaint,
+  useSidebarSelection,
+  useSidebarShadow,
+} from "@layout/shell"
 import { SidebarSelectionContext } from "./sidebar-selection"
 import { useNavIndicator } from "./useNavIndicator"
 import type { SidebarSelection } from "@theme"
@@ -49,6 +53,7 @@ function SidebarNav({
   )
   const look = useSidebarSelection(selection)
   const shadow = useSidebarShadow()
+  const paint = useSidebarPaint(look)
   const navRef = useRef<HTMLElement>(null)
   const indicatorRef = useRef<HTMLSpanElement>(null)
   useNavIndicator(navRef, indicatorRef, pathname, nav)
@@ -62,6 +67,7 @@ function SidebarNav({
           data-collapsed={collapsed || undefined}
           data-sidebar-selection={look}
           data-sidebar-shadow={shadow}
+          data-sidebar-paint={paint}
           data-indicator="pending"
         >
           <span
@@ -190,6 +196,7 @@ function CollapsedParentItem({ item }: { item: NavItem }) {
   const active = containsItem(item, activeItem)
   const look = useContext(SidebarSelectionContext)
   const shadow = useSidebarShadow()
+  const paint = useSidebarPaint(look ?? "chip")
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -215,6 +222,7 @@ function CollapsedParentItem({ item }: { item: NavItem }) {
         className="dr-sidebar-nav-popover-content"
         data-sidebar-selection={look}
         data-sidebar-shadow={shadow}
+        data-sidebar-paint={look ? paint : undefined}
         sideOffset={8}
       >
         {/* The parent's own route. Rendered as the first entry rather than a

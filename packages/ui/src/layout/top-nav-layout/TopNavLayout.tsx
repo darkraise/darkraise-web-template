@@ -17,6 +17,7 @@ import type { LayoutProps } from "@layout/types"
 import {
   useShellStyle,
   useSidebarSelection,
+  useSidebarPaint,
   useSidebarShadow,
 } from "@layout/shell"
 import type { ShellStyle } from "@theme"
@@ -67,6 +68,7 @@ export function TopNavLayout({
   const shellStyle = useShellStyle(shellStyleProp, defaultShellStyle)
   const look = useSidebarSelection()
   const shadow = useSidebarShadow()
+  const paint = useSidebarPaint(look)
   // The sidebar* names predate the layouts that have no sidebar; both still
   // work, and the new name wins when a caller passes each.
   const resolvedNavHeader = navHeader ?? sidebarHeader
@@ -112,6 +114,7 @@ export function TopNavLayout({
           className="dr-top-nav-layout-nav"
           data-sidebar-selection={look}
           data-sidebar-shadow={shadow}
+          data-sidebar-paint={paint}
         >
           {nav.flatMap((group) =>
             group.items.map((item) =>

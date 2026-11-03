@@ -49,6 +49,7 @@ export const softGlass: PresetDefinition = {
     glassBlur: "high",
   },
   signatures: {
+    navSelection: "frosted",
     sliderStyle: "round",
   },
   tokens: {
@@ -69,6 +70,13 @@ export const softGlass: PresetDefinition = {
       chromeBarFill: LIGHT_CHROME,
       cardEdge:
         "inset 0 1px 0 rgb(255 255 255 / 0.6), 0 10px 26px -18px rgb(0 0 0 / 0.35)",
+      // Glass's set-in row as a frosted pane: a thinner white layer the
+      // look's blur shows through, a line of light along its top and an
+      // accent glow below. The accent edge keeps it 1.2:1 off the rail.
+      navSelectionFill:
+        "linear-gradient(hsl(var(--primary) / 0.12), hsl(var(--primary) / 0.12)), linear-gradient(rgb(255 255 255 / 0.5), rgb(255 255 255 / 0.5))",
+      navSelectionShadow: "inset 0 1px 0 rgb(255 255 255 / 0.9)",
+      navSelectionGlow: "0 8px 20px -10px hsl(var(--primary) / 0.45)",
       scrim: "hsl(var(--foreground) / 0.16)",
     },
     dark: {
@@ -77,6 +85,8 @@ export const softGlass: PresetDefinition = {
       chromeBarFill: DARK_CHROME,
       cardEdge:
         "inset 0 1px 0 rgb(255 255 255 / 0.08), 0 10px 26px -18px rgb(0 0 0 / 0.6)",
+      navSelectionShadow: "inset 0 1px 0 rgb(255 255 255 / 0.12)",
+      navSelectionGlow: "0 8px 20px -10px hsl(var(--primary) / 0.6)",
       scrim: "rgb(0 0 0 / 0.65)",
     },
   },

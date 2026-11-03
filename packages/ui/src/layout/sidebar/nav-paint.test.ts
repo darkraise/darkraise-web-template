@@ -6,8 +6,8 @@ import { SIGNATURES } from "../../theme/config/signatures"
 import { cssRules } from "../../test/css-rules"
 import { stripCssComments } from "../../test/strip-css-comments"
 
-// The nav selection looks read the public --nav-selection-* tokens over
-// their own paints, the nav rows read --nav-item-radius, and the marker and
+// The nav selection looks read the public --nav-selection-* tokens, through
+// a per-nav --sidebar-style-* copy, over their own paints, the nav rows read --nav-item-radius, and the marker and
 // label case signatures restyle the rows from the root attribute. jsdom
 // computes no cascade, so the source rules are what this asserts; the
 // effective values are checked in Chromium by the template's e2e suite.
@@ -119,16 +119,32 @@ describe("selection tokens", () => {
   it.each(LOOKS)("lets the public tokens override the %s look", (look) => {
     const tokens = lookOf(look)
     expect(tokens["--sidebar-active-surface"]).toMatch(
-      /^var\(--nav-selection-fill, .+\)$/,
+      /^var\(--sidebar-style-fill, .+\)$/,
     )
     expect(tokens["--sidebar-active-edge"]).toMatch(
-      /^var\(--nav-selection-edge, .+\)$/,
+      /^var\(--sidebar-style-edge, .+\)$/,
     )
     expect(tokens["--sidebar-active-shadow"]).toMatch(
-      /^var\(--nav-selection-shadow, .+\)$/,
+      /^var\(--sidebar-style-shadow, .+\)$/,
     )
     expect(tokens["--sidebar-active-glow"]).toMatch(
-      /^var\(--nav-selection-glow, .+\)$/,
+      /^var\(--sidebar-style-glow, .+\)$/,
+    )
+  })
+
+  it("copies the public tokens on every nav and clears the shadow and glow copies where the nav draws another look", () => {
+    const nav = bodyOf("selection", "[data-sidebar-selection]")
+    const kit = bodyOf(
+      "selection",
+      '[data-sidebar-selection][data-sidebar-paint="kit"]',
+    )
+    for (const part of ["fill", "edge", "shadow", "glow"]) {
+      expect(nav).toContain(
+        `--sidebar-style-${part}: var(--nav-selection-${part});`,
+      )
+    }
+    expect(kit).toBe(
+      "--sidebar-style-shadow: initial; --sidebar-style-glow: initial;",
     )
   })
 
@@ -148,10 +164,10 @@ describe("the new looks", () => {
   it("tints the row and sets its label in the accent", () => {
     expect(lookOf("tint")).toEqual({
       "--sidebar-active-surface":
-        "var(--nav-selection-fill, var(--sidebar-tint))",
-      "--sidebar-active-edge": "var(--nav-selection-edge, transparent)",
-      "--sidebar-active-shadow": "var(--nav-selection-shadow, 0 0 transparent)",
-      "--sidebar-active-glow": "var(--nav-selection-glow, 0 0 transparent)",
+        "var(--sidebar-style-fill, var(--sidebar-tint))",
+      "--sidebar-active-edge": "var(--sidebar-style-edge, transparent)",
+      "--sidebar-active-shadow": "var(--sidebar-style-shadow, 0 0 transparent)",
+      "--sidebar-active-glow": "var(--sidebar-style-glow, 0 0 transparent)",
       "--sidebar-active-backdrop": "none",
       "--sidebar-active-marker": "transparent",
       "--sidebar-active-tile": "transparent",
@@ -163,11 +179,11 @@ describe("the new looks", () => {
   it("washes the row in the accent behind an accent edge", () => {
     expect(lookOf("accent")).toEqual({
       "--sidebar-active-surface":
-        "var(--nav-selection-fill, hsl(var(--primary) / 0.12))",
+        "var(--sidebar-style-fill, hsl(var(--primary) / 0.12))",
       "--sidebar-active-edge":
-        "var(--nav-selection-edge, hsl(var(--primary) / 0.3))",
-      "--sidebar-active-shadow": "var(--nav-selection-shadow, 0 0 transparent)",
-      "--sidebar-active-glow": "var(--nav-selection-glow, 0 0 transparent)",
+        "var(--sidebar-style-edge, hsl(var(--primary) / 0.3))",
+      "--sidebar-active-shadow": "var(--sidebar-style-shadow, 0 0 transparent)",
+      "--sidebar-active-glow": "var(--sidebar-style-glow, 0 0 transparent)",
       "--sidebar-active-backdrop": "none",
       "--sidebar-active-marker": "transparent",
       "--sidebar-active-tile": "transparent",
@@ -177,10 +193,10 @@ describe("the new looks", () => {
 
   it("marks the row with a full-height accent rule and no fill", () => {
     expect(lookOf("rule")).toEqual({
-      "--sidebar-active-surface": "var(--nav-selection-fill, transparent)",
-      "--sidebar-active-edge": "var(--nav-selection-edge, transparent)",
-      "--sidebar-active-shadow": "var(--nav-selection-shadow, 0 0 transparent)",
-      "--sidebar-active-glow": "var(--nav-selection-glow, 0 0 transparent)",
+      "--sidebar-active-surface": "var(--sidebar-style-fill, transparent)",
+      "--sidebar-active-edge": "var(--sidebar-style-edge, transparent)",
+      "--sidebar-active-shadow": "var(--sidebar-style-shadow, 0 0 transparent)",
+      "--sidebar-active-glow": "var(--sidebar-style-glow, 0 0 transparent)",
       "--sidebar-active-backdrop": "none",
       "--sidebar-active-marker": "hsl(var(--primary-text))",
       "--sidebar-active-tile": "transparent",
@@ -196,12 +212,12 @@ describe("the new looks", () => {
   it("raises the row on the neutral button's face", () => {
     expect(lookOf("key")).toEqual({
       "--sidebar-active-surface":
-        "var(--nav-selection-fill, var(--btn-neutral-sheen), linear-gradient(var(--btn-neutral-fill), var(--btn-neutral-fill)), var(--surface-card-fill-opaque))",
+        "var(--sidebar-style-fill, var(--btn-neutral-sheen), linear-gradient(var(--btn-neutral-fill), var(--btn-neutral-fill)), var(--surface-card-fill-opaque))",
       "--sidebar-active-edge":
-        "var(--nav-selection-edge, var(--btn-neutral-border, var(--field-edge)))",
+        "var(--sidebar-style-edge, var(--btn-neutral-border, var(--field-edge)))",
       "--sidebar-active-shadow":
-        "var(--nav-selection-shadow, var(--btn-neutral-edge), var(--btn-neutral-shadow))",
-      "--sidebar-active-glow": "var(--nav-selection-glow, 0 0 transparent)",
+        "var(--sidebar-style-shadow, var(--btn-neutral-edge), var(--btn-neutral-shadow))",
+      "--sidebar-active-glow": "var(--sidebar-style-glow, 0 0 transparent)",
       "--sidebar-active-backdrop": "none",
       "--sidebar-active-marker": "transparent",
       "--sidebar-active-tile": "transparent",
@@ -212,12 +228,12 @@ describe("the new looks", () => {
   it("lifts the row as a card tab", () => {
     expect(lookOf("tab")).toEqual({
       "--sidebar-active-surface":
-        "var(--nav-selection-fill, var(--sidebar-chip-opaque))",
+        "var(--sidebar-style-fill, var(--sidebar-chip-opaque))",
       "--sidebar-active-edge":
-        "var(--nav-selection-edge, var(--sidebar-chip-edge))",
+        "var(--sidebar-style-edge, var(--sidebar-chip-edge))",
       "--sidebar-active-shadow":
-        "var(--nav-selection-shadow, var(--sidebar-tab-shadow))",
-      "--sidebar-active-glow": "var(--nav-selection-glow, 0 0 transparent)",
+        "var(--sidebar-style-shadow, var(--sidebar-tab-shadow))",
+      "--sidebar-active-glow": "var(--sidebar-style-glow, 0 0 transparent)",
       "--sidebar-active-backdrop": "none",
       "--sidebar-active-marker": "transparent",
       "--sidebar-active-tile": "transparent",

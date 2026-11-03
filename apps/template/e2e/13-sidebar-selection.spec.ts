@@ -497,17 +497,39 @@ test.describe("selection tokens and signatures", () => {
       property,
     )
 
-  test("a style's selection tokens override the look", async ({ page }) => {
+  const TOKENS = `@layer style.base { :root {
+    --nav-selection-fill: rgb(1, 2, 3);
+    --nav-selection-edge: rgb(4, 5, 6);
+    --nav-selection-shadow: rgb(7, 8, 9) 0px 2px 0px 0px;
+    --nav-selection-glow: rgb(10, 11, 12) 0px 0px 6px 0px;
+    --nav-item-radius: 5px;
+  } }`
+
+  // Quiet's own look is tint; chip is picked over it.
+  test("a picked look keeps the style's fill and edge and draws its own shadow and glow", async ({
+    page,
+  }) => {
     await arrive(page, "chip")
-    await page.addStyleTag({
-      content: `@layer style.base { :root {
-        --nav-selection-fill: rgb(1, 2, 3);
-        --nav-selection-edge: rgb(4, 5, 6);
-        --nav-selection-shadow: rgb(7, 8, 9) 0px 2px 0px 0px;
-        --nav-selection-glow: rgb(10, 11, 12) 0px 0px 6px 0px;
-        --nav-item-radius: 5px;
-      } }`,
-    })
+    await expect(nav(page)).toHaveAttribute("data-sidebar-paint", "kit")
+    await page.addStyleTag({ content: TOKENS })
+    await settle(page)
+    expect(
+      await indicator(page).evaluate(
+        (el) => getComputedStyle(el).backgroundColor,
+      ),
+    ).toBe("rgb(1, 2, 3)")
+    const shadow = await indicator(page).evaluate(
+      (el) => getComputedStyle(el).boxShadow,
+    )
+    expect(shadow).toMatch(/^rgb\(4, 5, 6\) 0px 0px 0px 1px, /)
+    expect(shadow).not.toContain("rgb(7, 8, 9)")
+    expect(shadow).not.toContain("rgb(10, 11, 12)")
+  })
+
+  test("a style's selection tokens override its own look", async ({ page }) => {
+    await arrive(page, "tint")
+    await expect(nav(page)).not.toHaveAttribute("data-sidebar-paint", /./)
+    await page.addStyleTag({ content: TOKENS })
     await settle(page)
     expect(
       await indicator(page).evaluate(
