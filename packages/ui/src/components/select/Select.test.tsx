@@ -342,3 +342,94 @@ describe("Select option text changed after mount", () => {
     await waitFor(() => expect(quince).toHaveFocus())
   })
 })
+
+describe("Select opening highlights the selected option", () => {
+  function Speed({ value }: { value?: string }) {
+    return (
+      <Select defaultValue={value}>
+        <SelectTrigger>
+          <SelectValue placeholder="Speed" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="0.5">0.5x</SelectItem>
+          <SelectItem value="0.75">0.75x</SelectItem>
+          <SelectItem value="1">1x</SelectItem>
+          <SelectItem value="1.5">1.5x</SelectItem>
+          <SelectItem value="2">2x</SelectItem>
+        </SelectContent>
+      </Select>
+    )
+  }
+
+  it("Enter on the trigger highlights the selected option, ArrowDown moves past it", async () => {
+    const user = userEvent.setup()
+    render(<Speed value="1" />)
+    screen.getByRole("combobox").focus()
+    await user.keyboard("{Enter}")
+    const selected = await screen.findByRole("option", { name: "1x" })
+    await waitFor(() => expect(selected).toHaveFocus())
+    expect(selected).toHaveAttribute("data-highlighted")
+    await user.keyboard("{ArrowDown}")
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: "1.5x" })).toHaveFocus(),
+    )
+  })
+
+  it("ArrowUp on the trigger also starts from the selected option", async () => {
+    const user = userEvent.setup()
+    render(<Speed value="1" />)
+    screen.getByRole("combobox").focus()
+    await user.keyboard("{ArrowUp}")
+    const selected = await screen.findByRole("option", { name: "1x" })
+    await waitFor(() => expect(selected).toHaveFocus())
+    await user.keyboard("{ArrowUp}")
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: "0.75x" })).toHaveFocus(),
+    )
+  })
+
+  it("a click open highlights the selected option", async () => {
+    const user = userEvent.setup()
+    render(<Speed value="1.5" />)
+    await user.click(screen.getByRole("combobox"))
+    const selected = await screen.findByRole("option", { name: "1.5x" })
+    await waitFor(() => expect(selected).toHaveFocus())
+  })
+
+  it("without a value, Enter highlights the first option and ArrowUp the last", async () => {
+    const user = userEvent.setup()
+    render(<Speed />)
+    const trigger = screen.getByRole("combobox")
+    trigger.focus()
+    await user.keyboard("{Enter}")
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: "0.5x" })).toHaveFocus(),
+    )
+    await user.keyboard("{Escape}")
+    await waitFor(() => expect(screen.queryByRole("listbox")).toBeNull())
+    await waitFor(() => expect(trigger).toHaveFocus())
+    await user.keyboard("{ArrowUp}")
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: "2x" })).toHaveFocus(),
+    )
+  })
+
+  it("under StrictMode, Enter without a value still highlights the first option", async () => {
+    const user = userEvent.setup()
+    render(<Speed />, { reactStrictMode: true })
+    screen.getByRole("combobox").focus()
+    await user.keyboard("{Enter}")
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: "0.5x" })).toHaveFocus(),
+    )
+  })
+
+  it("a click open without a value highlights nothing", async () => {
+    const user = userEvent.setup()
+    render(<Speed />)
+    await user.click(screen.getByRole("combobox"))
+    const listbox = await screen.findByRole("listbox")
+    await waitFor(() => expect(listbox).toHaveFocus())
+    expect(listbox.querySelector("[data-highlighted]")).toBeNull()
+  })
+})

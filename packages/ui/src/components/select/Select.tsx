@@ -62,6 +62,11 @@ interface SelectContextValue {
   focusLast: () => void
   focusNext: () => void
   focusPrev: () => void
+  /** Opens the list from the keyboard, asking for the row at `end` when no
+   *  option is selected. */
+  openFromKeyboard: (end: "first" | "last") => void
+  /** The end the keyboard open in progress asked for, if any. */
+  openEnd: () => "first" | "last" | null
   typeahead: (char: string) => string | null
   /** Selected item label (cached) */
   selectedLabel: string | null
@@ -159,6 +164,28 @@ function Select({
   const triggerRef = React.useRef<HTMLButtonElement | null>(null)
   const [trigger, setTrigger] = React.useState<HTMLButtonElement | null>(null)
   const [selectedLabel, setSelectedLabel] = React.useState<string | null>(null)
+  const openEndRef = React.useRef<"first" | "last" | null>(null)
+
+  const openFromKeyboard = React.useCallback(
+    (end: "first" | "last") => {
+      if (menu.open) {
+        if (end === "first") menu.focusFirst()
+        else menu.focusLast()
+        return
+      }
+      openEndRef.current = end
+      menu.setOpen(true)
+    },
+    [menu],
+  )
+
+  const openEnd = React.useCallback(() => openEndRef.current, [])
+
+  // Cleared on close rather than read-once, so an effect that runs twice on
+  // the opening commit (StrictMode) sees the same request both times.
+  React.useEffect(() => {
+    if (!menu.open) openEndRef.current = null
+  }, [menu.open])
 
   const setValueAndClose = React.useCallback(
     (next: string) => {
@@ -191,6 +218,8 @@ function Select({
       focusLast: menu.focusLast,
       focusNext: menu.focusNext,
       focusPrev: menu.focusPrev,
+      openFromKeyboard,
+      openEnd,
       typeahead: menu.typeahead,
       selectedLabel,
       disabled,
@@ -202,6 +231,8 @@ function Select({
       menu,
       value,
       setValueAndClose,
+      openFromKeyboard,
+      openEnd,
       trigger,
       dir,
       selectedLabel,
@@ -363,12 +394,10 @@ function SelectTrigger({
           event.key === " "
         ) {
           event.preventDefault()
-          if (!ctx.open) ctx.setOpen(true)
-          requestAnimationFrame(() => ctx.focusFirst())
+          ctx.openFromKeyboard("first")
         } else if (event.key === "ArrowUp") {
           event.preventDefault()
-          if (!ctx.open) ctx.setOpen(true)
-          requestAnimationFrame(() => ctx.focusLast())
+          ctx.openFromKeyboard("last")
         }
       }}
       className={cn("dr-select-trigger", className)}
@@ -398,6 +427,24 @@ interface SelectContentProps extends React.HTMLAttributes<HTMLDivElement> {
   ref?: React.Ref<HTMLDivElement>
   /** Which plane the surface paints; nested non-portalled surfaces inherit it. */
   surface?: SurfaceFill
+}
+
+/** Scrolls only the listbox, never the page: on the opening commit the popup
+ *  may not be positioned yet, so `scrollIntoView` could scroll the document.
+ *  Layout offsets, not client rects, because the list opens mid scale
+ *  animation and a scaled rect undershoots the distance to scroll. */
+function revealInScrollport(scrollport: HTMLElement, row: HTMLElement) {
+  let top = 0
+  let node: HTMLElement | null = row
+  while (node && node !== scrollport) {
+    top += node.offsetTop
+    node = node.offsetParent as HTMLElement | null
+  }
+  if (!node) return
+  const bottom = top + row.offsetHeight
+  if (top < scrollport.scrollTop) scrollport.scrollTop = top
+  else if (bottom > scrollport.scrollTop + scrollport.clientHeight)
+    scrollport.scrollTop = bottom - scrollport.clientHeight
 }
 
 function SelectContentImpl({
@@ -436,11 +483,29 @@ function SelectContentImpl({
 
   const localContentRef = React.useRef<HTMLDivElement | null>(null)
 
+  // Rows register in layout effects, which run before this effect, so the
+  // selected row can be found on the commit that opens the list.
   React.useEffect(() => {
     if (!ctx.open) return
-    queueMicrotask(() => {
-      localContentRef.current?.focus({ preventScroll: true })
-    })
+    const end = ctx.openEnd()
+    const selected = ctx
+      .items()
+      .find((it) => it.value === ctx.value && !it.disabled)
+    if (selected) {
+      ctx.setFocusedId(selected.id)
+      const content = localContentRef.current
+      const row = selected.ref.current
+      if (content && row) revealInScrollport(content, row)
+    } else if (end === "first") {
+      ctx.focusFirst()
+    } else if (end === "last") {
+      ctx.focusLast()
+    } else {
+      queueMicrotask(() => {
+        localContentRef.current?.focus({ preventScroll: true })
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ctx.open])
 
   const onCloseAutoFocusRef = React.useRef(onCloseAutoFocus)
