@@ -4,6 +4,8 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+## [7.0.0] — 2026-11-03
+
 7.0 is a major release. The [upgrade guide](https://github.com/darkraise/darkraise-web-template/blob/master/docs/upgrade-7.0.md) lists every breaking change with its replacement.
 
 Breaking: `create-darkraise-ui` asks only for the brand axes and the style: mode, accent, surface, tint with accent (skipped under the neutral accent), style, font, radius, density and font size. Every theme axis except `preset` has a flag, and `--help` lists them with their values and defaults. The 6.x flags `--preset`, `--surface-intensity`, `--accent-intensity`, `--shell-style`, `--control-depth`, `--button-elevation` and `--sidebar-active-bar`, and retired names in `--theme-axes`, exit with an error naming the replacement instead of being ignored. The generated `theme.config.ts` lists only the choices made, the generated `vite.config.ts` passes that config to `darkraisePrerender({ config: themeConfig })`, and `--ui-version 7.0` is kept as written rather than read as a number.
