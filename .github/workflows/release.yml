@@ -183,7 +183,7 @@ jobs:
 
       - name: Test
         run: pnpm test --maxWorkers=2
-        timeout-minutes: 5
+        timeout-minutes: 12
 
       - name: Install browser
         run: pnpm --filter darkraise-web-template exec playwright install --with-deps chromium

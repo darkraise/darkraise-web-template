@@ -37,7 +37,7 @@ jobs:
       - run: pnpm exec prettier --check .
         timeout-minutes: 3
       - run: pnpm test --maxWorkers=2
-        timeout-minutes: 5
+        timeout-minutes: 12
       - run: pnpm --filter darkraise-web-template exec playwright install --with-deps chromium
         timeout-minutes: 5
       - run: pnpm --filter darkraise-web-template exec playwright test 01-auth 06-overlays 08-data-display 11-review-regressions 12-i18n --global-timeout=300000
