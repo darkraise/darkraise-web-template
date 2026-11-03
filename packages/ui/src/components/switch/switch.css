@@ -51,6 +51,14 @@
     background-color: var(--thumb-fill, var(--field-edge));
   }
 
+  /* The page tone is near-black in dark mode, which read as a hole in the
+     lit track. The thumb takes the track's own foreground, solved against
+     it. :where() holds the specificity to the unchecked rule's, so the
+     switchStyle thumbs below still paint their own. */
+  :where([data-mode="dark"]) .dr-switch[data-state="checked"] .dr-switch-thumb {
+    background-color: var(--thumb-fill, var(--selected-check-fg));
+  }
+
   /* Compose the style-driven --affordance-glow on top of the thumb's
      base shadow when the switch is checked. Transparent in every
      shipped style (no visual change); a style can bind a primary-color

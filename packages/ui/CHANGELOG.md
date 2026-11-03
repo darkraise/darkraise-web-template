@@ -324,6 +324,9 @@ Breaking: `ClipboardLabel` reads the `Clipboard` context to point at its input, 
 
 ### Fixed
 
+- A checked Switch's thumb in dark mode takes the track's foreground (`--selected-check-fg`), white on most accents, instead of the near-black page tone. `thumbFill` and the `track` and `slide` switch styles still paint their own.
+- Dialog, Sheet, Drawer and every other surface mounted through the presence primitive (popovers, menus, select, tooltip, hover card, accordion, collapsible) play their closing animation. The closed state landed a render after the surface closed, so the check for a running exit animation saw none and unmounted it at once.
+- Calendar days keep the Radius step under `iconButton: "round"`, which turned them into circles, and the today marker and the ends of a range take the day button's radius, so hover, selection, today and the range band share one shape at every step.
 - The four layouts, `PageHeader`, `SidebarNav` and `SearchCommand` mount without a `RouterAdapterProvider`, rendering plain anchors and navigating with full page loads, as the error pages already did. They threw, so the app `create-darkraise-ui` generates, which has no router, crashed on its first render.
 - `create-darkraise-ui` pins TypeScript `~6.0.3` for every app, the version the kit is built with; an app without `--multilingual` got `~5.7.0`.
 - A touch press on an inactive tab or segment lifts its label to `--foreground`, as a mouse press already did. The resting label stayed under the press wash, which paints in its own colour, and fell below 4.5:1 in every Flat, Quiet and Tactile look in dark mode and in most Glass looks (lowest 3.5:1, Smoked Obsidian dark).
