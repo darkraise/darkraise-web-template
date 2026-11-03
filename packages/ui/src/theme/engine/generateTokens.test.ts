@@ -406,9 +406,7 @@ describe("generateTokens", () => {
               key !== "--field-edge-lifted-color" &&
               plain[key] !== frosted[key],
           )
-          expect(moved, `${accentColor} ${contrast}`).toEqual(
-            mode === "dark" ? ["--surface-sidebar"] : [],
-          )
+          expect(moved, `${accentColor} ${contrast}`).toEqual([])
         }
       }
     },
@@ -446,21 +444,29 @@ describe("generateTokens", () => {
     ).toEqual(["0 10px 30px -10px rgb(0 0 0 / 0.6)"])
   })
 
-  it("paints a frosted sidebar on the page ground in dark mode", () => {
-    const input = {
-      accentColor: "blue",
-      surfaceColor: "slate",
-      backgroundStyle: "solid",
-      mode: "dark",
-      contrast: "standard",
-      darkAccentChroma: "standard",
-      tintWithAccent: false,
-    } as const
-    const frosted = generateTokens({ ...input, frosted: true })
-    const plain = generateTokens({ ...input, frosted: false })
-    expect(frosted["--surface-sidebar"]).toBe(frosted["--background"])
-    expect(plain["--surface-sidebar"]).toBe(plain["--card"])
-  })
+  it.each(["light", "dark"] as const)(
+    "paints the page-tone rail and bar on the page ground (%s)",
+    (mode) => {
+      for (const frosted of [true, false]) {
+        const tokens = generateTokens({
+          accentColor: "blue",
+          surfaceColor: "slate",
+          backgroundStyle: "solid",
+          mode,
+          contrast: "standard",
+          darkAccentChroma: "standard",
+          tintWithAccent: false,
+          frosted,
+        })
+        expect(tokens["--surface-sidebar"], `frosted ${frosted}`).toBe(
+          tokens["--background"],
+        )
+        expect(tokens["--surface-header"], `frosted ${frosted}`).toBe(
+          tokens["--background"],
+        )
+      }
+    },
+  )
 
   describe("status pairs", () => {
     // The base hue survives the solve: emerald-500 measured 2.48:1 and

@@ -976,11 +976,12 @@ describe("ThemeProvider theme definitions", () => {
     expect(root.getAttribute("data-elevation")).toBe("flat")
     expect(root.getAttribute("data-background-style")).toBe("gradient")
     expect(token("--card")).not.toBe(token("--background"))
-    expect(token("--surface-sidebar")).toBe(token("--background"))
+    const frostedEdge = token("--field-edge-lifted-color")
+    expect(frostedEdge).not.toBe("")
 
     act(() => result.current.setStyle("paper"))
     expect(root.getAttribute("data-style")).toBe("paper")
-    expect(token("--surface-sidebar")).toBe(token("--card"))
+    expect(token("--field-edge-lifted-color")).not.toBe(frostedEdge)
   })
 
   it("boots on a stored consumer style or one set as the default", () => {
@@ -1083,9 +1084,10 @@ describe("ThemeProvider theme definitions", () => {
       </ThemeProvider>
     )
     const { rerender } = render(tree(true))
-    expect(token("--surface-sidebar")).toBe(token("--background"))
+    const frostedEdge = token("--field-edge-lifted-color")
+    expect(frostedEdge).not.toBe("")
     rerender(tree(false))
-    expect(token("--surface-sidebar")).toBe(token("--card"))
+    expect(token("--field-edge-lifted-color")).not.toBe(frostedEdge)
   })
 
   it("exposes the registry built from the config", () => {

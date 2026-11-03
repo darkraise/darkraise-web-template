@@ -210,7 +210,7 @@
   }
 
   .dr-data-table-viewport thead {
-    @apply sticky top-0 z-10 bg-[hsl(var(--surface-header))];
+    @apply sticky top-0 z-10 bg-[hsl(var(--surface-raised))];
   }
 
   .dr-data-table-viewport .dr-table-wrapper {

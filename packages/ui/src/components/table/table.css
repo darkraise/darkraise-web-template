@@ -21,7 +21,7 @@
     background-color: color-mix(
       in oklab,
       var(--color-muted) 50%,
-      var(--color-surface-header)
+      hsl(var(--surface-raised))
     );
   }
 
