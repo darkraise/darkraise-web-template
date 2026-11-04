@@ -110,6 +110,18 @@ describe("Resizable", () => {
     )
     const grip = document.querySelector(".dr-resizable-handle-grip")
     expect(grip).toBeInTheDocument()
+    expect(screen.getByRole("separator")).toHaveAttribute("data-grip", "")
+  })
+
+  it("a handle without withHandle carries no data-grip", () => {
+    render(
+      <ResizablePanelGroup orientation="horizontal">
+        <ResizablePanel defaultSize={50}>A</ResizablePanel>
+        <ResizableHandle />
+        <ResizablePanel defaultSize={50}>B</ResizablePanel>
+      </ResizablePanelGroup>,
+    )
+    expect(screen.getByRole("separator")).not.toHaveAttribute("data-grip")
   })
 
   describe("drag state", () => {

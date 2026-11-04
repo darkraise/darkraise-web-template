@@ -2932,6 +2932,7 @@
   .dr-progress,
   .dr-scroll-thumb,
   .dr-resizable-handle,
+  .dr-resizable-handle-grip,
   .dr-split-panel-layout-handle[data-dragging="true"],
   .dr-navigation-menu-indicator-arrow,
   .dr-steps-separator,
@@ -2988,7 +2989,9 @@
   .dr-progress-indicator,
   .dr-steps-separator[data-status="complete"],
   .dr-timeline-connector[data-status="complete"],
-  .dr-resizable-handle[data-dragging="true"] {
+  .dr-resizable-handle[data-dragging="true"],
+  .dr-resizable-handle:is([data-dragging="true"], :focus-visible)
+    .dr-resizable-handle-grip {
     background-color: Highlight;
   }
 

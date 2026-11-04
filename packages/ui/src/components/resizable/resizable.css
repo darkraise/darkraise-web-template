@@ -3,21 +3,21 @@
     @apply flex h-full w-full data-[panel-group-direction=vertical]:flex-col;
   }
 
+  /* The divider is a hairline; the ::after strip is the real 12px hit area.
+     It overhangs both panels, so z-10 keeps a positioned descendant of the
+     later panel from painting over its half and taking the press. */
   .dr-resizable-handle {
-    @apply bg-border relative flex w-px shrink-0 items-center justify-center transition-colors after:absolute after:inset-y-0 after:left-1/2 after:w-1 after:-translate-x-1/2 after:transition-colors data-[panel-group-direction=vertical]:h-px data-[panel-group-direction=vertical]:w-full data-[panel-group-direction=vertical]:after:left-0 data-[panel-group-direction=vertical]:after:h-1 data-[panel-group-direction=vertical]:after:w-full data-[panel-group-direction=vertical]:after:translate-x-0 data-[panel-group-direction=vertical]:after:-translate-y-1/2 [&[data-panel-group-direction=vertical]>div]:rotate-90;
+    @apply bg-border relative flex w-px shrink-0 items-center justify-center transition-colors after:absolute after:inset-y-0 after:left-1/2 after:z-10 after:w-3 after:-translate-x-1/2 data-[panel-group-direction=vertical]:h-px data-[panel-group-direction=vertical]:w-full data-[panel-group-direction=vertical]:after:top-1/2 data-[panel-group-direction=vertical]:after:left-0 data-[panel-group-direction=vertical]:after:h-3 data-[panel-group-direction=vertical]:after:w-full data-[panel-group-direction=vertical]:after:translate-x-0 data-[panel-group-direction=vertical]:after:-translate-y-1/2;
   }
 
-  /* The divider itself is a hairline, so the accent tint alone would be
-     easy to miss; the ::after strip is the real 4px hit area and washing it
-     shows the user how wide the grab target actually is. */
   @media (hover: hover) {
-    .dr-resizable-handle:not([data-disabled]):hover {
-      @apply bg-primary-fill after:bg-primary/20;
+    .dr-resizable-handle:not([data-disabled], [data-grip]):hover {
+      @apply bg-primary-fill;
     }
   }
 
-  .dr-resizable-handle[data-dragging="true"] {
-    @apply bg-primary-fill after:bg-primary/30;
+  .dr-resizable-handle[data-dragging="true"]:not([data-grip]) {
+    @apply bg-primary-fill;
   }
 
   .dr-resizable-handle:focus-visible {
@@ -25,20 +25,64 @@
     outline-offset: 1px;
   }
 
+  /* With a grip the bar is the only mark, in every state: the panels read as
+     separated by a gap rather than a rule, and the grown accent bar is the
+     focus indicator. */
+  .dr-resizable-handle[data-grip] {
+    background-color: transparent;
+  }
+
+  .dr-resizable-handle[data-grip]:focus-visible {
+    outline: none;
+  }
+
   .dr-resizable-handle[data-disabled] {
     @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
   }
 
+  /* min() keeps the bar inside a group shorter than the bar. */
   .dr-resizable-handle-grip {
-    @apply bg-border z-10 flex h-4 w-3 items-center justify-center rounded-sm border transition-colors;
+    @apply pointer-events-none z-10 shrink-0 rounded-[var(--radius-pill)];
+    background-color: hsl(var(--foreground) / 0.15);
+    width: 4px;
+    height: min(28px, 100%);
+    transition:
+      height var(--duration-fast) var(--ease-out),
+      background-color var(--duration-fast) var(--ease-out);
   }
 
-  .dr-resizable-handle[data-dragging="true"] .dr-resizable-handle-grip {
-    @apply border-primary-fill bg-primary-fill text-primary-foreground;
+  .dr-resizable-handle[data-panel-group-direction="vertical"]
+    .dr-resizable-handle-grip {
+    width: min(28px, 100%);
+    height: 4px;
+    transition-property: width, background-color;
   }
+
+  .dr-resizable-handle:is([data-dragging="true"], :focus-visible)
+    .dr-resizable-handle-grip {
+    @apply bg-primary-fill;
+    height: min(56px, 100%);
+  }
+  .dr-resizable-handle[data-panel-group-direction="vertical"]:is(
+      [data-dragging="true"],
+      :focus-visible
+    )
+    .dr-resizable-handle-grip {
+    width: min(56px, 100%);
+    height: 4px;
+  }
+
   @media (hover: hover) {
     .dr-resizable-handle:not([data-disabled]):hover .dr-resizable-handle-grip {
-      @apply border-primary-fill bg-primary-fill text-primary-foreground;
+      @apply bg-primary-fill;
+      height: min(56px, 100%);
+    }
+    .dr-resizable-handle[data-panel-group-direction="vertical"]:not(
+        [data-disabled]
+      ):hover
+      .dr-resizable-handle-grip {
+      width: min(56px, 100%);
+      height: 4px;
     }
   }
 }

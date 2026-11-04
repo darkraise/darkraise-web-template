@@ -4,6 +4,11 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+### Changed
+
+- `ResizableHandle`'s grab area is 12px wide, centred on the divider, and sits above both panels so all of it takes a press (it was 4px, about 3px of it usable). Hover and drag no longer wash that area; on a handle without `withHandle` the divider alone turns the accent colour.
+- `ResizableHandle withHandle` draws a 4px rounded bar in place of the bordered grip icon and no divider line, so the panels read as separated by a gap. The bar is the foreground colour at 15% opacity at rest, grows from 28px to 56px and takes the accent colour on hover, keyboard focus and drag, and replaces the focus outline on that handle. The handle carries `data-grip`.
+
 ## [7.0.0] — 2026-11-03
 
 7.0 is a major release. The [upgrade guide](https://github.com/darkraise/darkraise-web-template/blob/master/docs/upgrade-7.0.md) lists every breaking change with its replacement.

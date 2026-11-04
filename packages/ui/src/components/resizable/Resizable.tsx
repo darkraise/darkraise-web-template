@@ -1,5 +1,4 @@
 import * as React from "react"
-import { GripVertical } from "lucide-react"
 
 import { getDirection } from "@lib/direction"
 import { cn } from "@lib/utils"
@@ -357,6 +356,7 @@ function ResizableHandle({
       data-panel-group-direction={ctx.orientation}
       data-disabled={disabled ? "" : undefined}
       data-dragging={dragging ? "true" : undefined}
+      data-grip={withHandle ? "" : undefined}
       className={cn("dr-resizable-handle", className)}
       style={{
         cursor: disabled
@@ -412,16 +412,7 @@ function ResizableHandle({
       {...props}
     >
       {withHandle && (
-        <div className="dr-resizable-handle-grip">
-          {/* Pinned literal: .dr-resizable-handle-grip (resizable.css) is a
-              fixed, asymmetric h-4 w-3 slot hand-fitted to this glyph; it
-              does not follow the font-size axis and the token's growth
-              would exceed the slot's width at large/extra-large. */}
-          <GripVertical
-            className="size-[var(--icon-size-2xs)]"
-            aria-hidden="true"
-          />
-        </div>
+        <div className="dr-resizable-handle-grip" aria-hidden="true" />
       )}
     </div>
   )
