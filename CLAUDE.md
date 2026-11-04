@@ -79,5 +79,6 @@ Hooks: pre-commit runs lint-staged (ESLint, Prettier), pre-push runs
 `master` makes the next release a minor, anything else a patch; a breaking
 marker fails the release run, so a major ships by pushing a `vX.Y.Z` tag.
 
-`docs/specs/` holds committed design specs. `docs/superpowers/` is gitignored
-local working state (plans, registers, `gates.md` with the full merge gates).
+`docs/specs/` holds committed design specs. `docs/dforge/` is gitignored
+local working state (plans, registers, `gates.md` with the full merge gates),
+except `docs/dforge/ui-ux/`, the committed UI profile and proof reports.

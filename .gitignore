@@ -20,7 +20,8 @@ playwright-report
 storybook-static
 apps/template/src/routeTree.gen.ts
 .tanstack/
-.superpowers
+.dforge
 .claude/**
-docs/superpowers/
+docs/dforge/*
+!docs/dforge/ui-ux/
 docs/plans/**
