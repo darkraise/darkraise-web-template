@@ -153,29 +153,38 @@ describe("SplitPanelLayout resize handle", () => {
     expect(panelWidth(container)).toBe("480px")
   })
 
-  it("sizes the panel from the inline-start edge of the shell when dragged", () => {
-    const drag = (dir: "ltr" | "rtl", clientX: number) => {
+  // The press lands anywhere in a strip wider than the edge, and shell
+  // padding or a gutter sits between the shell's edge and the panel's, so
+  // the width follows the pointer's travel rather than its position.
+  it("resizes the panel by the pointer's travel from the press", () => {
+    const drag = (dir: "ltr" | "rtl", from: number, to: number) => {
       const { container, unmount } = render(
         <div dir={dir}>{phoneTree({ defaultPanelWidth: 320 })}</div>,
       )
       const shell = container.querySelector(".dr-shell") as HTMLElement
       shell.getBoundingClientRect = () =>
         ({ left: 100, right: 1100, width: 1000, top: 0 }) as DOMRect
-      fireEvent.pointerDown(screen.getByRole("separator"), { pointerId: 1 })
-      act(() => {
-        document.dispatchEvent(
-          new PointerEvent("pointermove", { pointerId: 1, clientX }),
-        )
+      fireEvent.pointerDown(screen.getByRole("separator"), {
+        pointerId: 1,
+        clientX: from,
       })
-      const width = panelWidth(container)
+      const widths: string[] = []
+      for (const clientX of [from, to]) {
+        act(() => {
+          document.dispatchEvent(
+            new PointerEvent("pointermove", { pointerId: 1, clientX }),
+          )
+        })
+        widths.push(panelWidth(container))
+      }
       act(() => {
         document.dispatchEvent(new PointerEvent("pointerup", { pointerId: 1 }))
       })
       unmount()
-      return width
+      return widths
     }
-    expect(drag("ltr", 450)).toBe("350px")
-    expect(drag("rtl", 750)).toBe("350px")
+    expect(drag("ltr", 600, 630)).toEqual(["320px", "350px"])
+    expect(drag("rtl", 600, 570)).toEqual(["320px", "350px"])
   })
 
   it("routes its skip link through the label system", () => {

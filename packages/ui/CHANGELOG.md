@@ -7,6 +7,7 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 ### Fixed
 
 - `SplitPanelLayout`'s resize handle can be grabbed under the `floating` shell style; the content plane covered it.
+- Dragging `SplitPanelLayout`'s resize handle moves the panel's edge with the pointer from where it was pressed. It used to set the width to the pointer's distance from the shell's edge, so the panel jumped on the first move, by 18px under the `island` shell style.
 
 ## [7.1.0] — 2026-11-04
 
