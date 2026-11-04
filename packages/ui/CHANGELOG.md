@@ -4,6 +4,8 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+## [7.2.0] — 2026-11-04
+
 ### Changed
 
 - `SplitPanelLayout`'s resize handle matches `ResizableHandle withHandle`: a 4px rounded bar centred on the panel's edge, the foreground colour at 15% opacity at rest, growing from 28px to 56px in the accent colour on hover, keyboard focus and drag, in place of the hover and drag wash and the focus ring. The grab area is 12px wide, reaching 2px into the panel (so a scroll bar against the panel's edge stays grabbable) and 10px into the content. The handle takes no width of its own, so the content is 4px wider.
