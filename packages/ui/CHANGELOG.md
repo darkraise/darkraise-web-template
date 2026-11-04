@@ -4,6 +4,10 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+### Fixed
+
+- `SplitPanelLayout`'s resize handle can be grabbed under the `floating` shell style; the content plane covered it.
+
 ## [7.1.0] — 2026-11-04
 
 ### Changed

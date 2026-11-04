@@ -158,6 +158,15 @@
     margin-inline-end: -100%;
   }
 
+  /* The handle's grab strip overhangs the panel and the content. At the
+     rails' level but after the panel in the DOM, it paints over the panel
+     and over a content plane that spans the grid (floating), and stays
+     under the bar's open menus. */
+  .dr-shell > [data-region="handle"] {
+    position: relative;
+    z-index: 1;
+  }
+
   .dr-shell > [data-region="bar"] {
     z-index: 2;
     border-bottom: 1px solid var(--chrome-edge);

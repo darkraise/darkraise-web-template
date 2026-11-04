@@ -312,6 +312,15 @@ describe("region chrome", () => {
     expect(shellBodies(`.dr-shell > :is(${RAILS})`)).toContain("z-index: 1;")
   })
 
+  // The handle's grab strip overhangs the panel and the content. Equal to
+  // the rails but later in the DOM, it paints over the panel and over the
+  // floating style's full-grid content plane, and stays under the bar.
+  it("stacks the handle with the rails", () => {
+    const body = shellBodies('.dr-shell > [data-region="handle"]')
+    expect(body).toContain("position: relative;")
+    expect(body).toContain("z-index: 1;")
+  })
+
   it("stacks the bar above the rails", () => {
     expect(shellBodies('.dr-shell > [data-region="bar"]')).toContain(
       "z-index: 2;",
