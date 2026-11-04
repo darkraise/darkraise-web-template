@@ -4,6 +4,8 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+## [7.1.0] — 2026-11-04
+
 ### Changed
 
 - `ResizableHandle`'s grab area is 12px wide, centred on the divider, and sits above both panels so all of it takes a press (it was 4px, about 3px of it usable). Hover and drag no longer wash that area; on a handle without `withHandle` the divider alone turns the accent colour.
