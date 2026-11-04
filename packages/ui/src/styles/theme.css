@@ -2933,16 +2933,11 @@
   .dr-scroll-thumb,
   .dr-resizable-handle,
   .dr-resizable-handle-grip,
-  .dr-split-panel-layout-handle[data-dragging="true"],
+  .dr-split-panel-layout-grip,
   .dr-navigation-menu-indicator-arrow,
   .dr-steps-separator,
   .dr-timeline-connector {
     background-color: CanvasText;
-  }
-  @media (hover: hover) {
-    .dr-split-panel-layout-handle:hover {
-      background-color: CanvasText;
-    }
   }
 
   /* The scroll bar reserves a transparent edge beside the content. */
@@ -2991,7 +2986,9 @@
   .dr-timeline-connector[data-status="complete"],
   .dr-resizable-handle[data-dragging="true"],
   .dr-resizable-handle:is([data-dragging="true"], :focus-visible)
-    .dr-resizable-handle-grip {
+    .dr-resizable-handle-grip,
+  .dr-split-panel-layout-handle:is([data-dragging="true"], :focus-visible)
+    .dr-split-panel-layout-grip {
     background-color: Highlight;
   }
 

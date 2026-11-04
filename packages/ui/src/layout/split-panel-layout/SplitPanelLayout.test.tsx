@@ -187,6 +187,15 @@ describe("SplitPanelLayout resize handle", () => {
     expect(drag("rtl", 600, 570)).toEqual(["320px", "350px"])
   })
 
+  it("draws a grip bar that assistive technology skips", () => {
+    renderLayout()
+    const grip = screen
+      .getByRole("separator")
+      .querySelector(".dr-split-panel-layout-grip")
+    expect(grip).toBeInTheDocument()
+    expect(grip).toHaveAttribute("aria-hidden", "true")
+  })
+
   it("routes its skip link through the label system", () => {
     render(
       <UiLabelsProvider value={{ layout: { skipToContent: "Naar inhoud" } }}>

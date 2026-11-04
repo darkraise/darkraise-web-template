@@ -154,10 +154,6 @@ const OUTLINE_EXEMPT = new Map<string, string>([
     "resize handles keep their own treatment, drawn on a hit area wider than the visible line",
   ],
   [
-    "dr-split-panel-layout-handle",
-    "a 4px-wide separator whose focus ring is drawn with ring-2 above both panes, as a resize handle",
-  ],
-  [
     "dr-contribution-graph-cell",
     "a chart cell whose hover outline and level colours are chart chrome; keyboard focus is focus-ring-inset on the cell",
   ],

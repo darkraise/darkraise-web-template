@@ -192,7 +192,9 @@ export function SplitPanelLayout({
         // touch-action: none keeps a touch drag on the handle from
         // scrolling the page or triggering platform gestures.
         style={{ touchAction: "none" }}
-      />
+      >
+        <div className="dr-split-panel-layout-grip" aria-hidden="true" />
+      </div>
 
       <main
         ref={mainRef}

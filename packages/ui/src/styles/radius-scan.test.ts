@@ -55,6 +55,7 @@ const PILL_UNLESS_SHARP: Array<[string, string]> = [
   ["empty-state/empty-state.css", ".dr-empty-state-icon"],
   ["drawer/drawer.css", ".dr-drawer-handle"],
   ["resizable/resizable.css", ".dr-resizable-handle-grip"],
+  ["split-panel-layout/split-panel-layout.css", ".dr-split-panel-layout-grip"],
 ]
 
 /** Modals round with --dialog-radius, which defaults to --overlay-radius. */

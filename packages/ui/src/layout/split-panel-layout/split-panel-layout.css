@@ -4,23 +4,50 @@
     width: var(--panel-width);
   }
 
+  /* A zero-width track on the panel's edge. The ::after strip is the 12px
+     hit area: it reaches only 2px into the panel, so a scroll bar against
+     the panel's edge stays grabbable, and lies otherwise in the content's
+     padding. */
   .dr-split-panel-layout-handle {
-    @apply w-1 cursor-col-resize bg-transparent transition-colors;
-  }
-  @media (hover: hover) {
-    .dr-split-panel-layout-handle:hover {
-      @apply bg-primary/20;
-    }
+    @apply flex cursor-col-resize items-center justify-center;
+    width: 0;
   }
 
-  .dr-split-panel-layout-handle[data-dragging="true"] {
-    @apply bg-primary/30;
+  .dr-split-panel-layout-handle::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: -2px;
+    width: 12px;
   }
 
-  /* The handle is focusable now that it is a real separator, so it needs a
-     visible focus state of its own. */
+  /* The grown accent bar is the focus indicator; forced colours restore the
+     outline (theme.css). */
   .dr-split-panel-layout-handle:focus-visible {
-    @apply ring-ring z-1 ring-2 outline-none;
+    outline: none;
+  }
+
+  .dr-split-panel-layout-grip {
+    @apply pointer-events-none shrink-0 rounded-[var(--radius-pill)];
+    width: 4px;
+    height: 28px;
+    background-color: hsl(var(--foreground) / 0.15);
+    transition:
+      height var(--duration-fast) var(--ease-out),
+      background-color var(--duration-fast) var(--ease-out);
+  }
+
+  .dr-split-panel-layout-handle:is([data-dragging="true"], :focus-visible)
+    .dr-split-panel-layout-grip {
+    @apply bg-primary-fill;
+    height: 56px;
+  }
+
+  @media (hover: hover) {
+    .dr-split-panel-layout-handle:hover .dr-split-panel-layout-grip {
+      @apply bg-primary-fill;
+      height: 56px;
+    }
   }
 
   .dr-split-panel-layout-content {
