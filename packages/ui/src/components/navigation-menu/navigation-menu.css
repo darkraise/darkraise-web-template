@@ -25,7 +25,7 @@
      positions it with fixed coordinates under its trigger, and the size
      middleware caps it to the room left in the viewport. */
   .dr-navigation-menu-content {
-    @apply text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 z-50 min-w-[8rem] origin-[var(--popup-transform-origin)] overflow-y-auto rounded-[var(--overlay-radius)] border outline-none;
+    @apply text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 z-50 min-w-[8rem] origin-[var(--popup-transform-origin)] overflow-y-auto rounded-[var(--overlay-radius)] border outline-none data-[state=closed]:pointer-events-none;
     @apply overlay-surface;
     box-shadow: var(--overlay-shadow);
     max-width: var(--popup-available-width, 100vw);

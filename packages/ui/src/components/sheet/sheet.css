@@ -1,6 +1,6 @@
 @layer components {
   .dr-sheet-content {
-    @apply modal-surface text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 gap-4 p-6 ease-in-out;
+    @apply modal-surface text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 gap-4 p-6 ease-in-out data-[state=closed]:pointer-events-none;
     /* Modal-tier surface: the dialog's fill and border; the shadow
        stays via .modal-surface. */
     @apply overlay-surface;

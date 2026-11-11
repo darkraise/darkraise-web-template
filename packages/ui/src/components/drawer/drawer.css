@@ -1,13 +1,13 @@
 @layer components {
   .dr-drawer-overlay {
-    @apply data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 fixed inset-0 z-50;
+    @apply data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 fixed inset-0 z-50 data-[state=closed]:pointer-events-none;
     background-color: var(--scrim);
     -webkit-backdrop-filter: var(--scrim-backdrop);
     backdrop-filter: var(--scrim-backdrop);
   }
 
   .dr-drawer-content {
-    @apply modal-surface text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col border ease-in-out;
+    @apply modal-surface text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col border ease-in-out data-[state=closed]:pointer-events-none;
     /* Modal-tier surface: the dialog's fill and border; the shadow
        stays via .modal-surface. */
     @apply overlay-surface;

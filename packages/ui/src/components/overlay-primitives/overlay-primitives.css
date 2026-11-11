@@ -14,7 +14,7 @@
 
 @layer components {
   .dr-overlay-backdrop {
-    @apply data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50;
+    @apply data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 data-[state=closed]:pointer-events-none;
     background-color: var(--scrim);
     -webkit-backdrop-filter: var(--scrim-backdrop);
     backdrop-filter: var(--scrim-backdrop);
