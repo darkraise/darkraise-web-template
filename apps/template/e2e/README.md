@@ -630,6 +630,9 @@ one `data-probe` per case.
 - Outline variants, in both modes: the selected Listbox and TreeView row's ring
   reaches 3:1 against the row's fill, and Pagination's link edge reaches 3:1
   against the page.
+- A popover that is closing, still mounted for its exit animation, ignores a
+  press outside it and focus leaving it by Shift+Tab: neither calls
+  `onOpenChange(false)` or `onInteractOutside`.
 
 ### 28 · Right to left (`28-rtl.spec.ts`)
 

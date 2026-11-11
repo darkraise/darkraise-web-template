@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { createRoot } from "react-dom/client"
 import { Bold, Italic, Underline } from "lucide-react"
 import { Button } from "darkraise-ui/components/button"
@@ -15,6 +16,11 @@ import {
   PaginationItem,
   PaginationLink,
 } from "darkraise-ui/components/pagination"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "darkraise-ui/components/popover"
 import { Toggle } from "darkraise-ui/components/toggle"
 import { Toolbar, ToolbarSeparator } from "darkraise-ui/components/toolbar"
 import {
@@ -55,6 +61,53 @@ function Tree({ variant }: { variant: "filled" | "outline" }) {
         ))}
       </TreeViewTree>
     </TreeView>
+  )
+}
+
+// Done closes the popover without onOpenChange, so every count in the log
+// comes from the closing layer itself.
+function ClosingPopover() {
+  const [open, setOpen] = useState(false)
+  const [log, setLog] = useState({ openChangeFalse: 0, interactOutside: 0 })
+  const [pressedWhile, setPressedWhile] = useState("none")
+  return (
+    <>
+      <Popover
+        open={open}
+        onOpenChange={(next) => {
+          setOpen(next)
+          if (!next)
+            setLog((l) => ({ ...l, openChangeFalse: l.openChangeFalse + 1 }))
+        }}
+      >
+        <PopoverTrigger asChild>
+          <Button variant="outline">Open popover</Button>
+        </PopoverTrigger>
+        <PopoverContent
+          data-closing-popover=""
+          onInteractOutside={() =>
+            setLog((l) => ({ ...l, interactOutside: l.interactOutside + 1 }))
+          }
+        >
+          <Button onClick={() => setOpen(false)}>Done</Button>
+        </PopoverContent>
+      </Popover>
+      <Button
+        variant="outline"
+        onPointerDown={() =>
+          setPressedWhile(
+            document
+              .querySelector<HTMLElement>("[data-closing-popover]")
+              ?.getAttribute("data-state") ?? "none",
+          )
+        }
+      >
+        Next
+      </Button>
+      <output data-testid="closing-popover-log">
+        {`onOpenChange(false) ${log.openChangeFalse} · onInteractOutside ${log.interactOutside} · pressed while ${pressedWhile}`}
+      </output>
+    </>
   )
 }
 
@@ -143,6 +196,12 @@ createRoot(root).render(
             End
           </ResizablePanel>
         </ResizablePanelGroup>
+      </div>
+      <div
+        data-probe="closing-popover"
+        style={{ display: "flex", flexWrap: "wrap", gap: 8, width: 320 }}
+      >
+        <ClosingPopover />
       </div>
       <div data-probe="user-menu">
         <UserMenu

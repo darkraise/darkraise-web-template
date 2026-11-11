@@ -229,6 +229,50 @@ test.describe("resizable", () => {
   })
 })
 
+test.describe("closing popover", () => {
+  const log = (page: Page) => page.getByTestId("closing-popover-log")
+
+  async function openPopover(page: Page): Promise<Locator> {
+    await openInMode(page, "light")
+    await probe(page, "closing-popover", "button")
+      .filter({ hasText: "Open popover" })
+      .click()
+    const content = page.locator("[data-closing-popover]")
+    await expect(content).toHaveAttribute("data-state", "open")
+    await settle(page)
+    return content
+  }
+
+  test("a press outside it during its exit is not an outside interaction", async ({
+    page,
+  }) => {
+    const content = await openPopover(page)
+    const next = await boxOf(
+      probe(page, "closing-popover", "button").filter({ hasText: "Next" }),
+    )
+    await content.getByRole("button", { name: "Done" }).click()
+    await page.mouse.click(next.x + next.width / 2, next.y + next.height / 2)
+    await expect(content).toHaveCount(0)
+    await expect(log(page)).toHaveText(
+      "onOpenChange(false) 0 · onInteractOutside 0 · pressed while closed",
+    )
+  })
+
+  test("focus leaving it during its exit is not an outside interaction", async ({
+    page,
+  }) => {
+    const content = await openPopover(page)
+    await content.getByRole("button", { name: "Done" }).focus()
+    await page.keyboard.press("Enter")
+    await expect(content).toHaveAttribute("data-state", "closed")
+    await page.keyboard.press("Shift+Tab")
+    await expect(content).toHaveCount(0)
+    await expect(log(page)).toHaveText(
+      "onOpenChange(false) 0 · onInteractOutside 0 · pressed while none",
+    )
+  })
+})
+
 test.describe("user menu", () => {
   test("the Layout entry and its separator show below 48rem only", async ({
     page,
