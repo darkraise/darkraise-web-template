@@ -43,6 +43,66 @@ describe("useControllableState", () => {
     expect(result.current[0]).toBe(15)
   })
 
+  it("setting the current value calls no onChange", () => {
+    const onChange = vi.fn()
+    const controlled = renderHook(() =>
+      useControllableState<boolean>({ value: false, onChange }),
+    )
+    act(() => controlled.result.current[1](false))
+    const uncontrolled = renderHook(() =>
+      useControllableState<boolean>({ defaultValue: false, onChange }),
+    )
+    act(() => uncontrolled.result.current[1]((prev) => prev))
+    expect(onChange).not.toHaveBeenCalled()
+  })
+
+  it("two sets in one tick each compare against the one before", () => {
+    const onChange = vi.fn()
+    const { result } = renderHook(() =>
+      useControllableState<boolean>({ defaultValue: false, onChange }),
+    )
+    act(() => {
+      result.current[1](true)
+      result.current[1](false)
+    })
+    expect(result.current[0]).toBe(false)
+    expect(onChange.mock.calls).toEqual([[true], [false]])
+  })
+
+  it("a setter kept from an earlier render compares against the latest value", () => {
+    const onChange = vi.fn()
+    const { result } = renderHook(() =>
+      useControllableState<boolean>({ defaultValue: false, onChange }),
+    )
+    const kept = result.current[1]
+    act(() => result.current[1](true))
+    act(() => kept(false))
+    expect(result.current[0]).toBe(false)
+    expect(onChange.mock.calls).toEqual([[true], [false]])
+  })
+
+  it("updaters in one tick compose", () => {
+    const { result } = renderHook(() =>
+      useControllableState<number>({ defaultValue: 0 }),
+    )
+    act(() => {
+      result.current[1]((prev) => prev + 1)
+      result.current[1]((prev) => prev + 1)
+    })
+    expect(result.current[0]).toBe(2)
+  })
+
+  it("a controlled owner that kept its value is asked again on a later set", async () => {
+    const onChange = vi.fn()
+    const { result } = renderHook(() =>
+      useControllableState<boolean>({ value: true, onChange }),
+    )
+    act(() => result.current[1](false))
+    await act(async () => {})
+    act(() => result.current[1](false))
+    expect(onChange.mock.calls).toEqual([[false], [false]])
+  })
+
   it("does not switch modes when value goes from defined to undefined mid-life", () => {
     const { result, rerender } = renderHook(
       ({ value }: { value?: number }) =>

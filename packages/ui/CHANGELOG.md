@@ -4,6 +4,10 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+### Fixed
+
+- Change callbacks (`onOpenChange`, `onValueChange`, `onCheckedChange`, `onPressedChange` and the rest) are no longer called with the value a component already has, such as `onOpenChange(false)` from a Dialog that is already closed or `onValueChange` when the selected Select option is picked again. A controlled component whose owner kept its value after a change request is asked again on the next attempt.
+
 ## [7.2.1] — 2026-11-11
 
 ### Fixed
