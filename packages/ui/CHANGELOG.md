@@ -4,6 +4,10 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+### Fixed
+
+- A `Dialog`, `Drawer`, `Popover`, `DropdownMenu`, `ContextMenu`, `Menubar`, `Select` or `Combobox` that is closing no longer treats a press or a focus move outside it as an outside interaction while its exit animation keeps it mounted. A press in a dialog opened in its place used to call the closing dialog's `onPointerDownOutside`, `onInteractOutside` and `onOpenChange(false)` again.
+
 ## [7.2.0] — 2026-11-04
 
 ### Changed

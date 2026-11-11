@@ -40,7 +40,7 @@ export function DismissableLayer({
   React.useEffect(() => {
     pushLayer(id, ancestors, () => ref.current, isActive)
     const onPointerDown = (e: PointerEvent) => {
-      if (!ref.current) return
+      if (!ref.current || !isActive()) return
       if (e.target instanceof Node && isTargetInLayerOrAbove(id, e.target))
         return
       stableOutside(e)
@@ -51,7 +51,7 @@ export function DismissableLayer({
       stableEscape(e)
     }
     const onFocusIn = (e: FocusEvent) => {
-      if (!ref.current) return
+      if (!ref.current || !isActive()) return
       if (e.target instanceof Node && isTargetInLayerOrAbove(id, e.target))
         return
       stableFocusOutside(e)

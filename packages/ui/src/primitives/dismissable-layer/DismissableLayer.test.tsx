@@ -129,4 +129,35 @@ describe("DismissableLayer", () => {
     expect(dialogEsc).toHaveBeenCalledTimes(0)
     expect(sheetEsc).toHaveBeenCalledTimes(1)
   })
+
+  it("a closing layer ignores a pointerdown outside it", async () => {
+    const onOutside = vi.fn()
+    render(
+      <>
+        <button data-testid="outside">o</button>
+        <DismissableLayer active={false} onPointerDownOutside={onOutside}>
+          <div>x</div>
+        </DismissableLayer>
+      </>,
+    )
+    await userEvent.pointer({
+      keys: "[MouseLeft>]",
+      target: screen.getByTestId("outside"),
+    })
+    expect(onOutside).toHaveBeenCalledTimes(0)
+  })
+
+  it("a closing layer ignores focus moving outside it", () => {
+    const onFocusOutside = vi.fn()
+    render(
+      <>
+        <button data-testid="outside">o</button>
+        <DismissableLayer active={false} onFocusOutside={onFocusOutside}>
+          <div>x</div>
+        </DismissableLayer>
+      </>,
+    )
+    screen.getByTestId("outside").focus()
+    expect(onFocusOutside).toHaveBeenCalledTimes(0)
+  })
 })
