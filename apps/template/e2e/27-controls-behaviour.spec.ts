@@ -271,6 +271,41 @@ test.describe("closing popover", () => {
       "onOpenChange(false) 0 · onInteractOutside 0 · pressed while none",
     )
   })
+
+  test("a second press on its button during its exit does not reach the button", async ({
+    page,
+  }) => {
+    const content = await openPopover(page)
+    const done = content.getByRole("button", { name: "Done" })
+    const box = await boxOf(done)
+    await done.click()
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2)
+    await expect(content).toHaveCount(0)
+    await expect(page.getByTestId("closing-clicks")).toHaveText(
+      "done 1 · next 0",
+    )
+  })
+
+  test("a press through a closing dialog's backdrop reaches the page", async ({
+    page,
+  }) => {
+    await openInMode(page, "light")
+    await probe(page, "closing-popover", "button")
+      .filter({ hasText: "Open dialog" })
+      .click()
+    const dialog = page.locator("[data-closing-dialog]")
+    await expect(dialog).toHaveAttribute("data-state", "open")
+    await settle(page)
+    const next = await boxOf(
+      probe(page, "closing-popover", "button").filter({ hasText: "Next" }),
+    )
+    await dialog.getByRole("button", { name: "Close dialog" }).click()
+    await page.mouse.click(next.x + next.width / 2, next.y + next.height / 2)
+    await expect(dialog).toHaveCount(0)
+    await expect(page.getByTestId("closing-clicks")).toHaveText(
+      "done 0 · next 1",
+    )
+  })
 })
 
 test.describe("user menu", () => {

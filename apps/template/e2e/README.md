@@ -633,6 +633,8 @@ one `data-probe` per case.
 - A popover that is closing, still mounted for its exit animation, ignores a
   press outside it and focus leaving it by Shift+Tab: neither calls
   `onOpenChange(false)` or `onInteractOutside`.
+- During that exit, a second press on the popover's own button does not reach it,
+  and a press on Next through a closing dialog's backdrop reaches Next.
 
 ### 28 · Right to left (`28-rtl.spec.ts`)
 

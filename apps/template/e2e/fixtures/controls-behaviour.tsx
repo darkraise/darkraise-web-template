@@ -17,6 +17,12 @@ import {
   PaginationLink,
 } from "darkraise-ui/components/pagination"
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "darkraise-ui/components/dialog"
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -70,6 +76,8 @@ function ClosingPopover() {
   const [open, setOpen] = useState(false)
   const [log, setLog] = useState({ openChangeFalse: 0, interactOutside: 0 })
   const [pressedWhile, setPressedWhile] = useState("none")
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [clicks, setClicks] = useState({ done: 0, next: 0 })
   return (
     <>
       <Popover
@@ -89,11 +97,19 @@ function ClosingPopover() {
             setLog((l) => ({ ...l, interactOutside: l.interactOutside + 1 }))
           }
         >
-          <Button onClick={() => setOpen(false)}>Done</Button>
+          <Button
+            onClick={() => {
+              setOpen(false)
+              setClicks((c) => ({ ...c, done: c.done + 1 }))
+            }}
+          >
+            Done
+          </Button>
         </PopoverContent>
       </Popover>
       <Button
         variant="outline"
+        onClick={() => setClicks((c) => ({ ...c, next: c.next + 1 }))}
         onPointerDown={() =>
           setPressedWhile(
             document
@@ -107,6 +123,19 @@ function ClosingPopover() {
       <output data-testid="closing-popover-log">
         {`onOpenChange(false) ${log.openChangeFalse} · onInteractOutside ${log.interactOutside} · pressed while ${pressedWhile}`}
       </output>
+      <output data-testid="closing-clicks">
+        {`done ${clicks.done} · next ${clicks.next}`}
+      </output>
+      <Button variant="outline" onClick={() => setDialogOpen(true)}>
+        Open dialog
+      </Button>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent data-closing-dialog="">
+          <DialogTitle>Closing dialog</DialogTitle>
+          <DialogDescription>Its backdrop covers Next.</DialogDescription>
+          <Button onClick={() => setDialogOpen(false)}>Close dialog</Button>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }
