@@ -4,6 +4,8 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+## [7.2.2] — 2026-11-11
+
 ### Fixed
 
 - A closing overlay takes no pointer events while its exit animation runs: Dialog, AlertDialog, Sheet and Drawer content and backdrops, Popover, HoverCard, Tooltip, DropdownMenu, ContextMenu, Menubar, NavigationMenu, Select, Combobox, DatePicker and ColorPicker content. A second press on a closing dialog's button no longer runs its handler again, and a press on the page behind a fading backdrop reaches the page.
