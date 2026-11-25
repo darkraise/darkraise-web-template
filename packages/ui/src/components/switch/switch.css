@@ -97,6 +97,15 @@
     background-color: hsl(var(--primary-4));
   }
 
+  /* The off track's well matches the card on a frosted plane (about 1:1),
+     so it takes the thumb's ring: without it an off switch reads as a lone
+     thumb with no track. The inset shadow follows the narrowed padding box. */
+  [data-switch-style="track"] .dr-switch[data-state="unchecked"] {
+    box-shadow:
+      inset 0 0 0 1px hsl(var(--border-strong)),
+      var(--check-well-shadow);
+  }
+
   [data-switch-style="track"] .dr-switch .dr-switch-thumb {
     width: calc(var(--spacing) * 5);
     height: calc(var(--spacing) * 5);

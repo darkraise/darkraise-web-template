@@ -126,6 +126,12 @@ describe("switch style track", () => {
     )
   })
 
+  it("rings the unchecked track in the strong border, over its well shadow", () => {
+    expect(bodyOf(`${TRACK} .dr-switch[data-state="unchecked"]`)).toBe(
+      "box-shadow: inset 0 0 0 1px hsl(var(--border-strong)), var(--check-well-shadow);",
+    )
+  })
+
   it("grows the thumb to 20px and pulls it over the track's ends", () => {
     expect(bodyOf(`${TRACK} .dr-switch .dr-switch-thumb`)).toBe(
       "width: calc(var(--spacing) * 5); height: calc(var(--spacing) * 5); margin-inline-start: calc(var(--spacing) * -0.5); border-radius: var(--switch-radius);",

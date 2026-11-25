@@ -172,6 +172,28 @@ describe("control anatomy contrast over the engine matrix", () => {
     ).toEqual([])
   }, 30_000)
 
+  // The track switch's off track and off thumb are both ringed in
+  // --border-strong; the frosted well under the ring matches the card.
+  it("track switches: the off ring clears 3:1 on every plane", () => {
+    expect(
+      failures((combo, at) => {
+        const ink = at("--border-strong")
+        if (!combo.frosted) {
+          return (["--background", "--card"] as const).map((ground) => ({
+            where: `on ${ground}`,
+            ink,
+            ground: at(ground),
+          }))
+        }
+        return glassPlanes(combo, at).map(([plane, under]) => ({
+          where: plane,
+          ink,
+          ground: under,
+        }))
+      }, MARK),
+    ).toEqual([])
+  }, 30_000)
+
   it("marked switches: the off glyph clears 4.5:1 on the off track", () => {
     expect(
       failures((combo, at) => {
