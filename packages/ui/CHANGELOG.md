@@ -4,6 +4,8 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+## [7.2.3] — 2026-11-25
+
 ### Fixed
 
 - Under the `track` switch style, an off switch's track is drawn with a 1px `--border-strong` ring, the same as its thumb. Its well matched the card on frosted Glass planes (about 1:1), so an off switch read as a lone thumb with no track. The ring clears 3:1 on the page and on every card plane in both modes.
