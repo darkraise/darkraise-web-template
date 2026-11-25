@@ -266,6 +266,22 @@ for (const mode of MODES) {
         at(cardBox, 8, -6, 4, 3),
       )
       expect(ringCard).toBeGreaterThanOrEqual(3)
+
+      // The off track takes the thumb's ring, inside its 14px padding box:
+      // its top edge against the page above the track.
+      expect(await computed(off, "box-shadow")).toMatch(
+        new RegExp(
+          `^${(await paint(page, "hsl(var(--border-strong))")).replace(/[()]/g, "\\$&")} 0px 0px 0px 1px inset`,
+        ),
+      )
+      // Measuring the card scrolled the page, so the off box is read again.
+      const offTrackBox = await boxOf(off)
+      const trackRing = await markContrast(
+        page,
+        at(offTrackBox, 23, 3, 4, 1),
+        at(offTrackBox, 23, 0, 4, 2),
+      )
+      expect(trackRing).toBeGreaterThanOrEqual(3)
     })
 
     test("slide draws a slot, a ridged thumb and a lamp where the thumb has left", async ({
